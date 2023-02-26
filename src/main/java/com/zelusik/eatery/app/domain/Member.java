@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.domain;
 
+import com.zelusik.eatery.app.domain.constant.Gender;
 import com.zelusik.eatery.app.domain.constant.LoginType;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,12 +21,12 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
-    @JoinColumn(name = "terms_info_id", nullable = false)
+    @JoinColumn(name = "terms_info_id")
     @OneToOne(fetch = FetchType.LAZY)
     private TermsInfo termsInfo;
 
     @Column(nullable = false)
-    private String uid;
+    private String socialUid;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -36,16 +37,23 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String nickname;
 
+    private Integer ageRange;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     private LocalDateTime deletedAt;
 
-    public static Member of(String uid, LoginType loginType, String email, String nickname) {
-        return new Member(uid, loginType, email, nickname);
+    public static Member of(String uid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
+        return new Member(uid, loginType, email, nickname, ageRange, gender);
     }
 
-    private Member(String uid, LoginType loginType, String email, String nickname) {
-        this.uid = uid;
+    private Member(String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
+        this.socialUid = socialUid;
         this.loginType = loginType;
         this.email = email;
         this.nickname = nickname;
+        this.ageRange = ageRange;
+        this.gender = gender;
     }
 }
