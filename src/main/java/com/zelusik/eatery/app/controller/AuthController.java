@@ -2,20 +2,18 @@ package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.domain.constant.LoginType;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
-import com.zelusik.eatery.app.dto.auth.LoginResponse;
+import com.zelusik.eatery.app.dto.auth.response.LoginResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.app.service.MemberService;
+import com.zelusik.eatery.app.service.RefreshTokenService;
 import com.zelusik.eatery.global.security.JwtTokenProvider;
-import com.zelusik.eatery.global.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "로그인 등 인증 관련")
@@ -27,6 +25,7 @@ public class AuthController {
     private final KakaoOAuthController kakaoOAuthController;
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Operation(
             summary = "로그인",
@@ -51,10 +50,19 @@ public class AuthController {
                 .body(createLoginResponseWithJwtTokens(memberDto, LoginType.KAKAO));
     }
 
+    /**
+     * Access token과 refresh token을 생성한 후,
+     * <code>LoginResponse</code> 객체에 로그인 사용자 정보와 두 개의 token을 담아 반환한다.
+     *
+     * @param memberDto 로그인 사용자
+     * @param loginType 로그인 유형
+     * @return 로그인 사용자 정보와 access token, refresh token이 담긴 <code>LoginResponse</code> 객체
+     */
     private LoginResponse createLoginResponseWithJwtTokens(MemberDto memberDto, LoginType loginType) {
         String accessToken = jwtTokenProvider.createAccessToken(memberDto.id(), loginType);
-        // TODO: refresh token은 추후 redis로 관리 필요
         String refreshToken = jwtTokenProvider.createRefreshToken(memberDto.id(), loginType);
+        refreshTokenService.save(memberDto.id(), refreshToken);
+
         return LoginResponse.of(
                 LoggedInMemberResponse.from(memberDto),
                 accessToken,
