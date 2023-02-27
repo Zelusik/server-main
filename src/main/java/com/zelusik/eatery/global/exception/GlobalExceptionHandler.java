@@ -18,8 +18,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.validation.ConstraintViolationException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 /**
@@ -38,7 +36,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-        log.error("[{}] CustomException {}:", LogUtils.getLogTraceId(), getExceptionStackTrace(ex));
+        log.error("[{}] CustomException: {}:", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         return ResponseEntity
                 .status(ex.getHttpStatus())
@@ -47,7 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log.error("[{}] Validation Exception: {}", LogUtils.getLogTraceId(), getExceptionStackTrace(ex));
+        log.error("[{}] Validation Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         List<ValidationErrorDetails> errorDetails = ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> new ValidationErrorDetails(
@@ -67,7 +65,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ValidationErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
-        log.error("[{}] Validation Exception: {}", LogUtils.getLogTraceId(), getExceptionStackTrace(ex));
+        log.error("[{}] Validation Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         List<ValidationErrorDetails> errorDetails = ex.getConstraintViolations().stream()
                 .map(violation -> {
@@ -83,7 +81,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log.error("[{}] Spring MVC Basic Exception: {}", LogUtils.getLogTraceId(), getExceptionStackTrace(ex));
+        log.error("[{}] Spring MVC Basic Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         ExceptionType exceptionType = ExceptionType.from(ex.getClass());
         return ResponseEntity
@@ -93,7 +91,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        log.error("[{}] UnHandled Exception: {}", LogUtils.getLogTraceId(), getExceptionStackTrace(ex));
+        log.error("[{}] UnHandled Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -101,11 +99,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         ExceptionType.UNHANDLED.getCode(),
                         ExceptionType.UNHANDLED.getMessage()
                 ));
-    }
-
-    private String getExceptionStackTrace(Exception ex) {
-        StringWriter stringWriter = new StringWriter();
-        ex.printStackTrace(new PrintWriter(stringWriter));
-        return String.valueOf(stringWriter);
     }
 }
