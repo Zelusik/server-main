@@ -21,11 +21,11 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
-    @JoinColumn(name = "terms_info_id")
+    @JoinColumn(name = "terms_info_id", nullable = false)
     @OneToOne(fetch = FetchType.LAZY)
     private TermsInfo termsInfo;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String socialUid;
 
     @Column(nullable = false)
@@ -44,11 +44,12 @@ public class Member extends BaseTimeEntity {
 
     private LocalDateTime deletedAt;
 
-    public static Member of(String uid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
-        return new Member(uid, loginType, email, nickname, ageRange, gender);
+    public static Member of(TermsInfo termsInfo, String uid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
+        return new Member(termsInfo, uid, loginType, email, nickname, ageRange, gender);
     }
 
-    private Member(String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
+    private Member(TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
+        this.termsInfo = termsInfo;
         this.socialUid = socialUid;
         this.loginType = loginType;
         this.email = email;
