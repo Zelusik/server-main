@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.dto.auth;
+package com.zelusik.eatery.app.dto.auth.response;
 
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
