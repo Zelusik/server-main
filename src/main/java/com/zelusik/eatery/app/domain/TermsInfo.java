@@ -39,4 +39,20 @@ public class TermsInfo extends BaseTimeEntity {
     private Boolean marketingReception;
     @Column(nullable = false)
     private LocalDateTime marketingReceptionUpdatedAt;
+
+    public static TermsInfo of(Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
+        return new TermsInfo(isMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt);
+    }
+
+    private TermsInfo(Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
+        this.isMinor = isMinor;
+        this.service = service;
+        this.serviceUpdatedAt = serviceUpdatedAt;
+        this.userInfo = userInfo;
+        this.userInfoUpdatedAt = userInfoUpdatedAt;
+        this.locationInfo = locationInfo;
+        this.locationInfoUpdatedAt = locationInfoUpdatedAt;
+        this.marketingReception = marketingReception;
+        this.marketingReceptionUpdatedAt = marketingReceptionUpdatedAt;
+    }
 }
