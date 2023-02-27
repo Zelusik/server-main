@@ -49,9 +49,11 @@ public class MemberService {
     }
 
     /**
+     * 주어진 PK에 해당하는 회원을 DB에서 조회한다.
      *
-     * @param memberId
-     * @return
+     * @param memberId 조회할 회원의 PK
+     * @return 조회한 회원 entity
+     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
      */
     private Member getMemberById(Long memberId) {
         return memberRepository.findById(memberId)
