@@ -30,9 +30,13 @@ public class UserPrincipal implements UserDetails {
                 .toList();
     }
 
+    public Long getMemberId() {
+        return memberDto.id();
+    }
+
     @Override
     public String getUsername() {
-        return String.valueOf(memberDto.id());
+        return String.valueOf(getMemberId());
     }
 
     @Override
