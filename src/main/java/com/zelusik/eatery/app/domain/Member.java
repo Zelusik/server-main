@@ -21,7 +21,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
-    @JoinColumn(name = "terms_info_id", nullable = false)
+    @JoinColumn(name = "terms_info_id")
     @OneToOne(fetch = FetchType.LAZY)
     private TermsInfo termsInfo;
 
