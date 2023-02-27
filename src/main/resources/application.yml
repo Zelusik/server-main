@@ -31,6 +31,8 @@ spring:
 
 ---
 # Settings for production(dev-server)
+jwt.secret.key: ${JWT_SECRET_KEY}
+
 logging:
   level:
     com.zelusik.eatery: info
