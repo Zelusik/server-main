@@ -60,7 +60,7 @@ class KakaoOAuthUserInfoTest {
         KakaoOAuthUserInfo result = KakaoOAuthUserInfo.from(attributes);
 
         // then
-        assertThat(result.getSocialUid()).isEqualTo(1234567890L);
+        assertThat(result.getSocialUid()).isEqualTo("1234567890");
         assertThat(result.connectedAt()).isEqualTo(
                 ZonedDateTime.of(2023, 1, 21, 13, 7, 45, 0, ZoneOffset.UTC)
                         .withZoneSameInstant(ZoneId.systemDefault())
