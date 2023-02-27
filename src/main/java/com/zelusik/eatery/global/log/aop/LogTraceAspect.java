@@ -27,9 +27,9 @@ public class LogTraceAspect {
 
             logTrace.end(status);
             return result;
-        } catch (Exception e) {
-            logTrace.exception(status, e);
-            throw e;
+        } catch (Exception ex) {
+            logTrace.exception(status, ex);
+            throw ex;
         }
     }
 }

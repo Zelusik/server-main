@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class LogUtils {
 
-    public static final String LOG_TRACE_ID_MDC_KEY = "ReetPlaceLogTraceId";
+    public static final String LOG_TRACE_ID_MDC_KEY = "LogTraceId";
 
     public static String getLogTraceId() {
         return MDC.get(LOG_TRACE_ID_MDC_KEY);
