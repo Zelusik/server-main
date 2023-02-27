@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     private static final Long HOUR = 60 * MINUTE;
     private static final Long DAY = 24 * HOUR;
     private static final long ACCESS_TOKEN_EXPIRED_DURATION = 12 * HOUR; // Access token 만료시간 : 12시간
-    private static final long REFRESH_TOKEN_EXPIRED_DURATION = 14 * DAY; // Refresh token 만료시간 : 2주
+    public static final long REFRESH_TOKEN_EXPIRED_DURATION = 30 * DAY; // Refresh token 만료시간 : 한 달
 
     private static final String TOKEN_TYPE_BEARER = "Bearer ";
 
