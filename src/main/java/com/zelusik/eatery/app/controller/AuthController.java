@@ -3,10 +3,12 @@ package com.zelusik.eatery.app.controller;
 import com.zelusik.eatery.app.domain.constant.LoginType;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
 import com.zelusik.eatery.app.dto.auth.response.LoginResponse;
+import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.app.service.MemberService;
 import com.zelusik.eatery.app.service.RefreshTokenService;
+import com.zelusik.eatery.global.security.JwtTokenInfoDto;
 import com.zelusik.eatery.global.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,17 +58,19 @@ public class AuthController {
      *
      * @param memberDto 로그인 사용자
      * @param loginType 로그인 유형
-     * @return 로그인 사용자 정보와 access token, refresh token이 담긴 <code>LoginResponse</code> 객체
+     * @return 로그인 사용자 정보와 access token, refresh token 정보가 담긴 <code>LoginResponse</code> 객체
      */
     private LoginResponse createLoginResponseWithJwtTokens(MemberDto memberDto, LoginType loginType) {
-        String accessToken = jwtTokenProvider.createAccessToken(memberDto.id(), loginType);
-        String refreshToken = jwtTokenProvider.createRefreshToken(memberDto.id(), loginType);
-        refreshTokenService.save(memberDto.id(), refreshToken);
+        JwtTokenInfoDto accessTokenInfo = jwtTokenProvider.createAccessToken(memberDto.id(), loginType);
+        JwtTokenInfoDto refreshTokenInfo = jwtTokenProvider.createRefreshToken(memberDto.id(), loginType);
+        refreshTokenService.save(memberDto.id(), refreshTokenInfo.token());
 
         return LoginResponse.of(
                 LoggedInMemberResponse.from(memberDto),
-                accessToken,
-                refreshToken
+                TokenResponse.of(
+                        accessTokenInfo.token(), accessTokenInfo.expiresAt(),
+                        refreshTokenInfo.token(), refreshTokenInfo.expiresAt()
+                )
         );
     }
 }

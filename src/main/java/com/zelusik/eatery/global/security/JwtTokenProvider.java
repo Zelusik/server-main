@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.sql.Timestamp;
 import java.util.Date;
 
 @Slf4j
@@ -30,9 +31,9 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
 
     // Expiration Time
-    private static final Long MINUTE = 1000 * 60L;
-    private static final Long HOUR = 60 * MINUTE;
-    private static final Long DAY = 24 * HOUR;
+    private static final long MINUTE = 1000 * 60L;
+    private static final long HOUR = 60 * MINUTE;
+    private static final long DAY = 24 * HOUR;
     private static final long ACCESS_TOKEN_EXPIRED_DURATION = 12 * HOUR; // Access token 만료시간 : 12시간
     public static final long REFRESH_TOKEN_EXPIRED_DURATION = 30 * DAY; // Refresh token 만료시간 : 한 달
 
@@ -59,7 +60,7 @@ public class JwtTokenProvider {
      * @param memberId 로그인하려는 회원의 id(PK)
      * @return 생성한 jwt token
      */
-    public String createAccessToken(Long memberId, LoginType loginType) {
+    public JwtTokenInfoDto createAccessToken(Long memberId, LoginType loginType) {
         return createJwtToken(memberId, RoleType.USER, loginType, ACCESS_TOKEN_EXPIRED_DURATION);
     }
 
@@ -69,7 +70,7 @@ public class JwtTokenProvider {
      * @param memberId 로그인하려는 회원의 id(PK)
      * @return 생성한 jwt token
      */
-    public String createRefreshToken(Long memberId, LoginType loginType) {
+    public JwtTokenInfoDto createRefreshToken(Long memberId, LoginType loginType) {
         return createJwtToken(memberId, RoleType.USER, loginType, REFRESH_TOKEN_EXPIRED_DURATION);
     }
 
@@ -132,21 +133,24 @@ public class JwtTokenProvider {
      * 현재 access token과 refresh token을 생성할 때 만료 시간 외의 정보는 동일하므로 method를 통일하였다.
      *
      * @param memberId             회원의 id(PK)
+     * @param roleType             회원의 role type
      * @param loginType            회원의 로그인 type
      * @param tokenExpiredDuration Token 만료 시간
-     * @return 생성된 JWT token
+     * @return 생성된 jwt token과 만료 시각이 포함된 <code>JwtTokenInfoDto</code> 객체
      */
-    private String createJwtToken(Long memberId, RoleType roleType, LoginType loginType, Long tokenExpiredDuration) {
+    private JwtTokenInfoDto createJwtToken(Long memberId, RoleType roleType, LoginType loginType, Long tokenExpiredDuration) {
         Date now = new Date();
-        return Jwts.builder()
+        Date expiresAt = new Date(now.getTime() + tokenExpiredDuration);
+        String token = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(String.valueOf(memberId))
                 .claim(ROLE_CLAIM_KEY, roleType.getName())
                 .claim(LOGIN_TYPE_CLAIM_KEY, loginType.name())
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenExpiredDuration))
+                .setExpiration(expiresAt)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+        return JwtTokenInfoDto.of(token, new Timestamp(expiresAt.getTime()).toLocalDateTime());
     }
 
     /**
