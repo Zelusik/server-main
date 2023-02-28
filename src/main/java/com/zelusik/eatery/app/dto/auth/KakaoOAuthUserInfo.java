@@ -39,15 +39,22 @@ public record KakaoOAuthUserInfo(
                 String profileImageUrl
         ) {
             public static Profile from(Map<String, Object> attributes) {
+                Object thumbnailImageUrl = attributes.get("thumbnail_image_url");
+                Object profileImageUrl = attributes.get("profile_image_url");
+
                 return new Profile(
-                        String.valueOf(attributes.get("nickname")),
-                        String.valueOf(attributes.get("thumbnail_image_url")),
-                        String.valueOf(attributes.get("profile_image_url"))
+                        attributes.get("nickname").toString(),
+                        thumbnailImageUrl == null ? null : thumbnailImageUrl.toString(),
+                        profileImageUrl == null ? null : profileImageUrl.toString()
                 );
             }
         }
 
         public static KakaoAccount from(Map<String, Object> attributes) {
+            Object email = attributes.get("email");
+            Object ageRange = attributes.get("age_range");
+            Object gender = attributes.get("gender");
+
             return new KakaoAccount(
                     Boolean.valueOf(String.valueOf(attributes.get("profile_nickname_needs_agreement"))),
                     Boolean.valueOf(String.valueOf(attributes.get("profile_image_needs_agreement"))),
@@ -56,13 +63,13 @@ public record KakaoOAuthUserInfo(
                     Boolean.valueOf(String.valueOf(attributes.get("email_needs_agreement"))),
                     Boolean.valueOf(String.valueOf(attributes.get("is_email_valid"))),
                     Boolean.valueOf(String.valueOf(attributes.get("is_email_verified"))),
-                    String.valueOf(attributes.get("email")),
+                    email == null ? null : email.toString(),
                     Boolean.valueOf(String.valueOf(attributes.get("has_age_range"))),
                     Boolean.valueOf(String.valueOf(attributes.get("age_range_needs_agreement"))),
-                    Integer.valueOf(String.valueOf(attributes.get("age_range")).substring(0, 2)),
+                    ageRange == null ? null : Integer.valueOf(ageRange.toString().substring(0, 2)),
                     Boolean.valueOf(String.valueOf(attributes.get("has_gender"))),
                     Boolean.valueOf(String.valueOf(attributes.get("gender_needs_agreement"))),
-                    Gender.caseFreeValueOf(String.valueOf(attributes.get("gender")))
+                    gender == null ? null : Gender.caseFreeValueOf(gender.toString())
             );
         }
     }

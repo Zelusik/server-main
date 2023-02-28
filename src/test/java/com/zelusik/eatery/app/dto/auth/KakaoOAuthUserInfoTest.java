@@ -73,4 +73,51 @@ class KakaoOAuthUserInfoTest {
         assertThat(result.getAgeRange()).isEqualTo(20);
         assertThat(result.getGender()).isEqualTo(Gender.MALE);
     }
+    
+    @DisplayName("필수 동의 항목만 동의한 kakao 유저 정보가 주어지면 해당하는 내용으로 KakaoOAuthInfo 객체로 변환한다.")
+    @Test
+    void givenOnlyRequiredValue_whenInstantiating_thenConvertKakaoOAuthInfoObject() throws Exception {
+        // given
+        String response = """
+                {
+                  "id": 1234567890,
+                  "connected_at": "2023-01-21T13:07:45Z",
+                  "properties": {
+                    "nickname": "홍길동"
+                  },
+                  "kakao_account": {
+                    "profile_nickname_needs_agreement": false,
+                    "profile_image_needs_agreement": true,
+                    "profile": {
+                      "nickname": "홍길동"
+                    },
+                    "has_email": true,
+                    "email_needs_agreement": true,
+                    "has_age_range": true,
+                    "age_range_needs_agreement": true,
+                    "has_gender": true,
+                    "gender_needs_agreement": true
+                  }
+                }
+                """;
+        Map<String, Object> attributes = mapper.readValue(response, new TypeReference<>() {
+        });
+
+        // when
+        KakaoOAuthUserInfo result = KakaoOAuthUserInfo.from(attributes);
+
+        // then
+        assertThat(result.getSocialUid()).isEqualTo("1234567890");
+        assertThat(result.connectedAt()).isEqualTo(
+                ZonedDateTime.of(2023, 1, 21, 13, 7, 45, 0, ZoneOffset.UTC)
+                        .withZoneSameInstant(ZoneId.systemDefault())
+                        .toLocalDateTime()
+        );
+        assertThat(result.getNickname()).isEqualTo("홍길동");
+        assertThat(result.getThumbnailImageUrl()).isNull();
+        assertThat(result.getProfileImageUrl()).isNull();
+        assertThat(result.getEmail()).isNull();
+        assertThat(result.getAgeRange()).isNull();
+        assertThat(result.getGender()).isNull();
+    }
 }
