@@ -2,12 +2,13 @@ package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.domain.constant.LoginType;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
+import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.app.dto.auth.response.LoginResponse;
 import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.app.service.MemberService;
-import com.zelusik.eatery.app.service.RefreshTokenService;
+import com.zelusik.eatery.app.service.RedisRefreshTokenService;
 import com.zelusik.eatery.global.security.JwtTokenInfoDto;
 import com.zelusik.eatery.global.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public class AuthController {
     private final KakaoOAuthController kakaoOAuthController;
     private final MemberService memberService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final RedisRefreshTokenService redisRefreshTokenService;
 
     @Operation(
             summary = "로그인",
@@ -63,7 +64,7 @@ public class AuthController {
     private LoginResponse createLoginResponseWithJwtTokens(MemberDto memberDto, LoginType loginType) {
         JwtTokenInfoDto accessTokenInfo = jwtTokenProvider.createAccessToken(memberDto.id(), loginType);
         JwtTokenInfoDto refreshTokenInfo = jwtTokenProvider.createRefreshToken(memberDto.id(), loginType);
-        refreshTokenService.save(memberDto.id(), refreshTokenInfo.token());
+        redisRefreshTokenService.save(refreshTokenInfo.token(), memberDto.id());
 
         return LoginResponse.of(
                 LoggedInMemberResponse.from(memberDto),

@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.dto.auth.RefreshToken;
-import com.zelusik.eatery.app.repository.RefreshTokenRepository;
+import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
+import com.zelusik.eatery.app.repository.RedisRefreshTokenRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,13 +15,13 @@ import static org.mockito.BDDMockito.then;
 
 @DisplayName("[Service] RefreshToken")
 @ExtendWith(MockitoExtension.class)
-class RefreshTokenServiceTest {
+class RedisRedisRefreshTokenServiceTest {
 
     @InjectMocks
-    private RefreshTokenService sut;
+    private RedisRefreshTokenService sut;
 
     @Mock
-    private RefreshTokenRepository refreshTokenRepository;
+    private RedisRefreshTokenRepository redisRefreshTokenRepository;
 
     @DisplayName("회원 정보와 refresh token이 주어지면 redis에 refresh token을 저장한다.")
     @Test
@@ -29,12 +29,12 @@ class RefreshTokenServiceTest {
         // given
         Long memberId = 1L;
         String refreshToken = "test";
-        given(refreshTokenRepository.save(any(RefreshToken.class))).willReturn(any(RefreshToken.class));
+        given(redisRefreshTokenRepository.save(any(RedisRefreshToken.class))).willReturn(any(RedisRefreshToken.class));
 
         // when
         sut.save(refreshToken, memberId);
 
         // then
-        then(refreshTokenRepository).should().save(any(RefreshToken.class));
+        then(redisRefreshTokenRepository).should().save(any(RedisRefreshToken.class));
     }
 }

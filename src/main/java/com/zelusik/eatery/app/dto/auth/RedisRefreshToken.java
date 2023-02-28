@@ -9,13 +9,13 @@ import org.springframework.data.redis.core.RedisHash;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @RedisHash(value = "refreshToken", timeToLive = 30 * 24 * 60 * 60)
-public class RefreshToken {
+public class RedisRefreshToken {
 
     @Id
     private String token;
     private Long memberId;
 
-    public static RefreshToken of(String token, Long memberId) {
-        return new RefreshToken(token, memberId);
+    public static RedisRefreshToken of(String token, Long memberId) {
+        return new RedisRefreshToken(token, memberId);
     }
 }

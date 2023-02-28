@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.dto.auth.RefreshToken;
-import com.zelusik.eatery.app.repository.RefreshTokenRepository;
+import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
+import com.zelusik.eatery.app.repository.RedisRefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class RefreshTokenService {
+public class RedisRefreshTokenService {
 
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
 
     /**
      * Redis에 refresh token을 저장한다.
@@ -21,6 +21,11 @@ public class RefreshTokenService {
      */
     @Transactional
     public void save(String token, Long memberId) {
-        refreshTokenRepository.save(RefreshToken.of(token, memberId));
+        redisRefreshTokenRepository.save(RedisRefreshToken.of(token, memberId));
+    }
+
+    public RedisRefreshToken findByToken(String token) {
+        return redisRefreshTokenRepository.findById(token)
+                .orElseThrow();
     }
 }
