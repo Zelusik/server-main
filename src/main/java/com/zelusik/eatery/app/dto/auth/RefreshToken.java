@@ -12,10 +12,10 @@ import org.springframework.data.redis.core.RedisHash;
 public class RefreshToken {
 
     @Id
-    private Long memberId;
     private String token;
+    private Long memberId;
 
-    public static RefreshToken of(Long memberId, String token) {
-        return new RefreshToken(memberId, token);
+    public static RefreshToken of(String token, Long memberId) {
+        return new RefreshToken(token, memberId);
     }
 }

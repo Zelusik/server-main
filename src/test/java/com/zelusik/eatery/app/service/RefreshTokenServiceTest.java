@@ -32,7 +32,7 @@ class RefreshTokenServiceTest {
         given(refreshTokenRepository.save(any(RefreshToken.class))).willReturn(any(RefreshToken.class));
 
         // when
-        sut.save(memberId, refreshToken);
+        sut.save(refreshToken, memberId);
 
         // then
         then(refreshTokenRepository).should().save(any(RefreshToken.class));

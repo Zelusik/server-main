@@ -17,10 +17,10 @@ public class RefreshTokenService {
      * Redis에 refresh token을 저장한다.
      *
      * @param memberId redis key로 사용할 회원의 PK 값
-     * @param refreshToken redis에 저장할 refresh token
+     * @param token redis에 저장할 refresh token
      */
     @Transactional
-    public void save(Long memberId, String refreshToken) {
-        refreshTokenRepository.save(RefreshToken.of(memberId, refreshToken));
+    public void save(String token, Long memberId) {
+        refreshTokenRepository.save(RefreshToken.of(token, memberId));
     }
 }
