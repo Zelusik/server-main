@@ -5,6 +5,11 @@ public enum Gender {
     MALE, FEMALE;
 
     public static Gender caseFreeValueOf(String name) {
-        return name.equalsIgnoreCase("male") ? MALE : FEMALE;
+        if (name.equalsIgnoreCase("male")) {
+            return MALE;
+        } else if (name.equalsIgnoreCase("female")) {
+            return FEMALE;
+        }
+        return null;
     }
 }
