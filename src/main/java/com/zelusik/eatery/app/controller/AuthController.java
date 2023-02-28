@@ -3,14 +3,14 @@ package com.zelusik.eatery.app.controller;
 import com.zelusik.eatery.app.domain.constant.LoginType;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
 import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
+import com.zelusik.eatery.app.dto.auth.request.TokenRefreshRequest;
 import com.zelusik.eatery.app.dto.auth.response.LoginResponse;
 import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
+import com.zelusik.eatery.app.service.JwtTokenService;
 import com.zelusik.eatery.app.service.MemberService;
-import com.zelusik.eatery.app.service.RedisRefreshTokenService;
 import com.zelusik.eatery.global.security.JwtTokenInfoDto;
-import com.zelusik.eatery.global.security.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Tag(name = "로그인 등 인증 관련")
 @RequiredArgsConstructor
@@ -27,8 +29,7 @@ public class AuthController {
 
     private final KakaoOAuthController kakaoOAuthController;
     private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final RedisRefreshTokenService redisRefreshTokenService;
+    private final JwtTokenService jwtTokenService;
 
     @Operation(
             summary = "로그인",
@@ -48,30 +49,23 @@ public class AuthController {
         MemberDto memberDto = memberService.findOptionalMemberBySocialUid(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.signUp(userInfo.toMemberDto()));
 
+        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.KAKAO);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(createLoginResponseWithJwtTokens(memberDto, LoginType.KAKAO));
+                .body(LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse));
     }
 
-    /**
-     * Access token과 refresh token을 생성한 후,
-     * <code>LoginResponse</code> 객체에 로그인 사용자 정보와 두 개의 token을 담아 반환한다.
-     *
-     * @param memberDto 로그인 사용자
-     * @param loginType 로그인 유형
-     * @return 로그인 사용자 정보와 access token, refresh token 정보가 담긴 <code>LoginResponse</code> 객체
-     */
-    private LoginResponse createLoginResponseWithJwtTokens(MemberDto memberDto, LoginType loginType) {
-        JwtTokenInfoDto accessTokenInfo = jwtTokenProvider.createAccessToken(memberDto.id(), loginType);
-        JwtTokenInfoDto refreshTokenInfo = jwtTokenProvider.createRefreshToken(memberDto.id(), loginType);
-        redisRefreshTokenService.save(refreshTokenInfo.token(), memberDto.id());
+    @Operation(
+            summary = "토큰 갱신하기",
+            description = "<p>기존 발급받은 refresh token으로 새로운 access token과 refresh token을 발급 받습니다.</p>"
+    )
+    @PostMapping("/token")
+    public ResponseEntity<TokenResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        TokenResponse tokenResponse = jwtTokenService.refresh(request.getRefreshToken());
 
-        return LoginResponse.of(
-                LoggedInMemberResponse.from(memberDto),
-                TokenResponse.of(
-                        accessTokenInfo.token(), accessTokenInfo.expiresAt(),
-                        refreshTokenInfo.token(), refreshTokenInfo.expiresAt()
-                )
-        );
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(tokenResponse);
     }
 }

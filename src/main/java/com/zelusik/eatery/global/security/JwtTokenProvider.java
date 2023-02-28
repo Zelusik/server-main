@@ -99,6 +99,10 @@ public class JwtTokenProvider {
         return authorizationHeader.substring(TOKEN_TYPE_BEARER.length());
     }
 
+    public LoginType getLoginType(String token) {
+        return LoginType.valueOf(getClaims(token).get(LOGIN_TYPE_CLAIM_KEY, String.class));
+    }
+
     /**
      * 토큰의 유효성, 만료일자 검증
      *
@@ -115,7 +119,6 @@ public class JwtTokenProvider {
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
-            throw new RuntimeException();
         } catch (
                 UnsupportedJwtException |
                 MalformedJwtException |
@@ -160,11 +163,14 @@ public class JwtTokenProvider {
      * @return 추출한 회원 정보(username == email)
      */
     private String getUsername(String token) {
+        return getClaims(token).getSubject();
+    }
+
+    private Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 }
