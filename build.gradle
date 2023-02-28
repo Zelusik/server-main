@@ -56,6 +56,9 @@ dependencies {
     // Spring Boot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    // Test Containers
+    testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.17.6'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
