@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
+import com.zelusik.eatery.global.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,12 @@ public class KakaoOAuthController {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpRequestController httpRequestController;
 
-    // accessToken은 Bearer ~~ 형식이어야 함.
     public KakaoOAuthUserInfo getUserInfo(String accessToken) {
         String requestUrl = "https://kapi.kakao.com/v2/user/me";
 
         // HTTP header 생성
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, accessToken);
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
 
         // HTTP request 보내기
