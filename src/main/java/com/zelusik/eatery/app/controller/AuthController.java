@@ -2,7 +2,6 @@ package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.domain.constant.LoginType;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
-import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.app.dto.auth.request.TokenRefreshRequest;
 import com.zelusik.eatery.app.dto.auth.response.LoginResponse;
 import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
@@ -10,7 +9,6 @@ import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.app.service.JwtTokenService;
 import com.zelusik.eatery.app.service.MemberService;
-import com.zelusik.eatery.global.security.JwtTokenInfoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
