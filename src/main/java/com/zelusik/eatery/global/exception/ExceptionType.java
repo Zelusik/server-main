@@ -1,7 +1,15 @@
 package com.zelusik.eatery.global.exception;
 
+import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundException;
+import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
+import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.global.log.LogUtils;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +27,6 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.validation.ConstraintViolationException;
-import java.security.SignatureException;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -33,6 +40,7 @@ import java.util.Optional;
  *     <li>13XX: API/Controller 관련 예외</li>
  *     <li>14XX: DB 관련 예외</li>
  *     <li>15XX: 인증 관련 예외</li>
+ *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
  * </ul>
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -70,6 +78,23 @@ public enum ExceptionType {
     MISSING_SERVLET_REQUEST_PART(1311, "multipart/form-data 형식의 요청 데이터에 대해 일부가 손실되거나 누락되었습니다.", MissingServletRequestPartException.class),
     NO_HANDLER_FOUND(1312, "알 수 없는 에러가 발생했으며, 에러를 처리할 handler를 찾지 못했습니다.", NoHandlerFoundException.class),
     ASYNC_REQUEST_TIMEOUT(1313, "요청에 대한 응답 시간이 초과되었습니다.", AsyncRequestTimeoutException.class),
+
+    /**
+     * 로그인, 인증 관련 예외
+     */
+    ACCESS_DENIED(1500, "접근이 거부되었습니다.", null),
+    UNAUTHORIZED(1501, "유효하지 않은 인증 정보로 인해 인증 과정에서 문제가 발생하였습니다.", null),
+    JWT_UNSUPPORTED(1502, "처리할 수 없는 token입니다.", UnsupportedJwtException.class),
+    JWT_MALFORMED(1503, "유효하지 않은 token입니다.", MalformedJwtException.class),
+    JWT_INVALID_SIGNATURE(1504, "Token의 서명이 잘못되었습니다.", SignatureException.class),
+    JWT_EXPIRED(1505, "Token이 만료되었습니다. Token을 갱신하거나 다시 로그인 해주세요.", ExpiredJwtException.class),
+    TOKEN_VALIDATE(1506, "Token의 유효성을 검증하는 과정에서 문제가 발생했습니다. 관리자에게 문의해주세요.", TokenValidateException.class),
+    REDIS_REFRESH_TOKEN_NOT_FOUND(1507, "로그인 이력을 찾을 수 없습니다. 다시 로그인 해주세요.", RedisRefreshTokenNotFoundException.class),
+
+    /**
+     * 회원 관련 예외
+     */
+    MEMBER_ID_NOT_FOUND(2000, "회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
     ;
 
     private final Integer code;
@@ -87,4 +112,4 @@ public enum ExceptionType {
 
         return exceptionType.orElse(UNHANDLED);
     }
-    }
+}

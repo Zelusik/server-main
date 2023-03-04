@@ -12,4 +12,12 @@ public abstract class ConflictException extends CustomException {
     public ConflictException(String optionalMessage) {
         super(HttpStatus.CONFLICT, optionalMessage);
     }
+
+    public ConflictException(Throwable cause) {
+        super(HttpStatus.CONFLICT, cause);
+    }
+
+    public ConflictException(String optionalMessage, Throwable cause) {
+        super(HttpStatus.CONFLICT, optionalMessage, cause);
+    }
 }

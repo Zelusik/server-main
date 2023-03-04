@@ -12,4 +12,12 @@ public abstract class UnauthorizedException extends CustomException {
     public UnauthorizedException(String optionalMessage) {
         super(HttpStatus.UNAUTHORIZED, optionalMessage);
     }
+
+    public UnauthorizedException(Throwable cause) {
+        super(HttpStatus.UNAUTHORIZED, cause);
+    }
+
+    public UnauthorizedException(String optionalMessage, Throwable cause) {
+        super(HttpStatus.UNAUTHORIZED, optionalMessage, cause);
+    }
 }
