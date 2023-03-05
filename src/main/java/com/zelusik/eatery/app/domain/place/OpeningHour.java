@@ -1,6 +1,6 @@
-package com.zelusik.eatery.app.domain;
+package com.zelusik.eatery.app.domain.place;
 
-import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +13,11 @@ import java.time.LocalTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class PlaceSchedule extends BaseTimeEntity {
+public class OpeningHour extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "open_schedule_id")
+    @Column(name = "opening_hour_id")
     private Long id;
 
     @Setter
