@@ -44,7 +44,7 @@ public class Place extends BaseTimeEntity {
     @Embedded
     private Address address;
 
-    private String snsUrl;
+    private String homepageUrl;
 
     @Embedded
     private Point point;
@@ -54,11 +54,11 @@ public class Place extends BaseTimeEntity {
 
     private LocalDateTime deletedAt;
 
-    public static Place of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String snsUrl, Point point) {
-        return new Place(kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, snsUrl, point);
+    public static Place of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point) {
+        return new Place(kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point);
     }
 
-    private Place(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String snsUrl, Point point) {
+    private Place(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point) {
         this.kakaoPid = kakaoPid;
         this.name = name;
         this.pageUrl = pageUrl;
@@ -66,7 +66,7 @@ public class Place extends BaseTimeEntity {
         this.category = category;
         this.phone = phone;
         this.address = address;
-        this.snsUrl = snsUrl;
+        this.homepageUrl = homepageUrl;
         this.point = point;
     }
 }

@@ -16,19 +16,19 @@ public record PlaceDto(
         PlaceCategory category,
         String phone,
         Address address,
-        String snsUrl,
+        String homepageUrl,
         Point point,
         Set<OpeningHoursDto> openingHoursDtos,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime deletedAt
 ) {
-    public static PlaceDto of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String snsUrl, Point point) {
-        return of(null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, snsUrl, point, null, null, null, null);
+    public static PlaceDto of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point) {
+        return of(null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, null, null, null, null);
     }
 
-    public static PlaceDto of(Long id, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String snsUrl, Point point, Set<OpeningHoursDto> openingHoursDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new PlaceDto(id, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, snsUrl, point, openingHoursDtos, createdAt, updatedAt, deletedAt);
+    public static PlaceDto of(Long id, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, Set<OpeningHoursDto> openingHoursDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new PlaceDto(id, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, openingHoursDtos, createdAt, updatedAt, deletedAt);
     }
 
     public static PlaceDto from(Place place) {
@@ -41,7 +41,7 @@ public record PlaceDto(
                 place.getCategory(),
                 place.getPhone(),
                 place.getAddress(),
-                place.getSnsUrl(),
+                place.getHomepageUrl(),
                 place.getPoint(),
                 place.getOpeningHoursSet().stream()
                         .map(OpeningHoursDto::from)
@@ -61,7 +61,7 @@ public record PlaceDto(
                 this.category(),
                 this.phone(),
                 this.address(),
-                this.snsUrl(),
+                this.homepageUrl(),
                 this.point()
         );
     }
