@@ -40,7 +40,7 @@ class MemberServiceTest {
         given(memberRepository.save(any(Member.class))).willReturn(expectedSavedMember);
 
         // when
-        MemberDto actualSavedMember = sut.signUp(memberInfo);
+        MemberDto actualSavedMember = sut.save(memberInfo);
 
         // then
         then(memberRepository).should().save(any(Member.class));
@@ -62,7 +62,7 @@ class MemberServiceTest {
         given(memberRepository.findById(memberId)).willReturn(Optional.of(expected));
 
         // when
-        MemberDto actual = sut.findMemberById(memberId);
+        MemberDto actual = sut.findDtoById(memberId);
 
         // then
         then(memberRepository).should().findById(memberId);
@@ -77,7 +77,7 @@ class MemberServiceTest {
         given(memberRepository.findById(memberId)).willReturn(Optional.empty());
 
         // when
-        Throwable throwable = catchThrowable(() -> sut.findMemberById(memberId));
+        Throwable throwable = catchThrowable(() -> sut.findDtoById(memberId));
 
         // then
         then(memberRepository).should().findById(memberId);
@@ -93,7 +93,7 @@ class MemberServiceTest {
         given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.of(expected));
 
         // when
-        Optional<MemberDto> optionalMember = sut.findOptionalMemberBySocialUid(socialUid);
+        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUid(socialUid);
 
         // then
         then(memberRepository).should().findBySocialUid(socialUid);
@@ -108,7 +108,7 @@ class MemberServiceTest {
         given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.empty());
 
         // when
-        Optional<MemberDto> optionalMember = sut.findOptionalMemberBySocialUid(socialUid);
+        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUid(socialUid);
 
         // then
         then(memberRepository).should().findBySocialUid(socialUid);

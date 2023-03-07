@@ -42,8 +42,8 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody KakaoLoginRequest request) {
         KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
 
-        MemberDto memberDto = memberService.findOptionalMemberBySocialUid(userInfo.getSocialUid())
-                .orElseGet(() -> memberService.signUp(userInfo.toMemberDto()));
+        MemberDto memberDto = memberService.findOptionalDtoBySocialUid(userInfo.getSocialUid())
+                .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
 
         TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.KAKAO);
 

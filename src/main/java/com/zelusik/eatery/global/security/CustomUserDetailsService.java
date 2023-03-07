@@ -10,6 +10,6 @@ public class CustomUserDetailsService {
 
     @Bean
     public UserDetailsService userDetailsService(MemberService memberService) {
-        return username -> UserPrincipal.of(memberService.findMemberById(Long.valueOf(username)));
+        return username -> UserPrincipal.of(memberService.findDtoById(Long.valueOf(username)));
     }
 }
