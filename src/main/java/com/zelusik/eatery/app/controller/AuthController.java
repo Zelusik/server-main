@@ -28,7 +28,7 @@ import javax.validation.Valid;
 @RestController
 public class AuthController {
 
-    private final KakaoOAuthController kakaoOAuthController;
+    private final KakaoOAuthService kakaoOAuthService;
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
 
@@ -40,7 +40,7 @@ public class AuthController {
     )
     @PostMapping("/login/kakao")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody KakaoLoginRequest request) {
-        KakaoOAuthUserInfo userInfo = kakaoOAuthController.getUserInfo(request.getKakaoAccessToken());
+        KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalMemberBySocialUid(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.signUp(userInfo.toMemberDto()));
