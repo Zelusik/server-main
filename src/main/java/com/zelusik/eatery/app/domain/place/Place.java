@@ -9,6 +9,8 @@ import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -31,6 +33,7 @@ public class Place extends BaseTimeEntity {
     private String pageUrl;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private KakaoCategoryGroupCode categoryGroupCode;
 
     @Embedded
@@ -45,6 +48,9 @@ public class Place extends BaseTimeEntity {
 
     @Embedded
     private Point point;
+
+    @OneToMany(mappedBy = "place")
+    private Set<OpeningHours> openingHoursSet = new LinkedHashSet<>();
 
     private LocalDateTime deletedAt;
 
