@@ -1,13 +1,13 @@
 package com.zelusik.eatery.app.domain.place;
 
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
+import com.zelusik.eatery.app.domain.constant.DayOfWeek;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,11 +27,22 @@ public class OpeningHours extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private DayOfWeek day;
+    private DayOfWeek dayOfWeek;
 
     @Column(nullable = false)
     private LocalTime openAt;
 
     @Column(nullable = false)
-    private LocalTime closedAt;
+    private LocalTime closeAt;
+
+    public static OpeningHours of(Place place, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt) {
+        return new OpeningHours(place, dayOfWeek, openAt, closeAt);
+    }
+
+    private OpeningHours(Place place, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt) {
+        this.place = place;
+        this.dayOfWeek = dayOfWeek;
+        this.openAt = openAt;
+        this.closeAt = closeAt;
+    }
 }

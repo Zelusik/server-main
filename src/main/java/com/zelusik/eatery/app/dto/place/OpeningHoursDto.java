@@ -1,29 +1,34 @@
 package com.zelusik.eatery.app.dto.place;
 
+import com.zelusik.eatery.app.domain.constant.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 
-import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public record OpeningHoursDto(
         Long id,
         Long placeId,
-        DayOfWeek day,
+        DayOfWeek dayOfWeek,
         LocalTime openAt,
-        LocalTime closedAt
+        LocalTime closeAt,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 
-    public static OpeningHoursDto of(Long id, Long placeId, DayOfWeek day, LocalTime openAt, LocalTime closedAt) {
-        return new OpeningHoursDto(id, placeId, day, openAt, closedAt);
+    public static OpeningHoursDto of(Long id, Long placeId, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new OpeningHoursDto(id, placeId, dayOfWeek, openAt, closedAt, createdAt, updatedAt);
     }
 
     public static OpeningHoursDto from(OpeningHours entity) {
         return of(
                 entity.getId(),
                 entity.getPlace().getId(),
-                entity.getDay(),
+                entity.getDayOfWeek(),
                 entity.getOpenAt(),
-                entity.getClosedAt()
+                entity.getCloseAt(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
         );
     }
 }
