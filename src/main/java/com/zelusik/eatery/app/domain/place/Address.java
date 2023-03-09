@@ -19,10 +19,8 @@ public class Address {
     @Column(nullable = false)
     private String sgg;
 
-    @Column(nullable = false)
     private String lotNumberAddress;
 
-    @Column(nullable = false)
     private String roadAddress;
 
     public Address(String lotNumberAddress, String roadAddress) {
