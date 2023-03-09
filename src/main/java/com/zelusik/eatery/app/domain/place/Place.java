@@ -72,8 +72,4 @@ public class Place extends BaseTimeEntity {
         this.point = point;
         this.closingHours = closingHours;
     }
-
-    public void addOpeningHours(OpeningHours openingHours) {
-        this.getOpeningHoursList().add(openingHours);
-    }
 }

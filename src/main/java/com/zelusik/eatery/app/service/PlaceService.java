@@ -76,7 +76,7 @@ public class PlaceService {
                 OpeningHoursTimeDto openingHoursTime = extractOpeningHoursTime(oh, 3);
 
                 Arrays.stream(DayOfWeek.values())
-                        .forEach(dayOfWeek -> place.addOpeningHours(OpeningHours.of(
+                        .forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
                                 place,
                                 dayOfWeek,
                                 openingHoursTime.openAt(),
@@ -91,7 +91,7 @@ public class PlaceService {
 
                 OpeningHoursTimeDto openingHoursTime = extractOpeningHoursTime(oh, 4);
 
-                dayOfWeekList.forEach(dayOfWeek -> place.addOpeningHours(OpeningHours.of(
+                dayOfWeekList.forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
                         place,
                         dayOfWeek,
                         openingHoursTime.openAt(),
@@ -110,7 +110,7 @@ public class PlaceService {
 
                 OpeningHoursTimeDto openingHoursTime = extractOpeningHoursTime(oh, firstSpaceIdx + 1);
 
-                dayOfWeekList.forEach(dayOfWeek -> place.addOpeningHours(OpeningHours.of(
+                dayOfWeekList.forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
                         place,
                         dayOfWeek,
                         openingHoursTime.openAt(),
@@ -130,7 +130,7 @@ public class PlaceService {
                         openingHoursTime.closeAt()
                 );
                 openingHoursRepository.save(openingHoursEntity);
-                place.addOpeningHours(openingHoursEntity);
+                place.getOpeningHoursList().add(openingHoursEntity);
             } else {
                 throw new OpeningHoursUnexpectedFormatException();
             }
