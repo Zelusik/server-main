@@ -13,8 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.zelusik.eatery.util.TestMemberUtil.createMemberDto;
-import static com.zelusik.eatery.util.TestMemberUtil.createMemberWithId;
+import static com.zelusik.eatery.util.MemberTestUtils.createMemberDto;
+import static com.zelusik.eatery.util.MemberTestUtils.createMemberWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
