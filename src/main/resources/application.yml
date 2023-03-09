@@ -16,6 +16,7 @@ spring:
 ---
 # Settings for local(dev)
 management.endpoints.web.exposure.include: "*"
+web-scraping.server.url: ${LOCAL_SCRAPING_SERVER_URL}
 
 spring:
   config.activate.on-profile: local
@@ -35,6 +36,7 @@ spring:
 ---
 # Settings for production(dev-server)
 jwt.secret.key: ${JWT_SECRET_KEY}
+web-scraping.server.url: ${PROD_SCRAPING_SERVER_URL}
 
 logging:
   level:

@@ -1,10 +1,13 @@
 package com.zelusik.eatery.global.exception;
 
 import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundException;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
+import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.global.log.LogUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -37,10 +40,12 @@ import java.util.Optional;
  *     <li>1000 ~ 1999: 일반 예외. 아래 항목에 해당하지 않는 대부분의 예외가 여기에 해당한다</li>
  *     <li>120X: Validation 관련 예외</li>
  *     <li>1210 ~ 1299: 구체적인 Validation content에 대한 exception. 해당 내용은 {@link ValidationErrorCode}, {@link GlobalExceptionHandler} 참고)</li>
- *     <li>13XX: API/Controller 관련 예외</li>
+ *     <li>1300 ~ 1349: API/Controller 관련 예외</li>
+ *     <li>1350 ~ 1399: Scraping 서버(Flask) 관련 예외)</li>
  *     <li>14XX: DB 관련 예외</li>
  *     <li>15XX: 인증 관련 예외</li>
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
+ *     <li>3XXX: 장소 관련 예외</li>
  * </ul>
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -80,6 +85,11 @@ public enum ExceptionType {
     ASYNC_REQUEST_TIMEOUT(1313, "요청에 대한 응답 시간이 초과되었습니다.", AsyncRequestTimeoutException.class),
 
     /**
+     * Scraping Server 관련 예외
+     */
+    SCRAPING_SERVER_UNAVAILABLE(1350, "장소 정보를 받아오던 중 서버에서 에러가 발생했습니다.", ScrapingServerInternalError.class),
+
+    /**
      * 로그인, 인증 관련 예외
      */
     ACCESS_DENIED(1500, "접근이 거부되었습니다.", null),
@@ -92,9 +102,14 @@ public enum ExceptionType {
     REDIS_REFRESH_TOKEN_NOT_FOUND(1507, "로그인 이력을 찾을 수 없습니다. 다시 로그인 해주세요.", RedisRefreshTokenNotFoundException.class),
 
     /**
-     * 회원 관련 예외
+     * 회원({@link Member}) 관련 예외
      */
     MEMBER_ID_NOT_FOUND(2000, "회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
+
+    /**
+     * 장소({@link Place}) 관련 예외
+     */
+    OPENING_HOURS_UNEXPECTED_FORMAT(3000, "가게 영업시간이 처리할 수 없는 형태입니다. 서버 관리자에게 문의해주세요.게", OpeningHoursUnexpectedFormatException.class),
     ;
 
     private final Integer code;
