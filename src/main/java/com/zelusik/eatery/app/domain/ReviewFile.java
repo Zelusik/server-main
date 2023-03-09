@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE place SET deleted_at = CURRENT_TIMESTAMP WHERE place_id = ?")
+@SQLDelete(sql = "UPDATE review_file SET deleted_at = CURRENT_TIMESTAMP WHERE place_id = ?")
 @Entity
 public class ReviewFile extends BaseTimeEntity {
 
@@ -24,9 +24,6 @@ public class ReviewFile extends BaseTimeEntity {
     private Review review;
 
     @Column(nullable = false)
-    private String uploaderIp;
-
-    @Column(nullable = false)
     private String originalName;
 
     @Column(nullable = false)
@@ -37,13 +34,12 @@ public class ReviewFile extends BaseTimeEntity {
 
     private LocalDateTime deletedAt;
 
-    public static ReviewFile of(Review review, String uploaderIp, String originalName, String storedName, String url) {
-        return new ReviewFile(review, uploaderIp, originalName, storedName, url);
+    public static ReviewFile of(Review review, String originalName, String storedName, String url) {
+        return new ReviewFile(review, originalName, storedName, url);
     }
 
-    private ReviewFile(Review review, String uploaderIp, String originalName, String storedName, String url) {
+    private ReviewFile(Review review, String originalName, String storedName, String url) {
         this.review = review;
-        this.uploaderIp = uploaderIp;
         this.originalName = originalName;
         this.storedName = storedName;
         this.url = url;
