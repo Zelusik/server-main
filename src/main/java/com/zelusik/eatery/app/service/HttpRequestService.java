@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.controller;
+package com.zelusik.eatery.app.service;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

@@ -1,15 +1,13 @@
-package com.zelusik.eatery.app.controller;
+package com.zelusik.eatery.app.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 import java.util.Map;

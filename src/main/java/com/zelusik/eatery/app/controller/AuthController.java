@@ -9,6 +9,7 @@ import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.app.service.JwtTokenService;
+import com.zelusik.eatery.app.service.KakaoOAuthService;
 import com.zelusik.eatery.app.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
