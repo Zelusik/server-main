@@ -9,8 +9,8 @@ import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -49,16 +49,18 @@ public class Place extends BaseTimeEntity {
     @Embedded
     private Point point;
 
+    private String closingHours;
+
     @OneToMany(mappedBy = "place")
-    private Set<OpeningHours> openingHoursSet = new LinkedHashSet<>();
+    private List<OpeningHours> openingHoursList = new LinkedList<>();
 
     private LocalDateTime deletedAt;
 
-    public static Place of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point) {
-        return new Place(kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point);
+    public static Place of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
+        return new Place(kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours);
     }
 
-    private Place(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point) {
+    private Place(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
         this.kakaoPid = kakaoPid;
         this.name = name;
         this.pageUrl = pageUrl;
@@ -68,5 +70,10 @@ public class Place extends BaseTimeEntity {
         this.address = address;
         this.homepageUrl = homepageUrl;
         this.point = point;
+        this.closingHours = closingHours;
+    }
+
+    public void addOpeningHours(OpeningHours openingHours) {
+        this.getOpeningHoursList().add(openingHours);
     }
 }
