@@ -30,6 +30,13 @@ public class FileService {
     @Value("${cloud.aws.s3.bucket-name}")
     private String bucketName;
 
+    /**
+     * MultipartFile을 전달받아 S3 bucket에 업로드한다.
+     *
+     * @param multipartFile 업로드할 파일
+     * @param dirPath       업로드할 경로
+     * @return 업로드한 파일 정보
+     */
     @Transactional
     public S3FileDto upload(MultipartFile multipartFile, String dirPath) {
         String originalFilename = multipartFile.getOriginalFilename();
@@ -60,6 +67,13 @@ public class FileService {
         return S3FileDto.of(originalFilename, storeFileName, storedFileUrl);
     }
 
+    /**
+     * S3 Bucket에 업로드할 고유한 파일 이름을 생성한다.
+     *
+     * @param originalFilename 파일의 원래 이름.
+     * @param dirPath          업로드 경로
+     * @return 생성된 고유한 파일 이름
+     */
     private String createStoreFileName(String originalFilename, String dirPath) {
         // Extract file extension
         int pos = originalFilename.lastIndexOf(".");
@@ -68,6 +82,12 @@ public class FileService {
         return dirPath + uuid + "." + extension;
     }
 
+    /**
+     * MultipartFile에 대한 ObjectMetadata를 생성한다.
+     *
+     * @param multipartFile MultipartFile
+     * @return multipartFile에 대해 생성된 ObjectMetadata
+     */
     private ObjectMetadata createMetadataWithContentInfo(MultipartFile multipartFile) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(multipartFile.getContentType());

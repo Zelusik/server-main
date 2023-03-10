@@ -29,9 +29,9 @@ public class ReviewService {
     /**
      * 리뷰를 생성합니다.
      *
-     * @param writerId    리뷰를 생성하고자 하는 회원의 PK.
+     * @param writerId      리뷰를 생성하고자 하는 회원의 PK.
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
-     * @param files
+     * @param files         리뷰와 함께 업로드 할 파일 목록
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional

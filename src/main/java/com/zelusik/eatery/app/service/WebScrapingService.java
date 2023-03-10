@@ -35,6 +35,12 @@ public class WebScrapingService {
         this.httpRequestService = httpRequestService;
     }
 
+    /**
+     * Web scraping server에서 장소의 추가 정보를 scarping한다.
+     *
+     * @param placeUrl 장소 정보를 읽어올 장소 상세 페이지 주소
+     * @return Scraping해서 읽어온 추가 정보
+     */
     public PlaceScrapingInfo getPlaceScrapingInfo(String placeUrl) {
         String requestUrl = scrapingServerUrl + "/api/scrap/places?page_url=" + placeUrl;
 
@@ -51,6 +57,12 @@ public class WebScrapingService {
         }
     }
 
+    /**
+     * ResponseEntity를 Map 데이터로 변환한다.
+     *
+     * @param responseEntity Map으로 변환하고자 하는 ResponseEntity 데이터
+     * @return 변환된 Map 데이터
+     */
     private Map<String, Object> mapResponseEntityToStringObjectMap(ResponseEntity<String> responseEntity) {
         Map<String, Object> attributes;
         try {

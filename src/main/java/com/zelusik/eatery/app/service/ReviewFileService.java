@@ -21,6 +21,12 @@ public class ReviewFileService {
 
     private static final String DIR_PATH = "review/";
 
+    /**
+     * Review 첨부 파일을 S3 bucket에 업로드한다.
+     *
+     * @param review         파일이 첨부될 리뷰
+     * @param multipartFiles 업로드할 파일들
+     */
     @Transactional
     public void upload(Review review, List<MultipartFile> multipartFiles) {
         multipartFiles.forEach(multipartFile -> {
