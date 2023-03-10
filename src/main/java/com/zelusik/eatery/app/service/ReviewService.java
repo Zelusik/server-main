@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
@@ -10,12 +11,16 @@ import com.zelusik.eatery.app.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class ReviewService {
 
+    private final ReviewFileService reviewFileService;
     private final WebScrapingService webScrapingService;
     private final MemberService memberService;
     private final PlaceService placeService;
@@ -24,12 +29,13 @@ public class ReviewService {
     /**
      * 리뷰를 생성합니다.
      *
-     * @param uploaderId 리뷰를 생성하고자 하는 회원의 PK.
+     * @param uploaderId    리뷰를 생성하고자 하는 회원의 PK.
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
+     * @param files
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
-    public ReviewDto create(Long uploaderId, ReviewCreateRequest reviewRequest) {
+    public ReviewDto create(Long uploaderId, ReviewCreateRequest reviewRequest, List<MultipartFile> files) {
         PlaceRequest placeRequest = reviewRequest.getPlace();
         Place place = placeService.findOptEntityByKakaoPid(placeRequest.getKakaoPid())
                 .orElseGet(() -> {
@@ -45,6 +51,8 @@ public class ReviewService {
         Member uploader = memberService.findEntityById(uploaderId);
 
         ReviewDto reviewDto = reviewRequest.toDto(place);
-        return ReviewDto.from(reviewRepository.save(reviewDto.toEntity(uploader, place)));
+        Review review = reviewRepository.save(reviewDto.toEntity(uploader, place));
+        reviewFileService.upload(review, files);
+        return ReviewDto.from(review);
     }
 }

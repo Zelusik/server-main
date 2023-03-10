@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundException;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
+import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
@@ -41,7 +42,7 @@ import java.util.Optional;
  *     <li>120X: Validation 관련 예외</li>
  *     <li>1210 ~ 1299: 구체적인 Validation content에 대한 exception. 해당 내용은 {@link ValidationErrorCode}, {@link GlobalExceptionHandler} 참고)</li>
  *     <li>1300 ~ 1349: API/Controller 관련 예외</li>
- *     <li>1350 ~ 1399: Scraping 서버(Flask) 관련 예외)</li>
+ *     <li>1350 ~ 1399: Scraping 서버(Flask) 관련 예외</li>
  *     <li>14XX: DB 관련 예외</li>
  *     <li>15XX: 인증 관련 예외</li>
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
@@ -57,6 +58,7 @@ public enum ExceptionType {
      * Global/Normal Exception
      */
     UNHANDLED(1000, "알 수 없는 서버 에러가 발생했습니다.", null),
+    MULTIPART_FILE_NOT_READABLE(1001, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class),
 
     /**
      * Validation Exception

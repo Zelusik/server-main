@@ -6,6 +6,7 @@ import com.zelusik.eatery.app.service.ReviewService;
 import com.zelusik.eatery.global.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.global.security.UserPrincipal;
 import com.zelusik.eatery.util.MemberTestUtils;
+import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,15 +16,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,25 +41,36 @@ class ReviewControllerTest {
     ReviewService reviewService;
 
     private final MockMvc mvc;
-    private final ObjectMapper mapper;
 
     public ReviewControllerTest(@Autowired MockMvc mvc) {
         this.mvc = mvc;
-        this.mapper = new ObjectMapper();
     }
 
     @DisplayName("생성할 리뷰 정보가 주어지고, 리뷰를 생성하면, 생성 후 저장된 리뷰가 반환된다.")
     @Test
     void givenReviewInfo_whenReviewCreate_thenReturnSavedReview() throws Exception {
         // given
-        given(reviewService.create(any(), any(ReviewCreateRequest.class)))
+        given(reviewService.create(any(), any(ReviewCreateRequest.class), any()))
                 .willReturn(ReviewTestUtils.createReviewDtoWithId());
 
         // when & then
+        ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         mvc.perform(
-                        post("/api/reviews")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(ReviewTestUtils.createReviewCreateRequest()))
+                        multipart("/api/reviews")
+                                .file(MultipartFileTestUtils.createMockMultipartFile())
+                                .param("place.kakaoPid", reviewCreateRequest.getPlace().getKakaoPid())
+                                .param("place.name", reviewCreateRequest.getPlace().getName())
+                                .param("place.pageUrl", reviewCreateRequest.getPlace().getPageUrl())
+                                .param("place.categoryGroupCode", reviewCreateRequest.getPlace().getCategoryGroupCode().toString())
+                                .param("place.categoryName", reviewCreateRequest.getPlace().getCategoryName())
+                                .param("place.phone", reviewCreateRequest.getPlace().getPhone())
+                                .param("place.lotNumberAddress", reviewCreateRequest.getPlace().getLotNumberAddress())
+                                .param("place.roadAddress", reviewCreateRequest.getPlace().getRoadAddress())
+                                .param("place.lat", reviewCreateRequest.getPlace().getLat())
+                                .param("place.lng", reviewCreateRequest.getPlace().getLng())
+                                .param("keywords", "NOISY", "FRESH")
+                                .param("autoCreatedContent", reviewCreateRequest.getAutoCreatedContent())
+                                .param("content", reviewCreateRequest.getContent())
                                 .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )

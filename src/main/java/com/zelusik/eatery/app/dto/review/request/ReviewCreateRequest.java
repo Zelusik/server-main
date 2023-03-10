@@ -6,14 +6,16 @@ import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 @Getter
 public class ReviewCreateRequest {
 
@@ -31,6 +33,13 @@ public class ReviewCreateRequest {
     @Schema(description = "업로드할 내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
     @Length(min = 1, max = 400)
     private String content;
+
+    @Schema(description = "업로드할 이미지 파일들")
+    private List<MultipartFile> files;
+
+    public static ReviewCreateRequest of(PlaceRequest place, List<ReviewKeyword> keywords, String autoCreatedContent, String content, List<MultipartFile> files) {
+        return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, files);
+    }
 
     public ReviewDto toDto(Place place) {
         return toDto(PlaceDto.from(place));

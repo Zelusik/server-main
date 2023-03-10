@@ -17,7 +17,7 @@ import java.util.List;
 public class PlaceTestUtils {
 
     public static PlaceRequest createPlaceRequest() {
-        return new PlaceRequest(
+        return PlaceRequest.of(
                 "308342289",
                 "연남토마 본점",
                 "http://place.map.kakao.com/308342289",

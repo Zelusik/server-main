@@ -6,12 +6,13 @@ import com.zelusik.eatery.app.domain.place.PlaceCategory;
 import com.zelusik.eatery.app.domain.place.Point;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 @Getter
 public class PlaceRequest {
 
@@ -51,6 +52,10 @@ public class PlaceRequest {
     @Schema(description = "경도", example = "126.921462488105")
     @NotBlank
     private String lng;
+
+    public static PlaceRequest of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, String categoryName, String phone, String lotNumberAddress, String roadAddress, String lat, String lng) {
+        return new PlaceRequest(kakaoPid, name, pageUrl, categoryGroupCode, categoryName, phone, lotNumberAddress, roadAddress, lat, lng);
+    }
 
     public PlaceDto toDto(String homepageUrl, String closingHours) {
         return PlaceDto.of(

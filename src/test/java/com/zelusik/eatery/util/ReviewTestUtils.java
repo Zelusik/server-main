@@ -48,6 +48,13 @@ public class ReviewTestUtils {
         );
     }
 
+    public static Review createReviewWithId() {
+        return createReviewWithId(
+                MemberTestUtils.createMemberWithId(),
+                PlaceTestUtils.createPlaceWithId()
+        );
+    }
+
     public static Review createReviewWithId(Member member, Place place) {
         Review review = Review.of(
                 member,

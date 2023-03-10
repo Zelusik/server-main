@@ -8,6 +8,7 @@ import com.zelusik.eatery.app.dto.review.ReviewDto;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.ReviewRepository;
 import com.zelusik.eatery.util.MemberTestUtils;
+import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +18,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 
 @DisplayName("[Service] Review")
 @ExtendWith(MockitoExtension.class)
@@ -31,6 +32,8 @@ class ReviewServiceTest {
     @InjectMocks
     private ReviewService sut;
 
+    @Mock
+    private ReviewFileService reviewFileService;
     @Mock
     private WebScrapingService webScrapingService;
     @Mock
@@ -52,14 +55,20 @@ class ReviewServiceTest {
         given(placeService.findOptEntityByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
         given(memberService.findEntityById(uploaderId)).willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class))).willReturn(ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace));
+        willDoNothing().given(reviewFileService).upload(any(Review.class), any());
 
         // when
-        ReviewDto actualSavedReview = sut.create(uploaderId, reviewCreateRequest);
+        ReviewDto actualSavedReview = sut.create(
+                uploaderId,
+                reviewCreateRequest,
+                List.of(MultipartFileTestUtils.createMockMultipartFile())
+        );
 
         // then
         then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
         then(memberService).should().findEntityById(uploaderId);
         then(reviewRepository).should().save(any(Review.class));
+        then(reviewFileService).should().upload(any(Review.class), any());
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
     }
 
@@ -85,9 +94,14 @@ class ReviewServiceTest {
                 .willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class)))
                 .willReturn(ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace));
+        willDoNothing().given(reviewFileService).upload(any(Review.class), any());
 
         // when
-        ReviewDto actualSavedReview = sut.create(uploaderId, reviewCreateRequest);
+        ReviewDto actualSavedReview = sut.create(
+                uploaderId,
+                reviewCreateRequest,
+                List.of(MultipartFileTestUtils.createMockMultipartFile())
+        );
 
         // then
         then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
@@ -95,6 +109,7 @@ class ReviewServiceTest {
         then(placeService).should().create(reviewCreateRequest.getPlace(), homepageUrl, openingHours, closingHours);
         then(memberService).should().findEntityById(uploaderId);
         then(reviewRepository).should().save(any(Review.class));
+        then(reviewFileService).should().upload(any(Review.class), any());
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
     }
 }
