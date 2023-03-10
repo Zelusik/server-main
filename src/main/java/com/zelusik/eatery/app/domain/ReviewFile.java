@@ -6,13 +6,12 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SQLDelete(sql = "UPDATE review_file SET deleted_at = CURRENT_TIMESTAMP WHERE review_file_id = ?")
 @Entity
-public class ReviewFile extends BaseTimeEntity {
+public class ReviewFile extends S3File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,17 +21,6 @@ public class ReviewFile extends BaseTimeEntity {
     @JoinColumn(name = "review_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
-
-    @Column(nullable = false)
-    private String originalName;
-
-    @Column(nullable = false)
-    private String storedName;
-
-    @Column(nullable = false)
-    private String url;
-
-    private LocalDateTime deletedAt;
 
     public static ReviewFile of(Review review, String originalName, String storedName, String url) {
         return new ReviewFile(review, originalName, storedName, url);

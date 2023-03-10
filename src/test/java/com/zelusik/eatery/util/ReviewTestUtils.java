@@ -5,19 +5,22 @@ import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.constant.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.review.ReviewDto;
+import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReviewTestUtils {
 
     public static ReviewCreateRequest createReviewCreateRequest() {
-        return new ReviewCreateRequest(
+        return ReviewCreateRequest.of(
                 PlaceTestUtils.createPlaceRequest(),
                 List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
                 "자동 생성된 내용",
-                "제출한 내용"
+                "제출한 내용",
+                List.of(MultipartFileTestUtils.createMockMultipartFile())
         );
     }
 
@@ -29,9 +32,19 @@ public class ReviewTestUtils {
                 List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
-                null,
-                null,
-                null
+                List.of(ReviewFileDto.of(
+                        1L,
+                        1L,
+                        "test.txt",
+                        "storedName",
+                        "url",
+                        LocalDateTime.now(),
+                        LocalDateTime.now(),
+                        LocalDateTime.now()
+                )),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
         );
     }
 

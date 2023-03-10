@@ -11,6 +11,7 @@ import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,6 +40,9 @@ public class Review extends BaseTimeEntity {
 
     @Column(length = 400, nullable = false)
     private String content;
+
+    @OneToMany(mappedBy = "review")
+    List<ReviewFile> reviewFiles = new LinkedList<>();
 
     private LocalDateTime deletedAt;
 

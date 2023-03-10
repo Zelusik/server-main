@@ -18,9 +18,10 @@ public class ReviewResponse {
     private PlaceResponse place;
     private List<ReviewKeyword> keywords;
     private String content;
+    private List<ReviewFileResponse> reviewFiles;
 
-    public static ReviewResponse of(Long id, Long uploaderId, PlaceResponse place, List<ReviewKeyword> keywords, String content) {
-        return new ReviewResponse(id, uploaderId, place, keywords, content);
+    public static ReviewResponse of(Long id, Long uploaderId, PlaceResponse place, List<ReviewKeyword> keywords, String content, List<ReviewFileResponse> reviewFiles) {
+        return new ReviewResponse(id, uploaderId, place, keywords, content, reviewFiles);
     }
 
     public static ReviewResponse from(ReviewDto reviewDto) {
@@ -29,7 +30,10 @@ public class ReviewResponse {
                 reviewDto.uploaderDto().id(),
                 PlaceResponse.from(reviewDto.placeDto()),
                 reviewDto.keywords(),
-                reviewDto.content()
+                reviewDto.content(),
+                reviewDto.reviewFileDtos().stream()
+                        .map(ReviewFileResponse::from)
+                        .toList()
         );
     }
 }

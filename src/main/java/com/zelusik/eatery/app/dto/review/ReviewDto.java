@@ -17,17 +17,18 @@ public record ReviewDto(
         List<ReviewKeyword> keywords,
         String autoCreatedContent,
         String content,
+        List<ReviewFileDto> reviewFileDtos,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime deletedAt
 ) {
 
     public static ReviewDto of(PlaceDto placeDto, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
-        return of(null, null, placeDto, keywords, autoCreatedContent, content, null, null, null);
+        return of(null, null, placeDto, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDto of(Long id, MemberDto uploader, PlaceDto place, List<ReviewKeyword> keywords, String autoCreatedContent, String content, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewDto(id, uploader, place, keywords, autoCreatedContent, content, createdAt, updatedAt, deletedAt);
+    public static ReviewDto of(Long id, MemberDto uploader, PlaceDto place, List<ReviewKeyword> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new ReviewDto(id, uploader, place, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
     }
 
     public static ReviewDto from(Review entity) {
@@ -38,6 +39,9 @@ public record ReviewDto(
                 entity.getKeywords(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
+                entity.getReviewFiles().stream()
+                        .map(ReviewFileDto::from)
+                        .toList(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getDeletedAt()
