@@ -18,7 +18,7 @@ public class ReviewResponse {
     private Long id;
 
     @Schema(description = "리뷰를 작성한 회원의 id(PK)", example = "1")
-    private Long uploaderId;
+    private Long writerId;
 
     @Schema(description = "장소 정보")
     private PlaceResponse place;
@@ -32,14 +32,14 @@ public class ReviewResponse {
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록")
     private List<ReviewFileResponse> reviewFiles;
 
-    public static ReviewResponse of(Long id, Long uploaderId, PlaceResponse place, List<ReviewKeyword> keywords, String content, List<ReviewFileResponse> reviewFiles) {
-        return new ReviewResponse(id, uploaderId, place, keywords, content, reviewFiles);
+    public static ReviewResponse of(Long id, Long writerId, PlaceResponse place, List<ReviewKeyword> keywords, String content, List<ReviewFileResponse> reviewFiles) {
+        return new ReviewResponse(id, writerId, place, keywords, content, reviewFiles);
     }
 
     public static ReviewResponse from(ReviewDto reviewDto) {
         return new ReviewResponse(
                 reviewDto.id(),
-                reviewDto.uploaderDto().id(),
+                reviewDto.writerDto().id(),
                 PlaceResponse.from(reviewDto.placeDto()),
                 reviewDto.keywords(),
                 reviewDto.content(),

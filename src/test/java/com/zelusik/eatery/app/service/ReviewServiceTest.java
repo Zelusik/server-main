@@ -49,24 +49,24 @@ class ReviewServiceTest {
         // given
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
-        long uploaderId = 1L;
+        long writerId = 1L;
         Place expectedPlace = PlaceTestUtils.createPlaceWithId();
         Member expectedMember = MemberTestUtils.createMemberWithId();
         given(placeService.findOptEntityByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
-        given(memberService.findEntityById(uploaderId)).willReturn(expectedMember);
+        given(memberService.findEntityById(writerId)).willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class))).willReturn(ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace));
         willDoNothing().given(reviewFileService).upload(any(Review.class), any());
 
         // when
         ReviewDto actualSavedReview = sut.create(
-                uploaderId,
+                writerId,
                 reviewCreateRequest,
                 List.of(MultipartFileTestUtils.createMockMultipartFile())
         );
 
         // then
         then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
-        then(memberService).should().findEntityById(uploaderId);
+        then(memberService).should().findEntityById(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewFileService).should().upload(any(Review.class), any());
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
@@ -78,7 +78,7 @@ class ReviewServiceTest {
         // given
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
-        long uploaderId = 1L;
+        long writerId = 1L;
         String homepageUrl = "homepage";
         String openingHours = "매일 00:00 ~ 24:00";
         String closingHours = null;
@@ -90,7 +90,7 @@ class ReviewServiceTest {
                 .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
         given(placeService.create(reviewCreateRequest.getPlace(), homepageUrl, openingHours, closingHours))
                 .willReturn(expectedPlace);
-        given(memberService.findEntityById(uploaderId))
+        given(memberService.findEntityById(writerId))
                 .willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class)))
                 .willReturn(ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace));
@@ -98,7 +98,7 @@ class ReviewServiceTest {
 
         // when
         ReviewDto actualSavedReview = sut.create(
-                uploaderId,
+                writerId,
                 reviewCreateRequest,
                 List.of(MultipartFileTestUtils.createMockMultipartFile())
         );
@@ -107,7 +107,7 @@ class ReviewServiceTest {
         then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
         then(webScrapingService).should().getPlaceScrapingInfo(reviewCreateRequest.getPlace().getPageUrl());
         then(placeService).should().create(reviewCreateRequest.getPlace(), homepageUrl, openingHours, closingHours);
-        then(memberService).should().findEntityById(uploaderId);
+        then(memberService).should().findEntityById(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewFileService).should().upload(any(Review.class), any());
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);

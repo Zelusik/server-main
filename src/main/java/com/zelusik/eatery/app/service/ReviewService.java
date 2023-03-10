@@ -29,13 +29,13 @@ public class ReviewService {
     /**
      * 리뷰를 생성합니다.
      *
-     * @param uploaderId    리뷰를 생성하고자 하는 회원의 PK.
+     * @param writerId    리뷰를 생성하고자 하는 회원의 PK.
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
      * @param files
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
-    public ReviewDto create(Long uploaderId, ReviewCreateRequest reviewRequest, List<MultipartFile> files) {
+    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest, List<MultipartFile> files) {
         PlaceRequest placeRequest = reviewRequest.getPlace();
         Place place = placeService.findOptEntityByKakaoPid(placeRequest.getKakaoPid())
                 .orElseGet(() -> {
@@ -48,10 +48,10 @@ public class ReviewService {
                     );
                 });
 
-        Member uploader = memberService.findEntityById(uploaderId);
+        Member writer = memberService.findEntityById(writerId);
 
         ReviewDto reviewDto = reviewRequest.toDto(place);
-        Review review = reviewRepository.save(reviewDto.toEntity(uploader, place));
+        Review review = reviewRepository.save(reviewDto.toEntity(writer, place));
         reviewFileService.upload(review, files);
         return ReviewDto.from(review);
     }

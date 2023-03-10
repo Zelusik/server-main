@@ -12,7 +12,7 @@ import java.util.List;
 
 public record ReviewDto(
         Long id,
-        MemberDto uploaderDto,
+        MemberDto writerDto,
         PlaceDto placeDto,
         List<ReviewKeyword> keywords,
         String autoCreatedContent,
@@ -27,14 +27,14 @@ public record ReviewDto(
         return of(null, null, placeDto, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDto of(Long id, MemberDto uploader, PlaceDto place, List<ReviewKeyword> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewDto(id, uploader, place, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
+    public static ReviewDto of(Long id, MemberDto writerDto, PlaceDto place, List<ReviewKeyword> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new ReviewDto(id, writerDto, place, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
     }
 
     public static ReviewDto from(Review entity) {
         return of(
                 entity.getId(),
-                MemberDto.from(entity.getUploader()),
+                MemberDto.from(entity.getWriter()),
                 PlaceDto.from(entity.getPlace()),
                 entity.getKeywords(),
                 entity.getAutoCreatedContent(),
@@ -48,9 +48,9 @@ public record ReviewDto(
         );
     }
 
-    public Review toEntity(Member uploader, Place place) {
+    public Review toEntity(Member writer, Place place) {
         return Review.of(
-                uploader,
+                writer,
                 place,
                 this.keywords(),
                 this.autoCreatedContent(),

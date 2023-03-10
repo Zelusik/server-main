@@ -25,9 +25,9 @@ public class Review extends BaseTimeEntity {
     @Column(name = "review_id")
     private Long id;
 
-    @JoinColumn(name = "uploader_id")
+    @JoinColumn(name = "writer_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Member uploader;
+    private Member writer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
@@ -46,12 +46,12 @@ public class Review extends BaseTimeEntity {
 
     private LocalDateTime deletedAt;
 
-    public static Review of(Member uploader, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
-        return new Review(uploader, place, keywords, autoCreatedContent, content);
+    public static Review of(Member writer, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
+        return new Review(writer, place, keywords, autoCreatedContent, content);
     }
 
-    private Review(Member uploader, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
-        this.uploader = uploader;
+    private Review(Member writer, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
+        this.writer = writer;
         this.place = place;
         this.keywords = keywords;
         this.autoCreatedContent = autoCreatedContent;
