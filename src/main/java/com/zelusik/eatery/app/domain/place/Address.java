@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.domain.place;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,14 +14,18 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Address {
 
+    @Schema(description = "시/도", example = "서울")
     @Column(nullable = false)
     private String sido;
 
+    @Schema(description = "시/군/구", example = "마포구")
     @Column(nullable = false)
     private String sgg;
 
+    @Schema(description = "지번주소", example = "연남동 568-26")
     private String lotNumberAddress;
 
+    @Schema(description = "도로명주소", example = "월드컵북로6길 61")
     private String roadAddress;
 
     public Address(String lotNumberAddress, String roadAddress) {

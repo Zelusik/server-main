@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.domain.place;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +14,14 @@ import java.util.Arrays;
 @Embeddable
 public class PlaceCategory {
 
+    @Schema(description = "카테고리 1", example = "퓨전요리")
     @Column(nullable = false)
     private String firstCategory;
 
+    @Schema(description = "카테고리 2", example = "퓨전일식")
     private String secondCategory;
 
+    @Schema(description = "카테고리 3")
     private String thirdCategory;
 
     public PlaceCategory(String categoryName) {
