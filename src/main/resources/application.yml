@@ -13,9 +13,22 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_S3_ACCESS_KEY}
+      secret-key: ${AWS_S3_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket-name: eatery-s3-bucket
+    stack:
+      auto: false
+
 ---
 # Settings for local(dev)
 management.endpoints.web.exposure.include: "*"
+web-scraping.server.url: ${LOCAL_SCRAPING_SERVER_URL}
 
 spring:
   config.activate.on-profile: local
@@ -35,6 +48,7 @@ spring:
 ---
 # Settings for production(dev-server)
 jwt.secret.key: ${JWT_SECRET_KEY}
+web-scraping.server.url: ${PROD_SCRAPING_SERVER_URL}
 
 logging:
   level:

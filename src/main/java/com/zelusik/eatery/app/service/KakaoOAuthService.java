@@ -1,24 +1,27 @@
-package com.zelusik.eatery.app.controller;
+package com.zelusik.eatery.app.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
-import com.zelusik.eatery.global.security.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Map;
 
-@RequiredArgsConstructor
-@RestController
-public class KakaoOAuthController {
+@Service
+public class KakaoOAuthService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final HttpRequestController httpRequestController;
+    private final ObjectMapper objectMapper;
+    private final HttpRequestService httpRequestService;
+
+    public KakaoOAuthService(HttpRequestService httpRequestService) {
+        this.objectMapper = new ObjectMapper();
+        this.httpRequestService = httpRequestService;
+    }
 
     public KakaoOAuthUserInfo getUserInfo(String accessToken) {
         String requestUrl = "https://kapi.kakao.com/v2/user/me";
@@ -29,7 +32,7 @@ public class KakaoOAuthController {
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
 
         // HTTP request 보내기
-        ResponseEntity<String> response = httpRequestController.sendHttpRequest(requestUrl, headers);
+        ResponseEntity<String> response = httpRequestService.sendHttpRequest(requestUrl, HttpMethod.GET, headers);
 
         // Response의 body에서 user info 추출
         Map<String, Object> attributes;

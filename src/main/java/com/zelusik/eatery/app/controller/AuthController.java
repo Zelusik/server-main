@@ -9,6 +9,7 @@ import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.app.service.JwtTokenService;
+import com.zelusik.eatery.app.service.KakaoOAuthService;
 import com.zelusik.eatery.app.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +29,7 @@ import javax.validation.Valid;
 @RestController
 public class AuthController {
 
-    private final KakaoOAuthController kakaoOAuthController;
+    private final KakaoOAuthService kakaoOAuthService;
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
 
@@ -40,10 +41,10 @@ public class AuthController {
     )
     @PostMapping("/login/kakao")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody KakaoLoginRequest request) {
-        KakaoOAuthUserInfo userInfo = kakaoOAuthController.getUserInfo(request.getKakaoAccessToken());
+        KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
 
-        MemberDto memberDto = memberService.findOptionalMemberBySocialUid(userInfo.getSocialUid())
-                .orElseGet(() -> memberService.signUp(userInfo.toMemberDto()));
+        MemberDto memberDto = memberService.findOptionalDtoBySocialUid(userInfo.getSocialUid())
+                .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
 
         TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.KAKAO);
 

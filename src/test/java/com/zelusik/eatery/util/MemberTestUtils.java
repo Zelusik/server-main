@@ -6,7 +6,7 @@ import com.zelusik.eatery.app.domain.constant.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import org.springframework.test.util.ReflectionTestUtils;
 
-public class TestMemberUtil {
+public class MemberTestUtils {
 
     public static final String SOCIAL_UID = "1234567890";
     public static final String EMAIL = "test@test.com";
@@ -25,8 +25,32 @@ public class TestMemberUtil {
         );
     }
 
+    public static MemberDto createMemberDtoWithId() {
+        return MemberDto.of(
+                1L,
+                null,
+                SOCIAL_UID,
+                LoginType.KAKAO,
+                EMAIL,
+                NICKNAME,
+                AGE_RANGE,
+                GENDER,
+                null,
+                null,
+                null
+        );
+    }
+
     public static Member createMember() {
-        return createMemberDto().toEntity();
+        return Member.of(
+                null,
+                SOCIAL_UID,
+                LoginType.KAKAO,
+                EMAIL,
+                NICKNAME,
+                AGE_RANGE,
+                GENDER
+        );
     }
 
     public static Member createMemberWithId() {

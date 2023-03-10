@@ -24,8 +24,20 @@ public class MemberService {
      * @return 등록된 회원 dto
      */
     @Transactional
-    public MemberDto signUp(MemberDto memberDto) {
+    public MemberDto save(MemberDto memberDto) {
         return MemberDto.from(memberRepository.save(memberDto.toEntity()));
+    }
+
+    /**
+     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
+     *
+     * @param memberId 조회할 회원의 PK
+     * @return 조회한 회원 entity
+     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
+     */
+    public Member findEntityById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
 
     /**
@@ -34,8 +46,8 @@ public class MemberService {
      * @param memberId 조회할 회원의 PK
      * @return 조회한 회원 dto
      */
-    public MemberDto findMemberById(Long memberId) {
-        return MemberDto.from(getMemberById(memberId));
+    public MemberDto findDtoById(Long memberId) {
+        return MemberDto.from(findEntityById(memberId));
     }
 
     /**
@@ -44,19 +56,7 @@ public class MemberService {
      * @param socialUid 조회할 회원의 socialUid
      * @return 조회한 회원 dto. <code>Optional</code> 그대로 반환한다.
      */
-    public Optional<MemberDto> findOptionalMemberBySocialUid(String socialUid) {
+    public Optional<MemberDto> findOptionalDtoBySocialUid(String socialUid) {
         return memberRepository.findBySocialUid(socialUid).map(MemberDto::from);
-    }
-
-    /**
-     * 주어진 PK에 해당하는 회원을 DB에서 조회한다.
-     *
-     * @param memberId 조회할 회원의 PK
-     * @return 조회한 회원 entity
-     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
-     */
-    private Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
 }

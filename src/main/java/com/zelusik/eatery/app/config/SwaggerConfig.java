@@ -14,7 +14,6 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI eateryApi(@Value("eatery.app.version") String appVersion) {
-        // TODO: 로그인 기능 구현 후 Swagger에서 access-token을 header에 첨부할 수 있도록 security scheme component 추가 필요.
         return new OpenAPI()
                 .info(
                         new Info()
