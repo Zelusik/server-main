@@ -27,7 +27,7 @@ public class WebScrapingService {
     private final ObjectMapper objectMapper;
     private final HttpRequestService httpRequestService;
 
-    @Value("${web-scraping.server.url}")
+    @Value("${web-scraping.server.url:127.0.0.1:5000}")
     private String scrapingServerUrl;
 
     public WebScrapingService(HttpRequestService httpRequestService) {
