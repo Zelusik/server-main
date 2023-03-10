@@ -44,11 +44,7 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         LogUtils.setLogTraceId();
 
-        if (isAsyncDispatch(request)) {
-            filterChain.doFilter(request, response);
-        } else {
-            doFilterWrapped(new RequestWrapper(request), new ResponseWrapper(response), filterChain);
-        }
+        filterChain.doFilter(request, response);
 
         LogUtils.removeLogTraceId();
     }
@@ -118,7 +114,11 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
         if (contentType.equals(MediaType.APPLICATION_JSON_VALUE)) {
             payloadInfo += contentString.replaceAll("\n *", "").replaceAll(",", ", ");
         } else if (contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)) {
-            payloadInfo += "\n" + contentString;
+            if (contentString.length() >= 100) {
+                payloadInfo += "multipart/form-data";
+            } else {
+                payloadInfo += "\n" + contentString;
+            }
         } else {
             payloadInfo += contentString;
         }
