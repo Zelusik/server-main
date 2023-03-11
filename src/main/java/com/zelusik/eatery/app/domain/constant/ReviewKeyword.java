@@ -1,8 +1,11 @@
 package com.zelusik.eatery.app.domain.constant;
 
+import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.Arrays;
 
 @Schema(
         description = "<p>리뷰 키워드. 목록은 다음과 같다</p>" +
@@ -39,4 +42,11 @@ public enum ReviewKeyword {
     ;
 
     private final String description;
+
+    public static ReviewKeyword valueOfDescription(String description) {
+        return Arrays.stream(values())
+                .filter(value -> description.equals(value.getDescription()))
+                .findFirst()
+                .orElseThrow(NotAcceptableReviewKeyword::new);
+    }
 }

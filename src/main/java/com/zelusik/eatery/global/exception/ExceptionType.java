@@ -1,6 +1,7 @@
 package com.zelusik.eatery.global.exception;
 
 import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundException;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
@@ -8,6 +9,7 @@ import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
+import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.global.log.LogUtils;
@@ -47,7 +49,8 @@ import java.util.Optional;
  *     <li>14XX: DB 관련 예외</li>
  *     <li>15XX: 인증 관련 예외</li>
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
- *     <li>3XXX: 장소 관련 예외</li>
+ *     <li>3000 ~ 3499: 장소 관련 예외</li>
+ *     <li>3500 ~ 3999: 리뷰 관련 예외</li>
  * </ul>
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -114,6 +117,11 @@ public enum ExceptionType {
      */
     OPENING_HOURS_UNEXPECTED_FORMAT(3000, "가게 영업시간이 처리할 수 없는 형태입니다. 서버 관리자에게 문의해주세요.게", OpeningHoursUnexpectedFormatException.class),
     PLACE_NOT_FOUND(3001, "가게를 찾을 수 없습니다.", PlaceNotFoundException.class),
+
+    /**
+     * 리뷰({@link Review}) 관련 예외
+     */
+    NOT_ACCEPTABLE_REVIEW_KEYWORD(3500, "유효하지 않은 리뷰 키워드입니다.", NotAcceptableReviewKeyword.class),
     ;
 
     private final Integer code;

@@ -24,7 +24,7 @@ public class ReviewResponse {
     private PlaceResponse place;
 
     @Schema(description = "리뷰 키워드 목록", example = "[\"FRESH\", \"NOISY\"]")
-    private List<ReviewKeyword> keywords;
+    private List<String> keywords;
 
     @Schema(description = "내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
     private String content;
@@ -32,7 +32,7 @@ public class ReviewResponse {
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록")
     private List<ReviewFileResponse> reviewFiles;
 
-    public static ReviewResponse of(Long id, Long writerId, PlaceResponse place, List<ReviewKeyword> keywords, String content, List<ReviewFileResponse> reviewFiles) {
+    public static ReviewResponse of(Long id, Long writerId, PlaceResponse place, List<String> keywords, String content, List<ReviewFileResponse> reviewFiles) {
         return new ReviewResponse(id, writerId, place, keywords, content, reviewFiles);
     }
 
@@ -41,7 +41,9 @@ public class ReviewResponse {
                 reviewDto.id(),
                 reviewDto.writerDto().id(),
                 PlaceResponse.from(reviewDto.placeDto()),
-                reviewDto.keywords(),
+                reviewDto.keywords().stream()
+                        .map(ReviewKeyword::getDescription)
+                        .toList(),
                 reviewDto.content(),
                 reviewDto.reviewFileDtos().stream()
                         .map(ReviewFileResponse::from)

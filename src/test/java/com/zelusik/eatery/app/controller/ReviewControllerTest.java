@@ -74,7 +74,7 @@ class ReviewControllerTest {
                                 .param("place.roadAddress", reviewCreateRequest.getPlace().getRoadAddress())
                                 .param("place.lat", reviewCreateRequest.getPlace().getLat())
                                 .param("place.lng", reviewCreateRequest.getPlace().getLng())
-                                .param("keywords", "NOISY", "FRESH")
+                                .param("keywords", "신선한 재료", "왁자지껄한")
                                 .param("autoCreatedContent", reviewCreateRequest.getAutoCreatedContent())
                                 .param("content", reviewCreateRequest.getContent())
                                 .with(csrf())
