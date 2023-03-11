@@ -15,13 +15,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -76,5 +82,23 @@ class ReviewControllerTest {
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
+    @Test
+    void givenPlaceId_whenSearchReviewsOfCertainPlace_thenReturnReviews() throws Exception {
+        // given
+        long placeId = 1L;
+        given(reviewService.searchDtosByPlaceId(eq(placeId), any(Pageable.class)))
+                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithId())));
+
+        // when & then
+        mvc.perform(
+                        get("/api/reviews?placeId=" + placeId)
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasContent").value(true));
     }
 }

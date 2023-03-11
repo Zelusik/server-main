@@ -17,6 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -111,5 +114,24 @@ class ReviewServiceTest {
         then(reviewRepository).should().save(any(Review.class));
         then(reviewFileService).should().upload(any(Review.class), any());
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
+    }
+
+    @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
+    @Test
+    void givenPlaceId_whenSearchReviewListOfCertainPlace_thenReturnReviewList() {
+        // given
+        long placeId = 1L;
+        Pageable pageable = Pageable.ofSize(15);
+        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId()));
+        given(reviewRepository.findByPlace_Id(placeId, pageable))
+                .willReturn(expectedSearchResult);
+
+        // when
+        Slice<ReviewDto> actualSearchResult = sut.searchDtosByPlaceId(placeId, pageable);
+
+        // then
+        then(reviewRepository).should().findByPlace_Id(placeId, pageable);
+        assertThat(actualSearchResult.hasContent()).isTrue();
+        assertThat(actualSearchResult.getContent().get(0).placeDto().id()).isEqualTo(placeId);
     }
 }

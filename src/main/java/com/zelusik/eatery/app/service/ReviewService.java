@@ -9,6 +9,8 @@ import com.zelusik.eatery.app.dto.review.ReviewDto;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,5 +56,18 @@ public class ReviewService {
         Review review = reviewRepository.save(reviewDto.toEntity(writer, place));
         reviewFileService.upload(review, files);
         return ReviewDto.from(review);
+    }
+
+    /**
+     * 특정 가게에 대헌 리뷰 목록(Slice) 조회.
+     *
+     * @param placeId  리뷰를 조회할 가게의 id(PK)
+     * @param pageable paging 정보
+     * @return 조회된 리뷰 목록(Slice)
+     */
+    public Slice<ReviewDto> searchDtosByPlaceId(Long placeId, Pageable pageable) {
+        // TODO: 현재 writer, place 정보를 사용하지 않음에도 ReviewDto가 해당 정보를 포함하고 있어 조회하게 된다. 최적화 필요.
+        // writer, place를 포함하지 않는 dto를 구현하여 적용하면 최적화 가능.
+        return reviewRepository.findByPlace_Id(placeId, pageable).map(ReviewDto::from);
     }
 }
