@@ -18,7 +18,7 @@ public class ReviewListResponse {
     @Schema(description = "리뷰를 작성한 회원의 id(PK)", example = "1")
     private Long writerId;
 
-    @Schema(description = "리뷰 키워드 목록", example = "[\"FRESH\", \"NOISY\"]")
+    @Schema(description = "리뷰 키워드 목록", example = "[\"신선한 재료\", \"왁자지껄한\"]")
     private List<String> keywords;
 
     @Schema(description = "내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
