@@ -4,9 +4,11 @@ import com.zelusik.eatery.app.domain.constant.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
+import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
 import com.zelusik.eatery.app.repository.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.PlaceRepository;
+import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -200,6 +202,36 @@ class PlaceServiceTest {
         then(openingHoursRepository).shouldHaveNoInteractions();
         assertThat(t).isInstanceOf(OpeningHoursUnexpectedFormatException.class);
     }
+    
+    @DisplayName("Id(PK)가 주어지고, 일치하는 장소를 찾으면, 장소 정보를 반환한다.")
+    @Test
+    void givenId_whenFindExistentPlace_thenReturnPlaceDto() {
+        // given
+        long placeId = 1L;
+        given(placeRepository.findById(placeId)).willReturn(Optional.of(PlaceTestUtils.createPlaceWithId()));
+        
+        // when
+        PlaceDto findDto = sut.findDtoById(placeId);
+
+        // then
+        then(placeRepository).should().findById(placeId);
+        assertThat(findDto.id()).isEqualTo(placeId);
+    }
+    
+    @DisplayName("Id(PK)가 주어지고, 존재하지 않는 장소를 찾으면, 예외가 발생한다.")
+    @Test
+    void givenId_whenFindNotExistentPlace_thenReturnThrowException() {
+        // given
+        long placeId = 1L;
+        given(placeRepository.findById(placeId)).willReturn(Optional.empty());
+        
+        // when
+        Throwable t = catchThrowable(() -> sut.findDtoById(placeId));
+
+        // then
+        then(placeRepository).should().findById(placeId);
+        assertThat(t).isInstanceOf(PlaceNotFoundException.class);
+    }
 
     @DisplayName("kakaoPid가 주어지고, 일치하는 장소를 찾으면, 장소를 반환한다.")
     @Test
@@ -217,7 +249,7 @@ class PlaceServiceTest {
         assertThat(actualPlace.get().getId()).isEqualTo(expectedPlace.getId());
     }
 
-    @DisplayName("kakaoPid가 주어지고, 일치하는 장소를 찾았지만 없다면, 비어있는 Optional을 반환한다.")
+    @DisplayName("kakaoPid가 주어지고, kakaoPid에 일치하는 장소가 없댜면, 비어있는 Optional을 반환한다.")
     @Test
     void givenKakaoPid_whenFindNotExistentPlace_thenReturnEmptyOptional() {
         // given

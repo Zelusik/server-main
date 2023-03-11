@@ -7,6 +7,7 @@ import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.global.log.LogUtils;
@@ -112,6 +113,7 @@ public enum ExceptionType {
      * 장소({@link Place}) 관련 예외
      */
     OPENING_HOURS_UNEXPECTED_FORMAT(3000, "가게 영업시간이 처리할 수 없는 형태입니다. 서버 관리자에게 문의해주세요.게", OpeningHoursUnexpectedFormatException.class),
+    PLACE_NOT_FOUND(3001, "가게를 찾을 수 없습니다.", PlaceNotFoundException.class),
     ;
 
     private final Integer code;

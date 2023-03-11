@@ -4,9 +4,11 @@ import com.zelusik.eatery.app.domain.constant.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
+import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
 import com.zelusik.eatery.app.repository.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.PlaceRepository;
+import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,11 @@ public class PlaceService {
                 .toEntity();
         createOpeningHours(place, openingHours);
         return placeRepository.save(place);
+    }
+
+    public PlaceDto findDtoById(Long placeId) {
+        return PlaceDto.from(placeRepository.findById(placeId)
+                .orElseThrow(PlaceNotFoundException::new));
     }
 
     /**
