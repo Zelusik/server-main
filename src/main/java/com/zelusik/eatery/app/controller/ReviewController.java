@@ -1,6 +1,8 @@
 package com.zelusik.eatery.app.controller;
 
+import com.zelusik.eatery.app.dto.SliceResponse;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.app.dto.review.response.ReviewListResponse;
 import com.zelusik.eatery.app.dto.review.response.ReviewResponse;
 import com.zelusik.eatery.app.service.ReviewService;
 import com.zelusik.eatery.global.security.UserPrincipal;
@@ -14,13 +16,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -56,5 +57,32 @@ public class ReviewController {
         return ResponseEntity
                 .created(URI.create("/api/reviews/" + response.getId()))
                 .body(response);
+    }
+
+    @Operation(
+            summary = "특정 가게의 리뷰 목록 조회.",
+            description = "<p>특정 가게의 리뷰 목록을 조회합니다.</p>" +
+                    "<p>가장 많이 태그된 세 개의 키워드 응답 미구현(추후 구현 예정)</p>",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping
+    public SliceResponse<ReviewListResponse> searchOfPlace(
+            @Parameter(
+                    description = "리뷰를 조회하고자 하는 가게의 id(PK)",
+                    example = "1"
+            ) @RequestParam Long placeId,
+            @Parameter(
+                    description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
+                    example = "0"
+            ) @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈). 기본값은 15입니다.",
+                    example = "15"
+            ) @RequestParam(required = false, defaultValue = "15") int size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return new SliceResponse<ReviewListResponse>()
+                .from(reviewService.searchDtosByPlaceId(placeId, pageRequest)
+                        .map(ReviewListResponse::from));
     }
 }
