@@ -28,7 +28,7 @@ public class PlaceController {
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
-            @ApiResponse(description = "3001: 찾고자 하는 가게가 존재하지 않는 경우", responseCode = "404", content = @Content)
+            @ApiResponse(description = "[3001] 찾고자 하는 가게가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping("/{placeId}")
     public PlaceResponse find(@PathVariable Long placeId) {

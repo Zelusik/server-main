@@ -48,11 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception ex) {
-                log.error(
-                        "[{}] JwtAuthenticationFilter.doFilterInternal() ex={}",
-                        LogUtils.getLogTraceId(),
-                        ExceptionUtils.getExceptionStackTrace(ex)
-                );
                 setErrorResponse(ex.getClass(), response);
             }
         }
@@ -73,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json; charset=UTF-8");
 
-        ExceptionType exceptionType = ExceptionType.from(classType);
+        ExceptionType exceptionType = ExceptionType.from(classType).orElse(ExceptionType.UNAUTHORIZED);
         ErrorResponse errorResponse = new ErrorResponse(exceptionType.getCode(), exceptionType.getMessage()
         );
         new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);

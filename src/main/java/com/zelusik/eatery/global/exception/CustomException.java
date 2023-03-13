@@ -12,7 +12,7 @@ public abstract class CustomException extends RuntimeException {
     private final Throwable cause;
 
     public CustomException(HttpStatus httpStatus) {
-        ExceptionType exceptionType = ExceptionType.from(this.getClass());
+        ExceptionType exceptionType = ExceptionType.from(this.getClass()).orElse(ExceptionType.UNHANDLED);
         this.httpStatus = httpStatus;
         this.code = exceptionType.getCode();
         this.message = exceptionType.getMessage();
@@ -20,7 +20,7 @@ public abstract class CustomException extends RuntimeException {
     }
 
     public CustomException(HttpStatus httpStatus, String optionalMessage) {
-        ExceptionType exceptionType = ExceptionType.from(this.getClass());
+        ExceptionType exceptionType = ExceptionType.from(this.getClass()).orElse(ExceptionType.UNHANDLED);
         this.httpStatus = httpStatus;
         this.code = exceptionType.getCode();
         this.message = exceptionType.getMessage() + " " + optionalMessage;
@@ -28,7 +28,7 @@ public abstract class CustomException extends RuntimeException {
     }
 
     public CustomException(HttpStatus httpStatus, Throwable cause) {
-        ExceptionType exceptionType = ExceptionType.from(this.getClass());
+        ExceptionType exceptionType = ExceptionType.from(this.getClass()).orElse(ExceptionType.UNHANDLED);
         this.httpStatus = httpStatus;
         this.code = exceptionType.getCode();
         this.message = exceptionType.getMessage();
@@ -36,7 +36,7 @@ public abstract class CustomException extends RuntimeException {
     }
 
     public CustomException(HttpStatus httpStatus, String optionalMessage, Throwable cause) {
-        ExceptionType exceptionType = ExceptionType.from(this.getClass());
+        ExceptionType exceptionType = ExceptionType.from(this.getClass()).orElse(ExceptionType.UNHANDLED);
         this.httpStatus = httpStatus;
         this.code = exceptionType.getCode();
         this.message = exceptionType.getMessage() + " " + optionalMessage;

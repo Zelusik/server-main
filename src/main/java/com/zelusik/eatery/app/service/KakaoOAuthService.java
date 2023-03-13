@@ -4,10 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
+import com.zelusik.eatery.app.dto.exception.ErrorResponse;
+import com.zelusik.eatery.global.exception.kakao.KakaoServerException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +37,20 @@ public class KakaoOAuthService {
         headers.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
 
         // HTTP request 보내기
-        ResponseEntity<String> response = httpRequestService.sendHttpRequest(requestUrl, HttpMethod.GET, headers);
+        ResponseEntity<String> response;
+        try {
+            response = httpRequestService.sendHttpRequest(requestUrl, HttpMethod.GET, headers);
+        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+            Integer errorCode = getErrorDetails(ex).code();
+            String errorMessage = getErrorDetails(ex).message();
+            if (errorCode == 401) {
+                throw new KakaoTokenValidateException(errorCode, errorMessage, ex);
+            }
+            throw new KakaoServerException(ex.getStatusCode(), errorCode, errorMessage, ex);
+        } catch (Exception ex) {
+            ErrorResponse errorDetails = getErrorDetails(ex);
+            throw new KakaoServerException(HttpStatus.INTERNAL_SERVER_ERROR, errorDetails.code(), errorDetails.message(), ex);
+        }
 
         // Response의 body에서 user info 추출
         Map<String, Object> attributes;
@@ -42,6 +60,26 @@ public class KakaoOAuthService {
         } catch (JsonProcessingException e) {
             attributes = Collections.emptyMap();
         }
+
         return KakaoOAuthUserInfo.from(attributes);
+    }
+
+    private ErrorResponse getErrorDetails(Exception ex) {
+        int errorCode = 0;
+        String errorMessage = ex.getMessage();
+        if (errorMessage != null) {
+            errorMessage = errorMessage.replace("\"", "");
+            errorCode = parseErrorCode(errorMessage);
+        }
+        return new ErrorResponse(errorCode, errorMessage);
+    }
+
+    private int parseErrorCode(String errorMessage) {
+        if (!errorMessage.contains("code:")) {
+            return 0;
+        }
+        int errorCodeStartIdx = errorMessage.indexOf("code:-");
+        int errorCodeEndIdx = errorMessage.indexOf("}");
+        return Integer.parseInt(errorMessage.substring(errorCodeStartIdx + 6, errorCodeEndIdx));
     }
 }

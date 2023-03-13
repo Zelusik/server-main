@@ -12,6 +12,10 @@ import com.zelusik.eatery.app.service.JwtTokenService;
 import com.zelusik.eatery.app.service.KakaoOAuthService;
 import com.zelusik.eatery.app.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,10 +39,15 @@ public class AuthController {
 
     @Operation(
             summary = "로그인",
-            description = "<p>Kakao에서 전달받은 access token을 request header에 담아 로그인합니다.</p>" +
-                    "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다.</p>" +
-                    "<p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다.</p>"
+            description = "<p>Kakao에서 전달받은 access token을 request header에 담아 로그인합니다." +
+                    "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다." +
+                    "<p>Access token의 만료기한은 12시간, refresh token의 만료기한은 1달입니다." +
+                    "<p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다."
     )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(description = "[10401] 유효하지 않은 kakao access token으로 요청한 경우.", responseCode = "401", content = @Content)
+    })
     @PostMapping("/login/kakao")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody KakaoLoginRequest request) {
         KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
@@ -55,8 +64,12 @@ public class AuthController {
 
     @Operation(
             summary = "토큰 갱신하기",
-            description = "<p>기존 발급받은 refresh token으로 새로운 access token과 refresh token을 발급 받습니다.</p>"
+            description = "<p>기존 발급받은 refresh token으로 새로운 access token과 refresh token을 발급 받습니다."
     )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(description = "[1507] 로그인 이력을 찾을 수 없는 경우. 즉, 서버가 전달받은 refresh token을 발행한 적이 없거나 refresh token이 만료된 경우.", responseCode = "404", content = @Content)
+    })
     @PostMapping("/token")
     public ResponseEntity<TokenResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
         TokenResponse tokenResponse = jwtTokenService.refresh(request.getRefreshToken());

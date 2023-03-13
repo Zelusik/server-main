@@ -7,6 +7,7 @@ import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundExcepti
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
+import com.zelusik.eatery.global.exception.kakao.KakaoTokenValidateException;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
@@ -51,6 +52,7 @@ import java.util.Optional;
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
  *     <li>3000 ~ 3499: 장소 관련 예외</li>
  *     <li>3500 ~ 3999: 리뷰 관련 예외</li>
+ *     <li>1XXXX: Kakao server 관련 예외</li>
  * </ul>
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -122,13 +124,20 @@ public enum ExceptionType {
      * 리뷰({@link Review}) 관련 예외
      */
     NOT_ACCEPTABLE_REVIEW_KEYWORD(3500, "유효하지 않은 리뷰 키워드입니다.", NotAcceptableReviewKeyword.class),
+
+
+    /**
+     * Kakao server 관련 예외
+     */
+    KAKAO_SERVER(10000, "카카오 서버와의 통신에서 에러가 발생했습니다.", null),
+    KAKAO_TOKEN_VALIDATE(10000, "유효하지 않은 kakao access token입니다. 요청 데이터가 잘못 되었거나 토큰이 만료되지 않았는지 확인해주세요.", KakaoTokenValidateException.class),
     ;
 
     private final Integer code;
     private final String message;
     private final Class<? extends Exception> type;
 
-    public static ExceptionType from(Class<? extends Exception> classType) {
+    public static Optional<ExceptionType> from(Class<? extends Exception> classType) {
         Optional<ExceptionType> exceptionType = Arrays.stream(values())
                 .filter(ex -> ex.getType() != null && ex.getType().equals(classType))
                 .findFirst();
@@ -137,6 +146,6 @@ public enum ExceptionType {
             log.error("[{}] 정의되지 않은 exception이 발생하였습니다. Type of exception={}", LogUtils.getLogTraceId(), classType);
         }
 
-        return exceptionType.orElse(UNHANDLED);
+        return exceptionType;
     }
 }

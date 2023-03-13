@@ -4,6 +4,7 @@ import com.zelusik.eatery.app.dto.exception.ErrorResponse;
 import com.zelusik.eatery.app.dto.exception.ValidationErrorDetails;
 import com.zelusik.eatery.app.dto.exception.ValidationErrorResponse;
 import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
+import com.zelusik.eatery.global.exception.kakao.KakaoServerException;
 import com.zelusik.eatery.global.exception.util.ViolationMessageResolver;
 import com.zelusik.eatery.global.log.LogUtils;
 import io.micrometer.core.lang.Nullable;
@@ -34,9 +35,18 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(KakaoServerException.class)
+    public ResponseEntity<ErrorResponse> handleKakaoServerException(KakaoServerException ex) {
+        log.error("[{}] Kakao Server Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
+
+        return ResponseEntity
+                .status(ex.getHttpStatus())
+                .body(new ErrorResponse(ex.getCode(), ex.getMessage()));
+    }
+
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-        log.error("[{}] CustomException: {}:", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
+        log.error("[{}] Custom Exception: {}:", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         return ResponseEntity
                 .status(ex.getHttpStatus())
@@ -83,7 +93,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error("[{}] Spring MVC Basic Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
-        ExceptionType exceptionType = ExceptionType.from(ex.getClass());
+        ExceptionType exceptionType = ExceptionType.from(ex.getClass()).orElse(ExceptionType.UNHANDLED);
         return ResponseEntity
                 .status(status)
                 .body(new ErrorResponse(exceptionType.getCode(), exceptionType.getMessage()));
