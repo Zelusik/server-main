@@ -27,11 +27,9 @@ public class ReviewCreateRequest {
     private List<ReviewKeyword> keywords;
 
     @Schema(description = "자동으로 생성된 내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 씹을 때마다...")
-    @Length(min = 1, max = 400)
     private String autoCreatedContent;
 
     @Schema(description = "업로드할 내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
-    @Length(min = 1, max = 400)
     private String content;
 
     @Schema(description = "업로드할 이미지 파일들")
