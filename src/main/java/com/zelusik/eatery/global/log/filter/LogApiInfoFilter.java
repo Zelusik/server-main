@@ -3,7 +3,6 @@ package com.zelusik.eatery.global.log.filter;
 import com.zelusik.eatery.global.log.LogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@Component
 public class LogApiInfoFilter extends OncePerRequestFilter {
 
     private static final String[] LOG_BLACK_LIST = {
@@ -31,8 +29,6 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
             MediaType.APPLICATION_FORM_URLENCODED,
             MediaType.APPLICATION_JSON,
             MediaType.APPLICATION_XML,
-            MediaType.valueOf("application/*+json"),
-            MediaType.valueOf("application/*+xml"),
             MediaType.MULTIPART_FORM_DATA
     );
 
@@ -42,26 +38,32 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        LogUtils.setLogTraceId();
-
-        filterChain.doFilter(request, response);
-
-        LogUtils.removeLogTraceId();
-    }
-
-    private void doFilterWrapped(
-            RequestWrapper request,
-            ContentCachingResponseWrapper response,
-            FilterChain filterChain
-    ) throws IOException, ServletException {
-        boolean doLog = Arrays.stream(LOG_BLACK_LIST).noneMatch(request.getRequestURI()::contains);
+        if (LogUtils.getLogTraceId() == null) {
+            LogUtils.setLogTraceId();
+        }
 
         try {
-            if (doLog) logRequest(request);
-            filterChain.doFilter(request, response);
+            if (isAsyncDispatch(request)) {
+                filterChain.doFilter(request, response);
+            } else {
+                boolean doLog = Arrays.stream(LOG_BLACK_LIST).noneMatch(request.getRequestURI()::contains);
+                ResponseWrapper responseWrapper = new ResponseWrapper(response);
+                try {
+                    if (isMultipartFormData(request.getContentType())) {
+                        log.info("[{}] Request: [{}] uri={}, payload=multipart/form-data", LogUtils.getLogTraceId(), request.getMethod(), request.getRequestURI());
+                        filterChain.doFilter(request, responseWrapper);
+                    } else {
+                        RequestWrapper requestWrapper = new RequestWrapper(request);
+                        if (doLog) logRequest(requestWrapper);
+                        filterChain.doFilter(requestWrapper, responseWrapper);
+                    }
+                } finally {
+                    if (doLog) logResponse(responseWrapper);
+                    responseWrapper.copyBodyToResponse();
+                }
+            }
         } finally {
-            if (doLog) logResponse(response);
-            response.copyBodyToResponse();
+            LogUtils.removeLogTraceId();
         }
     }
 
@@ -113,17 +115,15 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
         // TODO: 추가적인 content-type case에 대한 로그 출력도 고민할 필요 있음.
         if (contentType.equals(MediaType.APPLICATION_JSON_VALUE)) {
             payloadInfo += contentString.replaceAll("\n *", "").replaceAll(",", ", ");
-        } else if (contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)) {
-            if (contentString.length() >= 100) {
-                payloadInfo += "multipart/form-data";
-            } else {
-                payloadInfo += "\n" + contentString;
-            }
         } else {
             payloadInfo += contentString;
         }
 
         return payloadInfo;
+    }
+
+    private boolean isMultipartFormData(String contentType) {
+        return contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE);
     }
 
     private boolean isVisible(MediaType mediaType) {
