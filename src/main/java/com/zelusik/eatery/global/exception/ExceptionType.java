@@ -102,12 +102,7 @@ public enum ExceptionType {
      */
     ACCESS_DENIED(1500, "접근이 거부되었습니다.", null),
     UNAUTHORIZED(1501, "유효하지 않은 인증 정보로 인해 인증 과정에서 문제가 발생하였습니다.", null),
-    JWT_UNSUPPORTED(1502, "처리할 수 없는 token입니다.", UnsupportedJwtException.class),
-    JWT_MALFORMED(1503, "유효하지 않은 token입니다.", MalformedJwtException.class),
-    JWT_INVALID_SIGNATURE(1504, "Token의 서명이 잘못되었습니다.", SignatureException.class),
-    JWT_EXPIRED(1505, "Token이 만료되었습니다. Token을 갱신하거나 다시 로그인 해주세요.", ExpiredJwtException.class),
-    TOKEN_VALIDATE(1506, "Token의 유효성을 검증하는 과정에서 문제가 발생했습니다. 관리자에게 문의해주세요.", TokenValidateException.class),
-    REDIS_REFRESH_TOKEN_NOT_FOUND(1507, "로그인 이력을 찾을 수 없습니다. 다시 로그인 해주세요.", RedisRefreshTokenNotFoundException.class),
+    TOKEN_VALIDATE(1502, "유효하지 않은 token입니다. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신이 필요합니다.", TokenValidateException.class),
 
     /**
      * 회원({@link Member}) 관련 예외

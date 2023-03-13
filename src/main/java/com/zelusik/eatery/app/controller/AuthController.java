@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,10 +68,10 @@ public class AuthController {
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenResponse.class))),
-            @ApiResponse(description = "[1507] 로그인 이력을 찾을 수 없는 경우. 즉, 서버가 전달받은 refresh token을 발행한 적이 없거나 refresh token이 만료된 경우.", responseCode = "404", content = @Content)
+            @ApiResponse(description = "[1502] 유효하지 않은 token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
     })
     @PostMapping("/token")
-    public ResponseEntity<TokenResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<TokenResponse> tokenRefresh(@Valid @RequestBody TokenRefreshRequest request) {
         TokenResponse tokenResponse = jwtTokenService.refresh(request.getRefreshToken());
 
         return ResponseEntity

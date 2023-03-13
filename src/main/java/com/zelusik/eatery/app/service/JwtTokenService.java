@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.repository.RedisRefreshTokenRepository;
 import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundException;
+import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.security.JwtTokenInfoDto;
 import com.zelusik.eatery.global.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -47,13 +48,14 @@ public class JwtTokenService {
      *
      * @param oldRefreshToken 기존 발급받은 refresh token
      * @return 새롭게 생성된 access token과 refresh token 정보가 담긴 <code>TokenResponse</code> 객체
+     * @throws com.zelusik.eatery.global.exception.auth.TokenValidateException 유효하지 않은 token인 경우
      */
     @Transactional
     public TokenResponse refresh(String oldRefreshToken) {
         jwtTokenProvider.validateToken(oldRefreshToken);
 
         RedisRefreshToken oldRedisRefreshToken = redisRefreshTokenRepository.findById(oldRefreshToken)
-                .orElseThrow(RedisRefreshTokenNotFoundException::new);
+                .orElseThrow(TokenValidateException::new);
         redisRefreshTokenRepository.delete(oldRedisRefreshToken);
 
         return createJwtTokens(
