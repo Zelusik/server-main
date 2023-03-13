@@ -4,6 +4,7 @@ import com.zelusik.eatery.app.domain.constant.LoginType;
 import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.repository.RedisRefreshTokenRepository;
+import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.security.JwtTokenInfoDto;
 import com.zelusik.eatery.global.security.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
@@ -100,6 +102,72 @@ class JwtTokenServiceTest {
         then(redisRefreshTokenRepository).should().save(any(RedisRefreshToken.class));
         assertThat(actualNewAccessToken).isEqualTo(expectedNewJwtToken.token());
         assertThat(actualNewRefreshToken).isEqualTo(expectedNewJwtToken.token());
+    }
+
+    @DisplayName("유효하지 않은 refresh token이 주어지고, token을 갱신하면, 예외가 발생한다.")
+    @Test
+    void givenNotValidRefreshToken_whenRefresh_thenThrowException() {
+        // given
+        String refreshToken = "test";
+        willThrow(TokenValidateException.class).given(jwtTokenProvider).validateToken(refreshToken);
+
+        // when
+        Throwable t = catchThrowable(() -> sut.refresh(refreshToken));
+
+        // then
+        then(jwtTokenProvider).should().validateToken(refreshToken);
+        then(redisRefreshTokenRepository).shouldHaveNoInteractions();
+        then(jwtTokenProvider).shouldHaveNoMoreInteractions();
+        assertThat(t).isInstanceOf(TokenValidateException.class);
+    }
+    
+    @DisplayName("유효한 refresh token이 주어지고, 유효성을 검사하면, true를 반환한다.")
+    @Test
+    void givenValidRefreshToken_whenValidate_thenReturnTrue() {
+        // given
+        String refreshToken = "test";
+        willDoNothing().given(jwtTokenProvider).validateToken(refreshToken);
+        given(redisRefreshTokenRepository.existsById(refreshToken)).willReturn(true);
+
+        // when
+        boolean result = sut.validateOfRefreshToken(refreshToken);
+
+        // then
+        then(jwtTokenProvider).should().validateToken(refreshToken);
+        then(redisRefreshTokenRepository).should().existsById(refreshToken);
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("유효하지 않은 refresh token이 주어지고, 유효성을 검사하면, false를 반환한다.")
+    @Test
+    void givenNotValidRefreshToken_whenValidate_thenReturnFalse() {
+        // given
+        String refreshToken = "test";
+        willThrow(TokenValidateException.class).given(jwtTokenProvider).validateToken(refreshToken);
+
+        // when
+        boolean result = sut.validateOfRefreshToken(refreshToken);
+
+        // then
+        then(jwtTokenProvider).should().validateToken(refreshToken);
+        then(redisRefreshTokenRepository).shouldHaveNoInteractions();
+        assertThat(result).isFalse();
+    }
+
+    @DisplayName("유효한 refresh token이 주어졌지만 redis에 존재하지 않을 때, 유효성을 검사하면, false를 반환한다.")
+    @Test
+    void givenValidRefreshTokenButNotExistInRedis_whenValidate_thenReturnFalse() {
+        String refreshToken = "test";
+        willDoNothing().given(jwtTokenProvider).validateToken(refreshToken);
+        given(redisRefreshTokenRepository.existsById(refreshToken)).willReturn(false);
+
+        // when
+        boolean result = sut.validateOfRefreshToken(refreshToken);
+
+        // then
+        then(jwtTokenProvider).should().validateToken(refreshToken);
+        then(redisRefreshTokenRepository).should().existsById(refreshToken);
+        assertThat(result).isFalse();
     }
 
     private JwtTokenInfoDto createJwtToken() {
