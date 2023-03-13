@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.repository.RedisRefreshTokenRepository;
 import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundException;
+import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.security.JwtTokenInfoDto;
 import com.zelusik.eatery.global.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -47,18 +48,37 @@ public class JwtTokenService {
      *
      * @param oldRefreshToken 기존 발급받은 refresh token
      * @return 새롭게 생성된 access token과 refresh token 정보가 담긴 <code>TokenResponse</code> 객체
+     * @throws com.zelusik.eatery.global.exception.auth.TokenValidateException 유효하지 않은 token인 경우
      */
     @Transactional
     public TokenResponse refresh(String oldRefreshToken) {
         jwtTokenProvider.validateToken(oldRefreshToken);
 
         RedisRefreshToken oldRedisRefreshToken = redisRefreshTokenRepository.findById(oldRefreshToken)
-                .orElseThrow(RedisRefreshTokenNotFoundException::new);
+                .orElseThrow(TokenValidateException::new);
         redisRefreshTokenRepository.delete(oldRedisRefreshToken);
 
         return createJwtTokens(
                 oldRedisRefreshToken.getMemberId(),
                 jwtTokenProvider.getLoginType(oldRefreshToken)
         );
+    }
+
+    /**
+     * <p>
+     * Refresh token의 유효성을 검사한다.
+     * <p>
+     * Refresh token이 유효하지 않은 값인 경우, refresh token이 만료된 경우가 유효하지 않은 경우이다.
+     *
+     * @param refreshToken 유효성을 검사할 refreshToken
+     * @return refresh token의 유효성 검사 결과
+     */
+    public boolean validateOfRefreshToken(String refreshToken) {
+        try {
+            jwtTokenProvider.validateToken(refreshToken);
+        } catch (Exception ex) {
+            return false;
+        }
+        return redisRefreshTokenRepository.existsById(refreshToken);
     }
 }

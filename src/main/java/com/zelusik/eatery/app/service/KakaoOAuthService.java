@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
 import com.zelusik.eatery.app.dto.exception.ErrorResponse;
 import com.zelusik.eatery.global.exception.kakao.KakaoServerException;
+import com.zelusik.eatery.global.exception.kakao.KakaoTokenValidateException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;

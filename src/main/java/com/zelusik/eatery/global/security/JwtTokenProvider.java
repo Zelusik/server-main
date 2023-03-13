@@ -119,13 +119,6 @@ public class JwtTokenProvider {
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
-        } catch (
-                UnsupportedJwtException |
-                MalformedJwtException |
-                SignatureException |
-                ExpiredJwtException ex
-        ) {
-            throw ex;
         } catch (Exception ex) {
             throw new TokenValidateException(ex);
         }
