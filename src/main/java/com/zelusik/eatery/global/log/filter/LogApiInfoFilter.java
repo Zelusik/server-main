@@ -123,7 +123,7 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
     }
 
     private boolean isMultipartFormData(String contentType) {
-        return contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE);
+        return contentType != null && contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE);
     }
 
     private boolean isVisible(MediaType mediaType) {
