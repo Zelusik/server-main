@@ -35,10 +35,10 @@ public class Review extends BaseTimeEntity {
     @Convert(converter = ReviewKeywordsConverter.class)
     private List<ReviewKeyword> keywords;
 
-    @Column(length = 400, nullable = false)
+    @Column(length = 400)
     private String autoCreatedContent;
 
-    @Column(length = 400, nullable = false)
+    @Column(length = 400)
     private String content;
 
     @OneToMany(mappedBy = "review")
