@@ -46,6 +46,9 @@ dependencies {
     // Spring Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // Jdbc Template
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 

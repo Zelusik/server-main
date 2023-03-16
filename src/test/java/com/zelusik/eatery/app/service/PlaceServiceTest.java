@@ -20,9 +20,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -60,7 +64,7 @@ class PlaceServiceTest {
         // given
         PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -90,7 +94,7 @@ class PlaceServiceTest {
         // given
         PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -122,7 +126,7 @@ class PlaceServiceTest {
         // given
         PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -158,7 +162,7 @@ class PlaceServiceTest {
                 SAT, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0)),
                 SUN, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0))
         );
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.save(any(OpeningHours.class)))
                 .willReturn(OpeningHours.of(
@@ -202,14 +206,14 @@ class PlaceServiceTest {
         then(openingHoursRepository).shouldHaveNoInteractions();
         assertThat(t).isInstanceOf(OpeningHoursUnexpectedFormatException.class);
     }
-    
+
     @DisplayName("Id(PK)가 주어지고, 일치하는 장소를 찾으면, 장소 정보를 반환한다.")
     @Test
     void givenId_whenFindExistentPlace_thenReturnPlaceDto() {
         // given
         long placeId = 1L;
-        given(placeRepository.findById(placeId)).willReturn(Optional.of(PlaceTestUtils.createPlaceWithId()));
-        
+        given(placeRepository.findById(placeId)).willReturn(Optional.of(PlaceTestUtils.createPlace()));
+
         // when
         PlaceDto findDto = sut.findDtoById(placeId);
 
@@ -217,14 +221,14 @@ class PlaceServiceTest {
         then(placeRepository).should().findById(placeId);
         assertThat(findDto.id()).isEqualTo(placeId);
     }
-    
+
     @DisplayName("Id(PK)가 주어지고, 존재하지 않는 장소를 찾으면, 예외가 발생한다.")
     @Test
     void givenId_whenFindNotExistentPlace_thenReturnThrowException() {
         // given
         long placeId = 1L;
         given(placeRepository.findById(placeId)).willReturn(Optional.empty());
-        
+
         // when
         Throwable t = catchThrowable(() -> sut.findDtoById(placeId));
 
@@ -238,7 +242,7 @@ class PlaceServiceTest {
     void givenKakaoPid_whenFindExistentPlace_thenReturnOptionalPlace() {
         // given
         String kakaoPid = "test";
-        Place expectedPlace = PlaceTestUtils.createPlaceWithId();
+        Place expectedPlace = PlaceTestUtils.createPlace();
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
@@ -262,6 +266,47 @@ class PlaceServiceTest {
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
         assertThat(actualPlace).isEmpty();
+    }
+
+    @DisplayName("장소들이 존재하고, 중심 좌표 근처의 장소를 조회하면, 거리순으로 정렬된 장소 목록을 반환한다.")
+    @Test
+    void givenPlaces_whenFindNearBy_thenReturnPlaceSliceSortedByDistance() {
+        // given
+        String lat = "37";
+        String lng = "127";
+        Pageable pageable = Pageable.ofSize(30);
+        SliceImpl<Place> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
+        given(placeRepository.findNearBy(lat, lng, 3, pageable)).willReturn(expectedResult);
+
+        // when
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(lat, lng, pageable);
+
+        // then
+        then(placeRepository).should().findNearBy(lat, lng, 3, pageable);
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
+        assertThat(actualResult.getContent().get(0).id()).isEqualTo(expectedResult.getContent().get(0).getId());
+    }
+    
+    @DisplayName("3km 밖에 있고 10km 안에 있는 장소들이 주어지고, 중심 좌표 근처의 장소들을 조회하면, 거리순으로 정렬된 장소 목록을 반환한다.")
+    @Test
+    void givenPlaces3kmAwayAndWithin10km_whenFindNearBy_thenReturnPlaces() {
+        // given
+        String lat = "37";
+        String lng = "127";
+        Pageable pageable = Pageable.ofSize(30);
+        SliceImpl<Place> emptyResult = new SliceImpl<>(List.of(), pageable, false);
+        SliceImpl<Place> expectedResultWithin10km = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
+        given(placeRepository.findNearBy(lat, lng, 3, pageable)).willReturn(emptyResult);
+        given(placeRepository.findNearBy(lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
+        
+        // when
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(lat, lng, pageable);
+
+        // then
+        then(placeRepository).should().findNearBy(lat, lng, 3, pageable);
+        then(placeRepository).should().findNearBy(lat, lng, 10, pageable);
+        assertThat(actualResult.getNumberOfElements()).isNotZero();
     }
 
     static Stream<Arguments> openingHoursEveryDaysExamples() {
