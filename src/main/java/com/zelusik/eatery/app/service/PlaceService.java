@@ -11,6 +11,8 @@ import com.zelusik.eatery.app.repository.PlaceRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +66,22 @@ public class PlaceService {
      */
     public Optional<Place> findOptEntityByKakaoPid(String kakaoPid) {
         return placeRepository.findByKakaoPid(kakaoPid);
+    }
+
+    /**
+     * 중심 좌표 기준, 가까운 순으로 장소 목록을 조회한다.
+     *
+     * @param lat      중심좌표의 위도
+     * @param lng      중심좌표의 경도
+     * @param pageable paging 정보
+     * @return 조회한 장소 목록
+     */
+    public Slice<PlaceDto> findDtosNearBy(String lat, String lng, Pageable pageable) {
+        Slice<Place> places = placeRepository.findNearBy(lat, lng, 3, pageable);
+        if (!places.hasContent()) {
+            places = placeRepository.findNearBy(lat, lng, 10, pageable);
+        }
+        return places.map(PlaceDto::from);
     }
 
     /**

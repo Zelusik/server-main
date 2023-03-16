@@ -2,6 +2,7 @@ package com.zelusik.eatery.app.domain.place;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
@@ -9,6 +10,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Embeddable

@@ -1,6 +1,8 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.config.SecurityConfig;
+import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
 import com.zelusik.eatery.global.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.global.security.UserPrincipal;
@@ -13,8 +15,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -59,5 +65,26 @@ class PlaceControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(placeId));
+    }
+
+    @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")
+    @Test
+    void givenCenterPoint_whenSearchNearByPlaces_thenReturnPlaces() throws Exception {
+        // given
+        String lat = "37";
+        String lng = "127";
+        Pageable pageable = Pageable.ofSize(30);
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours()), pageable, false);
+        given(placeService.findDtosNearBy(lat, lng, pageable)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/places/search?lat=" + lat + "&lng=" + lng)
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasContent").value(true))
+                .andExpect(jsonPath("$.numOfElements").value(1));
     }
 }
