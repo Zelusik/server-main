@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
@@ -69,17 +70,19 @@ public class PlaceService {
     }
 
     /**
-     * 중심 좌표 기준, 가까운 순으로 장소 목록을 조회한다.
+     * 중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
      *
-     * @param lat      중심좌표의 위도
-     * @param lng      중심좌표의 경도
-     * @param pageable paging 정보
+     * @param daysOfWeek 검색할 요일 목록
+     * @param keyword    검색 키워드
+     * @param lat        중심좌표의 위도
+     * @param lng        중심좌표의 경도
+     * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findDtosNearBy(String lat, String lng, Pageable pageable) {
-        Slice<Place> places = placeRepository.findNearBy(lat, lng, 3, pageable);
+    public Slice<PlaceDto> findDtosNearBy(List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
+        Slice<Place> places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 3, pageable);
         if (!places.hasContent()) {
-            places = placeRepository.findNearBy(lat, lng, 10, pageable);
+            places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 10, pageable);
         }
         return places.map(PlaceDto::from);
     }

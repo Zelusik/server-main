@@ -276,13 +276,13 @@ class PlaceServiceTest {
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<Place> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
-        given(placeRepository.findNearBy(lat, lng, 3, pageable)).willReturn(expectedResult);
+        given(placeRepository.findNearBy(null, null, lat, lng, 3, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(lat, lng, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(null, null, lat, lng, pageable);
 
         // then
-        then(placeRepository).should().findNearBy(lat, lng, 3, pageable);
+        then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);
         then(placeRepository).shouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).id()).isEqualTo(expectedResult.getContent().get(0).getId());
@@ -297,15 +297,15 @@ class PlaceServiceTest {
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<Place> emptyResult = new SliceImpl<>(List.of(), pageable, false);
         SliceImpl<Place> expectedResultWithin10km = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
-        given(placeRepository.findNearBy(lat, lng, 3, pageable)).willReturn(emptyResult);
-        given(placeRepository.findNearBy(lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
+        given(placeRepository.findNearBy(null, null, lat, lng, 3, pageable)).willReturn(emptyResult);
+        given(placeRepository.findNearBy(null, null, lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
         
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(lat, lng, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(null, null, lat, lng, pageable);
 
         // then
-        then(placeRepository).should().findNearBy(lat, lng, 3, pageable);
-        then(placeRepository).should().findNearBy(lat, lng, 10, pageable);
+        then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);
+        then(placeRepository).should().findNearBy(null, null, lat, lng, 10, pageable);
         assertThat(actualResult.getNumberOfElements()).isNotZero();
     }
 
