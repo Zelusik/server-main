@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.domain.constant.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static com.zelusik.eatery.app.domain.constant.DayOfWeek.*;
+import static com.zelusik.eatery.app.constant.place.DayOfWeek.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.params.provider.Arguments.arguments;

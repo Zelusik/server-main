@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.util;
 
-import com.zelusik.eatery.app.domain.constant.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

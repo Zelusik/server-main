@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.repository;
 
-import com.zelusik.eatery.app.domain.constant.KakaoCategoryGroupCode;
+import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;

@@ -1,7 +1,7 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.domain.constant.DayOfWeek;
-import com.zelusik.eatery.app.domain.constant.KakaoCategoryGroupCode;
+import com.zelusik.eatery.app.constant.place.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;
@@ -9,7 +9,6 @@ import com.zelusik.eatery.app.domain.place.Point;
 import com.zelusik.eatery.app.dto.place.OpeningHoursDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

@@ -3,7 +3,7 @@ package com.zelusik.eatery.global.exception;
 import com.zelusik.eatery.app.dto.exception.ErrorResponse;
 import com.zelusik.eatery.app.dto.exception.ValidationErrorDetails;
 import com.zelusik.eatery.app.dto.exception.ValidationErrorResponse;
-import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
+import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.kakao.KakaoServerException;
 import com.zelusik.eatery.global.exception.util.ViolationMessageResolver;
 import com.zelusik.eatery.global.log.LogUtils;

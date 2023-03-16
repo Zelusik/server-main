@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.domain.constant;
+package com.zelusik.eatery.app.constant.place;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

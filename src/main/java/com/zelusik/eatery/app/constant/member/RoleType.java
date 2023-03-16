@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.domain.constant;
+package com.zelusik.eatery.app.constant.member;
 
 import lombok.Getter;
 

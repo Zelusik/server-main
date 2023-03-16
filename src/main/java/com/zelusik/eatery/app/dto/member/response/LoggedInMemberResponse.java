@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.member.response;
 
-import com.zelusik.eatery.app.domain.constant.LoginType;
+import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.terms_info.response.TermsInfoResponse;
 import io.swagger.v3.oas.annotations.media.Schema;

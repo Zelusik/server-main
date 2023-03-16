@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.domain;
 
-import com.zelusik.eatery.app.domain.constant.Gender;
-import com.zelusik.eatery.app.domain.constant.LoginType;
+import com.zelusik.eatery.app.constant.member.Gender;
+import com.zelusik.eatery.app.constant.member.LoginType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

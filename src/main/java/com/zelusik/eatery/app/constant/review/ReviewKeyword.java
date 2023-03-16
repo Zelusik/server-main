@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.domain.constant;
+package com.zelusik.eatery.app.constant.review;
 
 import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
 import io.swagger.v3.oas.annotations.media.Schema;

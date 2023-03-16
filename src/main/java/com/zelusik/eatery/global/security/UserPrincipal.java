@@ -1,6 +1,6 @@
 package com.zelusik.eatery.global.security;
 
-import com.zelusik.eatery.app.domain.constant.RoleType;
+import com.zelusik.eatery.app.constant.member.RoleType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

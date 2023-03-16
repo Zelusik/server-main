@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.domain.constant.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;

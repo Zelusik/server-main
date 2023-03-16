@@ -1,10 +1,9 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.domain.constant.LoginType;
+import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.repository.RedisRefreshTokenRepository;
-import com.zelusik.eatery.global.exception.auth.RedisRefreshTokenNotFoundException;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.security.JwtTokenInfoDto;
 import com.zelusik.eatery.global.security.JwtTokenProvider;

@@ -2,7 +2,7 @@ package com.zelusik.eatery.app.dto.auth;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.app.domain.constant.Gender;
+import com.zelusik.eatery.app.constant.member.Gender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
