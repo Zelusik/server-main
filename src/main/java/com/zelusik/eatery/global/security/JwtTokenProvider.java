@@ -1,11 +1,10 @@
 package com.zelusik.eatery.global.security;
 
-import com.zelusik.eatery.app.domain.constant.LoginType;
-import com.zelusik.eatery.app.domain.constant.RoleType;
+import com.zelusik.eatery.app.constant.member.LoginType;
+import com.zelusik.eatery.app.constant.member.RoleType;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

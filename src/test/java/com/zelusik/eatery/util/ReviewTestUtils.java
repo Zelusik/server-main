@@ -2,7 +2,7 @@ package com.zelusik.eatery.util;
 
 import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
-import com.zelusik.eatery.app.domain.constant.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.review.ReviewDto;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;

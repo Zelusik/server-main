@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.domain.place;
 
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
-import com.zelusik.eatery.app.domain.constant.KakaoCategoryGroupCode;
+import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 

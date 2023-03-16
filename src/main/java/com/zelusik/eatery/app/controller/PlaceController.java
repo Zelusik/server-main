@@ -1,5 +1,7 @@
 package com.zelusik.eatery.app.controller;
 
+import com.zelusik.eatery.app.constant.place.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.dto.SliceResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
@@ -14,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "가게 관련 API")
 @RequiredArgsConstructor
@@ -40,11 +44,21 @@ public class PlaceController {
     @Operation(
             summary = "주변 가게 검색 (거리순 정렬)",
             description = "<p>중심 좌표를 받아 중심 좌표에서 가까운 가게들을 검색합니다." +
-                    "<p>주변 3km 내에 있는 가게만 우선적으로 검색하며, 3km 이내에 아무런 가게가 없다면 10km로 검색 범위를 확대해 다시 검색합니다.",
+                    "<p>주변 3km 내에 있는 가게만 우선적으로 검색하며, 3km 이내에 아무런 가게가 없다면 10km로 검색 범위를 확대해 다시 검색합니다." +
+                    "<p>요청 데이터 중 <code>daysOfWeek</code>가 없으면 전체 날짜에 대해, <code>keyword</code>가 없으면 전체 약속 상황에 대해 검색합니다." +
+                    "<p>현재 \"약속 상황\" 필터링은 미구현 상태입니다. (구현 예정)",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/search")
     public SliceResponse<PlaceResponse> searchNearBy(
+            @Parameter(
+                    description = "요일 목록",
+                    example = "월,화,수"
+            ) @RequestParam(required = false) List<DayOfWeek> daysOfWeek,
+            @Parameter(
+                    description = "약속 상황",
+                    example = "신나는"
+            ) @RequestParam(required = false) PlaceSearchKeyword keyword,
             @Parameter(
                     description = "중심 위치 - 위도",
                     example = "37.566826004661"
@@ -63,7 +77,7 @@ public class PlaceController {
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
         return new SliceResponse<PlaceResponse>()
-                .from(placeService.findDtosNearBy(lat, lng, PageRequest.of(page, size))
+                .from(placeService.findDtosNearBy(daysOfWeek, keyword, lat, lng, PageRequest.of(page, size))
                         .map(PlaceResponse::from));
     }
 }

@@ -1,6 +1,6 @@
-package com.zelusik.eatery.app.util;
+package com.zelusik.eatery.app.util.controller;
 
-import com.zelusik.eatery.app.domain.constant.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import org.springframework.core.convert.converter.Converter;
 
 public class ReviewKeywordRequestConverter implements Converter<String, ReviewKeyword> {

@@ -1,6 +1,6 @@
 package com.zelusik.eatery.global.exception.util;
 
-import com.zelusik.eatery.global.exception.constant.ValidationErrorCode;
+import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
 import lombok.AllArgsConstructor;
 
 import javax.validation.ConstraintViolation;

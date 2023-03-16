@@ -1,4 +1,4 @@
-package com.zelusik.eatery.global.exception.constant;
+package com.zelusik.eatery.global.constant.exception;
 
 import lombok.Getter;
 

@@ -1,11 +1,8 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.domain.constant.DayOfWeek;
-import com.zelusik.eatery.app.domain.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.app.domain.place.Address;
-import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.domain.place.PlaceCategory;
-import com.zelusik.eatery.app.domain.place.Point;
+import com.zelusik.eatery.app.constant.place.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.app.domain.place.*;
 import com.zelusik.eatery.app.dto.place.OpeningHoursDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
@@ -87,7 +84,7 @@ public class PlaceTestUtils {
         );
     }
 
-    private static OpeningHoursDto createOpeningHoursDto(
+    public static OpeningHoursDto createOpeningHoursDto(
             Long id,
             DayOfWeek dayOfWeek,
             LocalTime openAt,
@@ -102,5 +99,11 @@ public class PlaceTestUtils {
                 null,
                 null
         );
+    }
+
+    public static OpeningHours createOpeningHours(Long id, Place place, DayOfWeek dayOfWeek) {
+        OpeningHours openingHours = OpeningHours.of(place, dayOfWeek, LocalTime.now().minusHours(6), LocalTime.now());
+        ReflectionTestUtils.setField(openingHours, "id", id);
+        return openingHours;
     }
 }

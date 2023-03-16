@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.util;
 
-import com.zelusik.eatery.app.domain.constant.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.zelusik.eatery.app.domain.constant.ReviewKeyword.*;
+import static com.zelusik.eatery.app.constant.review.ReviewKeyword.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 

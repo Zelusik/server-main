@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.review.response;
 
-import com.zelusik.eatery.app.domain.constant.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;

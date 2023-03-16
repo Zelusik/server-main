@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.domain.place;
 
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
-import com.zelusik.eatery.app.domain.constant.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

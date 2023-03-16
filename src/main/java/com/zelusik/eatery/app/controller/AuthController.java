@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.controller;
 
-import com.zelusik.eatery.app.domain.constant.LoginType;
+import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
 import com.zelusik.eatery.app.dto.auth.request.KakaoLoginRequest;
 import com.zelusik.eatery.app.dto.auth.request.TokenRefreshRequest;
