@@ -3,7 +3,7 @@ package com.zelusik.eatery.app.domain;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.util.ReviewKeywordsConverter;
+import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

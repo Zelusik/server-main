@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.util;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

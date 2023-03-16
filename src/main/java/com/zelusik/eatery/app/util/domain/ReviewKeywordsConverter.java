@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.util;
+package com.zelusik.eatery.app.util.domain;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 
