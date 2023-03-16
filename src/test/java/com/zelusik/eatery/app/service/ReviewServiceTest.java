@@ -53,7 +53,7 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
-        Place expectedPlace = PlaceTestUtils.createPlaceWithId();
+        Place expectedPlace = PlaceTestUtils.createPlace();
         Member expectedMember = MemberTestUtils.createMemberWithId();
         given(placeService.findOptEntityByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
         given(memberService.findEntityById(writerId)).willReturn(expectedMember);
@@ -85,7 +85,7 @@ class ReviewServiceTest {
         String homepageUrl = "homepage";
         String openingHours = "매일 00:00 ~ 24:00";
         String closingHours = null;
-        Place expectedPlace = PlaceTestUtils.createPlaceWithId();
+        Place expectedPlace = PlaceTestUtils.createPlace();
         Member expectedMember = MemberTestUtils.createMemberWithId();
         given(placeService.findOptEntityByKakaoPid(kakaoPid))
                 .willReturn(Optional.empty());

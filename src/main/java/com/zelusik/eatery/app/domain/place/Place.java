@@ -2,9 +2,7 @@ package com.zelusik.eatery.app.domain.place;
 
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.domain.constant.KakaoCategoryGroupCode;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
@@ -57,10 +55,32 @@ public class Place extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     public static Place of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
-        return new Place(kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours);
+        return of(null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null);
     }
 
-    private Place(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
+    public static Place of(Long id, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return Place.builder()
+                .id(id)
+                .kakaoPid(kakaoPid)
+                .name(name)
+                .pageUrl(pageUrl)
+                .categoryGroupCode(categoryGroupCode)
+                .category(category)
+                .phone(phone)
+                .address(address)
+                .homepageUrl(homepageUrl)
+                .point(point)
+                .closingHours(closingHours)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .deletedAt(deletedAt)
+                .build();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Place(LocalDateTime createdAt, LocalDateTime updatedAt, Long id, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime deletedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
         this.kakaoPid = kakaoPid;
         this.name = name;
         this.pageUrl = pageUrl;
@@ -71,5 +91,6 @@ public class Place extends BaseTimeEntity {
         this.homepageUrl = homepageUrl;
         this.point = point;
         this.closingHours = closingHours;
+        this.deletedAt = deletedAt;
     }
 }

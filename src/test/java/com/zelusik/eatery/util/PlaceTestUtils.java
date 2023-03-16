@@ -11,6 +11,7 @@ import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -55,20 +56,35 @@ public class PlaceTestUtils {
         );
     }
 
-    public static Place createPlace(String homepageUrl, String closingHours) {
-        return createPlaceRequest()
-                .toDto(homepageUrl, closingHours)
-                .toEntity();
+    public static Place createPlace() {
+        return createPlace(1L);
     }
 
-    public static Place createPlaceWithId() {
-        return createPlaceWithId(null, null);
+    public static Place createPlace(Long id) {
+        return createPlace(id, null, "37.5595073462493", "126.921462488105", null);
     }
 
-    public static Place createPlaceWithId(String homepageUrl, String closingHours) {
-        Place place = createPlace(homepageUrl, closingHours);
-        ReflectionTestUtils.setField(place, "id", 1L);
-        return place;
+    public static Place createPlace(Long id, String homepageUrl, String closingHours) {
+        return createPlace(id, homepageUrl, "37.5595073462493", "126.921462488105", closingHours);
+    }
+
+    public static Place createPlace(Long id, String homepageUrl, String lat, String lng, String closingHours) {
+        return Place.of(
+                id,
+                "308342289",
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                homepageUrl,
+                new Point(lat, lng),
+                closingHours,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
     }
 
     private static OpeningHoursDto createOpeningHoursDto(

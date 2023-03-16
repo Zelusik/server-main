@@ -51,7 +51,7 @@ public class ReviewTestUtils {
     public static Review createReviewWithId() {
         return createReviewWithId(
                 MemberTestUtils.createMemberWithId(),
-                PlaceTestUtils.createPlaceWithId()
+                PlaceTestUtils.createPlace()
         );
     }
 

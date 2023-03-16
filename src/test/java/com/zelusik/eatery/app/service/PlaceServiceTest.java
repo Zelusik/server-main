@@ -60,7 +60,7 @@ class PlaceServiceTest {
         // given
         PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -90,7 +90,7 @@ class PlaceServiceTest {
         // given
         PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -122,7 +122,7 @@ class PlaceServiceTest {
         // given
         PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -158,7 +158,7 @@ class PlaceServiceTest {
                 SAT, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0)),
                 SUN, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0))
         );
-        Place expectedSavedPlace = PlaceTestUtils.createPlaceWithId(homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.save(any(OpeningHours.class)))
                 .willReturn(OpeningHours.of(
@@ -208,7 +208,7 @@ class PlaceServiceTest {
     void givenId_whenFindExistentPlace_thenReturnPlaceDto() {
         // given
         long placeId = 1L;
-        given(placeRepository.findById(placeId)).willReturn(Optional.of(PlaceTestUtils.createPlaceWithId()));
+        given(placeRepository.findById(placeId)).willReturn(Optional.of(PlaceTestUtils.createPlace()));
         
         // when
         PlaceDto findDto = sut.findDtoById(placeId);
@@ -238,7 +238,7 @@ class PlaceServiceTest {
     void givenKakaoPid_whenFindExistentPlace_thenReturnOptionalPlace() {
         // given
         String kakaoPid = "test";
-        Place expectedPlace = PlaceTestUtils.createPlaceWithId();
+        Place expectedPlace = PlaceTestUtils.createPlace();
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
