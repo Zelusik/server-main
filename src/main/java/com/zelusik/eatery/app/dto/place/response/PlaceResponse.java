@@ -42,8 +42,11 @@ public class PlaceResponse {
     @Schema(description = "영업시간 정보")
     private List<OpeningHoursResponse> openingHours;
 
-    public static PlaceResponse of(Long id, String name, PlaceCategory category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours) {
-        return new PlaceResponse(id, name, category, phone, address, snsUrl, point, closingHours, openingHours);
+    @Schema(description = "북마크 여부", example = "false")
+    private Boolean isMarked;
+
+    public static PlaceResponse of(Long id, String name, PlaceCategory category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, Boolean isMarked) {
+        return new PlaceResponse(id, name, category, phone, address, snsUrl, point, closingHours, openingHours, isMarked);
     }
 
     public static PlaceResponse from(PlaceDto placeDto) {
@@ -63,7 +66,8 @@ public class PlaceResponse {
                 placeDto.closingHours(),
                 placeDto.openingHoursDtos().stream()
                         .map(OpeningHoursResponse::from)
-                        .toList()
+                        .toList(),
+                false
         );
     }
 }
