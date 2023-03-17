@@ -7,6 +7,6 @@ public class PlaceSearchKeywordConverter implements Converter<String, PlaceSearc
 
     @Override
     public PlaceSearchKeyword convert(String source) {
-        return PlaceSearchKeyword.valueOf(source);
+        return PlaceSearchKeyword.valueOfDescription(source);
     }
 }

@@ -2,6 +2,7 @@ package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.config.SecurityConfig;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
+import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
@@ -77,11 +78,11 @@ class PlaceControllerTest {
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours()), pageable, false);
-        given(placeService.findDtosNearBy(List.of(MON, WED, FRI), null, lat, lng, pageable)).willReturn(expectedResult);
+        given(placeService.findDtosNearBy(List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
-                        get("/api/places/search?lat=" + lat + "&lng=" + lng + "&daysOfWeek=월,수,금")
+                        get("/api/places/search?lat=" + lat + "&lng=" + lng + "&daysOfWeek=월,수,금" + "&keyword=혼밥")
                                 .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
