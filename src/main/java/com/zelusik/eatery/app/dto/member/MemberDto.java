@@ -46,7 +46,6 @@ public record MemberDto(
 
     public Member toEntity() {
         return Member.of(
-                null,
                 socialUid(),
                 loginType(),
                 email(),

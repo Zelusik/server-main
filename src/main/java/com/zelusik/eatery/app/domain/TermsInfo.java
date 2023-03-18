@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,10 +42,30 @@ public class TermsInfo extends BaseTimeEntity {
     private LocalDateTime marketingReceptionUpdatedAt;
 
     public static TermsInfo of(Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
-        return new TermsInfo(isMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt);
+        return of(null, isMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt, null, null);
     }
 
-    private TermsInfo(Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
+    public static TermsInfo of(Long id, Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return TermsInfo.builder()
+                .id(id)
+                .isMinor(isMinor)
+                .service(service)
+                .serviceUpdatedAt(serviceUpdatedAt)
+                .userInfo(userInfo)
+                .userInfoUpdatedAt(userInfoUpdatedAt)
+                .locationInfo(locationInfo)
+                .locationInfoUpdatedAt(locationInfoUpdatedAt)
+                .marketingReception(marketingReception)
+                .marketingReceptionUpdatedAt(marketingReceptionUpdatedAt)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private TermsInfo(LocalDateTime createdAt, LocalDateTime updatedAt, Long id, Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
         this.isMinor = isMinor;
         this.service = service;
         this.serviceUpdatedAt = serviceUpdatedAt;

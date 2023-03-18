@@ -6,6 +6,8 @@ import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
+
 public class MemberTestUtils {
 
     public static final String SOCIAL_UID = "1234567890";
@@ -41,22 +43,19 @@ public class MemberTestUtils {
         );
     }
 
-    public static Member createMember() {
+    public static Member createMember(Long memberId) {
         return Member.of(
+                memberId,
                 null,
                 SOCIAL_UID,
                 LoginType.KAKAO,
                 EMAIL,
                 NICKNAME,
                 AGE_RANGE,
-                GENDER
+                GENDER,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
         );
-    }
-
-    public static Member createMemberWithId() {
-        Member member = createMember();
-        ReflectionTestUtils.setField(member, "id", 1L);
-
-        return member;
     }
 }

@@ -1,9 +1,14 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.TermsInfo;
 import com.zelusik.eatery.app.dto.member.MemberDto;
+import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
+import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.repository.MemberRepository;
+import com.zelusik.eatery.app.repository.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.util.TermsInfoTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.zelusik.eatery.util.MemberTestUtils.createMemberDto;
-import static com.zelusik.eatery.util.MemberTestUtils.createMemberWithId;
+import static com.zelusik.eatery.util.MemberTestUtils.*;
+import static com.zelusik.eatery.util.TermsInfoTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,13 +35,15 @@ class MemberServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+    @Mock
+    private TermsInfoRepository termsInfoRepository;
 
     @DisplayName("회원 정보가 주어지면 회원가입을 진행한 후 등록된 회원 정보를 return한다.")
     @Test
     void givenMemberInfo_whenSignUp_thenSaveAndReturnMember() {
         // given
         MemberDto memberInfo = createMemberDto();
-        Member expectedSavedMember = createMemberWithId();
+        Member expectedSavedMember = createMember(1L);
         given(memberRepository.save(any(Member.class))).willReturn(expectedSavedMember);
 
         // when
@@ -53,12 +60,30 @@ class MemberServiceTest {
         assertThat(actualSavedMember.gender()).isEqualTo(expectedSavedMember.getGender());
     }
 
+    @DisplayName("약관 동의 정보가 주어지고, 약관에 동의하면, 약관 동의 결과를 반환한다.")
+    @Test
+    void givenAgreeOfTermsInfo_whenAgreeToTerms_thenReturnTermsInfoResult() {
+        // given
+        long memberId = 1L;
+        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(false, true, true, true, true);
+        given(termsInfoRepository.save(any(TermsInfo.class))).willReturn(createTermsInfo());
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(createMember(memberId)));
+
+        // when
+        TermsInfoDto actualResult = sut.agreeToTerms(memberId, termsAgreeRequest);
+
+        // then
+        then(termsInfoRepository).should().save(any(TermsInfo.class));
+        then(memberRepository).should().findById(memberId);
+        assertThat(actualResult.isMinor()).isFalse();
+    }
+
     @DisplayName("회원의 id(PK)가 주어지면 해당하는 회원을 조회한 후 반환한다.")
     @Test
     void givenMemberId_whenFindMember_thenReturnMember() {
         // given
         Long memberId = 1L;
-        Member expected = createMemberWithId();
+        Member expected = createMember(memberId);
         given(memberRepository.findById(memberId)).willReturn(Optional.of(expected));
 
         // when
@@ -89,7 +114,7 @@ class MemberServiceTest {
     void givenSocialUid_whenFindMember_thenReturnMember() {
         // given
         String socialUid = "1234567890";
-        Member expected = createMemberWithId();
+        Member expected = createMember(1L);
         given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.of(expected));
 
         // when
