@@ -54,7 +54,7 @@ public class PlaceController {
             @Parameter(
                     description = "요일 목록",
                     example = "월,화,수"
-            ) @RequestParam(required = false) List<DayOfWeek> daysOfWeek,
+            ) @RequestParam(required = false) List<String> daysOfWeek,
             @Parameter(
                     description = "약속 상황",
                     example = "신나는"
@@ -78,7 +78,9 @@ public class PlaceController {
     ) {
         return new SliceResponse<PlaceResponse>()
                 .from(placeService.findDtosNearBy(
-                        daysOfWeek,
+                        daysOfWeek.stream()
+                                .map(DayOfWeek::valueOfDescription)
+                                .toList(),
                         PlaceSearchKeyword.valueOfDescription(keyword),
                         lat,
                         lng,
