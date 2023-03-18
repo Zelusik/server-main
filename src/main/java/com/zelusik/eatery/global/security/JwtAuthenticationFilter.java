@@ -1,10 +1,6 @@
 package com.zelusik.eatery.global.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.app.dto.exception.ErrorResponse;
-import com.zelusik.eatery.global.exception.ExceptionType;
-import com.zelusik.eatery.global.exception.ExceptionUtils;
-import com.zelusik.eatery.global.log.LogUtils;
+import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -32,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @param request     request 객체
      * @param response    response 객체
      * @param filterChain FilterChain 객체
+     * @throws TokenValidateException token이 유효하지 않은 경우
      */
     @Override
     protected void doFilterInternal(
@@ -43,34 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtTokenProvider.getToken(request);
 
         if (token != null) {
-            try {
-                jwtTokenProvider.validateToken(token);
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (Exception ex) {
-                setErrorResponse(ex.getClass(), response);
-            }
+            jwtTokenProvider.validateToken(token);
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
-    }
-
-    /**
-     * Exception 정보를 입력받아 응답할 error response를 설정한다.
-     *
-     * @param classType Exception의 class type
-     * @param response  HttpServletResponse 객체
-     */
-    private void setErrorResponse(
-            Class<? extends Exception> classType,
-            HttpServletResponse response
-    ) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setCharacterEncoding("utf-8");
-        response.setContentType("application/json; charset=UTF-8");
-
-        ExceptionType exceptionType = ExceptionType.from(classType).orElse(ExceptionType.UNAUTHORIZED);
-        ErrorResponse errorResponse = new ErrorResponse(exceptionType.getCode(), exceptionType.getMessage()
-        );
-        new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
     }
 }
