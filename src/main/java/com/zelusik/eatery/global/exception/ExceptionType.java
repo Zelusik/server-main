@@ -8,6 +8,8 @@ import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.global.exception.kakao.KakaoTokenValidateException;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.global.exception.place.NotAcceptableFoodCategory;
+import com.zelusik.eatery.global.exception.place.NotAcceptablePlaceSearchKeyword;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
@@ -109,6 +111,8 @@ public enum ExceptionType {
      */
     OPENING_HOURS_UNEXPECTED_FORMAT(3000, "가게 영업시간이 처리할 수 없는 형태입니다. 서버 관리자에게 문의해주세요.게", OpeningHoursUnexpectedFormatException.class),
     PLACE_NOT_FOUND(3001, "가게를 찾을 수 없습니다.", PlaceNotFoundException.class),
+    NOT_ACCEPTABLE_PLACE_SEARCH_KEYWORD(3002, "유효하지 않은 검색 키워드입니다.", NotAcceptablePlaceSearchKeyword.class),
+    NOT_ACCEPTABLE_FOOD_CATEGORY(3003, "유효하지 않은 음식 카테고리입니다.", NotAcceptableFoodCategory.class),
 
     /**
      * 리뷰({@link Review}) 관련 예외

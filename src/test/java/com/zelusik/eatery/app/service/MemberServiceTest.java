@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.service;
 
+import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.TermsInfo;
 import com.zelusik.eatery.app.dto.member.MemberDto;
@@ -8,7 +9,6 @@ import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.repository.MemberRepository;
 import com.zelusik.eatery.app.repository.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
-import com.zelusik.eatery.util.TermsInfoTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
+import static com.zelusik.eatery.app.constant.FoodCategory.*;
 import static com.zelusik.eatery.util.MemberTestUtils.*;
 import static com.zelusik.eatery.util.TermsInfoTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -138,5 +140,22 @@ class MemberServiceTest {
         // then
         then(memberRepository).should().findBySocialUid(socialUid);
         assertThat(optionalMember.isPresent()).isFalse();
+    }
+
+    @DisplayName("선호 음식 카테고리 목록이 주어지고, 이를 업데이트하면, 선호 음식 카테고리를 수정한다.")
+    @Test
+    void givenFavoriteFoodCategories_whenUpdatingFavoriteFoodCategories_thenUpdate() {
+        // given
+        long memberId = 1L;
+        Member findMember = createMember(memberId);
+        List<FoodCategory> favoriteFoodCategories = List.of(KOREAN, WESTERN, DESERT);
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(findMember));
+
+        // when
+        MemberDto updatedMemberDto = sut.updateFavoriteFoodCategories(memberId, favoriteFoodCategories);
+
+        // then
+        then(memberRepository).should().findById(memberId);
+        assertThat(updatedMemberDto.favoriteFoodCategories()).contains(KOREAN, WESTERN, DESERT);
     }
 }

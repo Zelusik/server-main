@@ -1,12 +1,15 @@
 package com.zelusik.eatery.app.domain;
 
+import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
+import com.zelusik.eatery.app.util.domain.FoodCategoryConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -41,13 +44,17 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Setter
+    @Convert(converter = FoodCategoryConverter.class)
+    private List<FoodCategory> favoriteFoodCategories;
+
     private LocalDateTime deletedAt;
 
     public static Member of(String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
-        return of(null, null, socialUid, loginType, email, nickname, ageRange, gender, null, null, null);
+        return of(null, null, socialUid, loginType, email, nickname, ageRange, gender, null, null, null, null);
     }
 
-    public static Member of(Long id, TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public static Member of(Long id, TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         return Member.builder()
                 .id(id)
                 .termsInfo(termsInfo)
@@ -57,6 +64,7 @@ public class Member extends BaseTimeEntity {
                 .nickname(nickname)
                 .ageRange(ageRange)
                 .gender(gender)
+                .favoriteFoodCategories(favoriteFoodCategories)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .deletedAt(deletedAt)
@@ -64,7 +72,7 @@ public class Member extends BaseTimeEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Member(Long id, TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Member(Long id, TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.termsInfo = termsInfo;
@@ -74,6 +82,7 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.ageRange = ageRange;
         this.gender = gender;
+        this.favoriteFoodCategories = favoriteFoodCategories;
         this.deletedAt = deletedAt;
     }
 }

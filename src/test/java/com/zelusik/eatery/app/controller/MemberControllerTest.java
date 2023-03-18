@@ -1,6 +1,8 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.config.SecurityConfig;
+import com.zelusik.eatery.app.constant.FoodCategory;
+import com.zelusik.eatery.app.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.dto.terms_info.response.TermsInfoResponse;
@@ -19,14 +21,18 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import static com.zelusik.eatery.app.constant.FoodCategory.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,5 +89,27 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.userInfo").value(true))
                 .andExpect(jsonPath("$.locationInfo").value(true))
                 .andExpect(jsonPath("$.marketingReception").value(false));
+    }
+
+    @DisplayName("선호 음식 카테고리 목록이 주어지고, 이를 업데이트하면, 수정된 멤버 정보가 반환된다.")
+    @Test
+    void givenFavoriteFoodCategories_whenUpdatingFavoriteFoodCategories_thenReturnUpdatedMember() throws Exception {
+        // given
+        FavoriteFoodCategoriesUpdateRequest request = FavoriteFoodCategoriesUpdateRequest.of(List.of(KOREAN, WESTERN, DESERT));
+        given(memberService.updateFavoriteFoodCategories(any(), any()))
+                .willReturn(MemberTestUtils.createMemberDtoWithId());
+
+        // when & then
+        mvc.perform(
+                        patch("/api/members/favorite-food")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(request))
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.nickname").exists())
+                .andExpect(jsonPath("$.favoriteFoodCategories").exists());
     }
 }
