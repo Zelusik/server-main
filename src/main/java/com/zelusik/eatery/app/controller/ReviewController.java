@@ -85,4 +85,29 @@ public class ReviewController {
                 .from(reviewService.searchDtosByPlaceId(placeId, pageRequest)
                         .map(ReviewListResponse::from));
     }
+
+    @Operation(
+            summary = "피드 조회",
+            description = "<p>피드에 보여줄 리뷰 목록을 조회합니다." +
+                    "<p>모든 리뷰를 최신순으로 보여줍니다." +
+                    "<p>추후 기획 단계에서 고안된 알고리즘에 의해 정렬하여 제공할 예정입니다. (현재는 미구현) 다만, 요청/응답 데이터의 변경은 없을 예정",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/feed")
+    public SliceResponse<ReviewListResponse> searchFeed(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(
+                    description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
+                    example = "0"
+            ) @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈). 기본값은 15입니다.",
+                    example = "15"
+            ) @RequestParam(required = false, defaultValue = "15") int size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return new SliceResponse<ReviewListResponse>()
+                .from(reviewService.searchDtosOrderByCreatedAt(pageRequest)
+                        .map(ReviewListResponse::from));
+    }
 }
