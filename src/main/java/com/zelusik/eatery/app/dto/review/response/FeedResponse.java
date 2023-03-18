@@ -6,7 +6,6 @@ import com.zelusik.eatery.app.dto.place.response.FeedPlaceResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,8 +26,7 @@ public class FeedResponse {
     @Schema(description = "리뷰가 작성된 가게 정보")
     private FeedPlaceResponse place;
 
-//    @Schema(description = "리뷰 키워드 목록", )
-    @ArraySchema(arraySchema = @Schema(description = "리뷰 키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]"))
+    @ArraySchema(arraySchema = @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]"))
     private List<String> keywords;
 
     @Schema(description = "내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
