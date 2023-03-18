@@ -7,6 +7,7 @@ import com.zelusik.eatery.app.dto.terms_info.response.TermsInfoResponse;
 import com.zelusik.eatery.app.service.MemberService;
 import com.zelusik.eatery.global.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class MemberController {
     )
     @PostMapping("/terms")
     public ResponseEntity<TermsInfoResponse> agree(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody TermsAgreeRequest request
     ) {
         TermsInfoResponse response = TermsInfoResponse.from(memberService.agreeToTerms(userPrincipal.getMemberId(), request));
@@ -49,7 +50,7 @@ public class MemberController {
     )
     @PatchMapping("/favorite-food")
     public MemberResponse updateFavoriteFoodCategories(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
     ) {
         return MemberResponse.from(memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), request.getFavoriteFoodCategories()));

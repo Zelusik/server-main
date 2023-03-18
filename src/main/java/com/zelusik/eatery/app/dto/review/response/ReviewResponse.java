@@ -2,7 +2,7 @@ package com.zelusik.eatery.app.dto.review.response;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
-import com.zelusik.eatery.app.dto.review.ReviewDto;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -37,16 +37,16 @@ public class ReviewResponse {
         return new ReviewResponse(id, writerId, place, keywords, content, reviewFiles);
     }
 
-    public static ReviewResponse from(ReviewDto reviewDto) {
+    public static ReviewResponse from(ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace) {
         return new ReviewResponse(
-                reviewDto.id(),
-                reviewDto.writerDto().id(),
-                PlaceResponse.from(reviewDto.placeDto()),
-                reviewDto.keywords().stream()
+                reviewDtoWithMemberAndPlace.id(),
+                reviewDtoWithMemberAndPlace.writerDto().id(),
+                PlaceResponse.from(reviewDtoWithMemberAndPlace.placeDto()),
+                reviewDtoWithMemberAndPlace.keywords().stream()
                         .map(ReviewKeyword::getDescription)
                         .toList(),
-                reviewDto.content(),
-                reviewDto.reviewFileDtos().stream()
+                reviewDtoWithMemberAndPlace.content(),
+                reviewDtoWithMemberAndPlace.reviewFileDtos().stream()
                         .map(ReviewFileDto::url)
                         .toList()
         );

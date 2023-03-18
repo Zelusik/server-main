@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.dto.review.response;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
-import com.zelusik.eatery.app.dto.review.ReviewDto;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -32,7 +32,7 @@ public class ReviewListResponse {
         return new ReviewListResponse(id, writerId, keywords, content, reviewFiles);
     }
 
-    public static ReviewListResponse from(ReviewDto dto) {
+    public static ReviewListResponse from(ReviewDtoWithMemberAndPlace dto) {
         return of(
                 dto.id(),
                 dto.writerDto().id(),

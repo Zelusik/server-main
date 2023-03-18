@@ -4,7 +4,7 @@ import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
-import com.zelusik.eatery.app.dto.review.ReviewDto;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,12 +38,12 @@ public class ReviewCreateRequest {
         return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, files);
     }
 
-    public ReviewDto toDto(Place place) {
+    public ReviewDtoWithMemberAndPlace toDto(Place place) {
         return toDto(PlaceDto.from(place));
     }
 
-    public ReviewDto toDto(PlaceDto placeDto) {
-        return ReviewDto.of(
+    public ReviewDtoWithMemberAndPlace toDto(PlaceDto placeDto) {
+        return ReviewDtoWithMemberAndPlace.of(
                 placeDto,
                 this.getKeywords(),
                 this.getAutoCreatedContent(),

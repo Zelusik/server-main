@@ -4,7 +4,7 @@ import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
-import com.zelusik.eatery.app.dto.review.ReviewDto;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.ReviewRepository;
 import com.zelusik.eatery.util.MemberTestUtils;
@@ -61,7 +61,7 @@ class ReviewServiceTest {
         willDoNothing().given(reviewFileService).upload(any(Review.class), any());
 
         // when
-        ReviewDto actualSavedReview = sut.create(
+        ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
                 List.of(MultipartFileTestUtils.createMockMultipartFile())
@@ -100,7 +100,7 @@ class ReviewServiceTest {
         willDoNothing().given(reviewFileService).upload(any(Review.class), any());
 
         // when
-        ReviewDto actualSavedReview = sut.create(
+        ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
                 List.of(MultipartFileTestUtils.createMockMultipartFile())
@@ -127,7 +127,7 @@ class ReviewServiceTest {
                 .willReturn(expectedSearchResult);
 
         // when
-        Slice<ReviewDto> actualSearchResult = sut.searchDtosByPlaceId(placeId, pageable);
+        Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.searchDtosByPlaceId(placeId, pageable);
 
         // then
         then(reviewRepository).should().findByPlace_Id(placeId, pageable);

@@ -4,7 +4,7 @@ import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.dto.review.ReviewDto;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -24,8 +24,8 @@ public class ReviewTestUtils {
         );
     }
 
-    public static ReviewDto createReviewDtoWithId() {
-        return ReviewDto.of(
+    public static ReviewDtoWithMemberAndPlace createReviewDtoWithId() {
+        return ReviewDtoWithMemberAndPlace.of(
                 1L,
                 MemberTestUtils.createMemberDtoWithId(),
                 PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours(),
