@@ -21,8 +21,8 @@ public class PlaceResponse {
     @Schema(description = "이름", example = "연남토마 본점")
     private String name;
 
-    @Schema(description = "카테고리")
-    private PlaceCategory category;
+    @Schema(description = "카테고리", example = "퓨전일식")
+    private String category;
 
     @Schema(description = "대표번호", example = "02-332-8064")
     private String phone;
@@ -45,7 +45,7 @@ public class PlaceResponse {
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static PlaceResponse of(Long id, String name, PlaceCategory category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, Boolean isMarked) {
+    public static PlaceResponse of(Long id, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, Boolean isMarked) {
         return new PlaceResponse(id, name, category, phone, address, snsUrl, point, closingHours, openingHours, isMarked);
     }
 
@@ -58,7 +58,7 @@ public class PlaceResponse {
         return new PlaceResponse(
                 placeDto.id(),
                 placeDto.name(),
-                placeDto.category(),
+                placeDto.category().getSecondCategory(),
                 placeDto.phone(),
                 placeDto.address(),
                 snsUrl,
