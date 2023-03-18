@@ -1,7 +1,6 @@
 package com.zelusik.eatery.app.config;
 
 import com.zelusik.eatery.app.util.controller.DayOfWeekRequestConverter;
-import com.zelusik.eatery.app.util.controller.FoodCategoryRequestConverter;
 import com.zelusik.eatery.app.util.controller.PlaceSearchKeywordConverter;
 import com.zelusik.eatery.app.util.controller.ReviewKeywordRequestConverter;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +15,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addConverter(new ReviewKeywordRequestConverter());
         registry.addConverter(new DayOfWeekRequestConverter());
         registry.addConverter(new PlaceSearchKeywordConverter());
-        registry.addConverter(new FoodCategoryRequestConverter());
     }
 }
