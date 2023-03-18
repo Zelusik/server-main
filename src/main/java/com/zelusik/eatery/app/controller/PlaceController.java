@@ -58,7 +58,7 @@ public class PlaceController {
             @Parameter(
                     description = "약속 상황",
                     example = "신나는"
-            ) @RequestParam(required = false) PlaceSearchKeyword keyword,
+            ) @RequestParam(required = false) String keyword,
             @Parameter(
                     description = "중심 위치 - 위도",
                     example = "37.566826004661"
@@ -77,7 +77,12 @@ public class PlaceController {
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
         return new SliceResponse<PlaceResponse>()
-                .from(placeService.findDtosNearBy(daysOfWeek, keyword, lat, lng, PageRequest.of(page, size))
-                        .map(PlaceResponse::from));
+                .from(placeService.findDtosNearBy(
+                        daysOfWeek,
+                        PlaceSearchKeyword.valueOfDescription(keyword),
+                        lat,
+                        lng,
+                        PageRequest.of(page, size)
+                ).map(PlaceResponse::from));
     }
 }
