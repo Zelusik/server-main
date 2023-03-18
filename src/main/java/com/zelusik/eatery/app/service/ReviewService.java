@@ -79,7 +79,7 @@ public class ReviewService {
      * @param pageable paging 정보
      * @return 조회된 리뷰 목록(slice)
      */
-    public Slice<ReviewDtoWithMember> searchDtosOrderByCreatedAt(Pageable pageable) {
-        return reviewRepository.findAll(pageable).map(ReviewDtoWithMember::from);
+    public Slice<ReviewDtoWithMemberAndPlace> searchDtosOrderByCreatedAt(Pageable pageable) {
+        return reviewRepository.findAll(pageable).map(ReviewDtoWithMemberAndPlace::from);
     }
 }

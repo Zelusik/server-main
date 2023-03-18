@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.controller;
 
+import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.member.response.MemberResponse;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "회원 관련 API")
 @RequiredArgsConstructor
@@ -53,6 +55,9 @@ public class MemberController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
     ) {
-        return MemberResponse.from(memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), request.getFavoriteFoodCategories()));
+        List<FoodCategory> favoriteFoodCategories = request.getFavoriteFoodCategories().stream()
+                .map(FoodCategory::valueOfDescription)
+                .toList();
+        return MemberResponse.from(memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), favoriteFoodCategories));
     }
 }

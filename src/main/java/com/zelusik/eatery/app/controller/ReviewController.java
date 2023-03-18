@@ -2,6 +2,7 @@ package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.dto.SliceResponse;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.app.dto.review.response.FeedResponse;
 import com.zelusik.eatery.app.dto.review.response.ReviewListResponse;
 import com.zelusik.eatery.app.dto.review.response.ReviewResponse;
 import com.zelusik.eatery.app.service.ReviewService;
@@ -94,7 +95,7 @@ public class ReviewController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/feed")
-    public SliceResponse<ReviewListResponse> searchFeed(
+    public SliceResponse<FeedResponse> searchFeed(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
@@ -106,8 +107,8 @@ public class ReviewController {
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return new SliceResponse<ReviewListResponse>()
+        return new SliceResponse<FeedResponse>()
                 .from(reviewService.searchDtosOrderByCreatedAt(pageRequest)
-                        .map(ReviewListResponse::from));
+                        .map(FeedResponse::from));
     }
 }
