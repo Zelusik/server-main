@@ -2,6 +2,7 @@ package com.zelusik.eatery.app.dto.review.response;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.review.ReviewDto;
+import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,9 +26,9 @@ public class ReviewListResponse {
     private String content;
 
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록")
-    private List<ReviewFileResponse> reviewFiles;
+    private List<String> reviewFiles;
 
-    public static ReviewListResponse of(Long id, Long writerId, List<String> keywords, String content, List<ReviewFileResponse> reviewFiles) {
+    public static ReviewListResponse of(Long id, Long writerId, List<String> keywords, String content, List<String> reviewFiles) {
         return new ReviewListResponse(id, writerId, keywords, content, reviewFiles);
     }
 
@@ -40,7 +41,7 @@ public class ReviewListResponse {
                         .toList(),
                 dto.content(),
                 dto.reviewFileDtos().stream()
-                        .map(ReviewFileResponse::from)
+                        .map(ReviewFileDto::url)
                         .toList()
         );
     }
