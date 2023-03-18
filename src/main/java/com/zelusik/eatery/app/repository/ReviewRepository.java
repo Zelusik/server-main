@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @EntityGraph(attributePaths = {"writer", "place"})
+    @EntityGraph(attributePaths = {"writer"})
     Slice<Review> findByPlace_Id(Long placeId, Pageable pageable);
 }

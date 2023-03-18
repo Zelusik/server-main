@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.ReviewRepository;
@@ -65,10 +66,10 @@ public class ReviewService {
      * @param pageable paging 정보
      * @return 조회된 리뷰 목록(Slice)
      */
-    public Slice<ReviewDtoWithMemberAndPlace> searchDtosByPlaceId(Long placeId, Pageable pageable) {
+    public Slice<ReviewDtoWithMember> searchDtosByPlaceId(Long placeId, Pageable pageable) {
         // TODO: 현재 writer, place 정보를 사용하지 않음에도 ReviewDto가 해당 정보를 포함하고 있어 조회하게 된다. 최적화 필요.
         // => 작성자 누구인지 필요하다고 해서 작성자 정보는 유지할 예정
         // writer, place를 포함하지 않는 dto를 구현하여 적용하면 최적화 가능.
-        return reviewRepository.findByPlace_Id(placeId, pageable).map(ReviewDtoWithMemberAndPlace::from);
+        return reviewRepository.findByPlace_Id(placeId, pageable).map(ReviewDtoWithMember::from);
     }
 }
