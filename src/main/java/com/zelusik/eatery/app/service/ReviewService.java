@@ -72,4 +72,14 @@ public class ReviewService {
         // writer, place를 포함하지 않는 dto를 구현하여 적용하면 최적화 가능.
         return reviewRepository.findByPlace_Id(placeId, pageable).map(ReviewDtoWithMember::from);
     }
+
+    /**
+     * 리뷰 조회. 최신순 정렬
+     *
+     * @param pageable paging 정보
+     * @return 조회된 리뷰 목록(slice)
+     */
+    public Slice<ReviewDtoWithMember> searchDtosOrderByCreatedAt(Pageable pageable) {
+        return reviewRepository.findAll(pageable).map(ReviewDtoWithMember::from);
+    }
 }
