@@ -1,14 +1,15 @@
 package com.zelusik.eatery.app.domain;
 
+import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.zelusik.eatery.app.util.domain.FoodCategoryConverter;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -21,6 +22,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
+    @Setter
     @JoinColumn(name = "terms_info_id")
     @OneToOne(fetch = FetchType.LAZY)
     private TermsInfo termsInfo;
@@ -42,13 +44,37 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Setter
+    @Convert(converter = FoodCategoryConverter.class)
+    private List<FoodCategory> favoriteFoodCategories;
+
     private LocalDateTime deletedAt;
 
-    public static Member of(TermsInfo termsInfo, String uid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
-        return new Member(termsInfo, uid, loginType, email, nickname, ageRange, gender);
+    public static Member of(String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
+        return of(null, null, socialUid, loginType, email, nickname, ageRange, gender, null, null, null, null);
     }
 
-    private Member(TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
+    public static Member of(Long id, TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return Member.builder()
+                .id(id)
+                .termsInfo(termsInfo)
+                .socialUid(socialUid)
+                .loginType(loginType)
+                .email(email)
+                .nickname(nickname)
+                .ageRange(ageRange)
+                .gender(gender)
+                .favoriteFoodCategories(favoriteFoodCategories)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .deletedAt(deletedAt)
+                .build();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Member(Long id, TermsInfo termsInfo, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
         this.termsInfo = termsInfo;
         this.socialUid = socialUid;
         this.loginType = loginType;
@@ -56,5 +82,7 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.ageRange = ageRange;
         this.gender = gender;
+        this.favoriteFoodCategories = favoriteFoodCategories;
+        this.deletedAt = deletedAt;
     }
 }

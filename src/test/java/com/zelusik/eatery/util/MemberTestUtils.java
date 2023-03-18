@@ -1,10 +1,14 @@
 package com.zelusik.eatery.util;
 
+import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class MemberTestUtils {
 
@@ -35,28 +39,27 @@ public class MemberTestUtils {
                 NICKNAME,
                 AGE_RANGE,
                 GENDER,
+                List.of(FoodCategory.KOREAN),
                 null,
                 null,
                 null
         );
     }
 
-    public static Member createMember() {
+    public static Member createMember(Long memberId) {
         return Member.of(
+                memberId,
                 null,
                 SOCIAL_UID,
                 LoginType.KAKAO,
                 EMAIL,
                 NICKNAME,
                 AGE_RANGE,
-                GENDER
+                GENDER,
+                List.of(FoodCategory.KOREAN),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
         );
-    }
-
-    public static Member createMemberWithId() {
-        Member member = createMember();
-        ReflectionTestUtils.setField(member, "id", 1L);
-
-        return member;
     }
 }

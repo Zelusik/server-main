@@ -1,13 +1,20 @@
 package com.zelusik.eatery.app.service;
 
+import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.TermsInfo;
 import com.zelusik.eatery.app.dto.member.MemberDto;
+import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
+import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.repository.MemberRepository;
+import com.zelusik.eatery.app.repository.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -16,6 +23,7 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final TermsInfoRepository termsInfoRepository;
 
     /**
      * 회원 정보를 전달받아 회원가입을 진행한다.
@@ -26,6 +34,31 @@ public class MemberService {
     @Transactional
     public MemberDto save(MemberDto memberDto) {
         return MemberDto.from(memberRepository.save(memberDto.toEntity()));
+    }
+
+    /**
+     * 전체 약관에 대한 동의 정보를 받아 약관 동의를 진행한다.
+     *
+     * @param memberId 로그인 회원 id(PK)
+     * @param request  약관 동의 정보
+     * @return 적용된 약관 동의 결과 정보
+     */
+    @Transactional
+    public TermsInfoDto agreeToTerms(Long memberId, TermsAgreeRequest request) {
+        LocalDateTime now = LocalDateTime.now();
+        TermsInfo termsInfo = TermsInfo.of(
+                request.getIsMinor(),
+                request.getService(), now,
+                request.getUserInfo(), now,
+                request.getLocationInfo(), now,
+                request.getMarketingReception(), now
+        );
+        termsInfoRepository.save(termsInfo);
+
+        Member member = findEntityById(memberId);
+        member.setTermsInfo(termsInfo);
+
+        return TermsInfoDto.from(termsInfo);
     }
 
     /**
@@ -58,5 +91,17 @@ public class MemberService {
      */
     public Optional<MemberDto> findOptionalDtoBySocialUid(String socialUid) {
         return memberRepository.findBySocialUid(socialUid).map(MemberDto::from);
+    }
+
+    /**
+     * 좋아하는 음식 취향을 업데이트한다.
+     *
+     * @param memberId               회원 id(PK)
+     * @param favoriteFoodCategories 변경하고자 하는 음식 취향 목록
+     */
+    public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategory> favoriteFoodCategories) {
+        Member member = findEntityById(memberId);
+        member.setFavoriteFoodCategories(favoriteFoodCategories);
+        return MemberDto.from(member);
     }
 }

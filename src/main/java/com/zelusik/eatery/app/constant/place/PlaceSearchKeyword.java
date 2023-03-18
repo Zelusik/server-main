@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.constant.place;
 
+import com.zelusik.eatery.global.exception.place.NotAcceptablePlaceSearchKeyword;
 import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,6 @@ public enum PlaceSearchKeyword {
         return Arrays.stream(values())
                 .filter(value -> description.equals(value.getDescription()))
                 .findFirst()
-                .orElseThrow(NotAcceptableReviewKeyword::new);
+                .orElseThrow(NotAcceptablePlaceSearchKeyword::new);
     }
 }
