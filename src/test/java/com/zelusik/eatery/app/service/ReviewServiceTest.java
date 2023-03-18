@@ -4,6 +4,7 @@ import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.ReviewRepository;
@@ -127,11 +128,10 @@ class ReviewServiceTest {
                 .willReturn(expectedSearchResult);
 
         // when
-        Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.searchDtosByPlaceId(placeId, pageable);
+        Slice<ReviewDtoWithMember> actualSearchResult = sut.searchDtosByPlaceId(placeId, pageable);
 
         // then
         then(reviewRepository).should().findByPlace_Id(placeId, pageable);
         assertThat(actualSearchResult.hasContent()).isTrue();
-        assertThat(actualSearchResult.getContent().get(0).placeDto().id()).isEqualTo(placeId);
     }
 }

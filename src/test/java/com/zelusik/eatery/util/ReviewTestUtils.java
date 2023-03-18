@@ -1,9 +1,10 @@
 package com.zelusik.eatery.util;
 
+import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
@@ -24,11 +25,34 @@ public class ReviewTestUtils {
         );
     }
 
-    public static ReviewDtoWithMemberAndPlace createReviewDtoWithId() {
+    public static ReviewDtoWithMemberAndPlace createReviewDtoWithMemberAndPlace() {
         return ReviewDtoWithMemberAndPlace.of(
                 1L,
                 MemberTestUtils.createMemberDtoWithId(),
                 PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours(),
+                List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
+                "자동 생성된 내용",
+                "제출된 내용",
+                List.of(ReviewFileDto.of(
+                        1L,
+                        1L,
+                        "test.txt",
+                        "storedName",
+                        "url",
+                        LocalDateTime.now(),
+                        LocalDateTime.now(),
+                        LocalDateTime.now()
+                )),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    public static ReviewDtoWithMember createReviewDtoWithMember() {
+        return ReviewDtoWithMember.of(
+                1L,
+                MemberTestUtils.createMemberDtoWithId(),
                 List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
