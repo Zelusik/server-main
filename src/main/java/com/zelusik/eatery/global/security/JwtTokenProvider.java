@@ -3,7 +3,9 @@ package com.zelusik.eatery.global.security;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.constant.member.RoleType;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,7 @@ public class JwtTokenProvider {
     private static final long MINUTE = 1000 * 60L;
     private static final long HOUR = 60 * MINUTE;
     private static final long DAY = 24 * HOUR;
-    private static final long ACCESS_TOKEN_EXPIRED_DURATION = 12 * HOUR; // Access token 만료시간 : 12시간
+    private static final long ACCESS_TOKEN_EXPIRED_DURATION = DAY; // Access token 만료시간 : 한 달 (개발용)
     public static final long REFRESH_TOKEN_EXPIRED_DURATION = 30 * DAY; // Refresh token 만료시간 : 한 달
 
     private static final String TOKEN_TYPE_BEARER = "Bearer ";
