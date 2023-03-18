@@ -55,10 +55,15 @@ public class PlaceResponse {
             snsUrl = null;
         }
 
+        String category = placeDto.category().getSecondCategory();
+        if (category == null) {
+            category = placeDto.category().getFirstCategory();
+        }
+
         return new PlaceResponse(
                 placeDto.id(),
                 placeDto.name(),
-                placeDto.category().getSecondCategory(),
+                category,
                 placeDto.phone(),
                 placeDto.address(),
                 snsUrl,
