@@ -3,6 +3,7 @@ package com.zelusik.eatery.app.controller;
 import com.zelusik.eatery.app.dto.curation.request.CurationCreateRequest;
 import com.zelusik.eatery.app.dto.curation.request.CurationElemCreateRequest;
 import com.zelusik.eatery.app.dto.curation.response.CurationElemResponse;
+import com.zelusik.eatery.app.dto.curation.response.CurationListResponse;
 import com.zelusik.eatery.app.dto.curation.response.CurationResponse;
 import com.zelusik.eatery.app.service.CurationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,5 +65,19 @@ public class CurationController {
         return ResponseEntity
                 .created(URI.create("/api/curation/" + newCurationElemId))
                 .body(response);
+    }
+
+    @Operation(
+            summary = "큐레이션 목록 조회",
+            description = "<p>큐레이션 항목들을 불러옵니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping
+    public CurationListResponse findAll() {
+        return CurationListResponse.of(
+                curationService.findDtos().stream()
+                        .map(CurationResponse::from)
+                        .toList()
+        );
     }
 }
