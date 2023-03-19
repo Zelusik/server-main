@@ -3,8 +3,8 @@ package com.zelusik.eatery.app.service;
 import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
-import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
+import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
@@ -24,7 +24,6 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewFileService reviewFileService;
-    private final WebScrapingService webScrapingService;
     private final MemberService memberService;
     private final PlaceService placeService;
     private final ReviewRepository reviewRepository;
@@ -39,23 +38,16 @@ public class ReviewService {
      */
     @Transactional
     public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<MultipartFile> files) {
-        PlaceRequest placeRequest = reviewRequest.getPlace();
-        Place place = placeService.findOptEntityByKakaoPid(placeRequest.getKakaoPid())
-                .orElseGet(() -> {
-                    PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeRequest.getPageUrl());
-                    return placeService.create(
-                            placeRequest,
-                            scrapingInfo.homepageUrl(),
-                            scrapingInfo.openingHours(),
-                            scrapingInfo.closingHours()
-                    );
-                });
+        PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
+        Place place = placeService.findOptEntityByKakaoPid(placeCreateRequest.getKakaoPid())
+                .orElseGet(() -> placeService.create(placeCreateRequest));
 
         Member writer = memberService.findEntityById(writerId);
 
-        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(place);
+        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place));
         Review review = reviewRepository.save(reviewDtoWithMemberAndPlace.toEntity(writer, place));
         reviewFileService.upload(review, files);
+
         return ReviewDtoWithMemberAndPlace.from(review);
     }
 

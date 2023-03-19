@@ -3,7 +3,6 @@ package com.zelusik.eatery.app.service;
 import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
@@ -38,8 +37,6 @@ class ReviewServiceTest {
 
     @Mock
     private ReviewFileService reviewFileService;
-    @Mock
-    private WebScrapingService webScrapingService;
     @Mock
     private MemberService memberService;
     @Mock
@@ -76,9 +73,9 @@ class ReviewServiceTest {
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
     }
 
-    @DisplayName("생성할 리뷰와 존재하지 않는 장소 정보가 주어지고, 리뷰를 생성하면, 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
+    @DisplayName("생성할 리뷰와 존재하지 않는 장소 정보가 주어지고, 리뷰를 생성하면, 장소와 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
     @Test
-    void givenReviewAndNotExistentPlaceInfo_whenCreateReview_thenReturnSavedReviewInfo() {
+    void givenReviewAndNotExistentPlaceInfo_whenCreateReview_thenSavePlaceAndReview() {
         // given
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
@@ -90,9 +87,7 @@ class ReviewServiceTest {
         Member expectedMember = MemberTestUtils.createMember(writerId);
         given(placeService.findOptEntityByKakaoPid(kakaoPid))
                 .willReturn(Optional.empty());
-        given(webScrapingService.getPlaceScrapingInfo(reviewCreateRequest.getPlace().getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
-        given(placeService.create(reviewCreateRequest.getPlace(), homepageUrl, openingHours, closingHours))
+        given(placeService.create(reviewCreateRequest.getPlace()))
                 .willReturn(expectedPlace);
         given(memberService.findEntityById(writerId))
                 .willReturn(expectedMember);
@@ -109,8 +104,7 @@ class ReviewServiceTest {
 
         // then
         then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
-        then(webScrapingService).should().getPlaceScrapingInfo(reviewCreateRequest.getPlace().getPageUrl());
-        then(placeService).should().create(reviewCreateRequest.getPlace(), homepageUrl, openingHours, closingHours);
+        then(placeService).should().create(reviewCreateRequest.getPlace());
         then(memberService).should().findEntityById(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewFileService).should().upload(any(Review.class), any());

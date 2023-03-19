@@ -5,7 +5,7 @@ import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.app.domain.place.*;
 import com.zelusik.eatery.app.dto.place.OpeningHoursDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
-import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -14,8 +14,8 @@ import java.util.List;
 
 public class PlaceTestUtils {
 
-    public static PlaceRequest createPlaceRequest() {
-        return PlaceRequest.of(
+    public static PlaceCreateRequest createPlaceRequest() {
+        return PlaceCreateRequest.of(
                 "308342289",
                 "연남토마 본점",
                 "http://place.map.kakao.com/308342289",

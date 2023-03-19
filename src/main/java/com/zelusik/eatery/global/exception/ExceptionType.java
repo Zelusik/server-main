@@ -2,9 +2,11 @@ package com.zelusik.eatery.global.exception;
 
 import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
+import com.zelusik.eatery.app.domain.curation.Curation;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
+import com.zelusik.eatery.global.exception.curation.CurationNotFoundException;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.global.exception.kakao.KakaoTokenValidateException;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
@@ -49,6 +51,7 @@ import java.util.Optional;
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
  *     <li>3000 ~ 3499: 장소 관련 예외</li>
  *     <li>3500 ~ 3999: 리뷰 관련 예외</li>
+ *     <li>4000 ~ 4299: 큐레이션 관련 예외</li>
  *     <li>1XXXX: Kakao server 관련 예외</li>
  * </ul>
  */
@@ -119,6 +122,10 @@ public enum ExceptionType {
      */
     NOT_ACCEPTABLE_REVIEW_KEYWORD(3500, "유효하지 않은 리뷰 키워드입니다.", NotAcceptableReviewKeyword.class),
 
+    /**
+     * 큐레이션({@link Curation}) 관련 예외
+     */
+    CURATION_NOT_FOUND(4000, "큐레이션을 찾을 수 없습니다.", CurationNotFoundException.class),
 
     /**
      * Kakao server 관련 예외

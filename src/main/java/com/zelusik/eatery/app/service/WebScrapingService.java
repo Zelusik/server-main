@@ -40,6 +40,7 @@ public class WebScrapingService {
      *
      * @param placeUrl 장소 정보를 읽어올 장소 상세 페이지 주소
      * @return Scraping해서 읽어온 추가 정보
+     * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
     public PlaceScrapingInfo getPlaceScrapingInfo(String placeUrl) {
         String requestUrl = scrapingServerUrl + "/api/scrap/places?page_url=" + placeUrl;

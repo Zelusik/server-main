@@ -3,7 +3,6 @@ package com.zelusik.eatery.app.dto.review.response;
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class ReviewListResponse {
+public class ReviewListElemResponse {
     @Schema(description = "리뷰 id(PK)", example = "1")
     private Long id;
 
@@ -29,11 +28,11 @@ public class ReviewListResponse {
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록", example = "[\"https://eatery-s3-bucket.s3.ap-northeast-2.amazonaws.com/review/0950af0e-3950-4596-bba2-4fee11e4938a.jpg\"]")
     private List<String> reviewFiles;
 
-    public static ReviewListResponse of(Long id, Long writerId, List<String> keywords, String content, List<String> reviewFiles) {
-        return new ReviewListResponse(id, writerId, keywords, content, reviewFiles);
+    public static ReviewListElemResponse of(Long id, Long writerId, List<String> keywords, String content, List<String> reviewFiles) {
+        return new ReviewListElemResponse(id, writerId, keywords, content, reviewFiles);
     }
 
-    public static ReviewListResponse from(ReviewDtoWithMember dto) {
+    public static ReviewListElemResponse from(ReviewDtoWithMember dto) {
         return of(
                 dto.id(),
                 dto.writerDto().id(),

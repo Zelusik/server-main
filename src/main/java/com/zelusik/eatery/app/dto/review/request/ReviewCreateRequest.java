@@ -1,11 +1,9 @@
 package com.zelusik.eatery.app.dto.review.request;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
-import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
-import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +18,7 @@ import java.util.List;
 public class ReviewCreateRequest {
 
     @Schema(description = "리뷰를 작성하고자 하는 장소 정보")
-    private PlaceRequest place;
+    private PlaceCreateRequest place;
 
     @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
     @NotNull
@@ -35,12 +33,8 @@ public class ReviewCreateRequest {
     @Schema(description = "업로드할 이미지 파일들")
     private List<MultipartFile> files;
 
-    public static ReviewCreateRequest of(PlaceRequest place, List<String> keywords, String autoCreatedContent, String content, List<MultipartFile> files) {
+    public static ReviewCreateRequest of(PlaceCreateRequest place, List<String> keywords, String autoCreatedContent, String content, List<MultipartFile> files) {
         return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, files);
-    }
-
-    public ReviewDtoWithMemberAndPlace toDto(Place place) {
-        return toDto(PlaceDto.from(place));
     }
 
     public ReviewDtoWithMemberAndPlace toDto(PlaceDto placeDto) {

@@ -9,12 +9,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter
 @Getter
-public class PlaceRequest {
+public class PlaceCreateRequest {
 
     @Schema(description = "카카오에서 응답한 장소 id", example = "308342289")
     @NotBlank
@@ -29,7 +30,7 @@ public class PlaceRequest {
     private String pageUrl;
 
     @Schema(description = "카카오에서 응답한 카테고리 그룹 코드(<code>category_group_code</code>)", example = "FD6")
-    @NotBlank
+    @NotNull
     private KakaoCategoryGroupCode categoryGroupCode;
 
     @Schema(description = "카카에에서 응답한 카테고리 이름(<code>category_name</code>)", example = "음식점 > 퓨전요리 > 퓨전일식")
@@ -53,8 +54,8 @@ public class PlaceRequest {
     @NotBlank
     private String lng;
 
-    public static PlaceRequest of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, String categoryName, String phone, String lotNumberAddress, String roadAddress, String lat, String lng) {
-        return new PlaceRequest(kakaoPid, name, pageUrl, categoryGroupCode, categoryName, phone, lotNumberAddress, roadAddress, lat, lng);
+    public static PlaceCreateRequest of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, String categoryName, String phone, String lotNumberAddress, String roadAddress, String lat, String lng) {
+        return new PlaceCreateRequest(kakaoPid, name, pageUrl, categoryGroupCode, categoryName, phone, lotNumberAddress, roadAddress, lat, lng);
     }
 
     public PlaceDto toDto(String homepageUrl, String closingHours) {

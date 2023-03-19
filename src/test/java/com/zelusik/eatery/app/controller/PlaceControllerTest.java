@@ -4,6 +4,7 @@ import com.zelusik.eatery.app.config.SecurityConfig;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
 import com.zelusik.eatery.global.security.JwtAuthenticationFilter;
@@ -20,15 +21,19 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
 import static com.zelusik.eatery.app.constant.place.DayOfWeek.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -47,9 +52,32 @@ class PlaceControllerTest {
     PlaceService placeService;
 
     private final MockMvc mvc;
+    private final ObjectMapper mapper;
 
     public PlaceControllerTest(@Autowired MockMvc mvc) {
         this.mvc = mvc;
+        this.mapper = new ObjectMapper();
+    }
+
+    @DisplayName("장소 정보가 주어지면, 장소를 저장한다.")
+    @Test
+    void givenPlaceInfo_whenSaving_thenSavePlace() throws Exception {
+        // given
+        long placeId = 1L;
+        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
+        given(placeService.create(any(PlaceCreateRequest.class)))
+                .willReturn(PlaceTestUtils.createPlace(placeId));
+
+        // when & then
+        mvc.perform(
+                        post("/api/places")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(placeCreateRequest))
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(placeId));
     }
 
     @DisplayName("가게의 id(PK)가 주어지고, 존재하는 장소를 찾는다면, 장소 정보를 반환한다.")
