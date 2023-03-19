@@ -6,11 +6,13 @@ import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.repository.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.PlaceRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
+import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -28,6 +30,7 @@ import java.util.Optional;
 @Service
 public class PlaceService {
 
+    private final WebScrapingService webScrapingService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
 
@@ -35,22 +38,18 @@ public class PlaceService {
      * 장소 정보를 받아 장소를 저장한다.
      *
      * @param placeCreateRequest 장소 정보가 담긴 dto.
-     * @param homepageUrl  장소의 홈페이지 주소.
-     * @param openingHours 장소의 영업시간.
-     * @param closingHours 장소의 휴무일 정보.
      * @return 저장된 장소 entity.
+     * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
     @Transactional
-    public Place create(
-            PlaceCreateRequest placeCreateRequest,
-            String homepageUrl,
-            String openingHours,
-            String closingHours
-    ) {
+    public Place create(PlaceCreateRequest placeCreateRequest) {
+        PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
+
         Place place = placeCreateRequest
-                .toDto(homepageUrl, closingHours)
+                .toDto(scrapingInfo.homepageUrl(), scrapingInfo.closingHours())
                 .toEntity();
-        createOpeningHours(place, openingHours);
+        createOpeningHours(place, scrapingInfo.openingHours());
+
         return placeRepository.save(place);
     }
 

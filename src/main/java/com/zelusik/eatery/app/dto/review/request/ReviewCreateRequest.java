@@ -1,7 +1,6 @@
 package com.zelusik.eatery.app.dto.review.request;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
-import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
@@ -36,10 +35,6 @@ public class ReviewCreateRequest {
 
     public static ReviewCreateRequest of(PlaceCreateRequest place, List<String> keywords, String autoCreatedContent, String content, List<MultipartFile> files) {
         return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, files);
-    }
-
-    public ReviewDtoWithMemberAndPlace toDto(Place place) {
-        return toDto(PlaceDto.from(place));
     }
 
     public ReviewDtoWithMemberAndPlace toDto(PlaceDto placeDto) {

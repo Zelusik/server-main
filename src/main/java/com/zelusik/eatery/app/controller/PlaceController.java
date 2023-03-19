@@ -3,6 +3,8 @@ package com.zelusik.eatery.app.controller;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.dto.SliceResponse;
+import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,8 +17,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @Tag(name = "가게 관련 API")
@@ -26,6 +31,25 @@ import java.util.List;
 public class PlaceController {
 
     private final PlaceService placeService;
+
+    @Operation(
+            summary = "가게 저장",
+            description = "장소 정보를 전달받아 장소를 서버에 저장합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
+            @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 스크래핑 할 Flask 서버에서 에러가 발생한 경우.", responseCode = "500", content = @Content),
+            @ApiResponse(description = "[3000] 상세 페이지에서 읽어온 가게 영업시간이 처리할 수 없는 형태일 경우.", responseCode = "500", content = @Content)
+    })
+    @PostMapping
+    public ResponseEntity<PlaceResponse> save(@Valid @RequestBody PlaceCreateRequest request) {
+        PlaceResponse response = PlaceResponse.from(PlaceDto.from(placeService.create(request)));
+
+        return ResponseEntity
+                .created(URI.create("/api/places/" + response.getId()))
+                .body(response);
+    }
 
     @Operation(
             summary = "가게 단건 조회",

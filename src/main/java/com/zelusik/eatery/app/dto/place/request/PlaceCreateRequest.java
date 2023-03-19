@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,7 +30,7 @@ public class PlaceCreateRequest {
     private String pageUrl;
 
     @Schema(description = "카카오에서 응답한 카테고리 그룹 코드(<code>category_group_code</code>)", example = "FD6")
-    @NotBlank
+    @NotNull
     private KakaoCategoryGroupCode categoryGroupCode;
 
     @Schema(description = "카카에에서 응답한 카테고리 이름(<code>category_name</code>)", example = "음식점 > 퓨전요리 > 퓨전일식")

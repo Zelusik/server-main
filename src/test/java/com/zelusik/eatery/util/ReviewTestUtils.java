@@ -18,7 +18,7 @@ public class ReviewTestUtils {
     public static ReviewCreateRequest createReviewCreateRequest() {
         return ReviewCreateRequest.of(
                 PlaceTestUtils.createPlaceRequest(),
-                List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
+                List.of("신선한 재료", "최고의 맛"),
                 "자동 생성된 내용",
                 "제출한 내용",
                 List.of(MultipartFileTestUtils.createMockMultipartFile())
