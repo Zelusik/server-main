@@ -3,7 +3,7 @@ package com.zelusik.eatery.app.controller;
 import com.zelusik.eatery.app.dto.SliceResponse;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.dto.review.response.FeedResponse;
-import com.zelusik.eatery.app.dto.review.response.ReviewListResponse;
+import com.zelusik.eatery.app.dto.review.response.ReviewListElemResponse;
 import com.zelusik.eatery.app.dto.review.response.ReviewResponse;
 import com.zelusik.eatery.app.service.ReviewService;
 import com.zelusik.eatery.global.security.UserPrincipal;
@@ -67,7 +67,7 @@ public class ReviewController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping
-    public SliceResponse<ReviewListResponse> searchOfPlace(
+    public SliceResponse<ReviewListElemResponse> searchOfPlace(
             @Parameter(
                     description = "리뷰를 조회하고자 하는 가게의 id(PK)",
                     example = "1"
@@ -82,9 +82,9 @@ public class ReviewController {
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return new SliceResponse<ReviewListResponse>()
+        return new SliceResponse<ReviewListElemResponse>()
                 .from(reviewService.searchDtosByPlaceId(placeId, pageRequest)
-                        .map(ReviewListResponse::from));
+                        .map(ReviewListElemResponse::from));
     }
 
     @Operation(
