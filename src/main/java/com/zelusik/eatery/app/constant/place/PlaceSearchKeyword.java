@@ -10,8 +10,7 @@ import java.util.Arrays;
 
 @Schema(
         description = "<p>가게 검색 키워드. 목록은 다음과 같다." +
-                "<p>소개팅, 웃어른과, 혼밥, 단체, 맛집탐방, 조용한, 신나는",
-        example = "EXCITING"
+                "<p>소개팅, 웃어른과, 혼밥, 단체, 맛집탐방, 조용한, 신나는"
 )
 @AllArgsConstructor
 @Getter

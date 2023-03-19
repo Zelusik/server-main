@@ -21,8 +21,7 @@ import java.util.Arrays;
                 "<li>DESERT(\"디저트\")" +
                 "<li>ASIAN(\"아시안푸드\")" +
                 "<li>SANDWICH(\"샌드위치\")" +
-                "<li>FUSION_WORLD(\"퓨전/세계\")",
-        example = "한식"
+                "<li>FUSION_WORLD(\"퓨전/세계\")"
 )
 @AllArgsConstructor
 @Getter

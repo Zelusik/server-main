@@ -22,7 +22,7 @@ public class ReviewCreateRequest {
     @Schema(description = "리뷰를 작성하고자 하는 장소 정보")
     private PlaceRequest place;
 
-    @ArraySchema(arraySchema = @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]"))
+    @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
     @NotNull
     private List<String> keywords;
 

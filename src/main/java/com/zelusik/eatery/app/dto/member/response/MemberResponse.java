@@ -3,6 +3,7 @@ package com.zelusik.eatery.app.dto.member.response;
 import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.dto.member.MemberDto;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class MemberResponse {
     @Schema(description = "성별", example = "남성")
     private String gender;
 
-    @Schema(description = "선호 음식 카테고리 목록")
+    @Schema(description = "선호 음식 카테고리 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
     private List<String> favoriteFoodCategories;
 
     public static MemberResponse of(Long id, String email, String nickname, Gender gender, List<FoodCategory> favoriteFoodCategories) {

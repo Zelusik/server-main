@@ -21,8 +21,7 @@ import java.util.Arrays;
                 "<li>WAITING - 웨이팅 있음</li>" +
                 "<li>SILENT - 조용조용한</li>" +
                 "<li>NOISY - 왁자지껄한</li>" +
-                "</ul>",
-        example = "FRESH"
+                "</ul>"
 )
 @AllArgsConstructor
 @Getter
