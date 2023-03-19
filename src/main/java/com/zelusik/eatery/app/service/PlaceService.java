@@ -6,7 +6,7 @@ import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
-import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.repository.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.PlaceRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
@@ -34,7 +34,7 @@ public class PlaceService {
     /**
      * 장소 정보를 받아 장소를 저장한다.
      *
-     * @param placeRequest 장소 정보가 담긴 dto.
+     * @param placeCreateRequest 장소 정보가 담긴 dto.
      * @param homepageUrl  장소의 홈페이지 주소.
      * @param openingHours 장소의 영업시간.
      * @param closingHours 장소의 휴무일 정보.
@@ -42,12 +42,12 @@ public class PlaceService {
      */
     @Transactional
     public Place create(
-            PlaceRequest placeRequest,
+            PlaceCreateRequest placeCreateRequest,
             String homepageUrl,
             String openingHours,
             String closingHours
     ) {
-        Place place = placeRequest
+        Place place = placeCreateRequest
                 .toDto(homepageUrl, closingHours)
                 .toEntity();
         createOpeningHours(place, openingHours);

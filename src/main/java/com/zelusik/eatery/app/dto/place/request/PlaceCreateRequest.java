@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter
 @Getter
-public class PlaceRequest {
+public class PlaceCreateRequest {
 
     @Schema(description = "카카오에서 응답한 장소 id", example = "308342289")
     @NotBlank
@@ -53,8 +53,8 @@ public class PlaceRequest {
     @NotBlank
     private String lng;
 
-    public static PlaceRequest of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, String categoryName, String phone, String lotNumberAddress, String roadAddress, String lat, String lng) {
-        return new PlaceRequest(kakaoPid, name, pageUrl, categoryGroupCode, categoryName, phone, lotNumberAddress, roadAddress, lat, lng);
+    public static PlaceCreateRequest of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, String categoryName, String phone, String lotNumberAddress, String roadAddress, String lat, String lng) {
+        return new PlaceCreateRequest(kakaoPid, name, pageUrl, categoryGroupCode, categoryName, phone, lotNumberAddress, roadAddress, lat, lng);
     }
 
     public PlaceDto toDto(String homepageUrl, String closingHours) {

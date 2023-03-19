@@ -4,7 +4,7 @@ import com.zelusik.eatery.app.domain.Member;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
-import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
@@ -39,12 +39,12 @@ public class ReviewService {
      */
     @Transactional
     public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<MultipartFile> files) {
-        PlaceRequest placeRequest = reviewRequest.getPlace();
-        Place place = placeService.findOptEntityByKakaoPid(placeRequest.getKakaoPid())
+        PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
+        Place place = placeService.findOptEntityByKakaoPid(placeCreateRequest.getKakaoPid())
                 .orElseGet(() -> {
-                    PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeRequest.getPageUrl());
+                    PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
                     return placeService.create(
-                            placeRequest,
+                            placeCreateRequest,
                             scrapingInfo.homepageUrl(),
                             scrapingInfo.openingHours(),
                             scrapingInfo.closingHours()

@@ -5,7 +5,7 @@ import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
-import com.zelusik.eatery.app.dto.place.request.PlaceRequest;
+import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.repository.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.PlaceRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
@@ -62,18 +62,18 @@ class PlaceServiceTest {
             Map<DayOfWeek, OpeningHoursTimeDto> expectedOpeningHoursResult
     ) {
         // given
-        PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
+        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
         // when
-        Place actualSavedPlace = sut.create(placeRequest, homepageUrl, openingHours, closingHours);
+        Place actualSavedPlace = sut.create(placeCreateRequest, homepageUrl, openingHours, closingHours);
 
         // then
         then(placeRepository).should().save(any(Place.class));
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeRequest.getKakaoPid());
+        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
@@ -92,20 +92,20 @@ class PlaceServiceTest {
             Map<DayOfWeek, OpeningHoursTimeDto> expectedOpeningHoursResult
     ) {
         // given
-        PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
+        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
         // when
-        Place actualSavedPlace = sut.create(placeRequest, homepageUrl, openingHours, closingHours);
+        Place actualSavedPlace = sut.create(placeCreateRequest, homepageUrl, openingHours, closingHours);
 
         // then
         int wantedNumOfInvocationsOfSaveAll = StringUtils.countOccurrencesOf(openingHours, "\n") + 1;
         then(placeRepository).should().save(any(Place.class));
         verify(openingHoursRepository, times(wantedNumOfInvocationsOfSaveAll)).saveAll(any());
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeRequest.getKakaoPid());
+        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
@@ -124,19 +124,19 @@ class PlaceServiceTest {
             Map<DayOfWeek, OpeningHoursTimeDto> expectedOpeningHoursResult
     ) {
         // given
-        PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
+        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
         // when
-        Place actualSavedPlace = sut.create(placeRequest, homepageUrl, openingHours, closingHours);
+        Place actualSavedPlace = sut.create(placeCreateRequest, homepageUrl, openingHours, closingHours);
 
         // then
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().saveAll(any());
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeRequest.getKakaoPid());
+        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
@@ -150,7 +150,7 @@ class PlaceServiceTest {
     @Test
     void givenPlaceInfoWithOpeningHoursCommaSeperatedWithSingleDay_whenCreatePlace_thenReturnSavedPlace() {
         // given
-        PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
+        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
         String openingHours = "월,화,수,토,일 11:00 ~ 19:00\n목 09:00 ~ 18:00";
         String closingHours = "금요일";
@@ -174,13 +174,13 @@ class PlaceServiceTest {
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
         // when
-        Place actualSavedPlace = sut.create(placeRequest, homepageUrl, openingHours, closingHours);
+        Place actualSavedPlace = sut.create(placeCreateRequest, homepageUrl, openingHours, closingHours);
 
         // then
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().save(any());
         then(openingHoursRepository).should().saveAll(any());
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeRequest.getKakaoPid());
+        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
@@ -194,12 +194,12 @@ class PlaceServiceTest {
     @Test
     void givenUnexpectedFormatOpeningHoursInfo_whenCreatePlace_thenThrowException() {
         // given
-        PlaceRequest placeRequest = PlaceTestUtils.createPlaceRequest();
+        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
         String closingHours = null;
 
         // when
-        Throwable t = catchThrowable(() -> sut.create(placeRequest, homepageUrl, "처리할 수 없는 값", closingHours));
+        Throwable t = catchThrowable(() -> sut.create(placeCreateRequest, homepageUrl, "처리할 수 없는 값", closingHours));
 
         // then
         then(placeRepository).shouldHaveNoInteractions();
