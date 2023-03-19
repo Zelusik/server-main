@@ -1,6 +1,5 @@
 package com.zelusik.eatery.app.dto.member.request;
 
-import com.zelusik.eatery.app.constant.FoodCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,9 +16,9 @@ public class FavoriteFoodCategoriesUpdateRequest {
 
     @Schema(description = "좋아하는 음식 카테고리 목록")
     @NotNull
-    private List<FoodCategory> favoriteFoodCategories;
+    private List<String> favoriteFoodCategories;
 
-    public static FavoriteFoodCategoriesUpdateRequest of(List<FoodCategory> favoriteFoodCategories) {
+    public static FavoriteFoodCategoriesUpdateRequest of(List<String> favoriteFoodCategories) {
         return new FavoriteFoodCategoriesUpdateRequest(favoriteFoodCategories);
     }
 }
