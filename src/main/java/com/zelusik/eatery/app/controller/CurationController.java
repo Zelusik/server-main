@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.controller;
 
+import com.zelusik.eatery.app.dto.curation.CurationDto;
 import com.zelusik.eatery.app.dto.curation.request.CurationCreateRequest;
 import com.zelusik.eatery.app.dto.curation.request.CurationElemCreateRequest;
 import com.zelusik.eatery.app.dto.curation.response.CurationElemResponse;
@@ -65,6 +66,21 @@ public class CurationController {
         return ResponseEntity
                 .created(URI.create("/api/curation/" + newCurationElemId))
                 .body(response);
+    }
+
+    @Operation(
+            summary = "큐레이션 단건 조회",
+            description = "<p>큐레이션을 단건 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/{curationId}")
+    public CurationResponse find(
+            @Parameter(
+                    description = "조회하고자 하는 큐레이션의 PK",
+                    example = "1"
+            ) @PathVariable Long curationId
+    ) {
+        return CurationResponse.from(CurationDto.from(curationService.findEntityById(curationId)));
     }
 
     @Operation(

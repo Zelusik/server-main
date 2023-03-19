@@ -66,7 +66,7 @@ public class CurationService {
      * @param curationId 조회하고자 하는 큐레이션의 PK
      * @return 조회한 큐레이션 entity
      */
-    private Curation findEntityById(Long curationId) {
+    public Curation findEntityById(Long curationId) {
         return curationRepository.findById(curationId)
                 .orElseThrow(CurationNotFoundException::new);
     }
