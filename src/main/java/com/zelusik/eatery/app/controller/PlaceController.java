@@ -102,12 +102,9 @@ public class PlaceController {
     ) {
         return new SliceResponse<PlaceResponse>()
                 .from(placeService.findDtosNearBy(
-                        daysOfWeek.stream()
-                                .map(DayOfWeek::valueOfDescription)
-                                .toList(),
-                        PlaceSearchKeyword.valueOfDescription(keyword),
-                        lat,
-                        lng,
+                        daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
+                        keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
+                        lat, lng,
                         PageRequest.of(page, size)
                 ).map(PlaceResponse::from));
     }
