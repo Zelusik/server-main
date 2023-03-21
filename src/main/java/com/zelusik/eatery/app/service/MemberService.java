@@ -47,7 +47,7 @@ public class MemberService {
     public TermsInfoDto agreeToTerms(Long memberId, TermsAgreeRequest request) {
         LocalDateTime now = LocalDateTime.now();
         TermsInfo termsInfo = TermsInfo.of(
-                request.getIsMinor(),
+                request.getIsNotMinor(),
                 request.getService(), now,
                 request.getUserInfo(), now,
                 request.getLocationInfo(), now,
