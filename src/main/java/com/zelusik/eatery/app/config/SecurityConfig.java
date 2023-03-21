@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -47,6 +48,7 @@ public class SecurityConfig {
                             Arrays.stream(AUTH_WHITE_LIST)
                                     .forEach(authWhiteListElem ->
                                             auth.mvcMatchers(BASE_URL + authWhiteListElem).permitAll());
+                            auth.mvcMatchers(HttpMethod.GET, BASE_URL + "/curation").permitAll();
                             auth.anyRequest().authenticated();
                         }
                 )
