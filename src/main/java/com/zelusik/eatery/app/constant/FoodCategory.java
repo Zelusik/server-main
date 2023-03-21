@@ -44,9 +44,12 @@ public enum FoodCategory {
     private final String description;
 
     public static FoodCategory valueOfDescription(String description) {
+        String trimmedDescription = description.replace(" ", "");
+
         return Arrays.stream(values())
-                .filter(value -> description.equals(value.getDescription()))
-                .findFirst()
+                .filter(value -> trimmedDescription.equals(
+                        value.getDescription().replace(" ", "")
+                )).findFirst()
                 .orElseThrow(NotAcceptableFoodCategory::new);
     }
 }

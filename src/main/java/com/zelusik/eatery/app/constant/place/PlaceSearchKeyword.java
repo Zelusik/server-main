@@ -1,7 +1,6 @@
 package com.zelusik.eatery.app.constant.place;
 
 import com.zelusik.eatery.global.exception.place.NotAcceptablePlaceSearchKeyword;
-import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +27,12 @@ public enum PlaceSearchKeyword {
     private final String description;
 
     public static PlaceSearchKeyword valueOfDescription(String description) {
+        String trimmedDescription = description.replace(" ", "");
+
         return Arrays.stream(values())
-                .filter(value -> description.equals(value.getDescription()))
+                .filter(value -> trimmedDescription.equals(
+                        value.getDescription().replace(" ", "")
+                ))
                 .findFirst()
                 .orElseThrow(NotAcceptablePlaceSearchKeyword::new);
     }
