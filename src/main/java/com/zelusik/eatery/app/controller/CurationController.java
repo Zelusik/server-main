@@ -85,8 +85,7 @@ public class CurationController {
 
     @Operation(
             summary = "큐레이션 목록 조회",
-            description = "<p>큐레이션 항목들을 불러옵니다.",
-            security = @SecurityRequirement(name = "access-token")
+            description = "<p>큐레이션 항목들을 불러옵니다."
     )
     @GetMapping
     public CurationListResponse findAll() {
