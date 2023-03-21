@@ -43,9 +43,12 @@ public enum ReviewKeyword {
     private final String description;
 
     public static ReviewKeyword valueOfDescription(String description) {
+        String trimmedDescription = description.replace(" ", "");
+
         return Arrays.stream(values())
-                .filter(value -> description.equals(value.getDescription()))
-                .findFirst()
+                .filter(value -> trimmedDescription.equals(
+                        value.getDescription().replace(" ", "")
+                )).findFirst()
                 .orElseThrow(NotAcceptableReviewKeyword::new);
     }
 }
