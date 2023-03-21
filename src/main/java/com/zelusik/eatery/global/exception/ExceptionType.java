@@ -72,7 +72,7 @@ public enum ExceptionType {
      * @see ValidationErrorCode
      */
     METHOD_ARGUMENT_NOT_VALID(1200, "요청 데이터가 잘못되었습니다.", MethodArgumentNotValidException.class),
-    CONSTRAINT_VIOLATION(1201, "요청 데이터가 잘못되었습니다.", ConstraintViolationException.class),
+    CONSTRAINT_VIOLATION(1200, "요청 데이터가 잘못되었습니다.", ConstraintViolationException.class),
 
     /**
      * Spring MVC Default Exception

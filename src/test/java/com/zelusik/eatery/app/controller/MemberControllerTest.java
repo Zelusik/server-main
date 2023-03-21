@@ -1,11 +1,9 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.config.SecurityConfig;
-import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
-import com.zelusik.eatery.app.dto.terms_info.response.TermsInfoResponse;
 import com.zelusik.eatery.app.service.MemberService;
 import com.zelusik.eatery.global.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.global.security.UserPrincipal;
@@ -20,14 +18,11 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.zelusik.eatery.app.constant.FoodCategory.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -61,13 +56,13 @@ class MemberControllerTest {
 
     @DisplayName("약관 동의 정보가 주어지고, 약관에 동의하면, 약관 동의 결과를 반환한다.")
     @Test
-    void givenAgreeOfTermsInfo_whenAgreeToTerms_thenReturnTermsInfoResult() throws Exception {
+    void givenAgreementOfTermsInfo_whenAgreeToTerms_thenReturnTermsInfoResult() throws Exception {
         // given
-        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(false, true, true, true, false);
+        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, true, true, true, false);
         LocalDateTime now = LocalDateTime.now();
         given(memberService.agreeToTerms(anyLong(), any(TermsAgreeRequest.class)))
                 .willReturn(TermsInfoDto.of(1L,
-                        false,
+                        true,
                         true, now,
                         true, now,
                         true, now,
@@ -84,11 +79,39 @@ class MemberControllerTest {
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.isMinor").value(false))
+                .andExpect(jsonPath("$.isNotMinor").value(true))
                 .andExpect(jsonPath("$.service").value(true))
                 .andExpect(jsonPath("$.userInfo").value(true))
                 .andExpect(jsonPath("$.locationInfo").value(true))
                 .andExpect(jsonPath("$.marketingReception").value(false));
+    }
+
+    @DisplayName("필수 이용약관에 동의하지 않은 약관 동의 정보가 주어지고, 약관에 동의하면, 에러가 발생한다.")
+    @Test
+    void givenAgreementOfTermsInfoThatNotAgreedToRequiredTerms_whenAgreeToTerms_thenThrowException() throws Exception {
+        // given
+        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, false, true, true, false);
+        LocalDateTime now = LocalDateTime.now();
+        given(memberService.agreeToTerms(anyLong(), any(TermsAgreeRequest.class)))
+                .willReturn(TermsInfoDto.of(1L,
+                        true,
+                        false, now,
+                        true, now,
+                        true, now,
+                        false, now,
+                        now,
+                        now));
+
+        // when & then
+        mvc.perform(
+                        post("/api/members/terms")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(termsAgreeRequest))
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code").value(1200));
     }
 
     @DisplayName("선호 음식 카테고리 목록이 주어지고, 이를 업데이트하면, 수정된 멤버 정보가 반환된다.")

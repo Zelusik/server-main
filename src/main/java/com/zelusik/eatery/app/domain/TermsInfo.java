@@ -19,7 +19,7 @@ public class TermsInfo extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Boolean isMinor;
+    private Boolean isNotMinor;
 
     @Column(nullable = false)
     private Boolean service;
@@ -41,14 +41,14 @@ public class TermsInfo extends BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime marketingReceptionUpdatedAt;
 
-    public static TermsInfo of(Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
-        return of(null, isMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt, null, null);
+    public static TermsInfo of(Boolean isNotMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
+        return of(null, isNotMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt, null, null);
     }
 
-    public static TermsInfo of(Long id, Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public static TermsInfo of(Long id, Boolean isNotMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         return TermsInfo.builder()
                 .id(id)
-                .isMinor(isMinor)
+                .isNotMinor(isNotMinor)
                 .service(service)
                 .serviceUpdatedAt(serviceUpdatedAt)
                 .userInfo(userInfo)
@@ -63,10 +63,10 @@ public class TermsInfo extends BaseTimeEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private TermsInfo(LocalDateTime createdAt, LocalDateTime updatedAt, Long id, Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
+    private TermsInfo(LocalDateTime createdAt, LocalDateTime updatedAt, Long id, Boolean isNotMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
-        this.isMinor = isMinor;
+        this.isNotMinor = isNotMinor;
         this.service = service;
         this.serviceUpdatedAt = serviceUpdatedAt;
         this.userInfo = userInfo;

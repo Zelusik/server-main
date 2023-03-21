@@ -15,8 +15,8 @@ public class TermsInfoResponse {
     @Schema(description = "약관 동의 entity의 PK", example = "1")
     private Long id;
 
-    @Schema(description = "미성년자(14세 미만) 여부", example = "false")
-    private Boolean isMinor;
+    @Schema(description = "미성년자(14세 미만) 여부", example = "true")
+    private Boolean isNotMinor;
 
     @Schema(description = "서비스 약관 동의 여부", example = "true")
     private Boolean service;
@@ -49,7 +49,7 @@ public class TermsInfoResponse {
 
         return new TermsInfoResponse(
                 termsInfoDto.id(),
-                termsInfoDto.isMinor(),
+                termsInfoDto.isNotMinor(),
                 termsInfoDto.service(), termsInfoDto.serviceUpdatedAt(),
                 termsInfoDto.userInfo(), termsInfoDto.userInfoUpdatedAt(),
                 termsInfoDto.locationInfo(), termsInfoDto.locationInfoUpdatedAt(),

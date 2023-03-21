@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record TermsInfoDto(
         Long id,
-        Boolean isMinor,
+        Boolean isNotMinor,
         Boolean service,
         LocalDateTime serviceUpdatedAt,
         Boolean userInfo,
@@ -19,8 +19,8 @@ public record TermsInfoDto(
         LocalDateTime updatedAt
 ) {
 
-    public static TermsInfoDto of(Long id, Boolean isMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new TermsInfoDto(id, isMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt, createdAt, updatedAt);
+    public static TermsInfoDto of(Long id, Boolean isNotMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new TermsInfoDto(id, isNotMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt, createdAt, updatedAt);
     }
 
     public static TermsInfoDto from(TermsInfo entity) {
@@ -30,7 +30,7 @@ public record TermsInfoDto(
 
         return of(
                 entity.getId(),
-                entity.getIsMinor(),
+                entity.getIsNotMinor(),
                 entity.getService(),
                 entity.getServiceUpdatedAt(),
                 entity.getUserInfo(),

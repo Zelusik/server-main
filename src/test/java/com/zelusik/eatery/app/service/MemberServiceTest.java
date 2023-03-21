@@ -67,7 +67,7 @@ class MemberServiceTest {
     void givenAgreeOfTermsInfo_whenAgreeToTerms_thenReturnTermsInfoResult() {
         // given
         long memberId = 1L;
-        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(false, true, true, true, true);
+        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, true, true, true, true);
         given(termsInfoRepository.save(any(TermsInfo.class))).willReturn(createTermsInfo());
         given(memberRepository.findById(memberId)).willReturn(Optional.of(createMember(memberId)));
 
@@ -77,7 +77,7 @@ class MemberServiceTest {
         // then
         then(termsInfoRepository).should().save(any(TermsInfo.class));
         then(memberRepository).should().findById(memberId);
-        assertThat(actualResult.isMinor()).isFalse();
+        assertThat(actualResult.isNotMinor()).isTrue();
     }
 
     @DisplayName("회원의 id(PK)가 주어지면 해당하는 회원을 조회한 후 반환한다.")

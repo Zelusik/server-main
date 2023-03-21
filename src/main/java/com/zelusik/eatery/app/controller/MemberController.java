@@ -9,6 +9,10 @@ import com.zelusik.eatery.app.service.MemberService;
 import com.zelusik.eatery.global.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +37,14 @@ public class MemberController {
             description = "<p>전체 약관에 대한 동의/비동의 결과를 제출한다.",
             security = @SecurityRequirement(name = "access-token")
     )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "201", content = @Content(schema = @Schema(implementation = TermsInfoResponse.class))),
+            @ApiResponse(description = "[1200] 필수 이용 약관이 `false`로 전달된 경우", responseCode = "422", content = @Content)
+    })
     @PostMapping("/terms")
     public ResponseEntity<TermsInfoResponse> agree(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody TermsAgreeRequest request
+            @Valid @RequestBody TermsAgreeRequest request
     ) {
         TermsInfoResponse response = TermsInfoResponse.from(memberService.agreeToTerms(userPrincipal.getMemberId(), request));
 
