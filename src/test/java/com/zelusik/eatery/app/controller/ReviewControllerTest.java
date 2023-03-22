@@ -101,4 +101,22 @@ class ReviewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true));
     }
+
+    @DisplayName("내가 작성한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
+    @Test
+    void whenSearchMyReviews_thenReturnReviews() throws Exception {
+        // given
+        long memberId = 1L;
+        given(reviewService.searchDtosByWriterId(eq(memberId), any(Pageable.class)))
+                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithMemberAndPlace())));
+
+        // when & then
+        mvc.perform(
+                        get("/api/reviews/me")
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasContent").value(true));
+    }
 }
