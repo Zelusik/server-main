@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.dto.auth;
 
+import com.zelusik.eatery.app.constant.ConstantUtil;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
@@ -87,7 +88,19 @@ public record KakaoOAuthUserInfo(
     }
 
     public MemberDto toMemberDto() {
+        String profileImageUrl = getProfileImageUrl();
+        if (profileImageUrl == null) {
+            profileImageUrl = ConstantUtil.defaultProfileImageUrl;
+        }
+
+        String thumbnailImageUrl = getThumbnailImageUrl();
+        if (thumbnailImageUrl == null) {
+            thumbnailImageUrl = ConstantUtil.defaultProfileThumbnailImageUrl;
+        }
+
         return MemberDto.of(
+                profileImageUrl,
+                thumbnailImageUrl,
                 getSocialUid(),
                 LoginType.KAKAO,
                 getEmail(),

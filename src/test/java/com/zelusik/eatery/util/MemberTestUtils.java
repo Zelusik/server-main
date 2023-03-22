@@ -1,11 +1,11 @@
 package com.zelusik.eatery.util;
 
+import com.zelusik.eatery.app.constant.ConstantUtil;
 import com.zelusik.eatery.app.constant.FoodCategory;
-import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +20,8 @@ public class MemberTestUtils {
 
     public static MemberDto createMemberDto() {
         return MemberDto.of(
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
                 LoginType.KAKAO,
                 EMAIL,
@@ -33,6 +35,8 @@ public class MemberTestUtils {
         return MemberDto.of(
                 1L,
                 null,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
                 LoginType.KAKAO,
                 EMAIL,
@@ -50,6 +54,8 @@ public class MemberTestUtils {
         return Member.of(
                 memberId,
                 null,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
                 LoginType.KAKAO,
                 EMAIL,

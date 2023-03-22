@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
-import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.TermsInfo;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;

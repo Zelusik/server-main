@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.domain.Member;
+import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
