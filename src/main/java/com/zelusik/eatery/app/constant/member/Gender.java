@@ -1,11 +1,19 @@
 package com.zelusik.eatery.app.constant.member;
 
-import com.zelusik.eatery.global.exception.place.NotAcceptableFoodCategory;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
 
+@Schema(
+        description = "<p>성별. 목록은 다음과 같습니다." +
+                "<ul>" +
+                "<li>MALE</li>" +
+                "<li>FEMALE</li>" +
+                "<li>ETC</li>" +
+                "</ul>"
+)
 @AllArgsConstructor
 @Getter
 public enum Gender {
