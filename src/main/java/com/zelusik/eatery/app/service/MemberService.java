@@ -99,6 +99,7 @@ public class MemberService {
      * @param memberId               회원 id(PK)
      * @param favoriteFoodCategories 변경하고자 하는 음식 취향 목록
      */
+    @Transactional
     public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategory> favoriteFoodCategories) {
         Member member = findEntityById(memberId);
         member.setFavoriteFoodCategories(favoriteFoodCategories);
