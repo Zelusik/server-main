@@ -9,6 +9,8 @@ import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.ReviewRepository;
+import com.zelusik.eatery.global.exception.review.ReviewDeletePermissionDeniedException;
+import com.zelusik.eatery.global.exception.review.ReviewNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -52,6 +54,17 @@ public class ReviewService {
     }
 
     /**
+     * 주어진 PK에 해당하는 리뷰를 조회합니다.
+     *
+     * @param reviewId 조회하고자 하는 리뷰의 PK
+     * @return 조회된 리뷰
+     */
+    private Review findEntityById(Long reviewId) {
+        return reviewRepository.findByIdAndDeletedAtNull(reviewId)
+                .orElseThrow(ReviewNotFoundException::new);
+    }
+
+    /**
      * 특정 가게에 대헌 리뷰 목록(Slice) 조회.
      *
      * @param placeId  리뷰를 조회할 가게의 id(PK)
@@ -62,7 +75,7 @@ public class ReviewService {
         // TODO: 현재 writer, place 정보를 사용하지 않음에도 ReviewDto가 해당 정보를 포함하고 있어 조회하게 된다. 최적화 필요.
         // => 작성자 누구인지 필요하다고 해서 작성자 정보는 유지할 예정
         // writer, place를 포함하지 않는 dto를 구현하여 적용하면 최적화 가능.
-        return reviewRepository.findByPlace_Id(placeId, pageable).map(ReviewDtoWithMember::from);
+        return reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable).map(ReviewDtoWithMember::from);
     }
 
     /**
@@ -83,6 +96,36 @@ public class ReviewService {
      * @return 조회된 리뷰 목록(slice)
      */
     public Slice<ReviewDtoWithMemberAndPlace> searchDtosByWriterId(Long writerId, Pageable pageable) {
-        return reviewRepository.findByWriter_Id(writerId, pageable).map(ReviewDtoWithMemberAndPlace::from);
+        return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable).map(ReviewDtoWithMemberAndPlace::from);
+    }
+
+    /**
+     * 리뷰를 삭제합니다.
+     *
+     * @param memberId 리뷰룰 삭제하려는 회원(로그인 회원)의 PK.
+     * @param reviewId 삭제하려는 리뷰의 PK
+     */
+    @Transactional
+    public void delete(Long memberId, Long reviewId) {
+        Member member = memberService.findEntityById(memberId);
+        Review review = findEntityById(reviewId);
+
+        validateReviewDeletePermission(member, review);
+
+        reviewFileService.deleteAll(review.getReviewFiles());
+        reviewRepository.delete(review);
+    }
+
+    /**
+     * 리뷰 삭제 권한이 있는지 검증한다.
+     *
+     * @param member 리뷰를 삭제하고자 하는 회원
+     * @param review 삭제할 리뷰
+     * @throws ReviewDeletePermissionDeniedException 리뷰를 삭제할 권한이 없는 회원인 경우
+     */
+    private void validateReviewDeletePermission(Member member, Review review) {
+        if (!review.getWriter().getId().equals(member.getId())) {
+            throw new ReviewDeletePermissionDeniedException();
+        }
     }
 }

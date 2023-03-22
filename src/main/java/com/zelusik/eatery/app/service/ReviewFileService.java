@@ -40,4 +40,14 @@ public class ReviewFileService {
         });
         reviewFileRepository.saveAll(review.getReviewFiles());
     }
+
+    /**
+     * ReviewFile들을 삭제한다.
+     *
+     * @param reviewFiles 삭제할 ReviewFile 목록
+     */
+    @Transactional
+    public void deleteAll(List<ReviewFile> reviewFiles) {
+        reviewFileRepository.deleteAll(reviewFiles);
+    }
 }
