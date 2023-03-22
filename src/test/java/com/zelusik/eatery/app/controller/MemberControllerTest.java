@@ -123,7 +123,7 @@ class MemberControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/members/me")
+                        get("/api/members")
                                 .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
@@ -141,7 +141,7 @@ class MemberControllerTest {
 
         // when & then
         mvc.perform(
-                        patch("/api/members/favorite-food")
+                        put("/api/members/favorite-food")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(csrf())

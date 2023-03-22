@@ -1,8 +1,8 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
-import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.TermsInfo;
+import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
@@ -73,6 +73,19 @@ public class MemberService {
      * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
      */
     public Member findEntityById(Long memberId) {
+        return memberRepository.findByIdAndDeletedAtNull(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
+    }
+
+    /**
+     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
+     * 삭제된 회원도 포함해서 조회한다.
+     *
+     * @param memberId 조회할 회원의 PK
+     * @return 조회한 회원 entity
+     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
+     */
+    private Member findEntityByIdWithDeleted(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
@@ -89,14 +102,34 @@ public class MemberService {
 
     /**
      * 주어진 socialUid에 해당하는 회원을 조회한 후 <code>Optional</code> 객체를 그대로 반환한다.
+     * 삭제된 회원도 포함해서 조회한다.
      *
      * @param socialUid 조회할 회원의 socialUid
      * @return 조회한 회원 dto. <code>Optional</code> 그대로 반환한다.
      */
-    public Optional<MemberDto> findOptionalDtoBySocialUid(String socialUid) {
+    public Optional<MemberDto> findOptionalDtoBySocialUidWithDeleted(String socialUid) {
         return memberRepository.findBySocialUid(socialUid).map(MemberDto::from);
     }
 
+    /**
+     * <p>재가입을 진행한다.
+     * <p>재가입이란 회원의 <code>deletedAt</code> 속성을 <code>null</code>로 변경하는 것을 의미한다.
+     *
+     * @param memberId 재가입을 할 회원의 PK
+     */
+    @Transactional
+    public void rejoin(Long memberId) {
+        Member member = findEntityByIdWithDeleted(memberId);
+        member.rejoin();
+    }
+
+    /**
+     * 회원 정보를 수정한다.
+     *
+     * @param memberId      정보를 수정할 회원의 PK
+     * @param updateRequest 수정할 정보
+     * @return 수정된 회원 dto
+     */
     @Transactional
     public MemberDto updateMember(Long memberId, MemberUpdateRequest updateRequest) {
         Member member = findEntityById(memberId);
@@ -133,5 +166,16 @@ public class MemberService {
         Member member = findEntityById(memberId);
         member.setFavoriteFoodCategories(favoriteFoodCategories);
         return MemberDto.from(member);
+    }
+
+    /**
+     * 회원을 삭제한다.
+     *
+     * @param memberId 삭제할 회원의 PK
+     */
+    @Transactional
+    public void delete(Long memberId) {
+        Member member = findEntityById(memberId);
+        memberRepository.delete(member);
     }
 }
