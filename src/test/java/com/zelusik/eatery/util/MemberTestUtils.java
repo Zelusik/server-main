@@ -32,6 +32,10 @@ public class MemberTestUtils {
     }
 
     public static MemberDto createMemberDtoWithId() {
+        return createMemberDtoWithId(1L);
+    }
+
+    public static MemberDto createMemberDtoWithId(Long memberId) {
         return MemberDto.of(
                 1L,
                 null,
