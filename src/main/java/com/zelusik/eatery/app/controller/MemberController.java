@@ -56,7 +56,7 @@ public class MemberController {
     @Operation(
             summary = "내 정보 조회",
             description = "<p>내 정보를 조회합니다.",
-            security = @SecurityRequirement(name = "access-key")
+            security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping
     public MemberResponse getMyInfo(
@@ -68,9 +68,9 @@ public class MemberController {
     @Operation(
             summary = "선호하는 음식 카테고리(음식 취향) 변경",
             description = "<p>선호하는 음식 카테고리(음식 취향)를 변경한다.",
-            security = @SecurityRequirement(name = "access-key")
+            security = @SecurityRequirement(name = "access-token")
     )
-    @PatchMapping("/favorite-food")
+    @PutMapping("/favorite-food")
     public MemberResponse updateFavoriteFoodCategories(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
