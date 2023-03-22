@@ -57,6 +57,7 @@ web-scraping.server.url: ${PROD_SCRAPING_SERVER_URL}
 logging:
   level:
     com.zelusik.eatery: info
+    org.hibernate.SQL: info
 
 spring:
   config.activate.on-profile: prod
