@@ -111,4 +111,27 @@ public class ReviewController {
                 .from(reviewService.searchDtosOrderByCreatedAt(pageRequest)
                         .map(FeedResponse::from));
     }
+
+    @Operation(
+            summary = "피드 조회",
+            description = "<p>내가 작성한 리뷰를 최신순으로 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/me")
+    public SliceResponse<ReviewResponse> searchOfMe(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(
+                    description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
+                    example = "0"
+            ) @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈). 기본값은 15입니다.",
+                    example = "15"
+            ) @RequestParam(required = false, defaultValue = "15") int size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return new SliceResponse<ReviewResponse>()
+                .from(reviewService.searchDtosByWriterId(userPrincipal.getMemberId(), pageRequest)
+                        .map(ReviewResponse::from));
+    }
 }

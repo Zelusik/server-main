@@ -74,4 +74,15 @@ public class ReviewService {
     public Slice<ReviewDtoWithMemberAndPlace> searchDtosOrderByCreatedAt(Pageable pageable) {
         return reviewRepository.findAll(pageable).map(ReviewDtoWithMemberAndPlace::from);
     }
+
+    /**
+     * 특정 회원이 작성한 리뷰 조회.
+     *
+     * @param writerId 작성자의 PK
+     * @param pageable paging, sorting 정보
+     * @return 조회된 리뷰 목록(slice)
+     */
+    public Slice<ReviewDtoWithMemberAndPlace> searchDtosByWriterId(Long writerId, Pageable pageable) {
+        return reviewRepository.findByWriter_Id(writerId, pageable).map(ReviewDtoWithMemberAndPlace::from);
+    }
 }

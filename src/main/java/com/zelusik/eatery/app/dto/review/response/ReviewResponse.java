@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.dto.review.response;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.dto.member.response.MemberResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
@@ -19,8 +20,8 @@ public class ReviewResponse {
     @Schema(description = "리뷰 id(PK)", example = "1")
     private Long id;
 
-    @Schema(description = "리뷰를 작성한 회원의 id(PK)", example = "1")
-    private Long writerId;
+    @Schema(description = "리뷰를 작성한 회원 정보")
+    private MemberResponse writer;
 
     @Schema(description = "장소 정보")
     private PlaceResponse place;
@@ -34,14 +35,14 @@ public class ReviewResponse {
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록", example = "[\"https://eatery-s3-bucket.s3.ap-northeast-2.amazonaws.com/review/0950af0e-3950-4596-bba2-4fee11e4938a.jpg\"]")
     private List<String> reviewFiles;
 
-    public static ReviewResponse of(Long id, Long writerId, PlaceResponse place, List<String> keywords, String content, List<String> reviewFiles) {
-        return new ReviewResponse(id, writerId, place, keywords, content, reviewFiles);
+    public static ReviewResponse of(Long id, MemberResponse writer, PlaceResponse place, List<String> keywords, String content, List<String> reviewFiles) {
+        return new ReviewResponse(id, writer, place, keywords, content, reviewFiles);
     }
 
     public static ReviewResponse from(ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace) {
         return new ReviewResponse(
                 reviewDtoWithMemberAndPlace.id(),
-                reviewDtoWithMemberAndPlace.writerDto().id(),
+                MemberResponse.from(reviewDtoWithMemberAndPlace.writerDto()),
                 PlaceResponse.from(reviewDtoWithMemberAndPlace.placeDto()),
                 reviewDtoWithMemberAndPlace.keywords().stream()
                         .map(ReviewKeyword::getDescription)

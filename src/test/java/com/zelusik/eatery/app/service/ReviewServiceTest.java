@@ -128,4 +128,21 @@ class ReviewServiceTest {
         then(reviewRepository).should().findByPlace_Id(placeId, pageable);
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
+
+    @DisplayName("회원의 PK가 주어지고, 해당 회원이 작성한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
+    @Test
+    void givenMemberId_whenSearchReviewsOfWriter_thenReturnReviews() {
+        // given
+        long writerId = 1L;
+        Pageable pageable = Pageable.ofSize(15);
+        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId()));
+        given(reviewRepository.findByWriter_Id(writerId, pageable)).willReturn(expectedSearchResult);
+
+        // when
+        Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.searchDtosByWriterId(writerId, pageable);
+
+        // then
+        then(reviewRepository).should().findByWriter_Id(writerId, pageable);
+        assertThat(actualSearchResult.hasContent()).isTrue();
+    }
 }
