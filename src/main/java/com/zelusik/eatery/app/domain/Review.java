@@ -30,6 +30,7 @@ public class Review extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Member writer;
 
+    @JoinColumn(name = "place_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
 
