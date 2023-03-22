@@ -58,7 +58,7 @@ public class MemberController {
             description = "<p>내 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-key")
     )
-    @GetMapping("/me")
+    @GetMapping
     public MemberResponse getMyInfo(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
