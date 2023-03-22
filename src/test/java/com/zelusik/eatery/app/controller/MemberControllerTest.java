@@ -27,8 +27,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -112,6 +111,24 @@ class MemberControllerTest {
                 )
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.code").value(1200));
+    }
+
+    @DisplayName("내 정보를 조회하면, 회원 정보를 응답한다.")
+    @Test
+    void given_whenGetMyInfo_thenReturnMemberInfo() throws Exception {
+        // given
+        long memberId = 1L;
+        given(memberService.findDtoById(memberId))
+                .willReturn(MemberTestUtils.createMemberDtoWithId(memberId));
+
+        // when & then
+        mvc.perform(
+                        get("/api/members/me")
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(memberId));
     }
 
     @DisplayName("선호 음식 카테고리 목록이 주어지고, 이를 업데이트하면, 수정된 멤버 정보가 반환된다.")

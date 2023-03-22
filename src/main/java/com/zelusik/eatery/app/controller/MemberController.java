@@ -54,6 +54,18 @@ public class MemberController {
     }
 
     @Operation(
+            summary = "내 정보 조회",
+            description = "<p>내 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "access-key")
+    )
+    @GetMapping("/me")
+    public MemberResponse getMyInfo(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        return MemberResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
+    }
+
+    @Operation(
             summary = "선호하는 음식 카테고리(음식 취향) 변경",
             description = "<p>선호하는 음식 카테고리(음식 취향)를 변경한다.",
             security = @SecurityRequirement(name = "access-key")
