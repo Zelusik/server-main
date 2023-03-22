@@ -113,7 +113,7 @@ public class ReviewController {
     }
 
     @Operation(
-            summary = "피드 조회",
+            summary = "내가 작성한 리뷰 조회",
             description = "<p>내가 작성한 리뷰를 최신순으로 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
