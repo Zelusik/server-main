@@ -3,7 +3,9 @@ package com.zelusik.eatery.app.service;
 import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.TermsInfo;
+import com.zelusik.eatery.app.domain.member.ProfileImage;
 import com.zelusik.eatery.app.dto.member.MemberDto;
+import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.repository.MemberRepository;
@@ -12,6 +14,7 @@ import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +25,7 @@ import java.util.Optional;
 @Service
 public class MemberService {
 
+    private final ProfileImageService profileImageService;
     private final MemberRepository memberRepository;
     private final TermsInfoRepository termsInfoRepository;
 
@@ -91,6 +95,31 @@ public class MemberService {
      */
     public Optional<MemberDto> findOptionalDtoBySocialUid(String socialUid) {
         return memberRepository.findBySocialUid(socialUid).map(MemberDto::from);
+    }
+
+    @Transactional
+    public MemberDto updateMember(Long memberId, MemberUpdateRequest updateRequest) {
+        Member member = findEntityById(memberId);
+
+        MultipartFile profileImageFile = updateRequest.getProfileImage();
+        if (profileImageFile == null) {
+            member.update(
+                    updateRequest.getNickname(),
+                    updateRequest.getBirthDay(),
+                    updateRequest.getGender()
+            );
+        } else {
+            ProfileImage profileImage = profileImageService.upload(member, profileImageFile);
+            member.update(
+                    profileImage.getUrl(),
+                    profileImage.getUrl(),
+                    updateRequest.getNickname(),
+                    updateRequest.getBirthDay(),
+                    updateRequest.getGender()
+            );
+        }
+
+        return MemberDto.from(member);
     }
 
     /**

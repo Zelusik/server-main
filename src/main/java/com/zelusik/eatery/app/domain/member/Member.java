@@ -10,6 +10,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,9 +30,11 @@ public class Member extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private TermsInfo termsInfo;
 
+    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private String profileImageUrl;
 
+    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private String profileThumbnailImageUrl;
 
@@ -45,11 +48,16 @@ public class Member extends BaseTimeEntity {
     @Column(unique = true)
     private String email;
 
+    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private String nickname;
 
+    @Setter(AccessLevel.PRIVATE)
+    private LocalDate birthDay;
+
     private Integer ageRange;
 
+    @Setter(AccessLevel.PRIVATE)
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -60,10 +68,10 @@ public class Member extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     public static Member of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
-        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, ageRange, gender, null, null, null, null);
+        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, null, ageRange, gender, null, null, null, null);
     }
 
-    public static Member of(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public static Member of(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         return Member.builder()
                 .id(id)
                 .termsInfo(termsInfo)
@@ -74,6 +82,7 @@ public class Member extends BaseTimeEntity {
                 .email(email)
                 .nickname(nickname)
                 .ageRange(ageRange)
+                .birthDay(birthDay)
                 .gender(gender)
                 .favoriteFoodCategories(favoriteFoodCategories)
                 .createdAt(createdAt)
@@ -82,8 +91,22 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
+    public void update(String profileImageUrl, String profileThumbnailImageUrl, String nickname, LocalDate birthDay, Gender gender) {
+        this.setProfileImageUrl(profileImageUrl);
+        this.setProfileThumbnailImageUrl(profileThumbnailImageUrl);
+        this.setNickname(nickname);
+        this.setBirthDay(birthDay);
+        this.setGender(gender);
+    }
+
+    public void update(String nickname, LocalDate birthDay, Gender gender) {
+        this.setNickname(nickname);
+        this.setBirthDay(birthDay);
+        this.setGender(gender);
+    }
+
     @Builder(access = AccessLevel.PRIVATE)
-    private Member(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Member(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.termsInfo = termsInfo;
@@ -93,6 +116,7 @@ public class Member extends BaseTimeEntity {
         this.loginType = loginType;
         this.email = email;
         this.nickname = nickname;
+        this.birthDay = birthDay;
         this.ageRange = ageRange;
         this.gender = gender;
         this.favoriteFoodCategories = favoriteFoodCategories;
