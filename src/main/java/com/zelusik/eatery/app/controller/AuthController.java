@@ -42,7 +42,8 @@ public class AuthController {
             summary = "로그인",
             description = "<p>Kakao에서 전달받은 access token을 request header에 담아 로그인합니다." +
                     "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다." +
-                    "<p>Access token의 만료기한은 12시간, refresh token의 만료기한은 1달입니다." +
+                    "<p>Access token의 만료기한은 하루, refresh token의 만료기한은 1달입니다." +
+                    "<p>이전에 탈퇴했던 회원이고 DB에서 완전히 삭제되지 않은 경우, 재가입을 진행합니다." +
                     "<p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다."
     )
     @ApiResponses({
@@ -53,8 +54,12 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody KakaoLoginRequest request) {
         KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
 
-        MemberDto memberDto = memberService.findOptionalDtoBySocialUid(userInfo.getSocialUid())
+        MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
+
+        if (memberDto.deletedAt() != null) {
+            memberService.rejoin(memberDto.id());
+        }
 
         TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.KAKAO);
 

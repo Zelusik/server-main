@@ -101,4 +101,14 @@ public class MemberController {
                 .toList();
         return MemberResponse.from(memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), favoriteFoodCategories));
     }
+
+    @Operation(
+            summary = "회원 탈퇴",
+            description = "<p>회원 탈퇴를 진행한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @DeleteMapping
+    public void delete(@Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        memberService.delete(userPrincipal.getMemberId());
+    }
 }

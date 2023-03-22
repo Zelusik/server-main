@@ -69,14 +69,14 @@ class MemberServiceTest {
         long memberId = 1L;
         TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, true, true, true, true);
         given(termsInfoRepository.save(any(TermsInfo.class))).willReturn(createTermsInfo());
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(createMember(memberId)));
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(createMember(memberId)));
 
         // when
         TermsInfoDto actualResult = sut.agreeToTerms(memberId, termsAgreeRequest);
 
         // then
         then(termsInfoRepository).should().save(any(TermsInfo.class));
-        then(memberRepository).should().findById(memberId);
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
         assertThat(actualResult.isNotMinor()).isTrue();
     }
 
@@ -86,13 +86,13 @@ class MemberServiceTest {
         // given
         Long memberId = 1L;
         Member expected = createMember(memberId);
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(expected));
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(expected));
 
         // when
         MemberDto actual = sut.findDtoById(memberId);
 
         // then
-        then(memberRepository).should().findById(memberId);
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
         assertThat(actual.id()).isEqualTo(expected.getId());
     }
 
@@ -101,13 +101,13 @@ class MemberServiceTest {
     void givenNonExistentMemberId_whenFindMember_thenThrowException() {
         // given
         Long memberId = 10L;
-        given(memberRepository.findById(memberId)).willReturn(Optional.empty());
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.empty());
 
         // when
         Throwable throwable = catchThrowable(() -> sut.findDtoById(memberId));
 
         // then
-        then(memberRepository).should().findById(memberId);
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
         assertThat(throwable).isInstanceOf(MemberIdNotFoundException.class);
     }
 
@@ -120,7 +120,7 @@ class MemberServiceTest {
         given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.of(expected));
 
         // when
-        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUid(socialUid);
+        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUidWithDeleted(socialUid);
 
         // then
         then(memberRepository).should().findBySocialUid(socialUid);
@@ -135,7 +135,7 @@ class MemberServiceTest {
         given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.empty());
 
         // when
-        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUid(socialUid);
+        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUidWithDeleted(socialUid);
 
         // then
         then(memberRepository).should().findBySocialUid(socialUid);
@@ -149,13 +149,13 @@ class MemberServiceTest {
         long memberId = 1L;
         Member findMember = createMember(memberId);
         List<FoodCategory> favoriteFoodCategories = List.of(KOREAN, WESTERN, DESERT);
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(findMember));
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
 
         // when
         MemberDto updatedMemberDto = sut.updateFavoriteFoodCategories(memberId, favoriteFoodCategories);
 
         // then
-        then(memberRepository).should().findById(memberId);
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
         assertThat(updatedMemberDto.favoriteFoodCategories()).contains(KOREAN, WESTERN, DESERT);
     }
 }

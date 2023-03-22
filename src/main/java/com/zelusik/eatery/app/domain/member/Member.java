@@ -65,6 +65,7 @@ public class Member extends BaseTimeEntity {
     @Convert(converter = FoodCategoryConverter.class)
     private List<FoodCategory> favoriteFoodCategories;
 
+    @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
     public static Member of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
@@ -103,6 +104,10 @@ public class Member extends BaseTimeEntity {
         this.setNickname(nickname);
         this.setBirthDay(birthDay);
         this.setGender(gender);
+    }
+
+    public void rejoin() {
+        this.setDeletedAt(null);
     }
 
     @Builder(access = AccessLevel.PRIVATE)

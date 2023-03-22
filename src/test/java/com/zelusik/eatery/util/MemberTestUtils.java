@@ -7,6 +7,7 @@ import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class MemberTestUtils {
                 LoginType.KAKAO,
                 EMAIL,
                 NICKNAME,
+                LocalDate.of(1998, 1, 5),
                 AGE_RANGE,
                 GENDER,
                 List.of(FoodCategory.KOREAN),
@@ -64,6 +66,7 @@ public class MemberTestUtils {
                 LoginType.KAKAO,
                 EMAIL,
                 NICKNAME,
+                LocalDate.of(1998, 1, 5),
                 AGE_RANGE,
                 GENDER,
                 List.of(FoodCategory.KOREAN),
