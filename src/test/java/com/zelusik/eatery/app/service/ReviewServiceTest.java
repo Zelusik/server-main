@@ -118,14 +118,14 @@ class ReviewServiceTest {
         long placeId = 1L;
         Pageable pageable = Pageable.ofSize(15);
         SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId()));
-        given(reviewRepository.findByPlace_Id(placeId, pageable))
+        given(reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable))
                 .willReturn(expectedSearchResult);
 
         // when
         Slice<ReviewDtoWithMember> actualSearchResult = sut.searchDtosByPlaceId(placeId, pageable);
 
         // then
-        then(reviewRepository).should().findByPlace_Id(placeId, pageable);
+        then(reviewRepository).should().findByPlace_IdAndDeletedAtNull(placeId, pageable);
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
 
@@ -136,13 +136,13 @@ class ReviewServiceTest {
         long writerId = 1L;
         Pageable pageable = Pageable.ofSize(15);
         SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId()));
-        given(reviewRepository.findByWriter_Id(writerId, pageable)).willReturn(expectedSearchResult);
+        given(reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)).willReturn(expectedSearchResult);
 
         // when
         Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.searchDtosByWriterId(writerId, pageable);
 
         // then
-        then(reviewRepository).should().findByWriter_Id(writerId, pageable);
+        then(reviewRepository).should().findByWriter_IdAndDeletedAtNull(writerId, pageable);
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
 }

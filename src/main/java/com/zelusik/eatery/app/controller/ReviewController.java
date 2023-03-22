@@ -134,4 +134,24 @@ public class ReviewController {
                 .from(reviewService.searchDtosByWriterId(userPrincipal.getMemberId(), pageRequest)
                         .map(ReviewResponse::from));
     }
+
+    @Operation(
+            summary = "리뷰 삭제",
+            description = "<p>리뷰를 삭제합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema)),
+            @ApiResponse(description = "리뷰 삭제 권한이 없는 경우", responseCode = "403", content = @Content)
+    })
+    @DeleteMapping("/{reviewId}")
+    public void delete(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(
+                    description = "삭제할 리뷰의 PK",
+                    example = "1"
+            ) @PathVariable Long reviewId
+    ) {
+        reviewService.delete(userPrincipal.getMemberId(), reviewId);
+    }
 }
