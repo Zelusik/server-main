@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -21,8 +23,8 @@ public class ReviewCreateRequest {
     private PlaceCreateRequest place;
 
     @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
-    @NotNull
-    private List<String> keywords;
+    @NotEmpty
+    private List<@NotBlank String> keywords;
 
     @Schema(description = "자동으로 생성된 내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 씹을 때마다...")
     private String autoCreatedContent;
