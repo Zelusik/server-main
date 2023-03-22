@@ -106,7 +106,7 @@ public record KakaoOAuthUserInfo(
                 getEmail(),
                 getNickname(),
                 getAgeRange(),
-                getGender()
+                getGender() != null ? getGender() : Gender.ETC
         );
     }
 
