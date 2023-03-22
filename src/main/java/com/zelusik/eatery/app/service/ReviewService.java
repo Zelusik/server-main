@@ -1,13 +1,17 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.domain.member.Member;
+import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.app.domain.Review;
+import com.zelusik.eatery.app.domain.member.Member;
+import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.app.repository.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.app.repository.ReviewRepository;
 import com.zelusik.eatery.global.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.global.exception.review.ReviewNotFoundException;

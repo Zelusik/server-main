@@ -1,6 +1,8 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.dto.SliceResponse;
+import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
+import com.zelusik.eatery.app.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.dto.review.response.FeedResponse;
 import com.zelusik.eatery.app.dto.review.response.ReviewListElemResponse;

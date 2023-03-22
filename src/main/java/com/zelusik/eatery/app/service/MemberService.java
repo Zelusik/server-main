@@ -1,13 +1,17 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
+import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.app.domain.TermsInfo;
 import com.zelusik.eatery.app.domain.member.Member;
+import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
+import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
+import com.zelusik.eatery.app.repository.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.app.repository.MemberRepository;
 import com.zelusik.eatery.app.repository.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
@@ -28,6 +32,7 @@ public class MemberService {
     private final ProfileImageService profileImageService;
     private final MemberRepository memberRepository;
     private final TermsInfoRepository termsInfoRepository;
+    private final MemberDeletionSurveyRepository memberDeletionSurveyRepository;
 
     /**
      * 회원 정보를 전달받아 회원가입을 진행한다.
@@ -174,8 +179,14 @@ public class MemberService {
      * @param memberId 삭제할 회원의 PK
      */
     @Transactional
-    public void delete(Long memberId) {
+    public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
         Member member = findEntityById(memberId);
         memberRepository.delete(member);
+
+        return MemberDeletionSurveyDto.from(
+                memberDeletionSurveyRepository.save(
+                        MemberDeletionSurvey.of(member, surveyType)
+                )
+        );
     }
 }
