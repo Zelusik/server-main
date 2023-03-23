@@ -6,6 +6,7 @@ import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.bookmark.BookmarkDto;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.global.exception.bookmark.AlreadyMarkedPlaceException;
+import com.zelusik.eatery.global.exception.bookmark.BookmarkNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,25 @@ public class BookmarkService {
         return BookmarkDto.from(bookmark);
     }
 
+    /**
+     * 장소 북마크 취소
+     *
+     * @param memberId 북마크를 취소하고자 하는 회원(로그인 회원)의 PK
+     * @param placeId  북마크를 취소하고자 하는 장소의 PK
+     */
+    @Transactional
+    public void delete(Long memberId, Long placeId) {
+        Bookmark bookmark = bookmarkRepository.findByMember_IdAndPlace_Id(memberId, placeId)
+                .orElseThrow(BookmarkNotFoundException::new);
+        bookmarkRepository.delete(bookmark);
+    }
+
+    /**
+     * 이미 북마크에 저장한 장소인지 검증한다.
+     *
+     * @param memberId 북마크에 저장하고자 하는 회원(로그인 회원)의 PK
+     * @param placeId  북마크에 저장하고자 하는 장소의 PK
+     */
     private void validateNotAlreadyMarked(Long memberId, Long placeId) {
         if (bookmarkRepository.existsByMember_IdAndPlace_Id(memberId, placeId)) {
             throw new AlreadyMarkedPlaceException();
