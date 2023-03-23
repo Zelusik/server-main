@@ -72,7 +72,7 @@ public class PlaceResponse {
                 placeDto.openingHoursDtos().stream()
                         .map(OpeningHoursResponse::from)
                         .toList(),
-                false
+                placeDto.isMarked()
         );
     }
 }

@@ -1,18 +1,15 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.app.domain.Review;
 import com.zelusik.eatery.app.domain.member.Member;
-import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.app.repository.MemberDeletionSurveyRepository;
-import com.zelusik.eatery.app.repository.ReviewRepository;
+import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.app.repository.review.ReviewRepository;
 import com.zelusik.eatery.global.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.global.exception.review.ReviewNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +30,7 @@ public class ReviewService {
     private final MemberService memberService;
     private final PlaceService placeService;
     private final ReviewRepository reviewRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     /**
      * 리뷰를 생성합니다.
@@ -49,12 +47,13 @@ public class ReviewService {
                 .orElseGet(() -> placeService.create(placeCreateRequest));
 
         Member writer = memberService.findEntityById(writerId);
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
 
-        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place));
+        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place, markedPlaceIdList));
         Review review = reviewRepository.save(reviewDtoWithMemberAndPlace.toEntity(writer, place));
         reviewFileService.upload(review, files);
 
-        return ReviewDtoWithMemberAndPlace.from(review);
+        return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);
     }
 
     /**
@@ -76,9 +75,6 @@ public class ReviewService {
      * @return 조회된 리뷰 목록(Slice)
      */
     public Slice<ReviewDtoWithMember> searchDtosByPlaceId(Long placeId, Pageable pageable) {
-        // TODO: 현재 writer, place 정보를 사용하지 않음에도 ReviewDto가 해당 정보를 포함하고 있어 조회하게 된다. 최적화 필요.
-        // => 작성자 누구인지 필요하다고 해서 작성자 정보는 유지할 예정
-        // writer, place를 포함하지 않는 dto를 구현하여 적용하면 최적화 가능.
         return reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable).map(ReviewDtoWithMember::from);
     }
 
@@ -88,8 +84,11 @@ public class ReviewService {
      * @param pageable paging 정보
      * @return 조회된 리뷰 목록(slice)
      */
-    public Slice<ReviewDtoWithMemberAndPlace> searchDtosOrderByCreatedAt(Pageable pageable) {
-        return reviewRepository.findAll(pageable).map(ReviewDtoWithMemberAndPlace::from);
+    public Slice<ReviewDtoWithMemberAndPlace> searchDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
+
+        return reviewRepository.findAll(pageable)
+                .map(review -> ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList));
     }
 
     /**
@@ -100,7 +99,10 @@ public class ReviewService {
      * @return 조회된 리뷰 목록(slice)
      */
     public Slice<ReviewDtoWithMemberAndPlace> searchDtosByWriterId(Long writerId, Pageable pageable) {
-        return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable).map(ReviewDtoWithMemberAndPlace::from);
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
+
+        return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)
+                .map(review -> ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList));
     }
 
     /**

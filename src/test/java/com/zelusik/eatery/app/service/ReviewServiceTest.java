@@ -6,7 +6,8 @@ import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.app.repository.ReviewRepository;
+import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.app.repository.review.ReviewRepository;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
@@ -43,6 +44,8 @@ class ReviewServiceTest {
     private PlaceService placeService;
     @Mock
     private ReviewRepository reviewRepository;
+    @Mock
+    private BookmarkRepository bookmarkRepository;
 
     @DisplayName("생성할 리뷰와 존재하는 장소 정보가 주어지고, 리뷰를 생성하면, 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
     @Test
@@ -80,9 +83,6 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
-        String homepageUrl = "homepage";
-        String openingHours = "매일 00:00 ~ 24:00";
-        String closingHours = null;
         Place expectedPlace = PlaceTestUtils.createPlace();
         Member expectedMember = MemberTestUtils.createMember(writerId);
         given(placeService.findOptEntityByKakaoPid(kakaoPid))
@@ -94,6 +94,7 @@ class ReviewServiceTest {
         given(reviewRepository.save(any(Review.class)))
                 .willReturn(ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace));
         willDoNothing().given(reviewFileService).upload(any(Review.class), any());
+        given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
 
         // when
         ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
@@ -108,6 +109,7 @@ class ReviewServiceTest {
         then(memberService).should().findEntityById(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewFileService).should().upload(any(Review.class), any());
+        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
     }
 
@@ -137,12 +139,14 @@ class ReviewServiceTest {
         Pageable pageable = Pageable.ofSize(15);
         SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId()));
         given(reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)).willReturn(expectedSearchResult);
+        given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
 
         // when
         Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.searchDtosByWriterId(writerId, pageable);
 
         // then
         then(reviewRepository).should().findByWriter_IdAndDeletedAtNull(writerId, pageable);
+        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
 }

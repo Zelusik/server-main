@@ -3,8 +3,6 @@ package com.zelusik.eatery.app.repository.place;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.Point;
-import com.zelusik.eatery.app.repository.OpeningHoursRepository;
-import com.zelusik.eatery.app.repository.PlaceRepository;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

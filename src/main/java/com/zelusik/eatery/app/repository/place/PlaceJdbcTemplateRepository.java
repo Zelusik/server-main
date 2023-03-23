@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.repository;
+package com.zelusik.eatery.app.repository.place;
 
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;

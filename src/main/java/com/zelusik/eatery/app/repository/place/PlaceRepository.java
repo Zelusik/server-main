@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.repository;
+package com.zelusik.eatery.app.repository.place;
 
 import com.zelusik.eatery.app.domain.place.Place;
 import org.springframework.data.jpa.repository.JpaRepository;

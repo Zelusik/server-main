@@ -8,8 +8,9 @@ import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
-import com.zelusik.eatery.app.repository.OpeningHoursRepository;
-import com.zelusik.eatery.app.repository.PlaceRepository;
+import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.app.repository.place.OpeningHoursRepository;
+import com.zelusik.eatery.app.repository.place.PlaceRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
@@ -33,6 +34,7 @@ public class PlaceService {
     private final WebScrapingService webScrapingService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     /**
      * 장소 정보를 받아 장소를 저장한다.
@@ -54,14 +56,40 @@ public class PlaceService {
     }
 
     /**
+     * 장소 정보를 받아 장소를 저장한다.
+     *
+     * @param placeCreateRequest 장소 정보가 담긴 dto.
+     * @return 저장된 장소 dto.
+     * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
+     */
+    @Transactional
+    public PlaceDto createAndReturnDto(Long memberId, PlaceCreateRequest placeCreateRequest) {
+        Place place = create(placeCreateRequest);
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
+        return PlaceDto.from(place, markedPlaceIdList);
+    }
+
+    /**
+     * placeId에 해당하는 장소를 조회한 후 반환한다.
+     *
+     * @param placeId 조회하고자 하는 장소의 PK
+     * @return 조회한 장소 entity
+     */
+    public Place findEntityById(Long placeId) {
+        return placeRepository.findById(placeId)
+                .orElseThrow(PlaceNotFoundException::new);
+    }
+
+    /**
      * placeId에 해당하는 장소를 조회한 후 반환한다.
      *
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceDto findDtoById(Long placeId) {
-        return PlaceDto.from(placeRepository.findById(placeId)
-                .orElseThrow(PlaceNotFoundException::new));
+    public PlaceDto findDtoById(Long memberId, Long placeId) {
+        Place place = findEntityById(placeId);
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
+        return PlaceDto.from(place, markedPlaceIdList);
     }
 
     /**
@@ -76,6 +104,8 @@ public class PlaceService {
 
     /**
      * 중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
+     * 처음에는 3km 이내에 있는 장소만 조회한 후,
+     * 조회 결과가 없다면 10km 이내로 범위를 늘려서 조회한다.
      *
      * @param daysOfWeek 검색할 요일 목록
      * @param keyword    검색 키워드
@@ -84,12 +114,14 @@ public class PlaceService {
      * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findDtosNearBy(List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
+    public Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
         Slice<Place> places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 3, pageable);
         if (!places.hasContent()) {
             places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 10, pageable);
         }
-        return places.map(PlaceDto::from);
+
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
+        return places.map(place -> PlaceDto.from(place, markedPlaceIdList));
     }
 
     /**

@@ -29,6 +29,7 @@ import java.util.List;
 
 import static com.zelusik.eatery.app.constant.place.DayOfWeek.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -63,10 +64,9 @@ class PlaceControllerTest {
     @Test
     void givenPlaceInfo_whenSaving_thenSavePlace() throws Exception {
         // given
-        long placeId = 1L;
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
-        given(placeService.create(any(PlaceCreateRequest.class)))
-                .willReturn(PlaceTestUtils.createPlace(placeId));
+        given(placeService.createAndReturnDto(eq(1L), any(PlaceCreateRequest.class)))
+                .willReturn(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours());
 
         // when & then
         mvc.perform(
@@ -77,7 +77,7 @@ class PlaceControllerTest {
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(placeId));
+                .andExpect(jsonPath("$.id").exists());
     }
 
     @DisplayName("가게의 id(PK)가 주어지고, 존재하는 장소를 찾는다면, 장소 정보를 반환한다.")
@@ -85,7 +85,8 @@ class PlaceControllerTest {
     void givenPlaceId_whenFindExistentPlace_thenReturnPlace() throws Exception {
         // given
         long placeId = 1L;
-        given(placeService.findDtoById(placeId))
+        long memberId = 1L;
+        given(placeService.findDtoById(memberId, placeId))
                 .willReturn(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours());
 
         // when & then
@@ -106,7 +107,7 @@ class PlaceControllerTest {
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours()), pageable, false);
-        given(placeService.findDtosNearBy(List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
+        given(placeService.findDtosNearBy(1L, List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(

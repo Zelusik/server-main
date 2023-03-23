@@ -47,6 +47,7 @@ public class PlaceTestUtils {
                         createOpeningHoursDto(1L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
                         createOpeningHoursDto(1L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
                 ),
+                false,
                 null,
                 null,
                 null

@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.repository;
+package com.zelusik.eatery.app.repository.review;
 
 import com.zelusik.eatery.app.domain.Review;
 import org.springframework.data.domain.Pageable;
