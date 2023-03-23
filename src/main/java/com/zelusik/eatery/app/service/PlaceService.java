@@ -57,11 +57,21 @@ public class PlaceService {
      * placeId에 해당하는 장소를 조회한 후 반환한다.
      *
      * @param placeId 조회하고자 하는 장소의 PK
+     * @return 조회한 장소 entity
+     */
+    public Place findEntityById(Long placeId) {
+        return placeRepository.findById(placeId)
+                .orElseThrow(PlaceNotFoundException::new);
+    }
+
+    /**
+     * placeId에 해당하는 장소를 조회한 후 반환한다.
+     *
+     * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
     public PlaceDto findDtoById(Long placeId) {
-        return PlaceDto.from(placeRepository.findById(placeId)
-                .orElseThrow(PlaceNotFoundException::new));
+        return PlaceDto.from(findEntityById(placeId));
     }
 
     /**
