@@ -1,4 +1,4 @@
-package com.zelusik.eatery.app.repository;
+package com.zelusik.eatery.app.repository.review;
 
 import com.zelusik.eatery.app.domain.ReviewFile;
 import org.springframework.data.jpa.repository.JpaRepository;

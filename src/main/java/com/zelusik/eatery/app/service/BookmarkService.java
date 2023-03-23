@@ -4,7 +4,7 @@ import com.zelusik.eatery.app.domain.Bookmark;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.bookmark.BookmarkDto;
-import com.zelusik.eatery.app.repository.BookmarkRepository;
+import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

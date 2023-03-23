@@ -1,9 +1,8 @@
-package com.zelusik.eatery.app.repository;
+package com.zelusik.eatery.app.repository.place;
 
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;

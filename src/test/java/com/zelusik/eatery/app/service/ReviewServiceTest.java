@@ -6,7 +6,7 @@ import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.app.repository.ReviewRepository;
+import com.zelusik.eatery.app.repository.review.ReviewRepository;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
