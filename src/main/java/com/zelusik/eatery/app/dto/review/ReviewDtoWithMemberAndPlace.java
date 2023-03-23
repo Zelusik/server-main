@@ -31,11 +31,11 @@ public record ReviewDtoWithMemberAndPlace(
         return new ReviewDtoWithMemberAndPlace(id, writerDto, place, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
     }
 
-    public static ReviewDtoWithMemberAndPlace from(Review entity) {
+    public static ReviewDtoWithMemberAndPlace from(Review entity, List<Long> markedPlaceIdList) {
         return of(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
-                PlaceDto.from(entity.getPlace()),
+                PlaceDto.from(entity.getPlace(), markedPlaceIdList),
                 entity.getKeywords(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),

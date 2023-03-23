@@ -7,6 +7,7 @@ import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
+import com.zelusik.eatery.global.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,8 +45,11 @@ public class PlaceController {
             @ApiResponse(description = "[3000] 상세 페이지에서 읽어온 가게 영업시간이 처리할 수 없는 형태일 경우.", responseCode = "500", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<PlaceResponse> save(@Valid @RequestBody PlaceCreateRequest request) {
-        PlaceResponse response = PlaceResponse.from(placeService.createAndReturnDto(request));
+    public ResponseEntity<PlaceResponse> save(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Valid @RequestBody PlaceCreateRequest request
+    ) {
+        PlaceResponse response = PlaceResponse.from(placeService.createAndReturnDto(userPrincipal.getMemberId(), request));
 
         return ResponseEntity
                 .created(URI.create("/api/places/" + response.getId()))
@@ -61,8 +66,11 @@ public class PlaceController {
             @ApiResponse(description = "[3001] 찾고자 하는 가게가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping("/{placeId}")
-    public PlaceResponse find(@PathVariable Long placeId) {
-        return PlaceResponse.from(placeService.findDtoById(placeId));
+    public PlaceResponse find(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long placeId
+    ) {
+        return PlaceResponse.from(placeService.findDtoById(userPrincipal.getMemberId(), placeId));
     }
 
     @Operation(
@@ -75,6 +83,7 @@ public class PlaceController {
     )
     @GetMapping("/search")
     public SliceResponse<PlaceResponse> searchNearBy(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
                     example = "월,화,수"
@@ -102,6 +111,7 @@ public class PlaceController {
     ) {
         return new SliceResponse<PlaceResponse>()
                 .from(placeService.findDtosNearBy(
+                        userPrincipal.getMemberId(),
                         daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
                         keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
                         lat, lng,

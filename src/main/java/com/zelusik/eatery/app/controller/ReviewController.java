@@ -110,7 +110,7 @@ public class ReviewController {
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return new SliceResponse<FeedResponse>()
-                .from(reviewService.searchDtosOrderByCreatedAt(pageRequest)
+                .from(reviewService.searchDtosOrderByCreatedAt(userPrincipal.getMemberId(), pageRequest)
                         .map(FeedResponse::from));
     }
 

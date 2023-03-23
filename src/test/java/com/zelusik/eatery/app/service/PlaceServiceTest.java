@@ -7,6 +7,7 @@ import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.place.PlaceRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
@@ -55,6 +56,8 @@ class PlaceServiceTest {
     private PlaceRepository placeRepository;
     @Mock
     private OpeningHoursRepository openingHoursRepository;
+    @Mock
+    private BookmarkRepository bookmarkRepository;
 
     @DisplayName("'매일'이 적힌 영업시간이 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
     @MethodSource("openingHoursEveryDaysExamples")
@@ -223,13 +226,16 @@ class PlaceServiceTest {
     void givenId_whenFindExistentPlace_thenReturnPlaceDto() {
         // given
         long placeId = 1L;
+        long memberId = 2L;
         given(placeRepository.findById(placeId)).willReturn(Optional.of(PlaceTestUtils.createPlace()));
+        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
 
         // when
-        PlaceDto findDto = sut.findDtoById(placeId);
+        PlaceDto findDto = sut.findDtoById(memberId, placeId);
 
         // then
         then(placeRepository).should().findById(placeId);
+        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
         assertThat(findDto.id()).isEqualTo(placeId);
     }
 
@@ -241,10 +247,11 @@ class PlaceServiceTest {
         given(placeRepository.findById(placeId)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findDtoById(placeId));
+        Throwable t = catchThrowable(() -> sut.findDtoById(1L, placeId));
 
         // then
         then(placeRepository).should().findById(placeId);
+        then(placeRepository).shouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(PlaceNotFoundException.class);
     }
 
@@ -283,18 +290,21 @@ class PlaceServiceTest {
     @Test
     void givenPlaces_whenFindNearBy_thenReturnPlaceSliceSortedByDistance() {
         // given
+        long memberId = 1L;
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<Place> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
         given(placeRepository.findNearBy(null, null, lat, lng, 3, pageable)).willReturn(expectedResult);
+        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(null, null, lat, lng, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
         then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);
         then(placeRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).id()).isEqualTo(expectedResult.getContent().get(0).getId());
     }
@@ -303,6 +313,7 @@ class PlaceServiceTest {
     @Test
     void givenPlaces3kmAwayAndWithin10km_whenFindNearBy_thenReturnPlaces() {
         // given
+        long memberId = 1L;
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
@@ -310,13 +321,15 @@ class PlaceServiceTest {
         SliceImpl<Place> expectedResultWithin10km = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
         given(placeRepository.findNearBy(null, null, lat, lng, 3, pageable)).willReturn(emptyResult);
         given(placeRepository.findNearBy(null, null, lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
+        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(null, null, lat, lng, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
         then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);
         then(placeRepository).should().findNearBy(null, null, lat, lng, 10, pageable);
+        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
         assertThat(actualResult.getNumberOfElements()).isNotZero();
     }
 
