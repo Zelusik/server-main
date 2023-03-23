@@ -33,7 +33,7 @@ public class BookmarkController {
     )
     @ApiResponses({
             @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = BookmarkResponse.class))),
-            @ApiResponse(description = "이미 저장한 장소를 다시 북마크에 저장하고자 하는 경우", responseCode = "409", content = @Content)
+            @ApiResponse(description = "[4300] 이미 저장한 장소를 다시 북마크에 저장하고자 하는 경우", responseCode = "409", content = @Content)
     })
     @PostMapping
     public ResponseEntity<BookmarkResponse> mark(
@@ -57,7 +57,7 @@ public class BookmarkController {
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content),
-            @ApiResponse(description = "북마크에 저장하지 않은 장소인 경우.", responseCode = "404", content = @Content)
+            @ApiResponse(description = "[4301] 북마크에 저장하지 않은 장소인 경우.", responseCode = "404", content = @Content)
     })
     @DeleteMapping
     public void delete(
