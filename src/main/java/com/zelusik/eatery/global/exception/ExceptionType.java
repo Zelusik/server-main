@@ -8,6 +8,7 @@ import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.bookmark.AlreadyMarkedPlaceException;
+import com.zelusik.eatery.global.exception.bookmark.BookmarkNotFoundException;
 import com.zelusik.eatery.global.exception.curation.CurationNotFoundException;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.global.exception.kakao.KakaoTokenValidateException;
@@ -138,6 +139,7 @@ public enum ExceptionType {
      * 북마크({@link Bookmark} 관련 예외
      */
     ALREADY_MARKED_PLACE(4300, "이미 저장한 장소입니다.", AlreadyMarkedPlaceException.class),
+    BOOKMARK_NOT_FOUND(4301, "북마크 저장 이력을 찾을 수 없습니다", BookmarkNotFoundException.class),
 
     /**
      * Kakao server 관련 예외
