@@ -1,6 +1,6 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.place.Place;
@@ -30,7 +30,7 @@ public class ReviewTestUtils {
                 1L,
                 MemberTestUtils.createMemberDtoWithId(),
                 PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours(),
-                List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
+                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
                 List.of(ReviewFileDto.of(
@@ -53,7 +53,7 @@ public class ReviewTestUtils {
         return ReviewDtoWithMember.of(
                 1L,
                 MemberTestUtils.createMemberDtoWithId(),
-                List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
+                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
                 List.of(ReviewFileDto.of(
@@ -83,7 +83,7 @@ public class ReviewTestUtils {
         Review review = Review.of(
                 member,
                 place,
-                List.of(ReviewKeyword.NOISY, ReviewKeyword.FRESH),
+                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출한 내용"
         );

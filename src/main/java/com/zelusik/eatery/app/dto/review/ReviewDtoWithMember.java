@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.review;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 
@@ -10,7 +10,7 @@ import java.util.List;
 public record ReviewDtoWithMember(
         Long id,
         MemberDto writerDto,
-        List<ReviewKeyword> keywords,
+        List<ReviewKeywordValue> keywords,
         String autoCreatedContent,
         String content,
         List<ReviewFileDto> reviewFileDtos,
@@ -19,11 +19,11 @@ public record ReviewDtoWithMember(
         LocalDateTime deletedAt
 ) {
 
-    public static ReviewDtoWithMember of(List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
+    public static ReviewDtoWithMember of(List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
         return of(null, null, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDtoWithMember of(Long id, MemberDto writerDto, List<ReviewKeyword> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static ReviewDtoWithMember of(Long id, MemberDto writerDto, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return new ReviewDtoWithMember(id, writerDto, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
     }
 

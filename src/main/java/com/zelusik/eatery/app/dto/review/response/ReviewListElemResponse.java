@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.review.response;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,7 +37,7 @@ public class ReviewListElemResponse {
                 dto.id(),
                 dto.writerDto().id(),
                 dto.keywords().stream()
-                        .map(ReviewKeyword::getDescription)
+                        .map(ReviewKeywordValue::getDescription)
                         .toList(),
                 dto.content(),
                 dto.reviewFileDtos().stream()

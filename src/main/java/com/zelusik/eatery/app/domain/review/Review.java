@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.domain.review;
 
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
@@ -37,7 +37,7 @@ public class Review extends BaseTimeEntity {
     private Place place;
 
     @Convert(converter = ReviewKeywordsConverter.class)
-    private List<ReviewKeyword> keywords;
+    private List<ReviewKeywordValue> keywords;
 
     @Column(length = 400)
     private String autoCreatedContent;
@@ -51,11 +51,11 @@ public class Review extends BaseTimeEntity {
 
     private LocalDateTime deletedAt;
 
-    public static Review of(Member writer, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
+    public static Review of(Member writer, Place place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
         return new Review(writer, place, keywords, autoCreatedContent, content);
     }
 
-    private Review(Member writer, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
+    private Review(Member writer, Place place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
         this.writer = writer;
         this.place = place;
         this.keywords = keywords;

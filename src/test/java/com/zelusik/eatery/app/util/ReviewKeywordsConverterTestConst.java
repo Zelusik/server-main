@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.util;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,17 +11,17 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.zelusik.eatery.app.constant.review.ReviewKeyword.*;
+import static com.zelusik.eatery.app.constant.review.ReviewKeywordValue.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DisplayName("Review keyword converter test")
 @Import(ReviewKeywordsConverter.class)
-class ReviewKeywordsConverterTest {
+class ReviewKeywordsConverterTestConst {
 
     ReviewKeywordsConverter reviewKeywordsConverter;
 
-    public ReviewKeywordsConverterTest() {
+    public ReviewKeywordsConverterTestConst() {
         this.reviewKeywordsConverter = new ReviewKeywordsConverter();
     }
 
@@ -29,13 +29,13 @@ class ReviewKeywordsConverterTest {
     @MethodSource("keywordList")
     @ParameterizedTest(name = "[{index}] {0} => {1}")
     void givenKeywordList_whenConvert_thenReturnConcatenatedString(
-            List<ReviewKeyword> reviewKeywords,
+            List<ReviewKeywordValue> reviewKeywordValues,
             String expectedResult
     ) {
         // given
 
         // when
-        String actualResult = reviewKeywordsConverter.convertToDatabaseColumn(reviewKeywords);
+        String actualResult = reviewKeywordsConverter.convertToDatabaseColumn(reviewKeywordValues);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
@@ -46,12 +46,12 @@ class ReviewKeywordsConverterTest {
     @ParameterizedTest(name = "[{index}] {0} => {1}")
     void givenString_whenConvert_thenReturnKeywordList(
             String dbData,
-            List<ReviewKeyword> expectedResult
+            List<ReviewKeywordValue> expectedResult
     ) {
         // given
 
         // when
-        List<ReviewKeyword> actualResult = reviewKeywordsConverter.convertToEntityAttribute(dbData);
+        List<ReviewKeywordValue> actualResult = reviewKeywordsConverter.convertToEntityAttribute(dbData);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);

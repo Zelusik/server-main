@@ -25,7 +25,7 @@ import java.util.Arrays;
 )
 @AllArgsConstructor
 @Getter
-public enum ReviewKeyword {
+public enum ReviewKeywordValue {
 
     FRESH("신선한 재료"),
     BEST_FLAVOR("최고의 맛"),
@@ -42,7 +42,7 @@ public enum ReviewKeyword {
 
     private final String description;
 
-    public static ReviewKeyword valueOfDescription(String description) {
+    public static ReviewKeywordValue valueOfDescription(String description) {
         String trimmedDescription = description.replace(" ", "");
 
         return Arrays.stream(values())
