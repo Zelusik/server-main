@@ -1,7 +1,14 @@
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.9'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10" // Querydsl
 }
 
 group = 'com.zelusik'
@@ -46,6 +53,10 @@ dependencies {
     // Spring Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // Querydsl
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
+
     // Jdbc Template
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
@@ -74,4 +85,20 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Querydsl
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+sourceSets { // IDE의 소스 폴더에 자동으로 넣어준다.
+    main.java.srcDir querydslDir
+}
+configurations {
+    querydsl.extendsFrom compileClasspath // 컴파일이 될때 같이 수행
+}
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl // Q파일 생성
 }
