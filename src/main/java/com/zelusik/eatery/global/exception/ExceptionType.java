@@ -19,6 +19,7 @@ import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.review.NotAcceptableReviewKeyword;
 import com.zelusik.eatery.global.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.global.exception.review.ReviewNotFoundException;
+import com.zelusik.eatery.global.exception.review.ReviewUpdatePermissionDeniedException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.global.log.LogUtils;
@@ -129,6 +130,7 @@ public enum ExceptionType {
     NOT_ACCEPTABLE_REVIEW_KEYWORD(3500, "유효하지 않은 리뷰 키워드입니다.", NotAcceptableReviewKeyword.class),
     REVIEW_NOT_FOUND(3501, "리뷰를 찾을 수 없습니다.", ReviewNotFoundException.class),
     REVIEW_DELETE_PERMISSION_DENIED(3502, "리뷰를 삭제할 권한이 없습니다.", ReviewDeletePermissionDeniedException.class),
+    REVIEW_UPDATE_PERMISSION_DENIED(3503, "리뷰를 수정할 권한이 없습니다.", ReviewUpdatePermissionDeniedException.class),
 
     /**
      * 큐레이션({@link Curation}) 관련 예외

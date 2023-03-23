@@ -12,6 +12,7 @@ import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.repository.review.ReviewRepository;
 import com.zelusik.eatery.global.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.global.exception.review.ReviewNotFoundException;
+import com.zelusik.eatery.global.exception.review.ReviewUpdatePermissionDeniedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -106,10 +107,30 @@ public class ReviewService {
     }
 
     /**
+     * 리뷰를 수정합니다.
+     *
+     * @param memberId 리뷰를 수정하고자 하는 회원(로그인 회원)의 PK
+     * @param reviewId 수정할 리뷰의 PK
+     * @param content  수정하고자 하는 리뷰 내용
+     * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
+     */
+    @Transactional
+    public ReviewDtoWithMemberAndPlace update(Long memberId, Long reviewId, String content) {
+        Review review = this.findEntityById(reviewId);
+        validateReviewUpdatePermission(memberId, review);
+        review.update(content);
+
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
+
+        return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);
+    }
+
+    /**
      * 리뷰를 삭제합니다.
      *
      * @param memberId 리뷰룰 삭제하려는 회원(로그인 회원)의 PK.
      * @param reviewId 삭제하려는 리뷰의 PK
+     * @throws ReviewDeletePermissionDeniedException 리뷰 삭제 권한이 없는 경우
      */
     @Transactional
     public void delete(Long memberId, Long reviewId) {
@@ -120,6 +141,19 @@ public class ReviewService {
 
         reviewFileService.deleteAll(review.getReviewFiles());
         reviewRepository.delete(review);
+    }
+
+    /**
+     * 리뷰 슈정 권한이 있는지 검증한다.
+     *
+     * @param memberId 리뷰를 수정하고자 하는 회원(로그인 회원)
+     * @param review   수정할 리뷰
+     * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
+     */
+    private void validateReviewUpdatePermission(Long memberId, Review review) {
+        if (!review.getWriter().getId().equals(memberId)) {
+            throw new ReviewUpdatePermissionDeniedException();
+        }
     }
 
     /**

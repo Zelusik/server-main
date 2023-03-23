@@ -8,6 +8,7 @@ import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
@@ -40,6 +41,7 @@ public class Review extends BaseTimeEntity {
     @Column(length = 400)
     private String autoCreatedContent;
 
+    @Setter(AccessLevel.PRIVATE)
     @Column(length = 400)
     private String content;
 
@@ -58,5 +60,9 @@ public class Review extends BaseTimeEntity {
         this.keywords = keywords;
         this.autoCreatedContent = autoCreatedContent;
         this.content = content;
+    }
+
+    public void update(String content) {
+        this.setContent(content);
     }
 }
