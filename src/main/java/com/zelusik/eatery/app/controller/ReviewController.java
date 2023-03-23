@@ -4,6 +4,7 @@ import com.zelusik.eatery.app.dto.SliceResponse;
 import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.app.dto.review.request.ReviewUpdateRequest;
 import com.zelusik.eatery.app.dto.review.response.FeedResponse;
 import com.zelusik.eatery.app.dto.review.response.ReviewListElemResponse;
 import com.zelusik.eatery.app.dto.review.response.ReviewResponse;
@@ -138,13 +139,34 @@ public class ReviewController {
     }
 
     @Operation(
+            summary = "리뷰 내용 수정",
+            description = "<p>리뷰 내용을 수정합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = ReviewResponse.class))),
+            @ApiResponse(description = "[3503] 리뷰 수정 권한이 없는 경우.", responseCode = "403", content = @Content)
+    })
+    @PatchMapping("/{reviewId}")
+    public ReviewResponse update(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(
+                    description = "수정할 리뷰의 PK",
+                    example = "1"
+            ) @PathVariable Long reviewId,
+            @Valid @RequestBody ReviewUpdateRequest updateRequest
+    ) {
+        return ReviewResponse.from(reviewService.update(userPrincipal.getMemberId(), reviewId, updateRequest.getContent()));
+    }
+
+    @Operation(
             summary = "리뷰 삭제",
             description = "<p>리뷰를 삭제합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema)),
-            @ApiResponse(description = "리뷰 삭제 권한이 없는 경우", responseCode = "403", content = @Content)
+            @ApiResponse(description = "[3502] 리뷰 삭제 권한이 없는 경우", responseCode = "403", content = @Content)
     })
     @DeleteMapping("/{reviewId}")
     public void delete(
