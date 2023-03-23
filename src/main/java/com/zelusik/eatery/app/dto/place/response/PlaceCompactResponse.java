@@ -30,18 +30,18 @@ public class PlaceCompactResponse {
         return new PlaceCompactResponse(id, name, category, address, isMarked);
     }
 
-    public static PlaceCompactResponse from(PlaceDto placeDto) {
-        String category = placeDto.category().getSecondCategory();
+    public static PlaceCompactResponse from(PlaceDto dto) {
+        String category = dto.category().getSecondCategory();
         if (category == null) {
-            category = placeDto.category().getFirstCategory();
+            category = dto.category().getFirstCategory();
         }
 
         return new PlaceCompactResponse(
-                placeDto.id(),
-                placeDto.name(),
+                dto.id(),
+                dto.name(),
                 category,
-                placeDto.address(),
-                false
+                dto.address(),
+                dto.isMarked()
         );
     }
 }
