@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.review;
 
-import com.zelusik.eatery.app.domain.ReviewFile;
+import com.zelusik.eatery.app.domain.review.ReviewFile;
 
 import java.time.LocalDateTime;
 

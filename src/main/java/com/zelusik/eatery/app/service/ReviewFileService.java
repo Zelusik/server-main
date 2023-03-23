@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.domain.Review;
-import com.zelusik.eatery.app.domain.ReviewFile;
+import com.zelusik.eatery.app.domain.review.Review;
+import com.zelusik.eatery.app.domain.review.ReviewFile;
 import com.zelusik.eatery.app.dto.file.S3FileDto;
 import com.zelusik.eatery.app.repository.review.ReviewFileRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,8 @@
-package com.zelusik.eatery.app.domain;
+package com.zelusik.eatery.app.domain.review;
 
 
 import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;

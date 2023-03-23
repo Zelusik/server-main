@@ -1,5 +1,6 @@
-package com.zelusik.eatery.app.domain;
+package com.zelusik.eatery.app.domain.member;
 
+import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

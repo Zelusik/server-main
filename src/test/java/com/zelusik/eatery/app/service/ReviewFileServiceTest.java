@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.domain.Review;
+import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.repository.review.ReviewFileRepository;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;

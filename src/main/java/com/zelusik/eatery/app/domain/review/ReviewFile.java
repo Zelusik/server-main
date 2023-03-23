@@ -1,5 +1,6 @@
-package com.zelusik.eatery.app.domain;
+package com.zelusik.eatery.app.domain.review;
 
+import com.zelusik.eatery.app.domain.S3File;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

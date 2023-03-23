@@ -4,7 +4,6 @@ import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
-import com.zelusik.eatery.app.domain.TermsInfo;
 import com.zelusik.eatery.app.util.domain.FoodCategoryConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;

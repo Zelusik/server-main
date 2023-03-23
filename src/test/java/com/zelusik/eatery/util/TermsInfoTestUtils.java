@@ -1,6 +1,6 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.domain.TermsInfo;
+import com.zelusik.eatery.app.domain.member.TermsInfo;
 
 import java.time.LocalDateTime;
 

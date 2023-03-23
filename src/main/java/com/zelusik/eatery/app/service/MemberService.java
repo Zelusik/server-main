@@ -2,7 +2,7 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
-import com.zelusik.eatery.app.domain.TermsInfo;
+import com.zelusik.eatery.app.domain.member.TermsInfo;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.member.ProfileImage;

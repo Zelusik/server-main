@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.terms_info;
 
-import com.zelusik.eatery.app.domain.TermsInfo;
+import com.zelusik.eatery.app.domain.member.TermsInfo;
 
 import java.time.LocalDateTime;
 

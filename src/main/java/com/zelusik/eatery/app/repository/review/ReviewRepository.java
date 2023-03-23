@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.repository.review;
 
-import com.zelusik.eatery.app.domain.Review;
+import com.zelusik.eatery.app.domain.review.Review;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;

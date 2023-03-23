@@ -2,7 +2,7 @@ package com.zelusik.eatery.global.exception;
 
 import com.zelusik.eatery.app.domain.Bookmark;
 import com.zelusik.eatery.app.domain.member.Member;
-import com.zelusik.eatery.app.domain.Review;
+import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.curation.Curation;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
