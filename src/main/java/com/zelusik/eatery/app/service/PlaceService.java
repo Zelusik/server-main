@@ -54,6 +54,17 @@ public class PlaceService {
     }
 
     /**
+     * 장소 정보를 받아 장소를 저장한다.
+     *
+     * @param placeCreateRequest 장소 정보가 담긴 dto.
+     * @return 저장된 장소 dto.
+     * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
+     */
+    public PlaceDto createAndReturnDto(PlaceCreateRequest placeCreateRequest) {
+        return PlaceDto.from(create(placeCreateRequest));
+    }
+
+    /**
      * placeId에 해당하는 장소를 조회한 후 반환한다.
      *
      * @param placeId 조회하고자 하는 장소의 PK

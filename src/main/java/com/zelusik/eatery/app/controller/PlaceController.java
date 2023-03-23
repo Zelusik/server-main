@@ -44,7 +44,7 @@ public class PlaceController {
     })
     @PostMapping
     public ResponseEntity<PlaceResponse> save(@Valid @RequestBody PlaceCreateRequest request) {
-        PlaceResponse response = PlaceResponse.from(PlaceDto.from(placeService.create(request)));
+        PlaceResponse response = PlaceResponse.from(placeService.createAndReturnDto(request));
 
         return ResponseEntity
                 .created(URI.create("/api/places/" + response.getId()))
