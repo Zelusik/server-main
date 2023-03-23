@@ -4,6 +4,7 @@ import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 
@@ -36,7 +37,9 @@ public record ReviewDtoWithMemberAndPlace(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
                 PlaceDto.from(entity.getPlace(), markedPlaceIdList),
-                entity.getKeywords(),
+                entity.getKeywords().stream()
+                        .map(ReviewKeyword::getKeyword)
+                        .toList(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
                 entity.getReviewFiles().stream()
@@ -52,7 +55,6 @@ public record ReviewDtoWithMemberAndPlace(
         return Review.of(
                 writer,
                 place,
-                this.keywords(),
                 this.autoCreatedContent(),
                 this.content()
         );

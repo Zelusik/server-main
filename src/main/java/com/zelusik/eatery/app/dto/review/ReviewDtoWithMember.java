@@ -2,6 +2,7 @@ package com.zelusik.eatery.app.dto.review;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.review.Review;
+import com.zelusik.eatery.app.domain.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 
 import java.time.LocalDateTime;
@@ -31,7 +32,9 @@ public record ReviewDtoWithMember(
         return of(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
-                entity.getKeywords(),
+                entity.getKeywords().stream()
+                        .map(ReviewKeyword::getKeyword)
+                        .toList(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
                 entity.getReviewFiles().stream()

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Converter
-public class ReviewKeywordsConverter implements AttributeConverter<List<ReviewKeywordValue>, String> {
+public class ReviewKeywordValueConverter implements AttributeConverter<List<ReviewKeywordValue>, String> {
 
     @Override
     public String convertToDatabaseColumn(List<ReviewKeywordValue> attribute) {

@@ -3,12 +3,14 @@ package com.zelusik.eatery.app.service;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.app.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.app.repository.review.ReviewRepository;
 import com.zelusik.eatery.global.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.global.exception.review.ReviewNotFoundException;
@@ -31,6 +33,7 @@ public class ReviewService {
     private final MemberService memberService;
     private final PlaceService placeService;
     private final ReviewRepository reviewRepository;
+    private final ReviewKeywordRepository reviewKeywordRepository;
     private final BookmarkRepository bookmarkRepository;
 
     /**
@@ -51,7 +54,15 @@ public class ReviewService {
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
 
         ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place, markedPlaceIdList));
-        Review review = reviewRepository.save(reviewDtoWithMemberAndPlace.toEntity(writer, place));
+        Review review = reviewDtoWithMemberAndPlace.toEntity(writer, place);
+        reviewRepository.save(review);
+        reviewDtoWithMemberAndPlace.keywords()
+                .forEach(keyword -> {
+                    ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
+                    review.getKeywords().add(reviewKeyword);
+                    reviewKeywordRepository.save(reviewKeyword);
+                });
+
         reviewFileService.upload(review, files);
 
         return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);

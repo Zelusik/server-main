@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.util;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
+import com.zelusik.eatery.app.util.domain.ReviewKeywordValueConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -16,13 +16,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DisplayName("Review keyword converter test")
-@Import(ReviewKeywordsConverter.class)
-class ReviewKeywordsConverterTestConst {
+@Import(ReviewKeywordValueConverter.class)
+class ReviewKeywordValueConverterTest {
 
-    ReviewKeywordsConverter reviewKeywordsConverter;
+    ReviewKeywordValueConverter reviewKeywordValueConverter;
 
-    public ReviewKeywordsConverterTestConst() {
-        this.reviewKeywordsConverter = new ReviewKeywordsConverter();
+    public ReviewKeywordValueConverterTest() {
+        this.reviewKeywordValueConverter = new ReviewKeywordValueConverter();
     }
 
     @DisplayName("Review keywords가 담긴 List가 주어지면 연결된 문자열로 변환하여 반환한다.")
@@ -35,7 +35,7 @@ class ReviewKeywordsConverterTestConst {
         // given
 
         // when
-        String actualResult = reviewKeywordsConverter.convertToDatabaseColumn(reviewKeywordValues);
+        String actualResult = reviewKeywordValueConverter.convertToDatabaseColumn(reviewKeywordValues);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
@@ -51,7 +51,7 @@ class ReviewKeywordsConverterTestConst {
         // given
 
         // when
-        List<ReviewKeywordValue> actualResult = reviewKeywordsConverter.convertToEntityAttribute(dbData);
+        List<ReviewKeywordValue> actualResult = reviewKeywordValueConverter.convertToEntityAttribute(dbData);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
