@@ -87,7 +87,7 @@ public class ReviewService {
     public Slice<ReviewDtoWithMemberAndPlace> searchDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
 
-        return reviewRepository.findAll(pageable)
+        return reviewRepository.findAllByDeletedAtNull(pageable)
                 .map(review -> ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList));
     }
 

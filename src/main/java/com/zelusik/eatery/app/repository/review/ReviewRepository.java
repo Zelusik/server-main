@@ -17,4 +17,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @EntityGraph(attributePaths = {"writer", "place"})
     Slice<Review> findByWriter_IdAndDeletedAtNull(Long writerId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"writer", "place"})
+    Slice<Review> findAllByDeletedAtNull(Pageable pageable);
 }
