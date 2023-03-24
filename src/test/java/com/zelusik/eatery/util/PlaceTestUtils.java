@@ -2,6 +2,7 @@ package com.zelusik.eatery.util;
 
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.place.*;
 import com.zelusik.eatery.app.dto.place.OpeningHoursDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
@@ -32,6 +33,7 @@ public class PlaceTestUtils {
     public static PlaceDto createPlaceDtoWithIdAndOpeningHours() {
         return PlaceDto.of(
                 1L,
+                List.of(ReviewKeywordValue.FRESH),
                 "308342289",
                 "연남토마 본점",
                 "http://place.map.kakao.com/308342289",
@@ -69,6 +71,7 @@ public class PlaceTestUtils {
     public static Place createPlace(Long id, String homepageUrl, String lat, String lng, String closingHours) {
         return Place.of(
                 id,
+                List.of(ReviewKeywordValue.FRESH),
                 "308342289",
                 "연남토마 본점",
                 "http://place.map.kakao.com/308342289",

@@ -20,9 +20,10 @@ public class ReviewKeywordJdbcTemplateRepositoryImpl implements ReviewKeywordJdb
     public List<ReviewKeywordValue> searchTop3Keywords(Long placeId) {
         String sql = "SELECT rk.keyword " +
                 "FROM review r " +
-                "JOIN place p on r.place_id = p.place_id " +
-                "JOIN review_keyword rk on r.review_id = rk.review_id " +
+                "JOIN place p ON r.place_id = p.place_id " +
+                "JOIN review_keyword rk ON r.review_id = rk.review_id " +
                 "WHERE p.place_id = :place_id " +
+                "AND r.deleted_at IS NULL " +
                 "GROUP BY rk.keyword " +
                 "ORDER BY COUNT(rk.keyword) DESC " +
                 "LIMIT 3";

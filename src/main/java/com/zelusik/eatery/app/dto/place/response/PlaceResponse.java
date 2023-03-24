@@ -19,7 +19,11 @@ public class PlaceResponse {
     @Schema(description = "장소의 id(PK)", example = "1")
     private Long id;
 
-    @Schema(description = "가장 많이 태그된 top 3 keywords", example = "[\"신선한 재료\", \"최고의 맛\"]")
+    @Schema(
+            description = "<p>가장 많이 태그된 top 3 keywords." +
+                    "<p>이 장소에 대한 리뷰가 없다면, empty array로 응답합니다.",
+            example = "[\"신선한 재료\", \"최고의 맛\"]"
+    )
     List<String> top3Keywords;
 
     @Schema(description = "이름", example = "연남토마 본점")

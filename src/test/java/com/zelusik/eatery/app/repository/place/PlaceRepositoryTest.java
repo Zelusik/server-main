@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.repository.place;
 
+import com.zelusik.eatery.app.config.QuerydslConfig;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.Point;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[Repository] Place")
 @ActiveProfiles("test")
+@Import(QuerydslConfig.class)
 @DataJpaTest
 class PlaceRepositoryTest {
 
