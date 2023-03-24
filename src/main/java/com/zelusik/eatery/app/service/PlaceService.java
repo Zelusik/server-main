@@ -31,6 +31,7 @@ import java.util.Optional;
 @Service
 public class PlaceService {
 
+    private final MemberService memberService;
     private final WebScrapingService webScrapingService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
@@ -122,6 +123,11 @@ public class PlaceService {
 
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
         return places.map(place -> PlaceDto.from(place, markedPlaceIdList));
+    }
+
+    public Slice<PlaceDto> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
+        return placeRepository.findMarkedPlaces(memberId, pageable)
+                .map(place -> PlaceDto.from(place, null));
     }
 
     /**

@@ -37,10 +37,6 @@ public record PlaceDto(
         return new PlaceDto(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, isMarked, createdAt, updatedAt, deletedAt);
     }
 
-    public static PlaceDto from(Place place) {
-        return from(place, null);
-    }
-
     public static PlaceDto from(Place place, List<Long> markedPlaceIdList) {
         Boolean isMarked = markedPlaceIdList != null ? isMarked(place, markedPlaceIdList) : null;
 
