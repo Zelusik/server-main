@@ -127,7 +127,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/bookmarks")
-    public SliceResponse<PlaceCompactResponseWithoutIsMarked> findMarkedPlaces(
+    public SliceResponse<PlaceResponse> findMarkedPlaces(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호(0부터 시작합니다). 기본값은 0입니다.",
@@ -138,11 +138,11 @@ public class PlaceController {
                     example = "20"
             ) @RequestParam(required = false, defaultValue = "20") int size
     ) {
-        return new SliceResponse<PlaceCompactResponseWithoutIsMarked>().from(
+        return new SliceResponse<PlaceResponse>().from(
                 placeService.findMarkedPlaceDtos(
                         userPrincipal.getMemberId(),
                         PageRequest.of(page, size)
-                ).map(PlaceCompactResponseWithoutIsMarked::from)
+                ).map(PlaceResponse::from)
         );
     }
 }
