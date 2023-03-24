@@ -49,6 +49,6 @@ public enum ReviewKeywordValue {
                 .filter(value -> trimmedDescription.equals(
                         value.getDescription().replace(" ", "")
                 )).findFirst()
-                .orElseThrow(NotAcceptableReviewKeyword::new);
+                .orElseThrow(() -> new NotAcceptableReviewKeyword(description));
     }
 }

@@ -3,10 +3,12 @@ package com.zelusik.eatery.app.repository.place;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;
 import com.zelusik.eatery.app.domain.place.Point;
+import com.zelusik.eatery.app.util.domain.ReviewKeywordValueConverter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -16,6 +18,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.List;
 
 public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateRepository {
@@ -28,7 +31,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
 
     @Override
     public Slice<Place> findNearBy(List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable) {
-        StringBuilder sql = new StringBuilder("select p.place_id, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at, ");
+        StringBuilder sql = new StringBuilder("select p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at, ");
         sql.append("(6371 * acos(cos(radians(:lat)) * cos(radians(lat)) * cos(radians(lng) - radians(:lng)) + sin(radians(:lat)) * sin(radians(lat)))) as distance ");
         sql.append("from place p ");
 
@@ -47,7 +50,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
             sql.append(") ");
         }
 
-        sql.append("group by p.place_id, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at ");
+        sql.append("group by p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at ");
         sql.append("having distance <= :distance_limit ");
         sql.append("order by distance ");
         sql.append("limit :size ");
@@ -72,33 +75,37 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
     }
 
     private RowMapper<Place> placeRowMapper() {
-        return (rs, rowNum) -> Place.of(
-                rs.getLong("place_id"),
-                rs.getString("kakao_pid"),
-                rs.getString("name"),
-                rs.getString("page_url"),
-                KakaoCategoryGroupCode.valueOf(rs.getString("category_group_code")),
-                new PlaceCategory(
-                        rs.getString("first_category"),
-                        rs.getString("second_category"),
-                        rs.getString("third_category")
-                ),
-                rs.getString("phone"),
-                new Address(
-                        rs.getString("sido"),
-                        rs.getString("sgg"),
-                        rs.getString("lot_number_address"),
-                        rs.getString("road_address")
-                ),
-                rs.getString("homepage_url"),
-                new Point(
-                        rs.getString("lat"),
-                        rs.getString("lng")
-                ),
-                rs.getString("closing_hours"),
-                rs.getTimestamp("created_at").toLocalDateTime(),
-                rs.getTimestamp("updated_at").toLocalDateTime(),
-                rs.getTimestamp("deleted_at") == null ? null : rs.getTimestamp("deleted_at").toLocalDateTime()
-        );
+        return (rs, rowNum) -> {
+            ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
+            return Place.of(
+                    rs.getLong("place_id"),
+                    reviewKeywordValueConverter.convertToEntityAttribute(rs.getString("top3keywords")),
+                    rs.getString("kakao_pid"),
+                    rs.getString("name"),
+                    rs.getString("page_url"),
+                    KakaoCategoryGroupCode.valueOf(rs.getString("category_group_code")),
+                    new PlaceCategory(
+                            rs.getString("first_category"),
+                            rs.getString("second_category"),
+                            rs.getString("third_category")
+                    ),
+                    rs.getString("phone"),
+                    new Address(
+                            rs.getString("sido"),
+                            rs.getString("sgg"),
+                            rs.getString("lot_number_address"),
+                            rs.getString("road_address")
+                    ),
+                    rs.getString("homepage_url"),
+                    new Point(
+                            rs.getString("lat"),
+                            rs.getString("lng")
+                    ),
+                    rs.getString("closing_hours"),
+                    rs.getTimestamp("created_at").toLocalDateTime(),
+                    rs.getTimestamp("updated_at").toLocalDateTime(),
+                    rs.getTimestamp("deleted_at") == null ? null : rs.getTimestamp("deleted_at").toLocalDateTime()
+            );
+        };
     }
 }

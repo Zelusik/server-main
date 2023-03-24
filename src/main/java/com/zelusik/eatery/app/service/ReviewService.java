@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.service;
 
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
@@ -46,6 +47,7 @@ public class ReviewService {
      */
     @Transactional
     public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<MultipartFile> files) {
+        // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
         Place place = placeService.findOptEntityByKakaoPid(placeCreateRequest.getKakaoPid())
                 .orElseGet(() -> placeService.create(placeCreateRequest));
@@ -53,6 +55,7 @@ public class ReviewService {
         Member writer = memberService.findEntityById(writerId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
 
+        // 리뷰 저장
         ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place, markedPlaceIdList));
         Review review = reviewDtoWithMemberAndPlace.toEntity(writer, place);
         reviewRepository.save(review);
@@ -64,6 +67,10 @@ public class ReviewService {
                 });
 
         reviewFileService.upload(review, files);
+
+        // 장소 top 3 keyword 설정
+        List<ReviewKeywordValue> placeTop3Keywords = reviewKeywordRepository.searchTop3Keywords(place.getId());
+        place.setTop3Keywords(placeTop3Keywords);
 
         return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);
     }
