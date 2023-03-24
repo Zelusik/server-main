@@ -3,8 +3,8 @@ package com.zelusik.eatery.app.controller;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.dto.SliceResponse;
-import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.app.dto.place.response.PlaceCompactResponseWithoutIsMarked;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
 import com.zelusik.eatery.global.security.UserPrincipal;
@@ -109,13 +109,40 @@ public class PlaceController {
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
-        return new SliceResponse<PlaceResponse>()
-                .from(placeService.findDtosNearBy(
+        return new SliceResponse<PlaceResponse>().from(
+                placeService.findDtosNearBy(
                         userPrincipal.getMemberId(),
                         daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
                         keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
                         lat, lng,
                         PageRequest.of(page, size)
-                ).map(PlaceResponse::from));
+                ).map(PlaceResponse::from)
+        );
+    }
+
+    @Operation(
+            summary = "북마크에 저장한 장소 조회",
+            description = "<p>북마크에 저장한 장소들을 조회합니다." +
+                    "<p>정렬 기준은 최근에 북마크에 저장한 순서입니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/bookmarks")
+    public SliceResponse<PlaceCompactResponseWithoutIsMarked> findMarkedPlaces(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(
+                    description = "페이지 번호(0부터 시작합니다). 기본값은 0입니다.",
+                    example = "0"
+            ) @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈). 기본값은 20입니다.",
+                    example = "20"
+            ) @RequestParam(required = false, defaultValue = "20") int size
+    ) {
+        return new SliceResponse<PlaceCompactResponseWithoutIsMarked>().from(
+                placeService.findMarkedPlaceDtos(
+                        userPrincipal.getMemberId(),
+                        PageRequest.of(page, size)
+                ).map(PlaceCompactResponseWithoutIsMarked::from)
+        );
     }
 }

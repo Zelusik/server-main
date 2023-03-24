@@ -22,7 +22,7 @@ public record CurationElemDto(
         return of(
                 entity.getId(),
                 entity.getCuration().getId(),
-                PlaceDto.from(entity.getPlace()),
+                PlaceDto.from(entity.getPlace(), null),
                 CurationElemFileDto.from(entity.getImage()),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
