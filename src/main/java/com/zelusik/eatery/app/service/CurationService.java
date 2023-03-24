@@ -73,11 +73,12 @@ public class CurationService {
 
     /**
      * 모든 큐레이션을 조회합니다.
+     * 정렬 기준은 최신순입니다.
      *
      * @return 조회된 큐레이션 dto 목록
      */
     public List<CurationDto> findDtos() {
-        return curationRepository.findAll().stream()
+        return curationRepository.findAllByOrderByCreatedAtDesc().stream()
                 .filter(curation -> curation.getCurationElems().size() > 0)
                 .map(CurationDto::from)
                 .toList();
