@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.review.request;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -43,7 +42,7 @@ public class ReviewCreateRequest {
         return ReviewDtoWithMemberAndPlace.of(
                 placeDto,
                 this.getKeywords().stream()
-                        .map(ReviewKeyword::valueOfDescription)
+                        .map(ReviewKeywordValue::valueOfDescription)
                         .toList(),
                 this.getAutoCreatedContent(),
                 this.getContent()

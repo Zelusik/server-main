@@ -1,11 +1,9 @@
 package com.zelusik.eatery.app.domain.review;
 
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,9 +34,6 @@ public class Review extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
 
-    @Convert(converter = ReviewKeywordsConverter.class)
-    private List<ReviewKeyword> keywords;
-
     @Column(length = 400)
     private String autoCreatedContent;
 
@@ -47,18 +42,20 @@ public class Review extends BaseTimeEntity {
     private String content;
 
     @OneToMany(mappedBy = "review")
+    private List<ReviewKeyword> keywords = new LinkedList<>();
+
+    @OneToMany(mappedBy = "review")
     List<ReviewFile> reviewFiles = new LinkedList<>();
 
     private LocalDateTime deletedAt;
 
-    public static Review of(Member writer, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
-        return new Review(writer, place, keywords, autoCreatedContent, content);
+    public static Review of(Member writer, Place place, String autoCreatedContent, String content) {
+        return new Review(writer, place, autoCreatedContent, content);
     }
 
-    private Review(Member writer, Place place, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
+    private Review(Member writer, Place place, String autoCreatedContent, String content) {
         this.writer = writer;
         this.place = place;
-        this.keywords = keywords;
         this.autoCreatedContent = autoCreatedContent;
         this.content = content;
     }

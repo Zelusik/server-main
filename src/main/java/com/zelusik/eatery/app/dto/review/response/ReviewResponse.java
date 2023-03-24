@@ -1,11 +1,10 @@
 package com.zelusik.eatery.app.dto.review.response;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.dto.member.response.MemberResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewFileDto;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,7 +44,7 @@ public class ReviewResponse {
                 MemberResponse.from(reviewDtoWithMemberAndPlace.writerDto()),
                 PlaceResponse.from(reviewDtoWithMemberAndPlace.placeDto()),
                 reviewDtoWithMemberAndPlace.keywords().stream()
-                        .map(ReviewKeyword::getDescription)
+                        .map(ReviewKeywordValue::getDescription)
                         .toList(),
                 reviewDtoWithMemberAndPlace.content(),
                 reviewDtoWithMemberAndPlace.reviewFileDtos().stream()

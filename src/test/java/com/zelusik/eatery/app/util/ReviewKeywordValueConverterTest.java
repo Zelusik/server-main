@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.util;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
-import com.zelusik.eatery.app.util.domain.ReviewKeywordsConverter;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.app.util.domain.ReviewKeywordValueConverter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,31 +11,31 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.zelusik.eatery.app.constant.review.ReviewKeyword.*;
+import static com.zelusik.eatery.app.constant.review.ReviewKeywordValue.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @DisplayName("Review keyword converter test")
-@Import(ReviewKeywordsConverter.class)
-class ReviewKeywordsConverterTest {
+@Import(ReviewKeywordValueConverter.class)
+class ReviewKeywordValueConverterTest {
 
-    ReviewKeywordsConverter reviewKeywordsConverter;
+    ReviewKeywordValueConverter reviewKeywordValueConverter;
 
-    public ReviewKeywordsConverterTest() {
-        this.reviewKeywordsConverter = new ReviewKeywordsConverter();
+    public ReviewKeywordValueConverterTest() {
+        this.reviewKeywordValueConverter = new ReviewKeywordValueConverter();
     }
 
     @DisplayName("Review keywords가 담긴 List가 주어지면 연결된 문자열로 변환하여 반환한다.")
     @MethodSource("keywordList")
     @ParameterizedTest(name = "[{index}] {0} => {1}")
     void givenKeywordList_whenConvert_thenReturnConcatenatedString(
-            List<ReviewKeyword> reviewKeywords,
+            List<ReviewKeywordValue> reviewKeywordValues,
             String expectedResult
     ) {
         // given
 
         // when
-        String actualResult = reviewKeywordsConverter.convertToDatabaseColumn(reviewKeywords);
+        String actualResult = reviewKeywordValueConverter.convertToDatabaseColumn(reviewKeywordValues);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);
@@ -46,12 +46,12 @@ class ReviewKeywordsConverterTest {
     @ParameterizedTest(name = "[{index}] {0} => {1}")
     void givenString_whenConvert_thenReturnKeywordList(
             String dbData,
-            List<ReviewKeyword> expectedResult
+            List<ReviewKeywordValue> expectedResult
     ) {
         // given
 
         // when
-        List<ReviewKeyword> actualResult = reviewKeywordsConverter.convertToEntityAttribute(dbData);
+        List<ReviewKeywordValue> actualResult = reviewKeywordValueConverter.convertToEntityAttribute(dbData);
 
         // then
         assertThat(actualResult).isEqualTo(expectedResult);

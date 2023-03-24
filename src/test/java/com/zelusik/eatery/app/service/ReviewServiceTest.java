@@ -1,12 +1,15 @@
 package com.zelusik.eatery.app.service;
 
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.app.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.app.repository.review.ReviewRepository;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
@@ -45,6 +48,8 @@ class ReviewServiceTest {
     @Mock
     private ReviewRepository reviewRepository;
     @Mock
+    private ReviewKeywordRepository reviewKeywordRepository;
+    @Mock
     private BookmarkRepository bookmarkRepository;
 
     @DisplayName("생성할 리뷰와 존재하는 장소 정보가 주어지고, 리뷰를 생성하면, 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
@@ -56,9 +61,12 @@ class ReviewServiceTest {
         long writerId = 1L;
         Place expectedPlace = PlaceTestUtils.createPlace();
         Member expectedMember = MemberTestUtils.createMember(writerId);
+        Review expectedReview = ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace);
         given(placeService.findOptEntityByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
         given(memberService.findEntityById(writerId)).willReturn(expectedMember);
-        given(reviewRepository.save(any(Review.class))).willReturn(ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace));
+        given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
+        given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
+                .willReturn(ReviewTestUtils.createReviewKeyword(1L, expectedReview, ReviewKeywordValue.FRESH));
         willDoNothing().given(reviewFileService).upload(any(Review.class), any());
 
         // when
@@ -72,6 +80,7 @@ class ReviewServiceTest {
         then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
         then(memberService).should().findEntityById(writerId);
         then(reviewRepository).should().save(any(Review.class));
+        then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewFileService).should().upload(any(Review.class), any());
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
     }
@@ -85,6 +94,7 @@ class ReviewServiceTest {
         long writerId = 1L;
         Place expectedPlace = PlaceTestUtils.createPlace();
         Member expectedMember = MemberTestUtils.createMember(writerId);
+        Review expectedReview = ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace);
         given(placeService.findOptEntityByKakaoPid(kakaoPid))
                 .willReturn(Optional.empty());
         given(placeService.create(reviewCreateRequest.getPlace()))
@@ -92,7 +102,9 @@ class ReviewServiceTest {
         given(memberService.findEntityById(writerId))
                 .willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class)))
-                .willReturn(ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace));
+                .willReturn(expectedReview);
+        given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
+                .willReturn(ReviewTestUtils.createReviewKeyword(1L, expectedReview, ReviewKeywordValue.FRESH));
         willDoNothing().given(reviewFileService).upload(any(Review.class), any());
         given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
 
@@ -108,6 +120,7 @@ class ReviewServiceTest {
         then(placeService).should().create(reviewCreateRequest.getPlace());
         then(memberService).should().findEntityById(writerId);
         then(reviewRepository).should().save(any(Review.class));
+        then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewFileService).should().upload(any(Review.class), any());
         then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
         assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);

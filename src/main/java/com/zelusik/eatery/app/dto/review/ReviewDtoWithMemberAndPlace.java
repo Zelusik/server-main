@@ -1,9 +1,10 @@
 package com.zelusik.eatery.app.dto.review;
 
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.review.Review;
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 
@@ -14,7 +15,7 @@ public record ReviewDtoWithMemberAndPlace(
         Long id,
         MemberDto writerDto,
         PlaceDto placeDto,
-        List<ReviewKeyword> keywords,
+        List<ReviewKeywordValue> keywords,
         String autoCreatedContent,
         String content,
         List<ReviewFileDto> reviewFileDtos,
@@ -23,11 +24,11 @@ public record ReviewDtoWithMemberAndPlace(
         LocalDateTime deletedAt
 ) {
 
-    public static ReviewDtoWithMemberAndPlace of(PlaceDto placeDto, List<ReviewKeyword> keywords, String autoCreatedContent, String content) {
+    public static ReviewDtoWithMemberAndPlace of(PlaceDto placeDto, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
         return of(null, null, placeDto, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDtoWithMemberAndPlace of(Long id, MemberDto writerDto, PlaceDto place, List<ReviewKeyword> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static ReviewDtoWithMemberAndPlace of(Long id, MemberDto writerDto, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return new ReviewDtoWithMemberAndPlace(id, writerDto, place, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
     }
 
@@ -36,7 +37,9 @@ public record ReviewDtoWithMemberAndPlace(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
                 PlaceDto.from(entity.getPlace(), markedPlaceIdList),
-                entity.getKeywords(),
+                entity.getKeywords().stream()
+                        .map(ReviewKeyword::getKeyword)
+                        .toList(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
                 entity.getReviewFiles().stream()
@@ -52,7 +55,6 @@ public record ReviewDtoWithMemberAndPlace(
         return Review.of(
                 writer,
                 place,
-                this.keywords(),
                 this.autoCreatedContent(),
                 this.content()
         );

@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.review.response;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.dto.member.response.MemberResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceCompactResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
@@ -44,7 +44,7 @@ public class FeedResponse {
                 MemberResponse.from(dto.writerDto()),
                 PlaceCompactResponse.from(dto.placeDto()),
                 dto.keywords().stream()
-                        .map(ReviewKeyword::getDescription)
+                        .map(ReviewKeywordValue::getDescription)
                         .toList(),
                 dto.content(),
                 dto.reviewFileDtos().stream()

@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.dto.place.response;
 
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;
 import com.zelusik.eatery.app.domain.place.Point;
@@ -17,6 +18,9 @@ public class PlaceResponse {
 
     @Schema(description = "장소의 id(PK)", example = "1")
     private Long id;
+
+    @Schema(description = "가장 많이 태그된 top 3 keywords", example = "[\"신선한 재료\", \"최고의 맛\"]")
+    List<String> top3Keywords;
 
     @Schema(description = "이름", example = "연남토마 본점")
     private String name;
@@ -45,8 +49,8 @@ public class PlaceResponse {
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static PlaceResponse of(Long id, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, Boolean isMarked) {
-        return new PlaceResponse(id, name, category, phone, address, snsUrl, point, closingHours, openingHours, isMarked);
+    public static PlaceResponse of(Long id, List<String> top3Keywords, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, Boolean isMarked) {
+        return new PlaceResponse(id, top3Keywords, name, category, phone, address, snsUrl, point, closingHours, openingHours, isMarked);
     }
 
     public static PlaceResponse from(PlaceDto placeDto) {
@@ -62,6 +66,9 @@ public class PlaceResponse {
 
         return new PlaceResponse(
                 placeDto.id(),
+                placeDto.top3Keywords().stream()
+                        .map(ReviewKeywordValue::getDescription)
+                        .toList(),
                 placeDto.name(),
                 category,
                 placeDto.phone(),
