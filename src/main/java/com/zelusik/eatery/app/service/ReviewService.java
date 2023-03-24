@@ -69,8 +69,7 @@ public class ReviewService {
         reviewFileService.upload(review, files);
 
         // 장소 top 3 keyword 설정
-        List<ReviewKeywordValue> placeTop3Keywords = reviewKeywordRepository.searchTop3Keywords(place.getId());
-        place.setTop3Keywords(placeTop3Keywords);
+        renewPlaceTop3Keywords(place);
 
         return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);
     }
@@ -159,6 +158,9 @@ public class ReviewService {
 
         reviewFileService.deleteAll(review.getReviewFiles());
         reviewRepository.delete(review);
+        reviewRepository.flush();
+
+        renewPlaceTop3Keywords(review.getPlace());
     }
 
     /**
@@ -185,5 +187,15 @@ public class ReviewService {
         if (!review.getWriter().getId().equals(member.getId())) {
             throw new ReviewDeletePermissionDeniedException();
         }
+    }
+
+    /**
+     * 장소의 top 3 keyword를 DB에서 조회 후 갱신한다.
+     *
+     * @param place top 3 keyword를 갱신할 장소
+     */
+    private void renewPlaceTop3Keywords(Place place) {
+        List<ReviewKeywordValue> placeTop3Keywords = reviewKeywordRepository.searchTop3Keywords(place.getId());
+        place.setTop3Keywords(placeTop3Keywords);
     }
 }
