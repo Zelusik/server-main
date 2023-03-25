@@ -83,7 +83,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/search")
-    public SliceResponse<PlaceResponse> searchNearBy(
+    public SliceResponse<PlaceResponseWithImages> searchNearBy(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
@@ -110,14 +110,14 @@ public class PlaceController {
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
-        return new SliceResponse<PlaceResponse>().from(
+        return new SliceResponse<PlaceResponseWithImages>().from(
                 placeService.findDtosNearBy(
                         userPrincipal.getMemberId(),
                         daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
                         keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
                         lat, lng,
                         PageRequest.of(page, size)
-                ).map(PlaceResponse::from)
+                ).map(PlaceResponseWithImages::from)
         );
     }
 

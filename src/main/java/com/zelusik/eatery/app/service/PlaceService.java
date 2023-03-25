@@ -117,14 +117,18 @@ public class PlaceService {
      * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
+    public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
         Slice<Place> places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 3, pageable);
         if (!places.hasContent()) {
             places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 10, pageable);
         }
 
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-        return places.map(place -> PlaceDto.from(place, markedPlaceIdList));
+
+        return places.map(place -> {
+            List<ReviewFileDto> placeImages = reviewFileService.findLatest3ByPlace(place);
+            return PlaceDtoWithImages.from(place, placeImages, markedPlaceIdList);
+        });
     }
 
     public Slice<PlaceDtoWithImages> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
