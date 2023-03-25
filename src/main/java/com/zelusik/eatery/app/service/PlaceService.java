@@ -142,9 +142,9 @@ public class PlaceService {
         for (String oh : openingHours.split("\n")) {
             oh = oh.trim();
 
-            if (oh.contains("휴게시간")) {
-                continue;
-            }
+            if (oh.contains("라스트오더")) continue;
+
+            if (oh.contains("휴게시간")) continue;
 
             if (oh.startsWith("매일")) {
                 // 매일 11:30 ~ 22:00
