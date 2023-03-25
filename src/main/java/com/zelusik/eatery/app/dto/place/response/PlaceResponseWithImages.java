@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -71,6 +72,13 @@ public class PlaceResponseWithImages {
             category = dto.category().getFirstCategory();
         }
 
+        List<String> images = new LinkedList<>(dto.images().stream()
+                .map(ReviewFileDto::url)
+                .toList());
+        while (images.size() < 3) {
+            images.add("");
+        }
+
         return new PlaceResponseWithImages(
                 dto.id(),
                 dto.top3Keywords().stream()
@@ -86,9 +94,7 @@ public class PlaceResponseWithImages {
                 dto.openingHoursDtos().stream()
                         .map(OpeningHoursResponse::from)
                         .toList(),
-                dto.images().stream()
-                        .map(ReviewFileDto::url)
-                        .toList(),
+                images,
                 dto.isMarked()
         );
     }

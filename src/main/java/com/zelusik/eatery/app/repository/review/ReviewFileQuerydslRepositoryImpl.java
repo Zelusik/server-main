@@ -22,7 +22,8 @@ public class ReviewFileQuerydslRepositoryImpl implements ReviewFileQuerydslRepos
                 .from(review)
                 .join(review.place, place)
                 .join(review.reviewFiles, reviewFile)
-                .where(review.place.eq(cond))
+                .where(review.place.eq(cond)
+                        .and(review.deletedAt.isNull()))
                 .orderBy(reviewFile.createdAt.desc())
                 .limit(3)
                 .fetch();
