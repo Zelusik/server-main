@@ -6,8 +6,10 @@ import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.place.PlaceRepository;
@@ -31,8 +33,8 @@ import java.util.Optional;
 @Service
 public class PlaceService {
 
-    private final MemberService memberService;
     private final WebScrapingService webScrapingService;
+    private final ReviewFileService reviewFileService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
     private final BookmarkRepository bookmarkRepository;
@@ -125,9 +127,12 @@ public class PlaceService {
         return places.map(place -> PlaceDto.from(place, markedPlaceIdList));
     }
 
-    public Slice<PlaceDto> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
-        return placeRepository.findMarkedPlaces(memberId, pageable)
-                .map(place -> PlaceDto.from(place, null));
+    public Slice<PlaceDtoWithImages> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
+        Slice<Place> places = placeRepository.findMarkedPlaces(memberId, pageable);
+        return places.map(place -> {
+            List<ReviewFileDto> placeImages = reviewFileService.findLatest3ByPlace(place);
+            return PlaceDtoWithImages.from(place, placeImages, null);
+        });
     }
 
     /**

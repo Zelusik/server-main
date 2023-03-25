@@ -1,8 +1,10 @@
 package com.zelusik.eatery.app.service;
 
+import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.review.ReviewFile;
 import com.zelusik.eatery.app.dto.file.S3FileDto;
+import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import com.zelusik.eatery.app.repository.review.ReviewFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,12 @@ public class ReviewFileService {
             ));
         });
         reviewFileRepository.saveAll(review.getReviewFiles());
+    }
+
+    public List<ReviewFileDto> findLatest3ByPlace(Place place) {
+        return reviewFileRepository.findLatest3ByPlace(place).stream()
+                .map(ReviewFileDto::from)
+                .toList();
     }
 
     /**

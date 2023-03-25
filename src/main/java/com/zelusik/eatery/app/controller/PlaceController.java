@@ -6,6 +6,7 @@ import com.zelusik.eatery.app.dto.SliceResponse;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.place.response.PlaceCompactResponseWithoutIsMarked;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
+import com.zelusik.eatery.app.dto.place.response.PlaceResponseWithImages;
 import com.zelusik.eatery.app.service.PlaceService;
 import com.zelusik.eatery.global.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -127,7 +128,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/bookmarks")
-    public SliceResponse<PlaceResponse> findMarkedPlaces(
+    public SliceResponse<PlaceResponseWithImages> findMarkedPlaces(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호(0부터 시작합니다). 기본값은 0입니다.",
@@ -138,11 +139,11 @@ public class PlaceController {
                     example = "20"
             ) @RequestParam(required = false, defaultValue = "20") int size
     ) {
-        return new SliceResponse<PlaceResponse>().from(
+        return new SliceResponse<PlaceResponseWithImages>().from(
                 placeService.findMarkedPlaceDtos(
                         userPrincipal.getMemberId(),
                         PageRequest.of(page, size)
-                ).map(PlaceResponse::from)
+                ).map(PlaceResponseWithImages::from)
         );
     }
 }
