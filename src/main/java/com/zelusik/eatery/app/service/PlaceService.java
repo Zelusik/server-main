@@ -89,10 +89,13 @@ public class PlaceService {
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceDto findDtoById(Long memberId, Long placeId) {
+    public PlaceDtoWithImages findDtoById(Long memberId, Long placeId) {
         Place place = findEntityById(placeId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-        return PlaceDto.from(place, markedPlaceIdList);
+
+        List<ReviewFileDto> images = reviewFileService.findLatest3ByPlace(place);
+
+        return PlaceDtoWithImages.from(place, images, markedPlaceIdList);
     }
 
     /**

@@ -67,11 +67,11 @@ public class PlaceController {
             @ApiResponse(description = "[3001] 찾고자 하는 가게가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping("/{placeId}")
-    public PlaceResponse find(
+    public PlaceResponseWithImages find(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long placeId
     ) {
-        return PlaceResponse.from(placeService.findDtoById(userPrincipal.getMemberId(), placeId));
+        return PlaceResponseWithImages.from(placeService.findDtoById(userPrincipal.getMemberId(), placeId));
     }
 
     @Operation(
