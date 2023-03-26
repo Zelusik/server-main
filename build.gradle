@@ -70,6 +70,10 @@ dependencies {
     // Spring Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // Marvin for image resize
+    implementation 'com.github.downgoon:marvin:1.5.5'
+    implementation 'com.github.downgoon:MarvinPlugins:1.5.5'
+
     // Spring Boot Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
