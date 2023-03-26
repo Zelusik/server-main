@@ -9,12 +9,14 @@ public record CurationElemFileDto(
         String originalName,
         String storedName,
         String url,
+        String thumbnailStoredName,
+        String thumbnailUrl,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         LocalDateTime deletedAt
 ) {
-    public static CurationElemFileDto of(Long id, String originalName, String storedName, String url, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new CurationElemFileDto(id, originalName, storedName, url, createdAt, updatedAt, deletedAt);
+    public static CurationElemFileDto of(Long id, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new CurationElemFileDto(id, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
     }
 
     public static CurationElemFileDto from(CurationElemFile entity) {
@@ -23,6 +25,8 @@ public record CurationElemFileDto(
                 entity.getOriginalName(),
                 entity.getStoredName(),
                 entity.getUrl(),
+                entity.getThumbnailStoredName(),
+                entity.getThumbnailUrl(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getDeletedAt()

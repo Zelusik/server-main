@@ -1,7 +1,6 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.curation.CurationElemFile;
-import com.zelusik.eatery.app.dto.file.S3FileDto;
 import com.zelusik.eatery.app.repository.curation.CurationElemFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,11 +26,13 @@ public class CurationElemFileService {
      */
     @Transactional
     public CurationElemFile upload(MultipartFile multipartFile) {
-        S3FileDto s3FileDto = fileService.uploadFile(multipartFile, DIR_PATH);
+        S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
         return curationElemFileRepository.save(CurationElemFile.of(
-                s3FileDto.originalName(),
-                s3FileDto.storedName(),
-                s3FileDto.url()
+                s3ImageDto.originalName(),
+                s3ImageDto.storedName(),
+                s3ImageDto.url(),
+                s3ImageDto.thumbnailStoredName(),
+                s3ImageDto.thumbnailUrl()
         ));
     }
 }
