@@ -6,7 +6,7 @@ public class S3FileTestUtils {
     
     public static S3FileDto createS3FileDto() {
         return S3FileDto.of(
-                "originalFileNmae",
+                "originalFileName",
                 "storedFileName",
                 "url"
         );
