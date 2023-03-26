@@ -3,8 +3,8 @@ package com.zelusik.eatery.app.dto.place.response;
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Point;
+import com.zelusik.eatery.app.dto.file.response.ImageResponse;
 import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,12 +52,12 @@ public class PlaceResponseWithImages {
     private List<OpeningHoursResponse> openingHours;
 
     @Schema(description = "장소에 대한 이미지")
-    private List<String> images;
+    private List<ImageResponse> images;
 
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static PlaceResponseWithImages of(Long id, List<String> top3Keywords, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, List<String> images, Boolean isMarked) {
+    public static PlaceResponseWithImages of(Long id, List<String> top3Keywords, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, List<ImageResponse> images, Boolean isMarked) {
         return new PlaceResponseWithImages(id, top3Keywords, name, category, phone, address, snsUrl, point, closingHours, openingHours, images, isMarked);
     }
 
@@ -72,12 +72,9 @@ public class PlaceResponseWithImages {
             category = dto.category().getFirstCategory();
         }
 
-        List<String> images = new LinkedList<>(dto.images().stream()
-                .map(ReviewFileDto::url)
+        LinkedList<ImageResponse> images = new LinkedList<>(dto.images().stream()
+                .map(reviewFileDto -> ImageResponse.of(reviewFileDto.url(), reviewFileDto.thumbnailUrl()))
                 .toList());
-        while (images.size() < 3) {
-            images.add("");
-        }
 
         return new PlaceResponseWithImages(
                 dto.id(),
