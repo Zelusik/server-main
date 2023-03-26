@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
@@ -231,7 +232,7 @@ class PlaceServiceTest {
         given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
 
         // when
-        PlaceDto findDto = sut.findDtoById(memberId, placeId);
+        PlaceDtoWithImages findDto = sut.findDtoById(memberId, placeId);
 
         // then
         then(placeRepository).should().findById(placeId);
@@ -299,7 +300,7 @@ class PlaceServiceTest {
         given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
+        Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
         then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);
@@ -324,7 +325,7 @@ class PlaceServiceTest {
         given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
+        Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
         then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);

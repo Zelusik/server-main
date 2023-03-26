@@ -1,11 +1,10 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.config.SecurityConfig;
-import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
+import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
-import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.service.PlaceService;
 import com.zelusik.eatery.global.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.global.security.UserPrincipal;
@@ -66,7 +65,7 @@ class PlaceControllerTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         given(placeService.createAndReturnDto(eq(1L), any(PlaceCreateRequest.class)))
-                .willReturn(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours());
+                .willReturn(PlaceTestUtils.createPlaceDtoWithOpeningHours());
 
         // when & then
         mvc.perform(
@@ -87,7 +86,7 @@ class PlaceControllerTest {
         long placeId = 1L;
         long memberId = 1L;
         given(placeService.findDtoById(memberId, placeId))
-                .willReturn(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours());
+                .willReturn(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours());
 
         // when & then
         mvc.perform(
@@ -106,7 +105,7 @@ class PlaceControllerTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithIdAndOpeningHours()), pageable, false);
+        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
         given(placeService.findDtosNearBy(1L, List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
 
         // when & then
