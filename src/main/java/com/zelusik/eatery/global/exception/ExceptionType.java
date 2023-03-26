@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.curation.Curation;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.global.exception.auth.AppleOAuthLoginException;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.bookmark.AlreadyMarkedPlaceException;
@@ -61,6 +62,7 @@ import java.util.Optional;
  *     <li>4000 ~ 4299: 큐레이션 관련 예외</li>
  *     <li>4300 ~ 4599: 북마크 관련 예외</li>
  *     <li>1XXXX: Kakao server 관련 예외</li>
+ *     <li>2XXXX: Apple server/login 관련 예외</li>
  * </ul>
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -150,6 +152,11 @@ public enum ExceptionType {
      */
     KAKAO_SERVER(10000, "카카오 서버와의 통신에서 에러가 발생했습니다.", null),
     KAKAO_TOKEN_VALIDATE(10000, "유효하지 않은 kakao access token입니다. 요청 데이터가 잘못 되었거나 토큰이 만료되지 않았는지 확인해주세요.", KakaoTokenValidateException.class),
+
+    /**
+     * Apple server/login 관련 예외
+     */
+    APPLE_OAUTH_LOGIN(20000, "애플 로그인 과정에서 알 수 없는 에러가 발생했습니다.", AppleOAuthLoginException.class),
     ;
 
     private final Integer code;

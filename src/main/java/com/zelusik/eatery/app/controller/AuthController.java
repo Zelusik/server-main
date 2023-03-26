@@ -1,7 +1,9 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.constant.member.LoginType;
+import com.zelusik.eatery.app.dto.auth.AppleOAuthUserInfo;
 import com.zelusik.eatery.app.dto.auth.KakaoOAuthUserInfo;
+import com.zelusik.eatery.app.dto.auth.request.AppleLoginRequest;
 import com.zelusik.eatery.app.dto.auth.request.KakaoLoginRequest;
 import com.zelusik.eatery.app.dto.auth.request.TokenRefreshRequest;
 import com.zelusik.eatery.app.dto.auth.response.LoginResponse;
@@ -9,6 +11,7 @@ import com.zelusik.eatery.app.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.app.dto.auth.response.TokenValidateResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.response.LoggedInMemberResponse;
+import com.zelusik.eatery.app.service.AppleOAuthService;
 import com.zelusik.eatery.app.service.JwtTokenService;
 import com.zelusik.eatery.app.service.KakaoOAuthService;
 import com.zelusik.eatery.app.service.MemberService;
@@ -35,13 +38,14 @@ import javax.validation.constraints.NotBlank;
 public class AuthController {
 
     private final KakaoOAuthService kakaoOAuthService;
+    private final AppleOAuthService appleOAuthService;
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
 
     @Operation(
-            summary = "로그인",
-            description = "<p>Kakao에서 전달받은 access token을 request header에 담아 로그인합니다." +
-                    "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다." +
+            summary = "카카오 로그인",
+            description = "<p>Kakao에서 전달받은 access token으로 로그인합니다." +
+                    "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다. 이후 로그인 원한이 필요한 API를 호출할 때는 HTTP header의 <strong>Authorization</strong>에 access token을 담아서 요청해야 합니다." +
                     "<p>Access token의 만료기한은 하루, refresh token의 만료기한은 1달입니다." +
                     "<p>이전에 탈퇴했던 회원이고 DB에서 완전히 삭제되지 않은 경우, 재가입을 진행합니다." +
                     "<p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다."
@@ -51,7 +55,7 @@ public class AuthController {
             @ApiResponse(description = "[10401] 유효하지 않은 kakao access token으로 요청한 경우.", responseCode = "401", content = @Content)
     })
     @PostMapping("/login/kakao")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody KakaoLoginRequest request) {
+    public LoginResponse kakaoLogin(@Valid @RequestBody KakaoLoginRequest request) {
         KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
@@ -63,9 +67,36 @@ public class AuthController {
 
         TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.KAKAO);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse));
+        return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
+    }
+
+    @Operation(
+            summary = "애플 로그인",
+            description = "<p>Apple에서 전달받은 identity token으로 로그인합니다." +
+                    "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다. 이후 로그인 원한이 필요한 API를 호출할 때는 HTTP header의 <strong>Authorization</strong>에 access token을 담아서 요청해야 합니다." +
+                    "<p>Access token의 만료기한은 하루, refresh token의 만료기한은 1달입니다." +
+                    "<p>이전에 탈퇴했던 회원이고 DB에서 완전히 삭제되지 않은 경우, 재가입을 진행합니다." +
+                    "<p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다."
+    )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(description = "[1502] 유효하지 않은 token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
+            @ApiResponse(description = "[20000] Apple 로그인 과정에서 알 수 없는 에러가 발생한 경우. 서버 관리자에게 문의해주세요.", responseCode = "500", content = @Content)
+    })
+    @PostMapping("/login/apple")
+    public LoginResponse appleLogin(@Valid @RequestBody AppleLoginRequest request) {
+        AppleOAuthUserInfo userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
+
+        MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.sub())
+                .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName())));
+
+        if (memberDto.deletedAt() != null) {
+            memberService.rejoin(memberDto.id());
+        }
+
+        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.APPLE);
+
+        return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
     }
 
     @Operation(
