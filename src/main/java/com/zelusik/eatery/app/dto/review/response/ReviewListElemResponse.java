@@ -1,8 +1,8 @@
 package com.zelusik.eatery.app.dto.review.response;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.app.dto.file.response.ImageResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,11 +25,11 @@ public class ReviewListElemResponse {
     @Schema(description = "내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
     private String content;
 
-    @Schema(description = "리뷰에 첨부된 이미지 파일 목록", example = "[\"https://eatery-s3-bucket.s3.ap-northeast-2.amazonaws.com/review/0950af0e-3950-4596-bba2-4fee11e4938a.jpg\"]")
-    private List<String> reviewFiles;
+    @Schema(description = "리뷰에 첨부된 이미지 파일 목록")
+    private List<ImageResponse> images;
 
-    public static ReviewListElemResponse of(Long id, Long writerId, List<String> keywords, String content, List<String> reviewFiles) {
-        return new ReviewListElemResponse(id, writerId, keywords, content, reviewFiles);
+    public static ReviewListElemResponse of(Long id, Long writerId, List<String> keywords, String content, List<ImageResponse> images) {
+        return new ReviewListElemResponse(id, writerId, keywords, content, images);
     }
 
     public static ReviewListElemResponse from(ReviewDtoWithMember dto) {
@@ -41,7 +41,7 @@ public class ReviewListElemResponse {
                         .toList(),
                 dto.content(),
                 dto.reviewFileDtos().stream()
-                        .map(ReviewFileDto::url)
+                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.url(), reviewFileDto.thumbnailUrl()))
                         .toList()
         );
     }

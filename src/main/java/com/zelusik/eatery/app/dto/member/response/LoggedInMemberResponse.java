@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.dto.member.response;
 
 import com.zelusik.eatery.app.constant.member.LoginType;
+import com.zelusik.eatery.app.dto.file.response.ImageResponse;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.terms_info.response.TermsInfoResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,11 +19,8 @@ public class LoggedInMemberResponse {
     @Schema(description = "약관 동의 정보")
     private TermsInfoResponse termsInfo;
 
-    @Schema(description = "프로필 이미지 url", example = "https://...")
-    private String profileImageUrl;
-
-    @Schema(description = "프로필 이미지 썸네일 url", example = "https://...")
-    private String profileThumbnailImageUrl;
+    @Schema(description = "프로필 이미지")
+    private ImageResponse image;
 
     @Schema(description = "로그인 유형", example = "KAKAO")
     private LoginType loginType;
@@ -37,8 +35,7 @@ public class LoggedInMemberResponse {
         return new LoggedInMemberResponse(
                 memberDto.id(),
                 TermsInfoResponse.from(memberDto.termsInfoDto()),
-                memberDto.profileImageUrl(),
-                memberDto.profileThumbnailImageUrl(),
+                ImageResponse.of(memberDto.profileImageUrl(), memberDto.profileThumbnailImageUrl()),
                 memberDto.loginType(),
                 memberDto.email(),
                 memberDto.nickname()

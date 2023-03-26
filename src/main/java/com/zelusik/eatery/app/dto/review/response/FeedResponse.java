@@ -1,10 +1,10 @@
 package com.zelusik.eatery.app.dto.review.response;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.app.dto.file.response.ImageResponse;
 import com.zelusik.eatery.app.dto.member.response.MemberResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceCompactResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,10 +32,10 @@ public class FeedResponse {
     private String content;
 
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록", example = "[\"https://eatery-s3-bucket.s3.ap-northeast-2.amazonaws.com/review/0950af0e-3950-4596-bba2-4fee11e4938a.jpg\"]")
-    private List<String> reviewFiles;
+    private List<ImageResponse> images;
 
-    public static FeedResponse of(Long id, MemberResponse writer, PlaceCompactResponse place, List<String> keywords, String content, List<String> reviewFiles) {
-        return new FeedResponse(id, writer, place, keywords, content, reviewFiles);
+    public static FeedResponse of(Long id, MemberResponse writer, PlaceCompactResponse place, List<String> keywords, String content, List<ImageResponse> images) {
+        return new FeedResponse(id, writer, place, keywords, content, images);
     }
 
     public static FeedResponse from(ReviewDtoWithMemberAndPlace dto) {
@@ -48,7 +48,7 @@ public class FeedResponse {
                         .toList(),
                 dto.content(),
                 dto.reviewFileDtos().stream()
-                        .map(ReviewFileDto::url)
+                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.url(), reviewFileDto.thumbnailUrl()))
                         .toList()
         );
     }
