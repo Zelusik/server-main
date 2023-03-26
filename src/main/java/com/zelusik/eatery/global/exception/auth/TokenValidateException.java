@@ -1,8 +1,8 @@
 package com.zelusik.eatery.global.exception.auth;
 
-import com.zelusik.eatery.global.exception.common.InternalServerException;
+import com.zelusik.eatery.global.exception.common.UnauthorizedException;
 
-public class TokenValidateException extends InternalServerException {
+public class TokenValidateException extends UnauthorizedException {
 
     public TokenValidateException() {
         super();
