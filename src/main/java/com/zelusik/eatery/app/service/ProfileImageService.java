@@ -2,7 +2,6 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
-import com.zelusik.eatery.app.dto.file.S3FileDto;
 import com.zelusik.eatery.app.repository.member.ProfileImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,12 +20,14 @@ public class ProfileImageService {
 
     @Transactional
     public ProfileImage upload(Member member, MultipartFile multipartFile) {
-        S3FileDto s3FileDto = fileService.uploadFile(multipartFile, DIR_PATH);
+        S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
         return profileImageRepository.save(ProfileImage.of(
                 member,
-                s3FileDto.originalName(),
-                s3FileDto.storedName(),
-                s3FileDto.url()
+                s3ImageDto.originalName(),
+                s3ImageDto.storedName(),
+                s3ImageDto.url(),
+                s3ImageDto.thumbnailStoredName(),
+                s3ImageDto.thumbnailUrl()
         ));
     }
 }

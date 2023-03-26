@@ -150,7 +150,7 @@ public class MemberService {
             ProfileImage profileImage = profileImageService.upload(member, profileImageFile);
             member.update(
                     profileImage.getUrl(),
-                    profileImage.getUrl(),
+                    profileImage.getThumbnailUrl(),
                     updateRequest.getNickname(),
                     updateRequest.getBirthDay(),
                     updateRequest.getGender()
