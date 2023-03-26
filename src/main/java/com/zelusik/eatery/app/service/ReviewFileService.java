@@ -32,12 +32,14 @@ public class ReviewFileService {
     @Transactional
     public void upload(Review review, List<MultipartFile> multipartFiles) {
         multipartFiles.forEach(multipartFile -> {
-            S3FileDto s3FileDto = fileService.upload(multipartFile, DIR_PATH);
+            S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
             review.getReviewFiles().add(ReviewFile.of(
                     review,
-                    s3FileDto.originalName(),
-                    s3FileDto.storedName(),
-                    s3FileDto.url()
+                    s3ImageDto.originalName(),
+                    s3ImageDto.storedName(),
+                    s3ImageDto.url(),
+                    s3ImageDto.thumbnailStoredName(),
+                    s3ImageDto.thumbnailUrl()
             ));
         });
         reviewFileRepository.saveAll(review.getReviewFiles());

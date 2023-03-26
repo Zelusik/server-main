@@ -40,6 +40,8 @@ public class ReviewTestUtils {
                         "test.txt",
                         "storedName",
                         "url",
+                        "thumbnailStoredName",
+                        "thumbnailUrl",
                         LocalDateTime.now(),
                         LocalDateTime.now(),
                         LocalDateTime.now()
@@ -63,6 +65,8 @@ public class ReviewTestUtils {
                         "test.txt",
                         "storedName",
                         "url",
+                        "thumbnailStoredName",
+                        "thumbnailUrl",
                         LocalDateTime.now(),
                         LocalDateTime.now(),
                         LocalDateTime.now()

@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.domain.member;
 
-import com.zelusik.eatery.app.domain.S3File;
+import com.zelusik.eatery.app.domain.S3Image;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @SQLDelete(sql = "UPDATE profile_image SET deleted_at = CURRENT_TIMESTAMP WHERE profile_image_id = ?")
 @Entity
-public class ProfileImage extends S3File {
+public class ProfileImage extends S3Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,22 +25,30 @@ public class ProfileImage extends S3File {
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
-    public static ProfileImage of(Member member, String originalName, String storedName, String url) {
-        return ProfileImage.builder()
-                .member(member)
-                .originalName(originalName)
-                .storedName(storedName)
-                .url(url)
-                .build();
+    public static ProfileImage of(Member member, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
+        return of(
+                null,
+                member,
+                originalName,
+                storedName,
+                url,
+                thumbnailStoredName,
+                thumbnailUrl,
+                null,
+                null,
+                null
+        );
     }
 
-    public static ProfileImage of(Long id, Member member, String originalName, String storedName, String url, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static ProfileImage of(Long id, Member member, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return ProfileImage.builder()
                 .id(id)
                 .member(member)
                 .originalName(originalName)
                 .storedName(storedName)
                 .url(url)
+                .thumbnailStoredName(thumbnailStoredName)
+                .thumbnailUrl(thumbnailUrl)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .deletedAt(deletedAt)
@@ -48,8 +56,9 @@ public class ProfileImage extends S3File {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private ProfileImage(Long id, Member member, String originalName, String storedName, String url, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        super(originalName, storedName, url, createdAt, updatedAt, deletedAt);
+    private ProfileImage(Long id, Member member, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
         this.id = id;
+        this.member = member;
     }
 }

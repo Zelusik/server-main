@@ -1,6 +1,7 @@
 package com.zelusik.eatery.util;
 
 import com.zelusik.eatery.app.dto.file.S3FileDto;
+import com.zelusik.eatery.app.service.S3ImageDto;
 
 public class S3FileTestUtils {
     
@@ -9,6 +10,16 @@ public class S3FileTestUtils {
                 "originalFileName",
                 "storedFileName",
                 "url"
+        );
+    }
+
+    public static S3ImageDto createS3ImageDto() {
+        return S3ImageDto.of(
+                "originalFileName",
+                "storedFileName",
+                "url",
+                "thumbnailStoredFileName",
+                "thumbnailUrl"
         );
     }
 }

@@ -1,7 +1,6 @@
 package com.zelusik.eatery.app.dto.curation.response;
 
 import com.zelusik.eatery.app.dto.curation.CurationElemDto;
-import com.zelusik.eatery.app.dto.place.response.PlaceCompactResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceCompactResponseWithoutIsMarked;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -29,7 +28,7 @@ public class CurationElemResponse {
         return of(
                 dto.id(),
                 PlaceCompactResponseWithoutIsMarked.from(dto.placeDto()),
-                dto.imageDto().url()
+                dto.imageDto().thumbnailUrl()
         );
     }
 }

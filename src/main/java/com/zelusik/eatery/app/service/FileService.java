@@ -5,16 +5,21 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.zelusik.eatery.app.dto.file.S3FileDto;
-import com.zelusik.eatery.global.exception.ExceptionUtils;
+import com.zelusik.eatery.app.util.CustomMultipartFile;
+import com.zelusik.eatery.global.exception.ThumbnailImageCreateException;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
-import com.zelusik.eatery.global.log.LogUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import marvin.image.MarvinImage;
+import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -24,6 +29,8 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @Service
 public class FileService {
+
+    private static final int THUMBNAIL_IMAGE_WIDTH = 800;
 
     private final AmazonS3Client s3Client;
 
@@ -38,7 +45,7 @@ public class FileService {
      * @return 업로드한 파일 정보
      */
     @Transactional
-    public S3FileDto upload(MultipartFile multipartFile, String dirPath) {
+    public S3FileDto uploadFile(MultipartFile multipartFile, String dirPath) {
         String originalFilename = multipartFile.getOriginalFilename();
         if (originalFilename == null) {
             originalFilename = "";
@@ -50,7 +57,6 @@ public class FileService {
         try {
             inputStream = multipartFile.getInputStream();
         } catch (IOException ex) {
-            log.info("[{}] !Catch Exception! FileService.save() ex={}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
             throw new MultipartFileNotReadableException(ex);
         }
 
@@ -65,6 +71,32 @@ public class FileService {
         String storedFileUrl = s3Client.getResourceUrl(bucketName, storeFileName);
 
         return S3FileDto.of(originalFilename, storeFileName, storedFileUrl);
+    }
+
+    /**
+     * S3 bucket에 이미지를 업로드한다.
+     * 원본 이미지와 썸네일 이미지 두 개를 업로드한다.
+     *
+     * @param multipartFile 업로드할 이미지 파일
+     * @param dirPath 업로드할 경로
+     * @return 업로드된 파일 정보. 원본 이미지와 썸네일 이미지 두 개에 대한 정보가 모두 담겨있다.
+     */
+    @Transactional
+    public S3ImageDto uploadImage(MultipartFile multipartFile, String dirPath) {
+        long size = multipartFile.getSize();
+        System.out.println("size = " + size);
+
+        MultipartFile resizedImage = resizeImage(multipartFile);
+
+        S3FileDto originalImageDto = this.uploadFile(multipartFile, dirPath);
+        S3FileDto thumbnailImageDto = this.uploadFile(resizedImage, dirPath + "thumbnail/");
+        return S3ImageDto.of(
+                originalImageDto.originalName(),
+                originalImageDto.storedName(),
+                originalImageDto.url(),
+                thumbnailImageDto.storedName(),
+                thumbnailImageDto.url()
+        );
     }
 
     /**
@@ -93,5 +125,54 @@ public class FileService {
         objectMetadata.setContentType(multipartFile.getContentType());
         objectMetadata.setContentLength(multipartFile.getSize());
         return objectMetadata;
+    }
+
+    /**
+     * 이미지를 썸네일용으로 압축(resizing)한다.
+     *
+     * @param originalImage 원본 이미지 파일
+     * @return resizing 된 이미지 파일
+     */
+    private MultipartFile resizeImage(MultipartFile originalImage) {
+        String imageFormat;
+        if (originalImage.getContentType() == null || originalImage.getContentType().length() == 0) {
+            imageFormat = "jpg";
+        } else {
+            int imageFormatPos = originalImage.getContentType().lastIndexOf("/");
+            imageFormat = originalImage.getContentType().substring(imageFormatPos + 1);
+        }
+
+        BufferedImage bufferedImage;
+        try {
+            bufferedImage = ImageIO.read(originalImage.getInputStream());
+        } catch (IOException ex) {
+            throw new MultipartFileNotReadableException(ex);
+        }
+
+        int originalWidth = bufferedImage.getWidth();
+        int originalHeight = bufferedImage.getHeight();
+
+        MarvinImage marvinImage = new MarvinImage(bufferedImage);
+        Scale scale = new Scale();
+        scale.load();
+        scale.setAttribute("newWidth", FileService.THUMBNAIL_IMAGE_WIDTH);
+        scale.setAttribute("newHeight", FileService.THUMBNAIL_IMAGE_WIDTH * originalHeight / originalWidth);
+        scale.process(marvinImage.clone(), marvinImage, null, null, false);
+
+        BufferedImage bufferedImageNoAlpha = marvinImage.getBufferedImageNoAlpha();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImageNoAlpha, imageFormat, byteArrayOutputStream);
+            byteArrayOutputStream.flush();
+        } catch (IOException ex) {
+            throw new ThumbnailImageCreateException(ex);
+        }
+
+        return new CustomMultipartFile(
+                originalImage.getName(),
+                originalImage.getOriginalFilename(),
+                originalImage.getContentType(),
+                byteArrayOutputStream.toByteArray()
+        );
     }
 }
