@@ -14,15 +14,15 @@ import java.time.LocalDateTime;
 public abstract class S3File extends BaseTimeEntity {
 
     @Column(nullable = false)
-    protected String originalName;
+    private String originalName;
 
     @Column(nullable = false)
-    protected String storedName;
+    private String storedName;
 
     @Column(nullable = false)
-    protected String url;
+    private String url;
 
-    protected LocalDateTime deletedAt;
+    private LocalDateTime deletedAt;
 
     protected S3File(String originalName, String storedName, String url, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         super(createdAt, updatedAt);
