@@ -21,7 +21,7 @@ public class ProfileImageService {
 
     @Transactional
     public ProfileImage upload(Member member, MultipartFile multipartFile) {
-        S3FileDto s3FileDto = fileService.upload(multipartFile, DIR_PATH);
+        S3FileDto s3FileDto = fileService.uploadFile(multipartFile, DIR_PATH);
         return profileImageRepository.save(ProfileImage.of(
                 member,
                 s3FileDto.originalName(),

@@ -1,10 +1,10 @@
 package com.zelusik.eatery.app.dto.review.response;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.app.dto.file.response.ImageResponse;
 import com.zelusik.eatery.app.dto.member.response.MemberResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,14 +32,14 @@ public class ReviewResponse {
     private String content;
 
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록", example = "[\"https://eatery-s3-bucket.s3.ap-northeast-2.amazonaws.com/review/0950af0e-3950-4596-bba2-4fee11e4938a.jpg\"]")
-    private List<String> reviewFiles;
+    private List<ImageResponse> images;
 
-    public static ReviewResponse of(Long id, MemberResponse writer, PlaceResponse place, List<String> keywords, String content, List<String> reviewFiles) {
-        return new ReviewResponse(id, writer, place, keywords, content, reviewFiles);
+    public static ReviewResponse of(Long id, MemberResponse writer, PlaceResponse place, List<String> keywords, String content, List<ImageResponse> images) {
+        return new ReviewResponse(id, writer, place, keywords, content, images);
     }
 
     public static ReviewResponse from(ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace) {
-        return new ReviewResponse(
+        return of(
                 reviewDtoWithMemberAndPlace.id(),
                 MemberResponse.from(reviewDtoWithMemberAndPlace.writerDto()),
                 PlaceResponse.from(reviewDtoWithMemberAndPlace.placeDto()),
@@ -48,7 +48,7 @@ public class ReviewResponse {
                         .toList(),
                 reviewDtoWithMemberAndPlace.content(),
                 reviewDtoWithMemberAndPlace.reviewFileDtos().stream()
-                        .map(ReviewFileDto::url)
+                        .map(ImageResponse::from)
                         .toList()
         );
     }

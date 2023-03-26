@@ -75,6 +75,7 @@ public enum ExceptionType {
      */
     UNHANDLED(1000, "알 수 없는 서버 에러가 발생했습니다.", null),
     MULTIPART_FILE_NOT_READABLE(1001, "파일을 읽을 수 없습니다.", MultipartFileNotReadableException.class),
+    THUMBNAIL_IMAGE_CREATE(1002, "이미지 압축 과정에서 알 수 없는 에러가 발생했습니다.", ThumbnailImageCreateException.class),
 
     /**
      * Validation Exception

@@ -31,20 +31,21 @@ class ReviewFileServiceTest {
     @Mock
     private ReviewFileRepository reviewFileRepository;
 
-    @DisplayName("Multipart file들이 주어지면, 파일들을 업로드한다.")
+    @DisplayName("이미지 파일들이 주어지면, 파일들을 업로드한다.")
     @Test
-    void givenMultipartFiles_whenUpload_thenUploadFiles() {
+    void givenImageFiles_whenUploading_thenUploadFiles() {
         // given
         List<MultipartFile> multipartFiles = List.of(MultipartFileTestUtils.createMockMultipartFile());
         Review review = ReviewTestUtils.createReviewWithId();
-        given(fileService.upload(any(MultipartFile.class), any(String.class))).willReturn(S3FileTestUtils.createS3FileDto());
+        given(fileService.uploadImage(any(MultipartFile.class), any(String.class)))
+                .willReturn(S3FileTestUtils.createS3ImageDto());
         given(reviewFileRepository.saveAll(any())).willReturn(List.of());
 
         // when
         sut.upload(review, multipartFiles);
 
         // then
-        then(fileService).should().upload(any(MultipartFile.class), any(String.class));
+        then(fileService).should().uploadImage(any(MultipartFile.class), any(String.class));
         then(reviewFileRepository).should().saveAll(any());
     }
 }

@@ -27,7 +27,7 @@ public class CurationElemFileService {
      */
     @Transactional
     public CurationElemFile upload(MultipartFile multipartFile) {
-        S3FileDto s3FileDto = fileService.upload(multipartFile, DIR_PATH);
+        S3FileDto s3FileDto = fileService.uploadFile(multipartFile, DIR_PATH);
         return curationElemFileRepository.save(CurationElemFile.of(
                 s3FileDto.originalName(),
                 s3FileDto.storedName(),

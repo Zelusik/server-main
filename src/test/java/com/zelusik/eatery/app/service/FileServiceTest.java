@@ -36,7 +36,7 @@ class FileServiceTest {
         given(s3Client.getResourceUrl(any(), any(String.class))).willReturn(expectedStoredFileUrl);
 
         // when
-        S3FileDto actualFileDto = sut.upload(MultipartFileTestUtils.createMockMultipartFile(), "test");
+        S3FileDto actualFileDto = sut.uploadFile(MultipartFileTestUtils.createMockMultipartFile(), "test");
 
         // then
         then(s3Client).should().putObject(any(PutObjectRequest.class));
