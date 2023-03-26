@@ -30,7 +30,7 @@ import java.util.UUID;
 @Service
 public class FileService {
 
-    private static final int THUMBNAIL_IMAGE_WIDTH = 800;
+    private static final int THUMBNAIL_IMAGE_WIDTH = 600;
 
     private final AmazonS3Client s3Client;
 
