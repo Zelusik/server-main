@@ -1,10 +1,10 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
-import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
+import com.zelusik.eatery.app.dto.member.response.MemberDeletionSurveyResponse;
 import com.zelusik.eatery.app.dto.member.response.MemberResponse;
 import com.zelusik.eatery.app.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.app.dto.terms_info.response.TermsInfoResponse;
@@ -110,10 +110,15 @@ public class MemberController {
             security = @SecurityRequirement(name = "access-token")
     )
     @DeleteMapping
-    public MemberDeletionSurveyDto delete(
+    public MemberDeletionSurveyResponse delete(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody MemberDeletionSurveyRequest memberDeletionSurveyRequest
     ) {
-        return memberService.delete(userPrincipal.getMemberId(), memberDeletionSurveyRequest.getSurveyType());
+        return MemberDeletionSurveyResponse.from(
+                memberService.delete(
+                        userPrincipal.getMemberId(),
+                        memberDeletionSurveyRequest.getSurveyType()
+                )
+        );
     }
 }
