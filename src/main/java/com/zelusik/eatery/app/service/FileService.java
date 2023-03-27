@@ -9,7 +9,6 @@ import com.zelusik.eatery.app.util.CustomMultipartFile;
 import com.zelusik.eatery.global.exception.ThumbnailImageCreateException;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import marvin.image.MarvinImage;
 import org.marvinproject.image.transform.scale.Scale;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,13 +23,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class FileService {
 
-    private static final int THUMBNAIL_IMAGE_WIDTH = 600;
+    private static final int THUMBNAIL_IMAGE_WIDTH = 500;
 
     private final AmazonS3Client s3Client;
 
@@ -78,18 +76,16 @@ public class FileService {
      * 원본 이미지와 썸네일 이미지 두 개를 업로드한다.
      *
      * @param multipartFile 업로드할 이미지 파일
-     * @param dirPath 업로드할 경로
+     * @param dirPath       업로드할 경로
      * @return 업로드된 파일 정보. 원본 이미지와 썸네일 이미지 두 개에 대한 정보가 모두 담겨있다.
      */
     @Transactional
     public S3ImageDto uploadImage(MultipartFile multipartFile, String dirPath) {
-        long size = multipartFile.getSize();
-        System.out.println("size = " + size);
-
         MultipartFile resizedImage = resizeImage(multipartFile);
 
         S3FileDto originalImageDto = this.uploadFile(multipartFile, dirPath);
         S3FileDto thumbnailImageDto = this.uploadFile(resizedImage, dirPath + "thumbnail/");
+
         return S3ImageDto.of(
                 originalImageDto.originalName(),
                 originalImageDto.storedName(),
@@ -134,14 +130,6 @@ public class FileService {
      * @return resizing 된 이미지 파일
      */
     private MultipartFile resizeImage(MultipartFile originalImage) {
-        String imageFormat;
-        if (originalImage.getContentType() == null || originalImage.getContentType().length() == 0) {
-            imageFormat = "jpg";
-        } else {
-            int imageFormatPos = originalImage.getContentType().lastIndexOf("/");
-            imageFormat = originalImage.getContentType().substring(imageFormatPos + 1);
-        }
-
         BufferedImage bufferedImage;
         try {
             bufferedImage = ImageIO.read(originalImage.getInputStream());
@@ -151,6 +139,18 @@ public class FileService {
 
         int originalWidth = bufferedImage.getWidth();
         int originalHeight = bufferedImage.getHeight();
+
+        if (originalWidth <= THUMBNAIL_IMAGE_WIDTH) {
+            return originalImage;
+        }
+
+        String imageFormat;
+        if (originalImage.getContentType() == null || originalImage.getContentType().length() == 0) {
+            imageFormat = "jpg";
+        } else {
+            int imageFormatPos = originalImage.getContentType().lastIndexOf("/");
+            imageFormat = originalImage.getContentType().substring(imageFormatPos + 1);
+        }
 
         MarvinImage marvinImage = new MarvinImage(bufferedImage);
         Scale scale = new Scale();
