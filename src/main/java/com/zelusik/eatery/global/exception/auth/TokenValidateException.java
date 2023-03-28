@@ -8,6 +8,10 @@ public class TokenValidateException extends UnauthorizedException {
         super();
     }
 
+    public TokenValidateException(String optionalMessage) {
+        super(optionalMessage);
+    }
+
     public TokenValidateException(Throwable cause) {
         super(cause);
     }

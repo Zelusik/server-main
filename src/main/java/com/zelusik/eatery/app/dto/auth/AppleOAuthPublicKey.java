@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.dto.auth;
 
+import com.zelusik.eatery.global.exception.auth.TokenValidateException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,6 +50,7 @@ public class AppleOAuthPublicKey {
         return this.getKeys().stream()
                 .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
                 .findFirst()
-                .orElseThrow(() -> new NullPointerException());
+                .orElseThrow(() ->
+                        new TokenValidateException("Apple 공개키 검증 과정에서 발생한 에러."));
     }
 }
