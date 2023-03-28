@@ -72,7 +72,7 @@ class PlaceServiceTest {
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -104,7 +104,7 @@ class PlaceServiceTest {
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -138,7 +138,7 @@ class PlaceServiceTest {
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -176,7 +176,7 @@ class PlaceServiceTest {
         );
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.save(any(OpeningHours.class)))
                 .willReturn(OpeningHours.of(
@@ -210,7 +210,7 @@ class PlaceServiceTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo("처리할 수 없는 값", null, "www.instagram.com/toma_wv"));
+                .willReturn(PlaceScrapingInfo.of("처리할 수 없는 값", null, "www.instagram.com/toma_wv"));
 
         // when
         Throwable t = catchThrowable(() -> sut.create(placeCreateRequest));

@@ -51,9 +51,9 @@ public class PlaceService {
         PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
 
         Place place = placeCreateRequest
-                .toDto(scrapingInfo.homepageUrl(), scrapingInfo.closingHours())
+                .toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours())
                 .toEntity();
-        createOpeningHours(place, scrapingInfo.openingHours());
+        createOpeningHours(place, scrapingInfo.getOpeningHours());
 
         return placeRepository.save(place);
     }
