@@ -77,7 +77,7 @@ class MemberServiceTest {
         // then
         then(termsInfoRepository).should().save(any(TermsInfo.class));
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-        assertThat(actualResult.isNotMinor()).isTrue();
+        assertThat(actualResult.getIsNotMinor()).isTrue();
     }
 
     @DisplayName("회원의 id(PK)가 주어지면 해당하는 회원을 조회한 후 반환한다.")

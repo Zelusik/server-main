@@ -48,12 +48,12 @@ public class TermsInfoResponse {
         }
 
         return new TermsInfoResponse(
-                termsInfoDto.id(),
-                termsInfoDto.isNotMinor(),
-                termsInfoDto.service(), termsInfoDto.serviceUpdatedAt(),
-                termsInfoDto.userInfo(), termsInfoDto.userInfoUpdatedAt(),
-                termsInfoDto.locationInfo(), termsInfoDto.locationInfoUpdatedAt(),
-                termsInfoDto.marketingReception(), termsInfoDto.marketingReceptionUpdatedAt()
+                termsInfoDto.getId(),
+                termsInfoDto.getIsNotMinor(),
+                termsInfoDto.getService(), termsInfoDto.getServiceUpdatedAt(),
+                termsInfoDto.getUserInfo(), termsInfoDto.getUserInfoUpdatedAt(),
+                termsInfoDto.getLocationInfo(), termsInfoDto.getLocationInfoUpdatedAt(),
+                termsInfoDto.getMarketingReception(), termsInfoDto.getMarketingReceptionUpdatedAt()
         );
     }
 }
