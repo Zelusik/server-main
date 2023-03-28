@@ -41,6 +41,6 @@ class FileServiceTest {
         // then
         then(s3Client).should().putObject(any(PutObjectRequest.class));
         then(s3Client).should().getResourceUrl(any(), any(String.class));
-        assertThat(actualFileDto.url()).isEqualTo(expectedStoredFileUrl);
+        assertThat(actualFileDto.getUrl()).isEqualTo(expectedStoredFileUrl);
     }
 }
