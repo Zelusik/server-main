@@ -22,7 +22,7 @@ public class BookmarkJdbcTemplateRepositoryImpl implements BookmarkJdbcTemplateR
                 "FROM bookmark b " +
                 "INNER JOIN place p " +
                 "on b.place_id = p.place_id " +
-                "where b.mebmer_id = :member_id";
+                "where b.member_id = :member_id";
 
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("member_id", memberId);
