@@ -26,10 +26,10 @@ public class OpeningHoursResponse {
 
     public static OpeningHoursResponse from(OpeningHoursDto openingHoursDto) {
         return new OpeningHoursResponse(
-                openingHoursDto.id(),
-                openingHoursDto.dayOfWeek().getDescription(),
-                parseTimeResponseOf(openingHoursDto.openAt()),
-                parseTimeResponseOf(openingHoursDto.closeAt())
+                openingHoursDto.getId(),
+                openingHoursDto.getDayOfWeek().getDescription(),
+                parseTimeResponseOf(openingHoursDto.getOpenAt()),
+                parseTimeResponseOf(openingHoursDto.getCloseAt())
         );
     }
 

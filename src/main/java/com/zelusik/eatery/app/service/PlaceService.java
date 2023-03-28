@@ -166,8 +166,8 @@ public class PlaceService {
                         .forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
                                 place,
                                 dayOfWeek,
-                                openingHoursTime.openAt(),
-                                openingHoursTime.closeAt()
+                                openingHoursTime.getOpenAt(),
+                                openingHoursTime.getCloseAt()
                         )));
                 openingHoursRepository.saveAll(place.getOpeningHoursList());
             } else if (oh.charAt(1) == '~') {
@@ -181,8 +181,8 @@ public class PlaceService {
                 dayOfWeekList.forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
                         place,
                         dayOfWeek,
-                        openingHoursTime.openAt(),
-                        openingHoursTime.closeAt()
+                        openingHoursTime.getOpenAt(),
+                        openingHoursTime.getCloseAt()
                 )));
                 openingHoursRepository.saveAll(place.getOpeningHoursList());
             } else if (oh.charAt(1) == ',') {
@@ -200,8 +200,8 @@ public class PlaceService {
                 dayOfWeekList.forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
                         place,
                         dayOfWeek,
-                        openingHoursTime.openAt(),
-                        openingHoursTime.closeAt()
+                        openingHoursTime.getOpenAt(),
+                        openingHoursTime.getCloseAt()
                 )));
                 openingHoursRepository.saveAll(place.getOpeningHoursList());
             } else if (oh.charAt(1) == ' ') {
@@ -213,8 +213,8 @@ public class PlaceService {
                 OpeningHours openingHoursEntity = OpeningHours.of(
                         place,
                         dayOfWeek,
-                        openingHoursTime.openAt(),
-                        openingHoursTime.closeAt()
+                        openingHoursTime.getOpenAt(),
+                        openingHoursTime.getCloseAt()
                 );
                 openingHoursRepository.save(openingHoursEntity);
                 place.getOpeningHoursList().add(openingHoursEntity);
@@ -239,6 +239,6 @@ public class PlaceService {
         LocalTime openAt = subStrOpenAt.equals("24:00") ? LocalTime.of(23, 59) : LocalTime.parse(subStrOpenAt);
         LocalTime closeAt = subStrCloseAt.equals("24:00") ? LocalTime.of(23, 59) : LocalTime.parse(subStrCloseAt);
 
-        return new OpeningHoursTimeDto(openAt, closeAt);
+        return OpeningHoursTimeDto.of(openAt, closeAt);
     }
 }
