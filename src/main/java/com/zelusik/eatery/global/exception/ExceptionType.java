@@ -1,13 +1,13 @@
 package com.zelusik.eatery.global.exception;
 
 import com.zelusik.eatery.app.domain.Bookmark;
-import com.zelusik.eatery.app.domain.member.Member;
-import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.curation.Curation;
+import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.Review;
+import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.auth.AppleOAuthLoginException;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
-import com.zelusik.eatery.global.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.global.exception.bookmark.AlreadyMarkedPlaceException;
 import com.zelusik.eatery.global.exception.bookmark.BookmarkNotFoundException;
 import com.zelusik.eatery.global.exception.curation.CurationNotFoundException;
@@ -30,9 +30,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
