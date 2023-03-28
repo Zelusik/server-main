@@ -19,6 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -75,10 +77,10 @@ public class MemberController {
                     "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PutMapping
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public MemberResponse updateMember(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Valid @RequestBody MemberUpdateRequest memberUpdateRequest
+            @ParameterObject @Valid @ModelAttribute MemberUpdateRequest memberUpdateRequest
     ) {
         return MemberResponse.from(
                 memberService.updateMember(
