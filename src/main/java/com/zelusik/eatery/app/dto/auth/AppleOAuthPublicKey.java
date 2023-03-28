@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")  // TODO: Map -> Object 변환 로직이 있어서 generic type casting 문제를 무시한다. 더 좋은 방법이 있다면 고려할 수 있음.
-public record AppleOAuthPublicKeyResponse(
+public record AppleOAuthPublicKey(
         List<Key> keys
 ) {
     public record Key(
@@ -27,12 +27,12 @@ public record AppleOAuthPublicKeyResponse(
         }
     }
 
-    public static AppleOAuthPublicKeyResponse from(Map<String, Object> attributes) {
+    public static AppleOAuthPublicKey from(Map<String, Object> attributes) {
         List<Map<String, Object>> keyMap = (List<Map<String, Object>>) attributes.get("keys");
         List<Key> keys = keyMap.stream()
                 .map(Key::from)
                 .toList();
-        return new AppleOAuthPublicKeyResponse(keys);
+        return new AppleOAuthPublicKey(keys);
     }
 
     public Key getMatchedKeyBy(String kid, String alg) {
