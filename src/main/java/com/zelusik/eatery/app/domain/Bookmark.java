@@ -20,7 +20,7 @@ public class Bookmark extends BaseTimeEntity {
     @Column(name = "bookmark_id")
     private Long id;
 
-    @JoinColumn(name = "mebmer_id")
+    @JoinColumn(name = "member_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
