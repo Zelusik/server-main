@@ -3,7 +3,7 @@ package com.zelusik.eatery.app.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.app.dto.auth.AppleOAuthPublicKeyResponse;
+import com.zelusik.eatery.app.dto.auth.AppleOAuthPublicKey;
 import com.zelusik.eatery.app.dto.auth.AppleOAuthUserInfo;
 import com.zelusik.eatery.global.exception.auth.AppleOAuthLoginException;
 import com.zelusik.eatery.global.exception.auth.TokenValidateException;
@@ -100,17 +100,17 @@ public class AppleOAuthService {
             attributes = Collections.emptyMap();
         }
 
-        AppleOAuthPublicKeyResponse appleOAuthPublicKeyResponse = AppleOAuthPublicKeyResponse.from(attributes);
-        AppleOAuthPublicKeyResponse.Key matchedKey = appleOAuthPublicKeyResponse.getMatchedKeyBy(
+        AppleOAuthPublicKey appleOAuthPublicKey = AppleOAuthPublicKey.from(attributes);
+        AppleOAuthPublicKey.Key matchedKey = appleOAuthPublicKey.getMatchedKeyBy(
                 String.valueOf(headerOfIdentityToken.get("kid")),
                 String.valueOf(headerOfIdentityToken.get("alg"))
         );
 
-        BigInteger n = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.n()));
-        BigInteger e = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.e()));
+        BigInteger n = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.getN()));
+        BigInteger e = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.getE()));
 
         try {
-            return KeyFactory.getInstance(matchedKey.kty())
+            return KeyFactory.getInstance(matchedKey.getKty())
                     .generatePublic(new RSAPublicKeySpec(n, e));
         } catch (NoSuchAlgorithmException |
                  InvalidKeySpecException ex) {

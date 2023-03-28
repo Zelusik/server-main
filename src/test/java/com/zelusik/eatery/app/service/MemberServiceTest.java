@@ -53,13 +53,13 @@ class MemberServiceTest {
 
         // then
         then(memberRepository).should().save(any(Member.class));
-        assertThat(actualSavedMember.id()).isNotNull();
-        assertThat(actualSavedMember.socialUid()).isEqualTo(expectedSavedMember.getSocialUid());
-        assertThat(actualSavedMember.loginType()).isEqualTo(expectedSavedMember.getLoginType());
-        assertThat(actualSavedMember.email()).isEqualTo(expectedSavedMember.getEmail());
-        assertThat(actualSavedMember.nickname()).isEqualTo(expectedSavedMember.getNickname());
-        assertThat(actualSavedMember.ageRange()).isEqualTo(expectedSavedMember.getAgeRange());
-        assertThat(actualSavedMember.gender()).isEqualTo(expectedSavedMember.getGender());
+        assertThat(actualSavedMember.getId()).isNotNull();
+        assertThat(actualSavedMember.getSocialUid()).isEqualTo(expectedSavedMember.getSocialUid());
+        assertThat(actualSavedMember.getLoginType()).isEqualTo(expectedSavedMember.getLoginType());
+        assertThat(actualSavedMember.getEmail()).isEqualTo(expectedSavedMember.getEmail());
+        assertThat(actualSavedMember.getNickname()).isEqualTo(expectedSavedMember.getNickname());
+        assertThat(actualSavedMember.getAgeRange()).isEqualTo(expectedSavedMember.getAgeRange());
+        assertThat(actualSavedMember.getGender()).isEqualTo(expectedSavedMember.getGender());
     }
 
     @DisplayName("약관 동의 정보가 주어지고, 약관에 동의하면, 약관 동의 결과를 반환한다.")
@@ -77,7 +77,7 @@ class MemberServiceTest {
         // then
         then(termsInfoRepository).should().save(any(TermsInfo.class));
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-        assertThat(actualResult.isNotMinor()).isTrue();
+        assertThat(actualResult.getIsNotMinor()).isTrue();
     }
 
     @DisplayName("회원의 id(PK)가 주어지면 해당하는 회원을 조회한 후 반환한다.")
@@ -93,7 +93,7 @@ class MemberServiceTest {
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-        assertThat(actual.id()).isEqualTo(expected.getId());
+        assertThat(actual.getId()).isEqualTo(expected.getId());
     }
 
     @DisplayName("존재하지 않는 회원 id(PK)가 주어지고 회원을 조회하면 예외가 발생한다.")
@@ -156,6 +156,6 @@ class MemberServiceTest {
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-        assertThat(updatedMemberDto.favoriteFoodCategories()).contains(KOREAN, WESTERN, DESERT);
+        assertThat(updatedMemberDto.getFavoriteFoodCategories()).contains(KOREAN, WESTERN, DESERT);
     }
 }

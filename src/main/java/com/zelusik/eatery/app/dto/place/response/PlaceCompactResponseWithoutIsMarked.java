@@ -28,11 +28,11 @@ public class PlaceCompactResponseWithoutIsMarked {
     }
 
     public static PlaceCompactResponseWithoutIsMarked from(PlaceDto dto) {
-        String category = dto.category().getSecondCategory();
+        String category = dto.getCategory().getSecondCategory();
         if (category == null) {
-            category = dto.category().getFirstCategory();
+            category = dto.getCategory().getFirstCategory();
         }
 
-        return of(dto.id(), dto.name(), category, dto.address());
+        return of(dto.getId(), dto.getName(), category, dto.getAddress());
     }
 }

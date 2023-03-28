@@ -1,16 +1,22 @@
 package com.zelusik.eatery.app.dto.bookmark;
 
 import com.zelusik.eatery.app.domain.Bookmark;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-public record BookmarkDto(
-        Long id,
-        Long memberId,
-        Long placeId,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class BookmarkDto {
+
+    private Long id;
+    private Long memberId;
+    private Long placeId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
     public static BookmarkDto of(Long id, Long memberId, Long placeId, LocalDateTime createdAt, LocalDateTime updatedAt) {
         return new BookmarkDto(id, memberId, placeId, createdAt, updatedAt);
     }

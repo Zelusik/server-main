@@ -24,6 +24,6 @@ public class MemberDeletionSurveyResponse {
     }
 
     public static MemberDeletionSurveyResponse from(MemberDeletionSurveyDto dto) {
-        return of(dto.id(), dto.memberId(), dto.surveyType().getDescription());
+        return of(dto.getId(), dto.getMemberId(), dto.getSurveyType().getDescription());
     }
 }

@@ -33,12 +33,12 @@ public class LoggedInMemberResponse {
 
     public static LoggedInMemberResponse from(MemberDto memberDto) {
         return new LoggedInMemberResponse(
-                memberDto.id(),
-                TermsInfoResponse.from(memberDto.termsInfoDto()),
-                ImageResponse.of(memberDto.profileImageUrl(), memberDto.profileThumbnailImageUrl()),
-                memberDto.loginType(),
-                memberDto.email(),
-                memberDto.nickname()
+                memberDto.getId(),
+                TermsInfoResponse.from(memberDto.getTermsInfoDto()),
+                ImageResponse.of(memberDto.getProfileImageUrl(), memberDto.getProfileThumbnailImageUrl()),
+                memberDto.getLoginType(),
+                memberDto.getEmail(),
+                memberDto.getNickname()
         );
     }
 }

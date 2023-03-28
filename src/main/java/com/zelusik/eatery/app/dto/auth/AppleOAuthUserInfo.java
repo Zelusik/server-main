@@ -6,13 +6,19 @@ import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.util.NicknameGenerator;
 import io.jsonwebtoken.Claims;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public record AppleOAuthUserInfo(
-        String sub,
-        String email,
-        Boolean emailVerified,
-        Boolean isPrivateEmail
-) {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class AppleOAuthUserInfo {
+
+    private String sub;
+    private String email;
+    private Boolean emailVerified;
+    private Boolean isPrivateEmail;
+
     public static AppleOAuthUserInfo from(Claims claims) {
         return new AppleOAuthUserInfo(
                 claims.getSubject(),
@@ -26,9 +32,9 @@ public record AppleOAuthUserInfo(
         return MemberDto.of(
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
-                this.sub(),
+                this.getSub(),
                 LoginType.APPLE,
-                this.email(),
+                this.getEmail(),
                 name != null ? name : NicknameGenerator.generateRandomNickname(),
                 null,
                 Gender.ETC

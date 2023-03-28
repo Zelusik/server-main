@@ -4,7 +4,6 @@ import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
-import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
@@ -73,7 +72,7 @@ class PlaceServiceTest {
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -86,8 +85,8 @@ class PlaceServiceTest {
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
-                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.openAt());
-                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.closeAt());
+                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
+                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
                 });
         assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
     }
@@ -105,7 +104,7 @@ class PlaceServiceTest {
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -120,8 +119,8 @@ class PlaceServiceTest {
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
-                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.openAt());
-                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.closeAt());
+                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
+                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
                 });
         assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
     }
@@ -139,7 +138,7 @@ class PlaceServiceTest {
         String homepageUrl = "www.instagram.com/toma_wv";
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
 
@@ -153,8 +152,8 @@ class PlaceServiceTest {
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
-                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.openAt());
-                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.closeAt());
+                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
+                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
                 });
         assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
     }
@@ -168,16 +167,16 @@ class PlaceServiceTest {
         String openingHours = "월,화,수,토,일 11:00 ~ 19:00\n목 09:00 ~ 18:00";
         String closingHours = "금요일";
         Map<DayOfWeek, OpeningHoursTimeDto> expectedOpeningHoursResult = Map.of(
-                MON, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0)),
-                TUE, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0)),
-                WED, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0)),
-                THU, new OpeningHoursTimeDto(LocalTime.of(9, 0), LocalTime.of(18, 0)),
-                SAT, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0)),
-                SUN, new OpeningHoursTimeDto(LocalTime.of(11, 0), LocalTime.of(19, 0))
+                MON, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0)),
+                TUE, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0)),
+                WED, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0)),
+                THU, OpeningHoursTimeDto.of(LocalTime.of(9, 0), LocalTime.of(18, 0)),
+                SAT, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0)),
+                SUN, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0))
         );
         Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo(openingHours, closingHours, homepageUrl));
+                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
         given(openingHoursRepository.save(any(OpeningHours.class)))
                 .willReturn(OpeningHours.of(
@@ -199,8 +198,8 @@ class PlaceServiceTest {
         actualSavedPlace.getOpeningHoursList()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
-                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.openAt());
-                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.closeAt());
+                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
+                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
                 });
         assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
     }
@@ -211,7 +210,7 @@ class PlaceServiceTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(new PlaceScrapingInfo("처리할 수 없는 값", null, "www.instagram.com/toma_wv"));
+                .willReturn(PlaceScrapingInfo.of("처리할 수 없는 값", null, "www.instagram.com/toma_wv"));
 
         // when
         Throwable t = catchThrowable(() -> sut.create(placeCreateRequest));
@@ -237,7 +236,7 @@ class PlaceServiceTest {
         // then
         then(placeRepository).should().findById(placeId);
         then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
-        assertThat(findDto.id()).isEqualTo(placeId);
+        assertThat(findDto.getId()).isEqualTo(placeId);
     }
 
     @DisplayName("Id(PK)가 주어지고, 존재하지 않는 장소를 찾으면, 예외가 발생한다.")
@@ -307,7 +306,7 @@ class PlaceServiceTest {
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
-        assertThat(actualResult.getContent().get(0).id()).isEqualTo(expectedResult.getContent().get(0).getId());
+        assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
     }
 
     @DisplayName("3km 밖에 있고 10km 안에 있는 장소들이 주어지고, 중심 좌표 근처의 장소들을 조회하면, 거리순으로 정렬된 장소 목록을 반환한다.")
@@ -337,31 +336,31 @@ class PlaceServiceTest {
     static Stream<Arguments> openingHoursEveryDaysExamples() {
         return Stream.of(
                 arguments("매일 11:30 ~ 22:00", null, Map.of(
-                        MON, new OpeningHoursTimeDto(LocalTime.of(11, 30), LocalTime.of(22, 0)),
-                        TUE, new OpeningHoursTimeDto(LocalTime.of(11, 30), LocalTime.of(22, 0)),
-                        WED, new OpeningHoursTimeDto(LocalTime.of(11, 30), LocalTime.of(22, 0)),
-                        THU, new OpeningHoursTimeDto(LocalTime.of(11, 30), LocalTime.of(22, 0)),
-                        FRI, new OpeningHoursTimeDto(LocalTime.of(11, 30), LocalTime.of(22, 0)),
-                        SAT, new OpeningHoursTimeDto(LocalTime.of(11, 30), LocalTime.of(22, 0)),
-                        SUN, new OpeningHoursTimeDto(LocalTime.of(11, 30), LocalTime.of(22, 0))
+                        MON, OpeningHoursTimeDto.of(LocalTime.of(11, 30), LocalTime.of(22, 0)),
+                        TUE, OpeningHoursTimeDto.of(LocalTime.of(11, 30), LocalTime.of(22, 0)),
+                        WED, OpeningHoursTimeDto.of(LocalTime.of(11, 30), LocalTime.of(22, 0)),
+                        THU, OpeningHoursTimeDto.of(LocalTime.of(11, 30), LocalTime.of(22, 0)),
+                        FRI, OpeningHoursTimeDto.of(LocalTime.of(11, 30), LocalTime.of(22, 0)),
+                        SAT, OpeningHoursTimeDto.of(LocalTime.of(11, 30), LocalTime.of(22, 0)),
+                        SUN, OpeningHoursTimeDto.of(LocalTime.of(11, 30), LocalTime.of(22, 0))
                 )),
                 arguments("매일 07:30 ~ 24:00", null, Map.of(
-                        MON, new OpeningHoursTimeDto(LocalTime.of(7, 30), LocalTime.of(23, 59)),
-                        TUE, new OpeningHoursTimeDto(LocalTime.of(7, 30), LocalTime.of(23, 59)),
-                        WED, new OpeningHoursTimeDto(LocalTime.of(7, 30), LocalTime.of(23, 59)),
-                        THU, new OpeningHoursTimeDto(LocalTime.of(7, 30), LocalTime.of(23, 59)),
-                        FRI, new OpeningHoursTimeDto(LocalTime.of(7, 30), LocalTime.of(23, 59)),
-                        SAT, new OpeningHoursTimeDto(LocalTime.of(7, 30), LocalTime.of(23, 59)),
-                        SUN, new OpeningHoursTimeDto(LocalTime.of(7, 30), LocalTime.of(23, 59))
+                        MON, OpeningHoursTimeDto.of(LocalTime.of(7, 30), LocalTime.of(23, 59)),
+                        TUE, OpeningHoursTimeDto.of(LocalTime.of(7, 30), LocalTime.of(23, 59)),
+                        WED, OpeningHoursTimeDto.of(LocalTime.of(7, 30), LocalTime.of(23, 59)),
+                        THU, OpeningHoursTimeDto.of(LocalTime.of(7, 30), LocalTime.of(23, 59)),
+                        FRI, OpeningHoursTimeDto.of(LocalTime.of(7, 30), LocalTime.of(23, 59)),
+                        SAT, OpeningHoursTimeDto.of(LocalTime.of(7, 30), LocalTime.of(23, 59)),
+                        SUN, OpeningHoursTimeDto.of(LocalTime.of(7, 30), LocalTime.of(23, 59))
                 )),
                 arguments(" 매일 12:00 ~ 20:00", null, Map.of(
-                        MON, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(20, 0)),
-                        TUE, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(20, 0)),
-                        WED, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(20, 0)),
-                        THU, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(20, 0)),
-                        FRI, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(20, 0)),
-                        SAT, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(20, 0)),
-                        SUN, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(20, 0))
+                        MON, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(20, 0)),
+                        TUE, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(20, 0)),
+                        WED, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(20, 0)),
+                        THU, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(20, 0)),
+                        FRI, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(20, 0)),
+                        SAT, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(20, 0)),
+                        SUN, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(20, 0))
                 ))
         );
     }
@@ -369,28 +368,28 @@ class PlaceServiceTest {
     static Stream<Arguments> openingHoursContainsTildeExamples() {
         return Stream.of(
                 arguments("화~일 10:30 ~ 15:30", "월요일", Map.of(
-                        TUE, new OpeningHoursTimeDto(LocalTime.of(10, 30), LocalTime.of(15, 30)),
-                        WED, new OpeningHoursTimeDto(LocalTime.of(10, 30), LocalTime.of(15, 30)),
-                        THU, new OpeningHoursTimeDto(LocalTime.of(10, 30), LocalTime.of(15, 30)),
-                        FRI, new OpeningHoursTimeDto(LocalTime.of(10, 30), LocalTime.of(15, 30)),
-                        SAT, new OpeningHoursTimeDto(LocalTime.of(10, 30), LocalTime.of(15, 30)),
-                        SUN, new OpeningHoursTimeDto(LocalTime.of(10, 30), LocalTime.of(15, 30))
+                        TUE, OpeningHoursTimeDto.of(LocalTime.of(10, 30), LocalTime.of(15, 30)),
+                        WED, OpeningHoursTimeDto.of(LocalTime.of(10, 30), LocalTime.of(15, 30)),
+                        THU, OpeningHoursTimeDto.of(LocalTime.of(10, 30), LocalTime.of(15, 30)),
+                        FRI, OpeningHoursTimeDto.of(LocalTime.of(10, 30), LocalTime.of(15, 30)),
+                        SAT, OpeningHoursTimeDto.of(LocalTime.of(10, 30), LocalTime.of(15, 30)),
+                        SUN, OpeningHoursTimeDto.of(LocalTime.of(10, 30), LocalTime.of(15, 30))
                 )),
                 arguments("월~토 18:00 ~ 02:00", "일요일", Map.of(
-                        MON, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(2, 0)),
-                        TUE, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(2, 0)),
-                        WED, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(2, 0)),
-                        THU, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(2, 0)),
-                        FRI, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(2, 0)),
-                        SAT, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(2, 0))
+                        MON, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(2, 0)),
+                        TUE, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(2, 0)),
+                        WED, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(2, 0)),
+                        THU, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(2, 0)),
+                        FRI, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(2, 0)),
+                        SAT, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(2, 0))
                 )),
                 arguments("월~수 12:00 ~ 18:00\n목~토 18:00 ~ 22:00", "일요일", Map.of(
-                        MON, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(18, 0)),
-                        TUE, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(18, 0)),
-                        WED, new OpeningHoursTimeDto(LocalTime.of(12, 0), LocalTime.of(18, 0)),
-                        THU, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(22, 0)),
-                        FRI, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(22, 0)),
-                        SAT, new OpeningHoursTimeDto(LocalTime.of(18, 0), LocalTime.of(22, 0))
+                        MON, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        TUE, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        WED, OpeningHoursTimeDto.of(LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        THU, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(22, 0)),
+                        FRI, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(22, 0)),
+                        SAT, OpeningHoursTimeDto.of(LocalTime.of(18, 0), LocalTime.of(22, 0))
                 ))
         );
     }
@@ -398,12 +397,12 @@ class PlaceServiceTest {
     static Stream<Arguments> openingHoursCommaSeperatedExamples() {
         return Stream.of(
                 arguments("월,화,목,금,토,일 10:00 ~ 19:30", "수요일", Map.of(
-                        MON, new OpeningHoursTimeDto(LocalTime.of(10, 0), LocalTime.of(19, 30)),
-                        TUE, new OpeningHoursTimeDto(LocalTime.of(10, 0), LocalTime.of(19, 30)),
-                        THU, new OpeningHoursTimeDto(LocalTime.of(10, 0), LocalTime.of(19, 30)),
-                        FRI, new OpeningHoursTimeDto(LocalTime.of(10, 0), LocalTime.of(19, 30)),
-                        SAT, new OpeningHoursTimeDto(LocalTime.of(10, 0), LocalTime.of(19, 30)),
-                        SUN, new OpeningHoursTimeDto(LocalTime.of(10, 0), LocalTime.of(19, 30))
+                        MON, OpeningHoursTimeDto.of(LocalTime.of(10, 0), LocalTime.of(19, 30)),
+                        TUE, OpeningHoursTimeDto.of(LocalTime.of(10, 0), LocalTime.of(19, 30)),
+                        THU, OpeningHoursTimeDto.of(LocalTime.of(10, 0), LocalTime.of(19, 30)),
+                        FRI, OpeningHoursTimeDto.of(LocalTime.of(10, 0), LocalTime.of(19, 30)),
+                        SAT, OpeningHoursTimeDto.of(LocalTime.of(10, 0), LocalTime.of(19, 30)),
+                        SUN, OpeningHoursTimeDto.of(LocalTime.of(10, 0), LocalTime.of(19, 30))
                 ))
         );
     }

@@ -59,7 +59,7 @@ public class ReviewService {
         ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place, markedPlaceIdList));
         Review review = reviewDtoWithMemberAndPlace.toEntity(writer, place);
         reviewRepository.save(review);
-        reviewDtoWithMemberAndPlace.keywords()
+        reviewDtoWithMemberAndPlace.getKeywords()
                 .forEach(keyword -> {
                     ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
                     review.getKeywords().add(reviewKeyword);

@@ -58,32 +58,32 @@ public class PlaceResponse {
     }
 
     public static PlaceResponse from(PlaceDto placeDto) {
-        String snsUrl = placeDto.homepageUrl();
+        String snsUrl = placeDto.getHomepageUrl();
         if (snsUrl != null && !snsUrl.contains("instagram")) {
             snsUrl = null;
         }
 
-        String category = placeDto.category().getSecondCategory();
+        String category = placeDto.getCategory().getSecondCategory();
         if (category == null) {
-            category = placeDto.category().getFirstCategory();
+            category = placeDto.getCategory().getFirstCategory();
         }
 
         return new PlaceResponse(
-                placeDto.id(),
-                placeDto.top3Keywords().stream()
+                placeDto.getId(),
+                placeDto.getTop3Keywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
-                placeDto.name(),
+                placeDto.getName(),
                 category,
-                placeDto.phone(),
-                placeDto.address(),
+                placeDto.getPhone(),
+                placeDto.getAddress(),
                 snsUrl,
-                placeDto.point(),
-                placeDto.closingHours(),
-                placeDto.openingHoursDtos().stream()
+                placeDto.getPoint(),
+                placeDto.getClosingHours(),
+                placeDto.getOpeningHoursDtos().stream()
                         .map(OpeningHoursResponse::from)
                         .toList(),
-                placeDto.isMarked()
+                placeDto.getIsMarked()
         );
     }
 }

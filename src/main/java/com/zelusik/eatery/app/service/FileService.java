@@ -87,11 +87,11 @@ public class FileService {
         S3FileDto thumbnailImageDto = this.uploadFile(resizedImage, dirPath + "thumbnail/");
 
         return S3ImageDto.of(
-                originalImageDto.originalName(),
-                originalImageDto.storedName(),
-                originalImageDto.url(),
-                thumbnailImageDto.storedName(),
-                thumbnailImageDto.url()
+                originalImageDto.getOriginalName(),
+                originalImageDto.getStoredName(),
+                originalImageDto.getUrl(),
+                thumbnailImageDto.getStoredName(),
+                thumbnailImageDto.getUrl()
         );
     }
 

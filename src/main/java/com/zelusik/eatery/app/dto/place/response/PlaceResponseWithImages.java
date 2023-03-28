@@ -62,37 +62,37 @@ public class PlaceResponseWithImages {
     }
 
     public static PlaceResponseWithImages from(PlaceDtoWithImages dto) {
-        String snsUrl = dto.homepageUrl();
+        String snsUrl = dto.getHomepageUrl();
         if (snsUrl != null && !snsUrl.contains("instagram")) {
             snsUrl = null;
         }
 
-        String category = dto.category().getSecondCategory();
+        String category = dto.getCategory().getSecondCategory();
         if (category == null) {
-            category = dto.category().getFirstCategory();
+            category = dto.getCategory().getFirstCategory();
         }
 
-        LinkedList<ImageResponse> images = new LinkedList<>(dto.images().stream()
-                .map(reviewFileDto -> ImageResponse.of(reviewFileDto.url(), reviewFileDto.thumbnailUrl()))
+        LinkedList<ImageResponse> images = new LinkedList<>(dto.getImages().stream()
+                .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
                 .toList());
 
-        return new PlaceResponseWithImages(
-                dto.id(),
-                dto.top3Keywords().stream()
+        return PlaceResponseWithImages.of(
+                dto.getId(),
+                dto.getTop3Keywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
-                dto.name(),
+                dto.getName(),
                 category,
-                dto.phone(),
-                dto.address(),
+                dto.getPhone(),
+                dto.getAddress(),
                 snsUrl,
-                dto.point(),
-                dto.closingHours(),
-                dto.openingHoursDtos().stream()
+                dto.getPoint(),
+                dto.getClosingHours(),
+                dto.getOpeningHoursDtos().stream()
                         .map(OpeningHoursResponse::from)
                         .toList(),
                 images,
-                dto.isMarked()
+                dto.getIsMarked()
         );
     }
 }

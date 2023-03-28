@@ -40,15 +40,15 @@ public class FeedResponse {
 
     public static FeedResponse from(ReviewDtoWithMemberAndPlace dto) {
         return of(
-                dto.id(),
-                MemberResponse.from(dto.writerDto()),
-                PlaceCompactResponse.from(dto.placeDto()),
-                dto.keywords().stream()
+                dto.getId(),
+                MemberResponse.from(dto.getWriterDto()),
+                PlaceCompactResponse.from(dto.getPlaceDto()),
+                dto.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
-                dto.content(),
-                dto.reviewFileDtos().stream()
-                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.url(), reviewFileDto.thumbnailUrl()))
+                dto.getContent(),
+                dto.getReviewFileDtos().stream()
+                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
                         .toList()
         );
     }

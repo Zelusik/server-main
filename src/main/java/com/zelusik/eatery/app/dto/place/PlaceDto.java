@@ -6,29 +6,34 @@ import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;
 import com.zelusik.eatery.app.domain.place.Point;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record PlaceDto(
-        Long id,
-        List<ReviewKeywordValue> top3Keywords,
-        String kakaoPid,
-        String name,
-        String pageUrl,
-        KakaoCategoryGroupCode categoryGroupCode,
-        PlaceCategory category,
-        String phone,
-        Address address,
-        String homepageUrl,
-        Point point,
-        String closingHours,
-        List<OpeningHoursDto> openingHoursDtos,
-        Boolean isMarked,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        LocalDateTime deletedAt
-) {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class PlaceDto {
+        private Long id;
+        private List<ReviewKeywordValue> top3Keywords;
+        private String kakaoPid;
+        private String name;
+        private String pageUrl;
+        private KakaoCategoryGroupCode categoryGroupCode;
+        private PlaceCategory category;
+        private String phone;
+        private Address address;
+        private String homepageUrl;
+        private Point point;
+        private String closingHours;
+        private List<OpeningHoursDto> openingHoursDtos;
+        private Boolean isMarked;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+        private LocalDateTime deletedAt;
+
     public static PlaceDto of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
         return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null, null, null);
     }
@@ -65,16 +70,16 @@ public record PlaceDto(
 
     public Place toEntity() {
         return Place.of(
-                this.kakaoPid(),
-                this.name(),
-                this.pageUrl(),
-                this.categoryGroupCode(),
-                this.category(),
-                this.phone(),
-                this.address(),
-                this.homepageUrl(),
-                this.point(),
-                this.closingHours()
+                this.getKakaoPid(),
+                this.getName(),
+                this.getPageUrl(),
+                this.getCategoryGroupCode(),
+                this.getCategory(),
+                this.getPhone(),
+                this.getAddress(),
+                this.getHomepageUrl(),
+                this.getPoint(),
+                this.getClosingHours()
         );
     }
 

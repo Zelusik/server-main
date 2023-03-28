@@ -25,9 +25,9 @@ public class BookmarkResponse {
 
     public static BookmarkResponse from(BookmarkDto bookmarkDto) {
         return of(
-                bookmarkDto.id(),
-                bookmarkDto.memberId(),
-                bookmarkDto.placeId()
+                bookmarkDto.getId(),
+                bookmarkDto.getMemberId(),
+                bookmarkDto.getPlaceId()
         );
     }
 }
