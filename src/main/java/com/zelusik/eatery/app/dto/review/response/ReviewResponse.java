@@ -40,14 +40,14 @@ public class ReviewResponse {
 
     public static ReviewResponse from(ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace) {
         return of(
-                reviewDtoWithMemberAndPlace.id(),
-                MemberResponse.from(reviewDtoWithMemberAndPlace.writerDto()),
-                PlaceResponse.from(reviewDtoWithMemberAndPlace.placeDto()),
-                reviewDtoWithMemberAndPlace.keywords().stream()
+                reviewDtoWithMemberAndPlace.getId(),
+                MemberResponse.from(reviewDtoWithMemberAndPlace.getWriterDto()),
+                PlaceResponse.from(reviewDtoWithMemberAndPlace.getPlaceDto()),
+                reviewDtoWithMemberAndPlace.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
-                reviewDtoWithMemberAndPlace.content(),
-                reviewDtoWithMemberAndPlace.reviewFileDtos().stream()
+                reviewDtoWithMemberAndPlace.getContent(),
+                reviewDtoWithMemberAndPlace.getReviewFileDtos().stream()
                         .map(ImageResponse::from)
                         .toList()
         );

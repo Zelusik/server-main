@@ -73,7 +73,7 @@ public class PlaceResponseWithImages {
         }
 
         LinkedList<ImageResponse> images = new LinkedList<>(dto.getImages().stream()
-                .map(reviewFileDto -> ImageResponse.of(reviewFileDto.url(), reviewFileDto.thumbnailUrl()))
+                .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
                 .toList());
 
         return PlaceResponseWithImages.of(

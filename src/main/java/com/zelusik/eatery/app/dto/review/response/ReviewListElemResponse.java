@@ -34,14 +34,14 @@ public class ReviewListElemResponse {
 
     public static ReviewListElemResponse from(ReviewDtoWithMember dto) {
         return of(
-                dto.id(),
-                dto.writerDto().getId(),
-                dto.keywords().stream()
+                dto.getId(),
+                dto.getWriterDto().getId(),
+                dto.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
-                dto.content(),
-                dto.reviewFileDtos().stream()
-                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.url(), reviewFileDto.thumbnailUrl()))
+                dto.getContent(),
+                dto.getReviewFileDtos().stream()
+                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
                         .toList()
         );
     }

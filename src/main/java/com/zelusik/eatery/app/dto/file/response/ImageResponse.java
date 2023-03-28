@@ -21,6 +21,6 @@ public class ImageResponse {
     }
 
     public static ImageResponse from(ReviewFileDto reviewFileDto) {
-        return of(reviewFileDto.url(), reviewFileDto.thumbnailUrl());
+        return of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl());
     }
 }
