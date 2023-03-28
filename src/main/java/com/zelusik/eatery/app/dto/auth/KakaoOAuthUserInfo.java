@@ -4,6 +4,9 @@ import com.zelusik.eatery.app.constant.ConstantUtil;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.dto.member.MemberDto;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -12,33 +15,42 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")  // TODO: Map -> Object 변환 로직이 있어서 generic type casting 문제를 무시한다. 더 좋은 방법이 있다면 고려할 수 있음.
-public record KakaoOAuthUserInfo(
-        String id,
-        LocalDateTime connectedAt,
-        Map<String, Object> properties,
-        KakaoAccount kakaoAccount
-) {
-    public record KakaoAccount(
-            Boolean profileNicknameNeedsAgreement,
-            Boolean profileImageNeedsAgreement,
-            Profile profile,
-            Boolean hasEmail,
-            Boolean emailNeedsAgreement,
-            Boolean isEmailValid,
-            Boolean isEmailVerified,
-            String email,
-            Boolean hasAgeRange,
-            Boolean ageRangeNeedsAgreement,
-            Integer ageRange,
-            Boolean hasGender,
-            Boolean genderNeedsAgreement,
-            Gender gender
-    ) {
-        public record Profile(
-                String nickname,
-                String thumbnailImageUrl,
-                String profileImageUrl
-        ) {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class KakaoOAuthUserInfo {
+
+    private String id;
+    private LocalDateTime connectedAt;
+    private Map<String, Object> properties;
+    private KakaoAccount kakaoAccount;
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    public static class KakaoAccount {
+
+        private Boolean profileNicknameNeedsAgreement;
+        private Boolean profileImageNeedsAgreement;
+        private Profile profile;
+        private Boolean hasEmail;
+        private Boolean emailNeedsAgreement;
+        private Boolean isEmailValid;
+        private Boolean isEmailVerified;
+        private String email;
+        private Boolean hasAgeRange;
+        private Boolean ageRangeNeedsAgreement;
+        private Integer ageRange;
+        private Boolean hasGender;
+        private Boolean genderNeedsAgreement;
+        private Gender gender;
+
+        @AllArgsConstructor(access = AccessLevel.PRIVATE)
+        @Getter
+        public static class Profile {
+
+            private String nickname;
+            private String thumbnailImageUrl;
+            private String profileImageUrl;
+
             public static Profile from(Map<String, Object> attributes) {
                 Object thumbnailImageUrl = attributes.get("thumbnail_image_url");
                 Object profileImageUrl = attributes.get("profile_image_url");
@@ -112,30 +124,30 @@ public record KakaoOAuthUserInfo(
 
     // Getter
     public String getSocialUid() {
-        return this.id();
+        return this.getId();
     }
 
     public String getNickname() {
-        return this.kakaoAccount().profile().nickname();
+        return this.getKakaoAccount().getProfile().getNickname();
     }
 
     public String getThumbnailImageUrl() {
-        return this.kakaoAccount().profile().thumbnailImageUrl();
+        return this.getKakaoAccount().getProfile().getThumbnailImageUrl();
     }
 
     public String getProfileImageUrl() {
-        return this.kakaoAccount().profile().profileImageUrl();
+        return this.getKakaoAccount().getProfile().getProfileImageUrl();
     }
 
     public String getEmail() {
-        return this.kakaoAccount().email();
+        return this.getKakaoAccount().getEmail();
     }
 
     public Integer getAgeRange() {
-        return this.kakaoAccount().ageRange();
+        return this.getKakaoAccount().getAgeRange();
     }
 
     public Gender getGender() {
-        return this.kakaoAccount().gender();
+        return this.getKakaoAccount().getGender();
     }
 }
