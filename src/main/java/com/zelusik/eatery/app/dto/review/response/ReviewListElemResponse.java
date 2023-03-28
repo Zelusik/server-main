@@ -35,7 +35,7 @@ public class ReviewListElemResponse {
     public static ReviewListElemResponse from(ReviewDtoWithMember dto) {
         return of(
                 dto.id(),
-                dto.writerDto().id(),
+                dto.writerDto().getId(),
                 dto.keywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),

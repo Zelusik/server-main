@@ -31,7 +31,7 @@ public class UserPrincipal implements UserDetails {
     }
 
     public Long getMemberId() {
-        return memberDto.id();
+        return memberDto.getId();
     }
 
     @Override
@@ -41,7 +41,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return memberDto.socialUid();
+        return memberDto.getSocialUid();
     }
 
     @Override

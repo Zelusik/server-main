@@ -48,12 +48,12 @@ public class MemberResponse {
 
     public static MemberResponse from(MemberDto dto) {
         return of(
-                dto.id(),
-                ImageResponse.of(dto.profileImageUrl(), dto.profileThumbnailImageUrl()),
-                dto.email(),
-                dto.nickname(),
-                dto.gender(),
-                dto.favoriteFoodCategories()
+                dto.getId(),
+                ImageResponse.of(dto.getProfileImageUrl(), dto.getProfileThumbnailImageUrl()),
+                dto.getEmail(),
+                dto.getNickname(),
+                dto.getGender(),
+                dto.getFavoriteFoodCategories()
         );
     }
 }

@@ -61,11 +61,11 @@ public class AuthController {
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
 
-        if (memberDto.deletedAt() != null) {
-            memberService.rejoin(memberDto.id());
+        if (memberDto.getDeletedAt() != null) {
+            memberService.rejoin(memberDto.getId());
         }
 
-        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.KAKAO);
+        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.getId(), LoginType.KAKAO);
 
         return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
     }
@@ -90,11 +90,11 @@ public class AuthController {
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.sub())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName())));
 
-        if (memberDto.deletedAt() != null) {
-            memberService.rejoin(memberDto.id());
+        if (memberDto.getDeletedAt() != null) {
+            memberService.rejoin(memberDto.getId());
         }
 
-        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.id(), LoginType.APPLE);
+        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.getId(), LoginType.APPLE);
 
         return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
     }

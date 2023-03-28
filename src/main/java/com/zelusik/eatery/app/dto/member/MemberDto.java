@@ -5,28 +5,34 @@ import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MemberDto(
-        Long id,
-        TermsInfoDto termsInfoDto,
-        String profileImageUrl,
-        String profileThumbnailImageUrl,
-        String socialUid,
-        LoginType loginType,
-        String email,
-        String nickname,
-        LocalDate birthDay,
-        Integer ageRange,
-        Gender gender,
-        List<FoodCategory> favoriteFoodCategories,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        LocalDateTime deletedAt
-) {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class MemberDto {
+
+    private Long id;
+    private TermsInfoDto termsInfoDto;
+    private String profileImageUrl;
+    private String profileThumbnailImageUrl;
+    private String socialUid;
+    private LoginType loginType;
+    private String email;
+    private String nickname;
+    private LocalDate birthDay;
+    private Integer ageRange;
+    private Gender gender;
+    private List<FoodCategory> favoriteFoodCategories;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+
     public static MemberDto of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
         return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, null, ageRange, gender, null, null, null, null);
     }
@@ -57,14 +63,14 @@ public record MemberDto(
 
     public Member toEntity() {
         return Member.of(
-                profileImageUrl(),
-                profileThumbnailImageUrl(),
-                socialUid(),
-                loginType(),
-                email(),
-                nickname(),
-                ageRange(),
-                gender()
+                this.getProfileImageUrl(),
+                this.getProfileThumbnailImageUrl(),
+                this.getSocialUid(),
+                this.getLoginType(),
+                this.getEmail(),
+                this.getNickname(),
+                this.getAgeRange(),
+                this.getGender()
         );
     }
 }
