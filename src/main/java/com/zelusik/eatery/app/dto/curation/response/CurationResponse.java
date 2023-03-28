@@ -27,9 +27,9 @@ public class CurationResponse {
 
     public static CurationResponse from(CurationDto dto) {
         return of(
-                dto.id(),
-                dto.title(),
-                dto.curationElemDtos().stream()
+                dto.getId(),
+                dto.getTitle(),
+                dto.getCurationElemDtos().stream()
                         .map(CurationElemResponse::from)
                         .toList()
         );
