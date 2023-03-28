@@ -106,11 +106,11 @@ public class AppleOAuthService {
                 String.valueOf(headerOfIdentityToken.get("alg"))
         );
 
-        BigInteger n = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.n()));
-        BigInteger e = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.e()));
+        BigInteger n = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.getN()));
+        BigInteger e = new BigInteger(1, Base64.getUrlDecoder().decode(matchedKey.getE()));
 
         try {
-            return KeyFactory.getInstance(matchedKey.kty())
+            return KeyFactory.getInstance(matchedKey.getKty())
                     .generatePublic(new RSAPublicKeySpec(n, e));
         } catch (NoSuchAlgorithmException |
                  InvalidKeySpecException ex) {

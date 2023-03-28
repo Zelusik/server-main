@@ -87,7 +87,7 @@ public class AuthController {
     public LoginResponse appleLogin(@Valid @RequestBody AppleLoginRequest request) {
         AppleOAuthUserInfo userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
-        MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.sub())
+        MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName())));
 
         if (memberDto.getDeletedAt() != null) {

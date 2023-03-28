@@ -1,20 +1,30 @@
 package com.zelusik.eatery.app.dto.auth;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")  // TODO: Map -> Object 변환 로직이 있어서 generic type casting 문제를 무시한다. 더 좋은 방법이 있다면 고려할 수 있음.
-public record AppleOAuthPublicKey(
-        List<Key> keys
-) {
-    public record Key(
-            String kty,
-            String kid,
-            String use,
-            String alg,
-            String n,
-            String e
-    ) {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class AppleOAuthPublicKey {
+
+    private List<Key> keys;
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    public static class Key {
+
+        private String kty;
+        private String kid;
+        private String use;
+        private String alg;
+        private String n;
+        private String e;
+
         public static Key from(Map<String, Object> attributes) {
             return new Key(
                     String.valueOf(attributes.get("kty")),
@@ -36,8 +46,8 @@ public record AppleOAuthPublicKey(
     }
 
     public Key getMatchedKeyBy(String kid, String alg) {
-        return this.keys().stream()
-                .filter(key -> key.kid().equals(kid) && key.alg().equals(alg))
+        return this.getKeys().stream()
+                .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
                 .findFirst()
                 .orElseThrow(() -> new NullPointerException());
     }
