@@ -31,17 +31,17 @@ public class PlaceCompactResponse {
     }
 
     public static PlaceCompactResponse from(PlaceDto dto) {
-        String category = dto.category().getSecondCategory();
+        String category = dto.getCategory().getSecondCategory();
         if (category == null) {
-            category = dto.category().getFirstCategory();
+            category = dto.getCategory().getFirstCategory();
         }
 
         return new PlaceCompactResponse(
-                dto.id(),
-                dto.name(),
+                dto.getId(),
+                dto.getName(),
                 category,
-                dto.address(),
-                dto.isMarked()
+                dto.getAddress(),
+                dto.getIsMarked()
         );
     }
 }

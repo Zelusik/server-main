@@ -237,7 +237,7 @@ class PlaceServiceTest {
         // then
         then(placeRepository).should().findById(placeId);
         then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
-        assertThat(findDto.id()).isEqualTo(placeId);
+        assertThat(findDto.getId()).isEqualTo(placeId);
     }
 
     @DisplayName("Id(PK)가 주어지고, 존재하지 않는 장소를 찾으면, 예외가 발생한다.")
@@ -307,7 +307,7 @@ class PlaceServiceTest {
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
-        assertThat(actualResult.getContent().get(0).id()).isEqualTo(expectedResult.getContent().get(0).getId());
+        assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
     }
 
     @DisplayName("3km 밖에 있고 10km 안에 있는 장소들이 주어지고, 중심 좌표 근처의 장소들을 조회하면, 거리순으로 정렬된 장소 목록을 반환한다.")

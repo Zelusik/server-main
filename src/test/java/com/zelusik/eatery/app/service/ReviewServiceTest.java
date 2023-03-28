@@ -82,7 +82,7 @@ class ReviewServiceTest {
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewFileService).should().upload(any(Review.class), any());
-        assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
+        assertThat(actualSavedReview.placeDto().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
     @DisplayName("생성할 리뷰와 존재하지 않는 장소 정보가 주어지고, 리뷰를 생성하면, 장소와 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
@@ -123,7 +123,7 @@ class ReviewServiceTest {
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewFileService).should().upload(any(Review.class), any());
         then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
-        assertThat(actualSavedReview.placeDto().kakaoPid()).isEqualTo(kakaoPid);
+        assertThat(actualSavedReview.placeDto().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
     @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
