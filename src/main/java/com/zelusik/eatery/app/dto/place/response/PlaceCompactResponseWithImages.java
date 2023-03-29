@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.dto.place.response;
 
 import com.zelusik.eatery.app.domain.place.Address;
+import com.zelusik.eatery.app.domain.place.Point;
 import com.zelusik.eatery.app.dto.file.response.ImageResponse;
 import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,14 +27,17 @@ public class PlaceCompactResponseWithImages {
     @Schema(description = "주소")
     private Address address;
 
+    @Schema(description = "위치 정보")
+    private Point point;
+
     @Schema(description = "장소에 대한 이미지")
     private List<ImageResponse> images;
 
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static PlaceCompactResponseWithImages of(Long id, String name, String category, Address address, List<ImageResponse> images, Boolean isMarked) {
-        return new PlaceCompactResponseWithImages(id, name, category, address, images, isMarked);
+    public static PlaceCompactResponseWithImages of(Long id, String name, String category, Address address, Point point, List<ImageResponse> images, Boolean isMarked) {
+        return new PlaceCompactResponseWithImages(id, name, category, address, point, images, isMarked);
     }
 
     public static PlaceCompactResponseWithImages from(PlaceDtoWithImages dto) {
@@ -47,6 +51,7 @@ public class PlaceCompactResponseWithImages {
                 dto.getName(),
                 category,
                 dto.getAddress(),
+                dto.getPoint(),
                 dto.getImages().stream()
                         .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
                         .toList(),
