@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.dto.place.response;
 
 import com.zelusik.eatery.app.domain.place.Address;
+import com.zelusik.eatery.app.domain.place.Point;
 import com.zelusik.eatery.app.dto.file.response.ImageResponse;
 import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,11 +27,14 @@ public class MarkedPlaceResponse {
     @Schema(description = "주소")
     private Address address;
 
+    @Schema(description = "위치 정보")
+    private Point point;
+
     @Schema(description = "장소에 대한 이미지")
     private List<ImageResponse> images;
 
-    public static MarkedPlaceResponse of(Long id, String name, String category, Address address, List<ImageResponse> images) {
-        return new MarkedPlaceResponse(id, name, category, address, images);
+    public static MarkedPlaceResponse of(Long id, String name, String category, Address address, Point point, List<ImageResponse> images) {
+        return new MarkedPlaceResponse(id, name, category, address, point, images);
     }
 
     public static MarkedPlaceResponse from(PlaceDtoWithImages dto) {
@@ -49,6 +53,7 @@ public class MarkedPlaceResponse {
                 dto.getName(),
                 category,
                 dto.getAddress(),
+                dto.getPoint(),
                 images
         );
     }
