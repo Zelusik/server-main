@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -30,16 +31,20 @@ public class MemberResponse {
     @Schema(description = "성별", example = "남성")
     private String gender;
 
+    @Schema(description = "생년월일", example = "1998-01-05")
+    private LocalDate birthDay;
+
     @Schema(description = "선호 음식 카테고리 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
     private List<String> favoriteFoodCategories;
 
-    public static MemberResponse of(Long id, ImageResponse image, String email, String nickname, Gender gender, List<FoodCategory> favoriteFoodCategories) {
+    public static MemberResponse of(Long id, ImageResponse image, String email, String nickname, Gender gender, LocalDate birthDay, List<FoodCategory> favoriteFoodCategories) {
         return new MemberResponse(
                 id,
                 image,
                 email,
                 nickname,
                 gender.getDescription(),
+                birthDay,
                 favoriteFoodCategories.stream()
                         .map(FoodCategory::getDescription)
                         .toList()
@@ -53,6 +58,7 @@ public class MemberResponse {
                 dto.getEmail(),
                 dto.getNickname(),
                 dto.getGender(),
+                dto.getBirthDay(),
                 dto.getFavoriteFoodCategories()
         );
     }
