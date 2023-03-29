@@ -51,6 +51,8 @@ class PlaceServiceTest {
     private PlaceService sut;
 
     @Mock
+    private ReviewFileService reviewFileService;
+    @Mock
     private WebScrapingService webScrapingService;
     @Mock
     private PlaceRepository placeRepository;
@@ -227,8 +229,10 @@ class PlaceServiceTest {
         // given
         long placeId = 1L;
         long memberId = 2L;
-        given(placeRepository.findById(placeId)).willReturn(Optional.of(PlaceTestUtils.createPlace()));
+        Place expectedPlace = PlaceTestUtils.createPlace();
+        given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedPlace));
         given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
+        given(reviewFileService.findLatest3ByPlace(expectedPlace)).willReturn(List.of());
 
         // when
         PlaceDtoWithImages findDto = sut.findDtoById(memberId, placeId);
@@ -236,6 +240,7 @@ class PlaceServiceTest {
         // then
         then(placeRepository).should().findById(placeId);
         then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        then(reviewFileService).should().findLatest3ByPlace(expectedPlace);
         assertThat(findDto.getId()).isEqualTo(placeId);
     }
 
@@ -294,17 +299,15 @@ class PlaceServiceTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<Place> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
-        given(placeRepository.findNearBy(null, null, lat, lng, 3, pageable)).willReturn(expectedResult);
-        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
+        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
+        given(placeRepository.findNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(expectedResult);
 
         // when
         Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
-        then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);
+        then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 3, pageable);
         then(placeRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
     }
@@ -317,19 +320,17 @@ class PlaceServiceTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<Place> emptyResult = new SliceImpl<>(List.of(), pageable, false);
-        SliceImpl<Place> expectedResultWithin10km = new SliceImpl<>(List.of(PlaceTestUtils.createPlace()), pageable, false);
-        given(placeRepository.findNearBy(null, null, lat, lng, 3, pageable)).willReturn(emptyResult);
-        given(placeRepository.findNearBy(null, null, lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
-        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
+        SliceImpl<PlaceDtoWithImages> emptyResult = new SliceImpl<>(List.of(), pageable, false);
+        SliceImpl<PlaceDtoWithImages> expectedResultWithin10km = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
+        given(placeRepository.findNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(emptyResult);
+        given(placeRepository.findNearBy(memberId, null, null, lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
 
         // when
         Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
-        then(placeRepository).should().findNearBy(null, null, lat, lng, 3, pageable);
-        then(placeRepository).should().findNearBy(null, null, lat, lng, 10, pageable);
-        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 3, pageable);
+        then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 10, pageable);
         assertThat(actualResult.getNumberOfElements()).isNotZero();
     }
 
