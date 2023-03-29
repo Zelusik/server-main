@@ -92,7 +92,6 @@ public class PlaceService {
     public PlaceDtoWithImages findDtoById(Long memberId, Long placeId) {
         Place place = findEntityById(placeId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-
         List<ReviewFileDto> images = reviewFileService.findLatest3ByPlace(place);
 
         return PlaceDtoWithImages.from(place, images, markedPlaceIdList);
@@ -121,25 +120,24 @@ public class PlaceService {
      * @return 조회한 장소 목록
      */
     public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
-        Slice<Place> places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 3, pageable);
+        Slice<PlaceDtoWithImages> places = placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 3, pageable);
         if (!places.hasContent()) {
-            places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 10, pageable);
+            places = placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 10, pageable);
         }
-
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-
-        return places.map(place -> {
-            List<ReviewFileDto> placeImages = reviewFileService.findLatest3ByPlace(place);
-            return PlaceDtoWithImages.from(place, placeImages, markedPlaceIdList);
-        });
+        return places;
     }
 
+    /**
+     * 북마크에 저장한 장소 목록(Slice)을 조회합니다.
+     * 조회 시 장소와 관련된 이미지를 함께 조회합니다.
+     * 이미지를 가져오는 기준은 "해당 장소에 작성된 리뷰에 담긴 사진 중 최신순으로 최대 3개"입니다.
+     *
+     * @param memberId 로그인 회원의 PK.
+     * @param pageable paging 정보
+     * @return 조회한 장소 목록과 사진 데이터
+     */
     public Slice<PlaceDtoWithImages> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
-        Slice<Place> places = placeRepository.findMarkedPlaces(memberId, pageable);
-        return places.map(place -> {
-            List<ReviewFileDto> placeImages = reviewFileService.findLatest3ByPlace(place);
-            return PlaceDtoWithImages.from(place, placeImages, null);
-        });
+        return placeRepository.findMarkedPlaces(memberId, pageable);
     }
 
     /**
@@ -155,7 +153,6 @@ public class PlaceService {
             oh = oh.trim();
 
             if (oh.contains("라스트오더")) continue;
-
             if (oh.contains("휴게시간")) continue;
 
             if (oh.startsWith("매일")) {
