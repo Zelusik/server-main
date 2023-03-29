@@ -3,7 +3,9 @@ eatery.app.version: v.0.0.1
 logging:
   level:
     com.zelusik.eatery: debug
-    org.hibernate.SQL: debug
+    org:
+      hibernate.SQL: debug
+      springframework.jdbc: debug
 
 spring:
   servlet:
@@ -33,7 +35,7 @@ cloud:
       bucket-name: eatery-s3-bucket
     stack:
       auto: false
-      
+
 ---
 # Settings for local(dev)
 management.endpoints.web.exposure.include: "*"
@@ -62,7 +64,9 @@ web-scraping.server.url: ${PROD_SCRAPING_SERVER_URL}
 logging:
   level:
     com.zelusik.eatery: info
-    org.hibernate.SQL: info
+    org:
+      hibernate.SQL: info
+      springframework.jdbc: info
 
 spring:
   config.activate.on-profile: prod
