@@ -2,7 +2,6 @@ package com.zelusik.eatery.app.repository.place;
 
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
-import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -21,7 +20,7 @@ public interface PlaceJdbcTemplateRepository {
      * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    Slice<Place> findNearBy(List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable);
+    Slice<PlaceDtoWithImages> findNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소 목록(Slice)을 조회합니다.

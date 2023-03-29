@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.app.dto.SliceResponse;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.place.response.MarkedPlaceResponse;
+import com.zelusik.eatery.app.dto.place.response.PlaceCompactResponseWithImages;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.app.dto.place.response.PlaceResponseWithImages;
 import com.zelusik.eatery.app.service.PlaceService;
@@ -83,7 +84,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/search")
-    public SliceResponse<PlaceResponseWithImages> searchNearBy(
+    public SliceResponse<PlaceCompactResponseWithImages> searchNearBy(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
@@ -110,14 +111,14 @@ public class PlaceController {
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
-        return new SliceResponse<PlaceResponseWithImages>().from(
+        return new SliceResponse<PlaceCompactResponseWithImages>().from(
                 placeService.findDtosNearBy(
                         userPrincipal.getMemberId(),
                         daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
                         keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
                         lat, lng,
                         PageRequest.of(page, size)
-                ).map(PlaceResponseWithImages::from)
+                ).map(PlaceCompactResponseWithImages::from)
         );
     }
 

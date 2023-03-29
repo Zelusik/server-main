@@ -92,7 +92,6 @@ public class PlaceService {
     public PlaceDtoWithImages findDtoById(Long memberId, Long placeId) {
         Place place = findEntityById(placeId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-
         List<ReviewFileDto> images = reviewFileService.findLatest3ByPlace(place);
 
         return PlaceDtoWithImages.from(place, images, markedPlaceIdList);
@@ -121,17 +120,11 @@ public class PlaceService {
      * @return 조회한 장소 목록
      */
     public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
-        Slice<Place> places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 3, pageable);
+        Slice<PlaceDtoWithImages> places = placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 3, pageable);
         if (!places.hasContent()) {
-            places = placeRepository.findNearBy(daysOfWeek, keyword, lat, lng, 10, pageable);
+            places = placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 10, pageable);
         }
-
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-
-        return places.map(place -> {
-            List<ReviewFileDto> placeImages = reviewFileService.findLatest3ByPlace(place);
-            return PlaceDtoWithImages.from(place, placeImages, markedPlaceIdList);
-        });
+        return places;
     }
 
     /**
