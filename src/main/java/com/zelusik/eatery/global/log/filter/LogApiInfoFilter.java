@@ -111,6 +111,10 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
             return payloadInfo + "Binary Content";
         }
 
+        if (content.length >= 10000) {
+            return payloadInfo + "too many data.";
+        }
+
         String contentString = new String(content);
         // TODO: 추가적인 content-type case에 대한 로그 출력도 고민할 필요 있음.
         if (contentType.equals(MediaType.APPLICATION_JSON_VALUE)) {
