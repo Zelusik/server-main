@@ -71,8 +71,8 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "회원 정보 수정",
-            description = "<p>회원 정보를 수정한다." +
+            summary = "내 정보 수정",
+            description = "<p>내 정보를 수정한다." +
                     "<p>프로필 이미지는 수정하고자 하는 경우에만 요청해야 하고, " +
                     "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
             security = @SecurityRequirement(name = "access-token")
