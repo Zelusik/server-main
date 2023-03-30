@@ -32,7 +32,7 @@ cloud:
     region:
       static: ap-northeast-2
     s3:
-      bucket-name: eatery-s3-bucket
+      bucket-name: ${AWS_S3_BUCKET_NAME}
     stack:
       auto: false
 
