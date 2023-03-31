@@ -6,7 +6,7 @@ import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;
 import com.zelusik.eatery.app.domain.place.Point;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
+import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class PlaceDtoWithImages {
     private Point point;
     private String closingHours;
     private List<OpeningHoursDto> openingHoursDtos;
-    private List<ReviewFileDto> images;
+    private List<ReviewImageDto> images;
     private Boolean isMarked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -41,11 +41,11 @@ public class PlaceDtoWithImages {
         return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null, null, null, null);
     }
 
-    public static PlaceDtoWithImages of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, List<ReviewFileDto> images, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static PlaceDtoWithImages of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, List<ReviewImageDto> images, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return new PlaceDtoWithImages(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, images, isMarked, createdAt, updatedAt, deletedAt);
     }
 
-    public static PlaceDtoWithImages from(Place place, List<ReviewFileDto> images, List<Long> markedPlaceIdList) {
+    public static PlaceDtoWithImages from(Place place, List<ReviewImageDto> images, List<Long> markedPlaceIdList) {
         Boolean isMarked = markedPlaceIdList != null ? isMarked(place, markedPlaceIdList) : null;
 
         return of(

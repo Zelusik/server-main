@@ -2,10 +2,9 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.review.Review;
-import com.zelusik.eatery.app.domain.review.ReviewFile;
-import com.zelusik.eatery.app.dto.file.S3FileDto;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
-import com.zelusik.eatery.app.repository.review.ReviewFileRepository;
+import com.zelusik.eatery.app.domain.review.ReviewImage;
+import com.zelusik.eatery.app.dto.review.ReviewImageDto;
+import com.zelusik.eatery.app.repository.review.ReviewImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,10 +15,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class ReviewFileService {
+public class ReviewImageService {
 
     private final FileService fileService;
-    private final ReviewFileRepository reviewFileRepository;
+    private final ReviewImageRepository reviewImageRepository;
 
     private static final String DIR_PATH = "review/";
 
@@ -33,7 +32,7 @@ public class ReviewFileService {
     public void upload(Review review, List<MultipartFile> multipartFiles) {
         multipartFiles.forEach(multipartFile -> {
             S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
-            review.getReviewFiles().add(ReviewFile.of(
+            review.getReviewImages().add(ReviewImage.of(
                     review,
                     s3ImageDto.originalName(),
                     s3ImageDto.storedName(),
@@ -42,22 +41,22 @@ public class ReviewFileService {
                     s3ImageDto.thumbnailUrl()
             ));
         });
-        reviewFileRepository.saveAll(review.getReviewFiles());
+        reviewImageRepository.saveAll(review.getReviewImages());
     }
 
-    public List<ReviewFileDto> findLatest3ByPlace(Place place) {
-        return reviewFileRepository.findLatest3ByPlace(place).stream()
-                .map(ReviewFileDto::from)
+    public List<ReviewImageDto> findLatest3ByPlace(Place place) {
+        return reviewImageRepository.findLatest3ByPlace(place).stream()
+                .map(ReviewImageDto::from)
                 .toList();
     }
 
     /**
      * ReviewFile들을 삭제한다.
      *
-     * @param reviewFiles 삭제할 ReviewFile 목록
+     * @param reviewImages 삭제할 ReviewImage 목록
      */
     @Transactional
-    public void deleteAll(List<ReviewFile> reviewFiles) {
-        reviewFileRepository.deleteAll(reviewFiles);
+    public void deleteAll(List<ReviewImage> reviewImages) {
+        reviewImageRepository.deleteAll(reviewImages);
     }
 }

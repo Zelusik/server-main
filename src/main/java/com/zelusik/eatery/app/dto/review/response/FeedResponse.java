@@ -47,8 +47,8 @@ public class FeedResponse {
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
                 dto.getContent(),
-                dto.getReviewFileDtos().stream()
-                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
+                dto.getReviewImageDtos().stream()
+                        .map(reviewImageDto -> ImageResponse.of(reviewImageDto.getUrl(), reviewImageDto.getThumbnailUrl()))
                         .toList()
         );
     }

@@ -7,7 +7,7 @@ import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.PlaceCategory;
 import com.zelusik.eatery.app.domain.place.Point;
 import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
+import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.util.domain.ReviewKeywordValueConverter;
 import org.springframework.data.domain.Pageable;
@@ -40,14 +40,14 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
     @Override
     public Slice<PlaceDtoWithImages> findNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable) {
         StringBuilder sql = new StringBuilder("select p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at, ")
-                .append("rf1.review_file_id as rf1_review_file_id, rf1.review_id as rf1_review_id, rf1.original_name as rf1_original_name, rf1.stored_name as rf1_stored_name, rf1.url as rf1_url, rf1.thumbnail_stored_name as rf1_thumbnail_stored_name, rf1.thumbnail_url as rf1_thumbnail_url, rf1.created_at as rf1_created_at, rf1.updated_at as rf1_updated_at, rf1.deleted_at as rf1_deleted_at, ")
-                .append("rf2.review_file_id as rf2_review_file_id, rf2.review_id as rf2_review_id, rf2.original_name as rf2_original_name, rf2.stored_name as rf2_stored_name, rf2.url as rf2_url, rf2.thumbnail_stored_name as rf2_thumbnail_stored_name, rf2.thumbnail_url as rf2_thumbnail_url, rf2.created_at as rf2_created_at, rf2.updated_at as rf2_updated_at, rf2.deleted_at as rf2_deleted_at, ")
-                .append("rf3.review_file_id as rf3_review_file_id, rf3.review_id as rf3_review_id, rf3.original_name as rf3_original_name, rf3.stored_name as rf3_stored_name, rf3.url as rf3_url, rf3.thumbnail_stored_name as rf3_thumbnail_stored_name, rf3.thumbnail_url as rf3_thumbnail_url, rf3.created_at as rf3_created_at, rf3.updated_at as rf3_updated_at, rf3.deleted_at as rf3_deleted_at, ")
+                .append("ri1.review_image_id as ri1_review_image_id, ri1.review_id as ri1_review_id, ri1.original_name as ri1_original_name, ri1.stored_name as ri1_stored_name, ri1.url as ri1_url, ri1.thumbnail_stored_name as ri1_thumbnail_stored_name, ri1.thumbnail_url as ri1_thumbnail_url, ri1.created_at as ri1_created_at, ri1.updated_at as ri1_updated_at, ri1.deleted_at as ri1_deleted_at, ")
+                .append("ri2.review_image_id as ri2_review_image_id, ri2.review_id as ri2_review_id, ri2.original_name as ri2_original_name, ri2.stored_name as ri2_stored_name, ri2.url as ri2_url, ri2.thumbnail_stored_name as ri2_thumbnail_stored_name, ri2.thumbnail_url as ri2_thumbnail_url, ri2.created_at as ri2_created_at, ri2.updated_at as ri2_updated_at, ri2.deleted_at as ri2_deleted_at, ")
+                .append("ri3.review_image_id as ri3_review_image_id, ri3.review_id as ri3_review_id, ri3.original_name as ri3_original_name, ri3.stored_name as ri3_stored_name, ri3.url as ri3_url, ri3.thumbnail_stored_name as ri3_thumbnail_stored_name, ri3.thumbnail_url as ri3_thumbnail_url, ri3.created_at as ri3_created_at, ri3.updated_at as ri3_updated_at, ri3.deleted_at as ri3_deleted_at, ")
                 .append("(6371 * acos(cos(radians(:lat)) * cos(radians(lat)) * cos(radians(lng) - radians(:lng)) + sin(radians(:lat)) * sin(radians(lat)))) as distance ")
                 .append("from place p ")
-                .append("left join review_file rf1 on rf1.review_file_id = (select rf.review_file_id from review_file rf join review r on r.review_id = rf.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 0) ")
-                .append("left join review_file rf2 on rf2.review_file_id = (select rf.review_file_id from review_file rf join review r on r.review_id = rf.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 1) ")
-                .append("left join review_file rf3 on rf3.review_file_id = (select rf.review_file_id from review_file rf join review r on r.review_id = rf.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 2) ");
+                .append("left join review_image ri1 on ri1.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 0) ")
+                .append("left join review_image ri2 on ri2.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 1) ")
+                .append("left join review_image ri3 on ri3.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 2) ");
 
         if (daysOfWeek != null && !daysOfWeek.isEmpty()) {
             sql.append("inner join opening_hours oh ")
@@ -65,9 +65,9 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
         }
 
         sql.append("group by p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at, ")
-                .append("rf1.review_file_id, rf1.review_id, rf1.original_name, rf1.stored_name, rf1.url, rf1.thumbnail_stored_name, rf1.thumbnail_url, rf1.created_at, rf1.updated_at, rf1.deleted_at, ")
-                .append("rf2.review_file_id, rf2.review_id, rf2.original_name, rf2.stored_name, rf2.url, rf2.thumbnail_stored_name, rf2.thumbnail_url, rf2.created_at, rf2.updated_at, rf2.deleted_at, ")
-                .append("rf3.review_file_id, rf3.review_id, rf3.original_name, rf3.stored_name, rf3.url, rf3.thumbnail_stored_name, rf3.thumbnail_url, rf3.created_at, rf3.updated_at, rf3.deleted_at ")
+                .append("ri1.review_image_id, ri1.review_id, ri1.original_name, ri1.stored_name, ri1.url, ri1.thumbnail_stored_name, ri1.thumbnail_url, ri1.created_at, ri1.updated_at, ri1.deleted_at, ")
+                .append("ri2.review_image_id, ri2.review_id, ri2.original_name, ri2.stored_name, ri2.url, ri2.thumbnail_stored_name, ri2.thumbnail_url, ri2.created_at, ri2.updated_at, ri2.deleted_at, ")
+                .append("ri3.review_image_id, ri3.review_id, ri3.original_name, ri3.stored_name, ri3.url, ri3.thumbnail_stored_name, ri3.thumbnail_url, ri3.created_at, ri3.updated_at, ri3.deleted_at ")
                 .append("having distance <= :distance_limit ")
                 .append("order by distance ")
                 .append("limit :size_of_page ")
@@ -115,53 +115,53 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                        p.created_at,
                        p.updated_at,
                        p.deleted_at,
-                       rf1.review_file_id        as rf1_review_file_id,
-                       rf1.review_id             as rf1_review_id,
-                       rf1.original_name         as rf1_original_name,
-                       rf1.stored_name           as rf1_stored_name,
-                       rf1.url                   as rf1_url,
-                       rf1.thumbnail_stored_name as rf1_thumbnail_stored_name,
-                       rf1.thumbnail_url         as rf1_thumbnail_url,
-                       rf1.created_at            as rf1_created_at,
-                       rf1.updated_at            as rf1_updated_at,
-                       rf1.deleted_at            as rf1_deleted_at,
-                       rf2.review_file_id        as rf2_review_file_id,
-                       rf2.review_id             as rf2_review_id,
-                       rf2.original_name         as rf2_original_name,
-                       rf2.stored_name           as rf2_stored_name,
-                       rf2.url                   as rf2_url,
-                       rf2.thumbnail_stored_name as rf2_thumbnail_stored_name,
-                       rf2.thumbnail_url         as rf2_thumbnail_url,
-                       rf2.created_at            as rf2_created_at,
-                       rf2.updated_at            as rf2_updated_at,
-                       rf2.deleted_at            as rf2_deleted_at,
-                       rf3.review_file_id        as rf3_review_file_id,
-                       rf3.review_id             as rf3_review_id,
-                       rf3.original_name         as rf3_original_name,
-                       rf3.stored_name           as rf3_stored_name,
-                       rf3.url                   as rf3_url,
-                       rf3.thumbnail_stored_name as rf3_thumbnail_stored_name,
-                       rf3.thumbnail_url         as rf3_thumbnail_url,
-                       rf3.created_at            as rf3_created_at,
-                       rf3.updated_at            as rf3_updated_at,
-                       rf3.deleted_at            as rf3_deleted_at
+                       ri1.review_image_id        as ri1_review_image_id,
+                       ri1.review_id             as ri1_review_id,
+                       ri1.original_name         as ri1_original_name,
+                       ri1.stored_name           as ri1_stored_name,
+                       ri1.url                   as ri1_url,
+                       ri1.thumbnail_stored_name as ri1_thumbnail_stored_name,
+                       ri1.thumbnail_url         as ri1_thumbnail_url,
+                       ri1.created_at            as ri1_created_at,
+                       ri1.updated_at            as ri1_updated_at,
+                       ri1.deleted_at            as ri1_deleted_at,
+                       ri2.review_image_id        as ri2_review_image_id,
+                       ri2.review_id             as ri2_review_id,
+                       ri2.original_name         as ri2_original_name,
+                       ri2.stored_name           as ri2_stored_name,
+                       ri2.url                   as ri2_url,
+                       ri2.thumbnail_stored_name as ri2_thumbnail_stored_name,
+                       ri2.thumbnail_url         as ri2_thumbnail_url,
+                       ri2.created_at            as ri2_created_at,
+                       ri2.updated_at            as ri2_updated_at,
+                       ri2.deleted_at            as ri2_deleted_at,
+                       ri3.review_image_id       as ri3_review_image_id,
+                       ri3.review_id             as ri3_review_id,
+                       ri3.original_name         as ri3_original_name,
+                       ri3.stored_name           as ri3_stored_name,
+                       ri3.url                   as ri3_url,
+                       ri3.thumbnail_stored_name as ri3_thumbnail_stored_name,
+                       ri3.thumbnail_url         as ri3_thumbnail_url,
+                       ri3.created_at            as ri3_created_at,
+                       ri3.updated_at            as ri3_updated_at,
+                       ri3.deleted_at            as ri3_deleted_at
                 from bookmark bm
                          join place p on bm.place_id = p.place_id
-                         left join review_file rf1 on rf1.review_file_id = (select rf.review_file_id
-                                                                            from review_file rf
-                                                                                     join review r on r.review_id = rf.review_id
+                         left join review_image ri1 on ri1.review_image_id = (select ri.review_image_id
+                                                                            from review_image ri
+                                                                                     join review r on r.review_id = ri.review_id
                                                                             where r.place_id = p.place_id
                                                                             order by r.created_at desc
                                                                             limit 1 offset 0)
-                         left join review_file rf2 on rf2.review_file_id = (select rf.review_file_id
-                                                                            from review_file rf
-                                                                                     join review r on r.review_id = rf.review_id
+                         left join review_image ri2 on ri2.review_image_id = (select ri.review_image_id
+                                                                            from review_image ri
+                                                                                     join review r on r.review_id = ri.review_id
                                                                             where r.place_id = p.place_id
                                                                             order by r.created_at desc
                                                                             limit 1 offset 1)
-                         left join review_file rf3 on rf3.review_file_id = (select rf.review_file_id
-                                                                            from review_file rf
-                                                                                     join review r on r.review_id = rf.review_id
+                         left join review_image ri3 on ri3.review_image_id = (select ri.review_image_id
+                                                                            from review_image ri
+                                                                                     join review r on r.review_id = ri.review_id
                                                                             where r.place_id = p.place_id
                                                                             order by r.created_at desc
                                                                             limit 1 offset 2)
@@ -221,7 +221,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                     ),
                     rs.getString("closing_hours"),
                     null,
-                    getTop3ReviewFileDtosOrderByLatest(rs),
+                    getTop3ReviewImageDtosOrderByLatest(rs),
                     isMarked,
                     rs.getTimestamp("created_at").toLocalDateTime(),
                     rs.getTimestamp("updated_at").toLocalDateTime(),
@@ -230,28 +230,28 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
         };
     }
 
-    private List<ReviewFileDto> getTop3ReviewFileDtosOrderByLatest(ResultSet rs) throws SQLException {
-        List<ReviewFileDto> reviewFileDtos = new ArrayList<>();
+    private List<ReviewImageDto> getTop3ReviewImageDtosOrderByLatest(ResultSet rs) throws SQLException {
+        List<ReviewImageDto> reviewImageDtos = new ArrayList<>();
 
         for (int i = 1; i <= 3; i++) {
-            ReviewFileDto rf = getReviewFileDtoByAlias(rs, "rf" + i);
-            if (rf != null) {
-                reviewFileDtos.add(rf);
+            ReviewImageDto ri = getReviewImageDtoByAlias(rs, "ri" + i);
+            if (ri != null) {
+                reviewImageDtos.add(ri);
             }
         }
 
-        return reviewFileDtos;
+        return reviewImageDtos;
     }
 
-    private ReviewFileDto getReviewFileDtoByAlias(ResultSet rs, String alias) throws SQLException {
-        long reviewFileId = rs.getLong(alias + "_review_file_id");
+    private ReviewImageDto getReviewImageDtoByAlias(ResultSet rs, String alias) throws SQLException {
+        long reviewImageId = rs.getLong(alias + "_review_image_id");
 
-        if (reviewFileId == 0) {
+        if (reviewImageId == 0) {
             return null;
         }
 
-        return ReviewFileDto.of(
-                reviewFileId,
+        return ReviewImageDto.of(
+                reviewImageId,
                 rs.getLong(alias + "_review_id"),
                 rs.getString(alias + "_original_name"),
                 rs.getString(alias + "_stored_name"),
@@ -260,7 +260,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                 rs.getString(alias + "_thumbnail_url"),
                 rs.getTimestamp(alias + "_created_at").toLocalDateTime(),
                 rs.getTimestamp(alias + "_updated_at").toLocalDateTime(),
-                rs.getTimestamp(alias + "_deleted_at") == null ? null : rs.getTimestamp("rf1_deleted_at").toLocalDateTime()
+                rs.getTimestamp(alias + "_deleted_at") == null ? null : rs.getTimestamp(alias + "_deleted_at").toLocalDateTime()
         );
     }
 }

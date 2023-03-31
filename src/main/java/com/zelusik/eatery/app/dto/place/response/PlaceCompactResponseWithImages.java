@@ -53,7 +53,7 @@ public class PlaceCompactResponseWithImages {
                 dto.getAddress(),
                 dto.getPoint(),
                 dto.getImages().stream()
-                        .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
+                        .map(reviewImageDto -> ImageResponse.of(reviewImageDto.getUrl(), reviewImageDto.getThumbnailUrl()))
                         .toList(),
                 dto.getIsMarked()
         );

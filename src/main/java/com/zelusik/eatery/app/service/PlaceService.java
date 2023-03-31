@@ -9,7 +9,7 @@ import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
 import com.zelusik.eatery.app.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
+import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.place.PlaceRepository;
@@ -34,7 +34,7 @@ import java.util.Optional;
 public class PlaceService {
 
     private final WebScrapingService webScrapingService;
-    private final ReviewFileService reviewFileService;
+    private final ReviewImageService reviewImageService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
     private final BookmarkRepository bookmarkRepository;
@@ -92,7 +92,7 @@ public class PlaceService {
     public PlaceDtoWithImages findDtoById(Long memberId, Long placeId) {
         Place place = findEntityById(placeId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-        List<ReviewFileDto> images = reviewFileService.findLatest3ByPlace(place);
+        List<ReviewImageDto> images = reviewImageService.findLatest3ByPlace(place);
 
         return PlaceDtoWithImages.from(place, images, markedPlaceIdList);
     }

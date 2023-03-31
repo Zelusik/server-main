@@ -1,6 +1,6 @@
 package com.zelusik.eatery.app.dto.file.response;
 
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
+import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class ImageResponse {
         return new ImageResponse(url, thumbnailUrl);
     }
 
-    public static ImageResponse from(ReviewFileDto reviewFileDto) {
-        return of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl());
+    public static ImageResponse from(ReviewImageDto reviewImageDto) {
+        return of(reviewImageDto.getUrl(), reviewImageDto.getThumbnailUrl());
     }
 }

@@ -51,7 +51,7 @@ class PlaceServiceTest {
     private PlaceService sut;
 
     @Mock
-    private ReviewFileService reviewFileService;
+    private ReviewImageService reviewImageService;
     @Mock
     private WebScrapingService webScrapingService;
     @Mock
@@ -232,7 +232,7 @@ class PlaceServiceTest {
         Place expectedPlace = PlaceTestUtils.createPlace();
         given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedPlace));
         given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
-        given(reviewFileService.findLatest3ByPlace(expectedPlace)).willReturn(List.of());
+        given(reviewImageService.findLatest3ByPlace(expectedPlace)).willReturn(List.of());
 
         // when
         PlaceDtoWithImages findDto = sut.findDtoById(memberId, placeId);
@@ -240,7 +240,7 @@ class PlaceServiceTest {
         // then
         then(placeRepository).should().findById(placeId);
         then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
-        then(reviewFileService).should().findLatest3ByPlace(expectedPlace);
+        then(reviewImageService).should().findLatest3ByPlace(expectedPlace);
         assertThat(findDto.getId()).isEqualTo(placeId);
     }
 

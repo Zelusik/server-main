@@ -20,7 +20,7 @@ public class ReviewDtoWithMember {
     private List<ReviewKeywordValue> keywords;
     private String autoCreatedContent;
     private String content;
-    private List<ReviewFileDto> reviewFileDtos;
+    private List<ReviewImageDto> reviewImageDtos;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
@@ -29,8 +29,8 @@ public class ReviewDtoWithMember {
         return of(null, null, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDtoWithMember of(Long id, MemberDto writerDto, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewDtoWithMember(id, writerDto, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
+    public static ReviewDtoWithMember of(Long id, MemberDto writerDto, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new ReviewDtoWithMember(id, writerDto, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
     }
 
     public static ReviewDtoWithMember from(Review entity) {
@@ -43,7 +43,7 @@ public class ReviewDtoWithMember {
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
                 entity.getReviewFiles().stream()
-                        .map(ReviewFileDto::from)
+                        .map(ReviewImageDto::from)
                         .toList(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),

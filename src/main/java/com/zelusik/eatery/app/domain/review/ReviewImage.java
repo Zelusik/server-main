@@ -12,21 +12,21 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE review_file SET deleted_at = CURRENT_TIMESTAMP WHERE review_file_id = ?")
+@SQLDelete(sql = "UPDATE review_image SET deleted_at = CURRENT_TIMESTAMP WHERE review_image_id = ?")
 @Entity
-public class ReviewFile extends S3Image {
+public class ReviewImage extends S3Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_file_id")
+    @Column(name = "review_image_id")
     private Long id;
 
     @JoinColumn(name = "review_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
-    public static ReviewFile of(Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
-        return ReviewFile.builder()
+    public static ReviewImage of(Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
+        return ReviewImage.builder()
                 .review(review)
                 .originalName(originalName)
                 .storedName(storedName)
@@ -37,7 +37,7 @@ public class ReviewFile extends S3Image {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private ReviewFile(Review review, String originalName, String storedName, String thumbnailStoredName, String url, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    private ReviewImage(Review review, String originalName, String storedName, String thumbnailStoredName, String url, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
         this.review = review;
     }
