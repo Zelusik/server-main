@@ -1,8 +1,8 @@
 package com.zelusik.eatery.app.domain.place;
 
+import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
-import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.app.util.domain.ReviewKeywordValueConverter;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -15,6 +15,10 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SQLDelete(sql = "UPDATE place SET deleted_at = CURRENT_TIMESTAMP WHERE place_id = ?")
+@Table(indexes = {
+        @Index(columnList = "kakaoPid"),
+        @Index(columnList = "createdAt")
+})
 @Entity
 public class Place extends BaseTimeEntity {
 
@@ -27,7 +31,7 @@ public class Place extends BaseTimeEntity {
     @Convert(converter = ReviewKeywordValueConverter.class)
     private List<ReviewKeywordValue> top3Keywords;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String kakaoPid;
 
     @Column(nullable = false)

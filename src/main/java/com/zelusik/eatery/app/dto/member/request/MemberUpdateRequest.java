@@ -3,10 +3,10 @@ package com.zelusik.eatery.app.dto.member.request;
 import com.zelusik.eatery.app.constant.member.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class MemberUpdateRequest {
 
     @Schema(description = "닉네임", example = "우기")
-    @NotBlank
+    @Length(max = 15)
     private String nickname;
 
     @Schema(description = "생년월일", example = "1998-01-05")
