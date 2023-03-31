@@ -16,6 +16,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SQLDelete(sql = "UPDATE member SET deleted_at = CURRENT_TIMESTAMP WHERE member_id = ?")
+@Table(indexes = {
+        @Index(columnList = "socialUid")
+})
 @Entity
 public class Member extends BaseTimeEntity {
 
@@ -48,7 +51,7 @@ public class Member extends BaseTimeEntity {
     private String email;
 
     @Setter(AccessLevel.PRIVATE)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 15)
     private String nickname;
 
     @Setter(AccessLevel.PRIVATE)

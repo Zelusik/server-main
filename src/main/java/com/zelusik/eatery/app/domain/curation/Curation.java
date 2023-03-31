@@ -15,6 +15,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SQLDelete(sql = "UPDATE curation SET deleted_at = CURRENT_TIMESTAMP WHERE curation_id = ?")
+@Table(indexes = {
+        @Index(columnList = "createdAt")
+})
 @Entity
 public class Curation extends BaseTimeEntity {
 

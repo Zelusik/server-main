@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+        @Index(columnList = "keyword")
+})
 @Entity
 public class ReviewKeyword extends BaseTimeEntity {
 

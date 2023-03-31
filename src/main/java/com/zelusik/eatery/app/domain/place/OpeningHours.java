@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.domain.place;
 
-import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
+import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,9 @@ import java.time.LocalTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+        @Index(columnList = "dayOfWeek")
+})
 @Entity
 public class OpeningHours extends BaseTimeEntity {
 
