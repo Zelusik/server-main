@@ -24,7 +24,7 @@ public class ReviewDtoWithMemberAndPlace {
     private List<ReviewKeywordValue> keywords;
     private String autoCreatedContent;
     private String content;
-    private List<ReviewFileDto> reviewFileDtos;
+    private List<ReviewImageDto> reviewImageDtos;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
@@ -33,8 +33,8 @@ public class ReviewDtoWithMemberAndPlace {
         return of(null, null, placeDto, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDtoWithMemberAndPlace of(Long id, MemberDto writerDto, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewFileDto> reviewFileDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewDtoWithMemberAndPlace(id, writerDto, place, keywords, autoCreatedContent, content, reviewFileDtos, createdAt, updatedAt, deletedAt);
+    public static ReviewDtoWithMemberAndPlace of(Long id, MemberDto writerDto, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new ReviewDtoWithMemberAndPlace(id, writerDto, place, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
     }
 
     public static ReviewDtoWithMemberAndPlace from(Review entity, List<Long> markedPlaceIdList) {
@@ -48,7 +48,7 @@ public class ReviewDtoWithMemberAndPlace {
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
                 entity.getReviewFiles().stream()
-                        .map(ReviewFileDto::from)
+                        .map(ReviewImageDto::from)
                         .toList(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),

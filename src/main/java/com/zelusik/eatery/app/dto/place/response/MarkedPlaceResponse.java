@@ -45,7 +45,7 @@ public class MarkedPlaceResponse {
         }
 
         List<ImageResponse> images = dto.getImages().stream()
-                .map(reviewFileDto -> ImageResponse.of(reviewFileDto.getUrl(), reviewFileDto.getThumbnailUrl()))
+                .map(reviewImageDto -> ImageResponse.of(reviewImageDto.getUrl(), reviewImageDto.getThumbnailUrl()))
                 .toList();
 
         return MarkedPlaceResponse.of(

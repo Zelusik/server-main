@@ -44,7 +44,7 @@ public class Review extends BaseTimeEntity {
     private List<ReviewKeyword> keywords = new LinkedList<>();
 
     @OneToMany(mappedBy = "review")
-    private List<ReviewFile> reviewFiles = new LinkedList<>();
+    private List<ReviewImage> reviewImages = new LinkedList<>();
 
     private LocalDateTime deletedAt;
 

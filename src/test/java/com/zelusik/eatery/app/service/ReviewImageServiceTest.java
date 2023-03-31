@@ -1,7 +1,7 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.review.Review;
-import com.zelusik.eatery.app.repository.review.ReviewFileRepository;
+import com.zelusik.eatery.app.repository.review.ReviewImageRepository;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
 import com.zelusik.eatery.util.S3FileTestUtils;
@@ -21,15 +21,15 @@ import static org.mockito.BDDMockito.then;
 
 @DisplayName("[Service] Review File")
 @ExtendWith(MockitoExtension.class)
-class ReviewFileServiceTest {
+class ReviewImageServiceTest {
 
     @InjectMocks
-    private ReviewFileService sut;
+    private ReviewImageService sut;
 
     @Mock
     private FileService fileService;
     @Mock
-    private ReviewFileRepository reviewFileRepository;
+    private ReviewImageRepository reviewImageRepository;
 
     @DisplayName("이미지 파일들이 주어지면, 파일들을 업로드한다.")
     @Test
@@ -39,13 +39,13 @@ class ReviewFileServiceTest {
         Review review = ReviewTestUtils.createReviewWithId();
         given(fileService.uploadImage(any(MultipartFile.class), any(String.class)))
                 .willReturn(S3FileTestUtils.createS3ImageDto());
-        given(reviewFileRepository.saveAll(any())).willReturn(List.of());
+        given(reviewImageRepository.saveAll(any())).willReturn(List.of());
 
         // when
         sut.upload(review, multipartFiles);
 
         // then
         then(fileService).should().uploadImage(any(MultipartFile.class), any(String.class));
-        then(reviewFileRepository).should().saveAll(any());
+        then(reviewImageRepository).should().saveAll(any());
     }
 }

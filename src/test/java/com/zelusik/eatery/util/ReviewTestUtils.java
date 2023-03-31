@@ -7,7 +7,7 @@ import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
-import com.zelusik.eatery.app.dto.review.ReviewFileDto;
+import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -34,7 +34,7 @@ public class ReviewTestUtils {
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
-                List.of(ReviewFileDto.of(
+                List.of(ReviewImageDto.of(
                         1L,
                         1L,
                         "test.txt",
@@ -59,7 +59,7 @@ public class ReviewTestUtils {
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
-                List.of(ReviewFileDto.of(
+                List.of(ReviewImageDto.of(
                         1L,
                         1L,
                         "test.txt",

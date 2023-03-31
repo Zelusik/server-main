@@ -47,7 +47,7 @@ public class ReviewResponse {
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
                 reviewDtoWithMemberAndPlace.getContent(),
-                reviewDtoWithMemberAndPlace.getReviewFileDtos().stream()
+                reviewDtoWithMemberAndPlace.getReviewImageDtos().stream()
                         .map(ImageResponse::from)
                         .toList()
         );

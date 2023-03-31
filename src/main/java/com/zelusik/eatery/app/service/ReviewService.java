@@ -1,9 +1,9 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.review.ReviewKeyword;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
@@ -30,7 +30,7 @@ import java.util.List;
 @Service
 public class ReviewService {
 
-    private final ReviewFileService reviewFileService;
+    private final ReviewImageService reviewImageService;
     private final MemberService memberService;
     private final PlaceService placeService;
     private final ReviewRepository reviewRepository;
@@ -66,7 +66,7 @@ public class ReviewService {
                     reviewKeywordRepository.save(reviewKeyword);
                 });
 
-        reviewFileService.upload(review, files);
+        reviewImageService.upload(review, files);
 
         // 장소 top 3 keyword 설정
         renewPlaceTop3Keywords(place);
@@ -156,7 +156,7 @@ public class ReviewService {
 
         validateReviewDeletePermission(member, review);
 
-        reviewFileService.deleteAll(review.getReviewFiles());
+        reviewImageService.deleteAll(review.getReviewImages());
         reviewRepository.delete(review);
         reviewRepository.flush();
 
