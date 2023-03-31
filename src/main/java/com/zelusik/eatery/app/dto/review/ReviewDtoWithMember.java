@@ -42,7 +42,7 @@ public class ReviewDtoWithMember {
                         .toList(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
-                entity.getReviewFiles().stream()
+                entity.getReviewImages().stream()
                         .map(ReviewImageDto::from)
                         .toList(),
                 entity.getCreatedAt(),
