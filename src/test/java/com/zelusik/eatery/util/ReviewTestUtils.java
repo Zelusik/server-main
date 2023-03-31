@@ -77,10 +77,10 @@ public class ReviewTestUtils {
         );
     }
 
-    public static Review createReviewWithId() {
+    public static Review createReviewWithId(Long placeId, String kakaoPid) {
         return createReviewWithId(
                 MemberTestUtils.createMember(1L),
-                PlaceTestUtils.createPlace()
+                PlaceTestUtils.createPlace(placeId, kakaoPid)
         );
     }
 

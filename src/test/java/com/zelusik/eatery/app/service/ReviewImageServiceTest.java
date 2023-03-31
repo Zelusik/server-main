@@ -36,7 +36,7 @@ class ReviewImageServiceTest {
     void givenImageFiles_whenUploading_thenUploadFiles() {
         // given
         List<MultipartFile> multipartFiles = List.of(MultipartFileTestUtils.createMockMultipartFile());
-        Review review = ReviewTestUtils.createReviewWithId();
+        Review review = ReviewTestUtils.createReviewWithId(1L, "1");
         given(fileService.uploadImage(any(MultipartFile.class), any(String.class)))
                 .willReturn(S3FileTestUtils.createS3ImageDto());
         given(reviewImageRepository.saveAll(any())).willReturn(List.of());

@@ -59,7 +59,7 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
-        Place expectedPlace = PlaceTestUtils.createPlace();
+        Place expectedPlace = PlaceTestUtils.createPlace(1L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace);
         given(placeService.findOptEntityByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
@@ -92,7 +92,7 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
-        Place expectedPlace = PlaceTestUtils.createPlace();
+        Place expectedPlace = PlaceTestUtils.createPlace(1L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace);
         given(placeService.findOptEntityByKakaoPid(kakaoPid))
@@ -132,7 +132,7 @@ class ReviewServiceTest {
         // given
         long placeId = 1L;
         Pageable pageable = Pageable.ofSize(15);
-        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId()));
+        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId(placeId, "1")));
         given(reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable))
                 .willReturn(expectedSearchResult);
 
@@ -150,7 +150,7 @@ class ReviewServiceTest {
         // given
         long writerId = 1L;
         Pageable pageable = Pageable.ofSize(15);
-        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId()));
+        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId(1L, "1")));
         given(reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)).willReturn(expectedSearchResult);
         given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
 

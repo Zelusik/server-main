@@ -84,23 +84,19 @@ public class PlaceTestUtils {
         );
     }
 
-    public static Place createPlace() {
-        return createPlace(1L);
+    public static Place createPlace(Long id, String kakaoPid) {
+        return createPlace(id, kakaoPid, null, "37.5595073462493", "126.921462488105", null);
     }
 
-    public static Place createPlace(Long id) {
-        return createPlace(id, null, "37.5595073462493", "126.921462488105", null);
+    public static Place createPlace(Long id, String kakaoPid, String homepageUrl, String closingHours) {
+        return createPlace(id, kakaoPid, homepageUrl, "37.5595073462493", "126.921462488105", closingHours);
     }
 
-    public static Place createPlace(Long id, String homepageUrl, String closingHours) {
-        return createPlace(id, homepageUrl, "37.5595073462493", "126.921462488105", closingHours);
-    }
-
-    public static Place createPlace(Long id, String homepageUrl, String lat, String lng, String closingHours) {
+    public static Place createPlace(Long id, String kakaoPid, String homepageUrl, String lat, String lng, String closingHours) {
         return Place.of(
                 id,
                 List.of(ReviewKeywordValue.FRESH),
-                "308342289",
+                kakaoPid,
                 "연남토마 본점",
                 "http://place.map.kakao.com/308342289",
                 KakaoCategoryGroupCode.FD6,

@@ -51,6 +51,7 @@ class PlaceRepositoryTest {
         for (int i = 0; i < 50; i++) {
             placeRepository.save(PlaceTestUtils.createPlace(
                     (long) (i + 1),
+                    String.valueOf(i),
                     null,
                     centerLat,
                     String.valueOf(Integer.parseInt(centerLng) + Math.random()),
@@ -78,13 +79,13 @@ class PlaceRepositoryTest {
         // given
         Long memberId = 1L;
         Point pos = new Point("37.5776087830657", "126.976896737645");  // 경복궁
-        Place place1 = placeRepository.save(PlaceTestUtils.createPlace(1L, "성심당", "36.32765802936324", "127.42727719121109", null));    // 대전
+        Place place1 = placeRepository.save(PlaceTestUtils.createPlace(1L, "1", "성심당", "36.32765802936324", "127.42727719121109", null));    // 대전
         place1.getOpeningHoursList().add(openingHoursRepository.save(PlaceTestUtils.createOpeningHours(1L, place1, DayOfWeek.MON)));
-        placeRepository.save(PlaceTestUtils.createPlace(2L, "해운대암소갈비집", "35.163310169485634", "129.1666092786243", null));  // 부산
-        Place place3 = placeRepository.save(PlaceTestUtils.createPlace(3L, "연남토마 본점", "37.5595073462493", "126.921462488105", null));   // 서울
+        placeRepository.save(PlaceTestUtils.createPlace(2L, "2", "해운대암소갈비집", "35.163310169485634", "129.1666092786243", null));  // 부산
+        Place place3 = placeRepository.save(PlaceTestUtils.createPlace(3L, "3", "연남토마 본점", "37.5595073462493", "126.921462488105", null));   // 서울
         place3.getOpeningHoursList().add(openingHoursRepository.save(PlaceTestUtils.createOpeningHours(2L, place3, DayOfWeek.MON)));
-        placeRepository.save(PlaceTestUtils.createPlace(4L, "연돈", "33.258895288625645", "126.40715814631936", null));   // 제주
-        Place place5 = placeRepository.save(PlaceTestUtils.createPlace(5L, "본수원갈비", "37.27796181430103", "127.04060364807957", null));  // 수원
+        placeRepository.save(PlaceTestUtils.createPlace(4L, "4", "연돈", "33.258895288625645", "126.40715814631936", null));   // 제주
+        Place place5 = placeRepository.save(PlaceTestUtils.createPlace(5L, "5", "본수원갈비", "37.27796181430103", "127.04060364807957", null));  // 수원
         place5.getOpeningHoursList().add(openingHoursRepository.save(PlaceTestUtils.createOpeningHours(3L, place5, DayOfWeek.WED)));
 
         // when
