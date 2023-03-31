@@ -72,7 +72,7 @@ class PlaceServiceTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
@@ -104,7 +104,7 @@ class PlaceServiceTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
@@ -138,7 +138,7 @@ class PlaceServiceTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
@@ -176,7 +176,7 @@ class PlaceServiceTest {
                 SAT, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0)),
                 SUN, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0))
         );
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, homepageUrl, closingHours);
+        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
         given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
@@ -229,7 +229,7 @@ class PlaceServiceTest {
         // given
         long placeId = 1L;
         long memberId = 2L;
-        Place expectedPlace = PlaceTestUtils.createPlace();
+        Place expectedPlace = PlaceTestUtils.createPlace(placeId, "1");
         given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedPlace));
         given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
         given(reviewImageService.findLatest3ByPlace(expectedPlace)).willReturn(List.of());
@@ -264,8 +264,8 @@ class PlaceServiceTest {
     @Test
     void givenKakaoPid_whenFindExistentPlace_thenReturnOptionalPlace() {
         // given
-        String kakaoPid = "test";
-        Place expectedPlace = PlaceTestUtils.createPlace();
+        String kakaoPid = "1";
+        Place expectedPlace = PlaceTestUtils.createPlace(1L, kakaoPid);
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
