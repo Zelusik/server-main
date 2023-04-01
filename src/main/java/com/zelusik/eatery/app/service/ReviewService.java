@@ -19,6 +19,7 @@ import com.zelusik.eatery.global.exception.review.ReviewUpdatePermissionDeniedEx
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -132,7 +133,7 @@ public class ReviewService {
      * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
      */
     @Transactional
-    public ReviewDtoWithMemberAndPlace update(Long memberId, Long reviewId, String content) {
+    public ReviewDtoWithMemberAndPlace update(Long memberId, Long reviewId, @Nullable String content) {
         Review review = this.findEntityById(reviewId);
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
