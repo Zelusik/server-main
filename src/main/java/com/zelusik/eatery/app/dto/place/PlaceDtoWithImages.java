@@ -35,14 +35,13 @@ public class PlaceDtoWithImages {
     private Boolean isMarked;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
     public static PlaceDtoWithImages of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
-        return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null, null, null, null);
+        return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null, null, null);
     }
 
-    public static PlaceDtoWithImages of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, List<ReviewImageDto> images, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new PlaceDtoWithImages(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, images, isMarked, createdAt, updatedAt, deletedAt);
+    public static PlaceDtoWithImages of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, List<ReviewImageDto> images, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new PlaceDtoWithImages(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, images, isMarked, createdAt, updatedAt);
     }
 
     public static PlaceDtoWithImages from(Place place, List<ReviewImageDto> images, List<Long> markedPlaceIdList) {
@@ -67,8 +66,7 @@ public class PlaceDtoWithImages {
                 images,
                 isMarked,
                 place.getCreatedAt(),
-                place.getUpdatedAt(),
-                place.getDeletedAt()
+                place.getUpdatedAt()
         );
     }
 
