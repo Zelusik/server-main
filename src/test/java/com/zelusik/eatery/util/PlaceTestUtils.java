@@ -52,7 +52,6 @@ public class PlaceTestUtils {
                 ),
                 false,
                 null,
-                null,
                 null
         );
     }
@@ -78,7 +77,6 @@ public class PlaceTestUtils {
                 ),
                 List.of(),
                 false,
-                LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0)
         );
@@ -107,8 +105,7 @@ public class PlaceTestUtils {
                 new Point(lat, lng),
                 closingHours,
                 LocalDateTime.now(),
-                LocalDateTime.now(),
-                null
+                LocalDateTime.now()
         );
     }
 

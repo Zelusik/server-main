@@ -14,7 +14,6 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE curation SET deleted_at = CURRENT_TIMESTAMP WHERE curation_id = ?")
 @Table(indexes = {
         @Index(columnList = "createdAt")
 })
@@ -32,27 +31,23 @@ public class Curation extends BaseTimeEntity {
     @OneToMany(mappedBy = "curation")
     private List<CurationElem> curationElems = new LinkedList<>();
 
-    private LocalDateTime deletedAt;
-
     public static Curation of(String title) {
-        return of(null, title, null, null, null);
+        return of(null, title, null, null);
     }
 
-    public static Curation of(Long id, String title, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static Curation of(Long id, String title, LocalDateTime createdAt, LocalDateTime updatedAt) {
         return Curation.builder()
                 .id(id)
                 .title(title)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .deletedAt(deletedAt)
                 .build();
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Curation(Long id, String title, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    private Curation(Long id, String title, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.title = title;
-        this.deletedAt = deletedAt;
     }
 }

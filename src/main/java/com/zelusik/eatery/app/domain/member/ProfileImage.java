@@ -25,6 +25,8 @@ public class ProfileImage extends S3Image {
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
+    private LocalDateTime deletedAt;
+
     public static ProfileImage of(Member member, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
         return of(
                 null,
@@ -57,8 +59,9 @@ public class ProfileImage extends S3Image {
 
     @Builder(access = AccessLevel.PRIVATE)
     private ProfileImage(Long id, Member member, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
+        super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt);
         this.id = id;
         this.member = member;
+        this.deletedAt = deletedAt;
     }
 }

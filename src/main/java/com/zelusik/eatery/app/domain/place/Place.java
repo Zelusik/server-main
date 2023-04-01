@@ -5,7 +5,6 @@ import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.util.domain.ReviewKeywordValueConverter;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE place SET deleted_at = CURRENT_TIMESTAMP WHERE place_id = ?")
 @Table(indexes = {
         @Index(columnList = "kakaoPid"),
         @Index(columnList = "createdAt")
@@ -62,13 +60,11 @@ public class Place extends BaseTimeEntity {
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHoursList = new LinkedList<>();
 
-    private LocalDateTime deletedAt;
-
     public static Place of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
-        return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null);
+        return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null);
     }
 
-    public static Place of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static Place of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime createdAt, LocalDateTime updatedAt) {
         return Place.builder()
                 .id(id)
                 .top3Keywords(top3Keywords)
@@ -84,12 +80,11 @@ public class Place extends BaseTimeEntity {
                 .closingHours(closingHours)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .deletedAt(deletedAt)
                 .build();
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Place(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Place(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.top3Keywords = top3Keywords;
@@ -103,6 +98,5 @@ public class Place extends BaseTimeEntity {
         this.homepageUrl = homepageUrl;
         this.point = point;
         this.closingHours = closingHours;
-        this.deletedAt = deletedAt;
     }
 }

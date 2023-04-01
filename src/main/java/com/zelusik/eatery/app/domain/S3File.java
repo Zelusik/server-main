@@ -22,13 +22,10 @@ public abstract class S3File extends BaseTimeEntity {
     @Column(nullable = false)
     private String url;
 
-    private LocalDateTime deletedAt;
-
-    protected S3File(String originalName, String storedName, String url, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    protected S3File(String originalName, String storedName, String url, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(createdAt, updatedAt);
         this.originalName = originalName;
         this.storedName = storedName;
         this.url = url;
-        this.deletedAt = deletedAt;
     }
 }

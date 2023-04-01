@@ -17,10 +17,9 @@ public class CurationDto {
     private List<CurationElemDto> curationElemDtos;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
-    public static CurationDto of(Long id, String title, List<CurationElemDto> curationElemDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new CurationDto(id, title, curationElemDtos, createdAt, updatedAt, deletedAt);
+    public static CurationDto of(Long id, String title, List<CurationElemDto> curationElemDtos, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new CurationDto(id, title, curationElemDtos, createdAt, updatedAt);
     }
 
     public static CurationDto from(Curation entity) {
@@ -31,8 +30,7 @@ public class CurationDto {
                         .map(CurationElemDto::from)
                         .toList(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt()
+                entity.getUpdatedAt()
         );
     }
 }

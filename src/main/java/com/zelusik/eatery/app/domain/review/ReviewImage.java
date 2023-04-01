@@ -25,6 +25,8 @@ public class ReviewImage extends S3Image {
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
+    private LocalDateTime deletedAt;
+
     public static ReviewImage of(Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
         return ReviewImage.builder()
                 .review(review)
@@ -38,7 +40,8 @@ public class ReviewImage extends S3Image {
 
     @Builder(access = AccessLevel.PRIVATE)
     private ReviewImage(Review review, String originalName, String storedName, String thumbnailStoredName, String url, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
+        super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt);
         this.review = review;
+        this.deletedAt = deletedAt;
     }
 }

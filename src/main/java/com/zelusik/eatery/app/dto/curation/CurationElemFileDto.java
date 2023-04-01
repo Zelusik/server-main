@@ -19,10 +19,9 @@ public class CurationElemFileDto {
     private String thumbnailUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
-    public static CurationElemFileDto of(Long id, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new CurationElemFileDto(id, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
+    public static CurationElemFileDto of(Long id, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new CurationElemFileDto(id, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt);
     }
 
     public static CurationElemFileDto from(CurationElemFile entity) {
@@ -34,8 +33,7 @@ public class CurationElemFileDto {
                 entity.getThumbnailStoredName(),
                 entity.getThumbnailUrl(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt()
+                entity.getUpdatedAt()
         );
     }
 }

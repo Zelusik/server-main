@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE curation_elem_file SET deleted_at = CURRENT_TIMESTAMP WHERE curation_elem_file_id = ?")
 @Entity
 public class CurationElemFile extends S3Image {
 
@@ -22,10 +21,10 @@ public class CurationElemFile extends S3Image {
     private Long id;
 
     public static CurationElemFile of(String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
-        return of(null, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, null, null, null);
+        return of(null, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, null, null);
     }
 
-    public static CurationElemFile of(Long id, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static CurationElemFile of(Long id, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
         return CurationElemFile.builder()
                 .id(id)
                 .originalName(originalName)
@@ -35,13 +34,12 @@ public class CurationElemFile extends S3Image {
                 .thumbnailUrl(thumbnailUrl)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .deletedAt(deletedAt)
                 .build();
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private CurationElemFile(Long id, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
+    private CurationElemFile(Long id, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt);
         this.id = id;
     }
 }

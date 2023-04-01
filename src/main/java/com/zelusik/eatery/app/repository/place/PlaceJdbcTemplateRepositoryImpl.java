@@ -39,7 +39,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
 
     @Override
     public Slice<PlaceDtoWithImages> findNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable) {
-        StringBuilder sql = new StringBuilder("select p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at, ")
+        StringBuilder sql = new StringBuilder("select p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ")
                 .append("ri1.review_image_id as ri1_review_image_id, ri1.review_id as ri1_review_id, ri1.original_name as ri1_original_name, ri1.stored_name as ri1_stored_name, ri1.url as ri1_url, ri1.thumbnail_stored_name as ri1_thumbnail_stored_name, ri1.thumbnail_url as ri1_thumbnail_url, ri1.created_at as ri1_created_at, ri1.updated_at as ri1_updated_at, ri1.deleted_at as ri1_deleted_at, ")
                 .append("ri2.review_image_id as ri2_review_image_id, ri2.review_id as ri2_review_id, ri2.original_name as ri2_original_name, ri2.stored_name as ri2_stored_name, ri2.url as ri2_url, ri2.thumbnail_stored_name as ri2_thumbnail_stored_name, ri2.thumbnail_url as ri2_thumbnail_url, ri2.created_at as ri2_created_at, ri2.updated_at as ri2_updated_at, ri2.deleted_at as ri2_deleted_at, ")
                 .append("ri3.review_image_id as ri3_review_image_id, ri3.review_id as ri3_review_id, ri3.original_name as ri3_original_name, ri3.stored_name as ri3_stored_name, ri3.url as ri3_url, ri3.thumbnail_stored_name as ri3_thumbnail_stored_name, ri3.thumbnail_url as ri3_thumbnail_url, ri3.created_at as ri3_created_at, ri3.updated_at as ri3_updated_at, ri3.deleted_at as ri3_deleted_at, ")
@@ -64,7 +64,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
             sql.append(") ");
         }
 
-        sql.append("group by p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, p.deleted_at, ")
+        sql.append("group by p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ")
                 .append("ri1.review_image_id, ri1.review_id, ri1.original_name, ri1.stored_name, ri1.url, ri1.thumbnail_stored_name, ri1.thumbnail_url, ri1.created_at, ri1.updated_at, ri1.deleted_at, ")
                 .append("ri2.review_image_id, ri2.review_id, ri2.original_name, ri2.stored_name, ri2.url, ri2.thumbnail_stored_name, ri2.thumbnail_url, ri2.created_at, ri2.updated_at, ri2.deleted_at, ")
                 .append("ri3.review_image_id, ri3.review_id, ri3.original_name, ri3.stored_name, ri3.url, ri3.thumbnail_stored_name, ri3.thumbnail_url, ri3.created_at, ri3.updated_at, ri3.deleted_at ")
@@ -114,7 +114,6 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                        p.closing_hours,
                        p.created_at,
                        p.updated_at,
-                       p.deleted_at,
                        ri1.review_image_id        as ri1_review_image_id,
                        ri1.review_id             as ri1_review_id,
                        ri1.original_name         as ri1_original_name,
@@ -224,8 +223,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                     getTop3ReviewImageDtosOrderByLatest(rs),
                     isMarked,
                     rs.getTimestamp("created_at").toLocalDateTime(),
-                    rs.getTimestamp("updated_at").toLocalDateTime(),
-                    rs.getTimestamp("deleted_at") == null ? null : rs.getTimestamp("deleted_at").toLocalDateTime()
+                    rs.getTimestamp("updated_at").toLocalDateTime()
             );
         };
     }
