@@ -150,18 +150,21 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                                                                             from review_image ri
                                                                                      join review r on r.review_id = ri.review_id
                                                                             where r.place_id = p.place_id
+                                                                                and ri.deleted_at is null
                                                                             order by r.created_at desc
                                                                             limit 1 offset 0)
                          left join review_image ri2 on ri2.review_image_id = (select ri.review_image_id
                                                                             from review_image ri
                                                                                      join review r on r.review_id = ri.review_id
                                                                             where r.place_id = p.place_id
+                                                                                and ri.deleted_at is null
                                                                             order by r.created_at desc
                                                                             limit 1 offset 1)
                          left join review_image ri3 on ri3.review_image_id = (select ri.review_image_id
                                                                             from review_image ri
                                                                                      join review r on r.review_id = ri.review_id
                                                                             where r.place_id = p.place_id
+                                                                                and ri.deleted_at is null
                                                                             order by r.created_at desc
                                                                             limit 1 offset 2)
                 where bm.member_id = :member_id
