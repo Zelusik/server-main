@@ -18,10 +18,9 @@ public class CurationElemDto {
     private CurationElemFileDto imageDto;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
-    public static CurationElemDto of(Long id, Long curationId, PlaceDto placeDto, CurationElemFileDto imageDto, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new CurationElemDto(id, curationId, placeDto, imageDto, createdAt, updatedAt, deletedAt);
+    public static CurationElemDto of(Long id, Long curationId, PlaceDto placeDto, CurationElemFileDto imageDto, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new CurationElemDto(id, curationId, placeDto, imageDto, createdAt, updatedAt);
     }
 
     public static CurationElemDto from(CurationElem entity) {
@@ -31,8 +30,7 @@ public class CurationElemDto {
                 PlaceDto.from(entity.getPlace(), null),
                 CurationElemFileDto.from(entity.getImage()),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt()
+                entity.getUpdatedAt()
         );
     }
 }

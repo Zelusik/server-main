@@ -19,8 +19,8 @@ public abstract class S3Image extends S3File {
     @Column(nullable = false)
     protected String thumbnailUrl;
 
-    protected S3Image(String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        super(originalName, storedName, url, createdAt, updatedAt, deletedAt);
+    protected S3Image(String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(originalName, storedName, url, createdAt, updatedAt);
         this.thumbnailStoredName = thumbnailStoredName;
         this.thumbnailUrl = thumbnailUrl;
     }
