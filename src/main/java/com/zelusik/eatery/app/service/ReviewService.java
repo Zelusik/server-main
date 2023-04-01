@@ -158,6 +158,7 @@ public class ReviewService {
         validateReviewDeletePermission(member, review);
 
         reviewImageService.deleteAll(review.getReviewImages());
+        reviewKeywordRepository.deleteAll(review.getKeywords());
         reviewRepository.delete(review);
         reviewRepository.flush();
 
