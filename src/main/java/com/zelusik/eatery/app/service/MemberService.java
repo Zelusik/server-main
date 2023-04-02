@@ -182,6 +182,7 @@ public class MemberService {
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
         Member member = findEntityById(memberId);
         memberRepository.delete(member);
+        termsInfoRepository.delete(member.getTermsInfo());
 
         return MemberDeletionSurveyDto.from(
                 memberDeletionSurveyRepository.save(

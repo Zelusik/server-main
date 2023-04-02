@@ -4,8 +4,11 @@ import com.zelusik.eatery.app.constant.ConstantUtil;
 import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
+import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.app.domain.member.Member;
+import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
+import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 
 import java.time.LocalDate;
@@ -89,6 +92,24 @@ public class MemberTestUtils {
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 null
+        );
+    }
+
+    public static MemberDeletionSurveyDto createMemberDeletionSurveyDto(Long memberId, MemberDeletionSurveyType surveyType) {
+        return MemberDeletionSurveyDto.of(
+                10L,
+                memberId,
+                surveyType
+        );
+    }
+
+    public static MemberDeletionSurvey createMemberDeletionSurvey(Member member, MemberDeletionSurveyType surveyType) {
+        return MemberDeletionSurvey.of(
+                10L,
+                member,
+                surveyType,
+                LocalDateTime.of(2023, 1, 1, 0, 0),
+                LocalDateTime.of(2023, 1, 1, 0, 0)
         );
     }
 }
