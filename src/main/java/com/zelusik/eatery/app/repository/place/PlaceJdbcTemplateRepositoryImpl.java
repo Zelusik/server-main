@@ -189,12 +189,12 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
     }
 
     private RowMapper<PlaceDtoWithImages> placeDtoWithImagesRowMapper(Long memberId) {
+        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
+
         return (rs, rowNum) -> {
             ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
 
             long placeId = rs.getLong("place_id");
-
-            List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
             boolean isMarked = markedPlaceIdList != null && markedPlaceIdList.contains(placeId);
 
             return PlaceDtoWithImages.of(
