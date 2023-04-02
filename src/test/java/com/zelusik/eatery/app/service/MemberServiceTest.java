@@ -2,15 +2,20 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.member.Gender;
+import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.app.domain.member.Member;
+import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.member.TermsInfo;
+import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
+import com.zelusik.eatery.app.repository.member.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.app.repository.member.MemberRepository;
 import com.zelusik.eatery.app.repository.member.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 
 @DisplayName("[Service] Member")
 @ExtendWith(MockitoExtension.class)
@@ -46,6 +50,8 @@ class MemberServiceTest {
     private MemberRepository memberRepository;
     @Mock
     private TermsInfoRepository termsInfoRepository;
+    @Mock
+    private MemberDeletionSurveyRepository memberDeletionSurveyRepository;
 
     @DisplayName("회원 정보가 주어지면 회원가입을 진행한 후 등록된 회원 정보를 return한다.")
     @Test
@@ -216,5 +222,29 @@ class MemberServiceTest {
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
         assertThat(updatedMemberDto.getFavoriteFoodCategories()).contains(KOREAN, WESTERN, DESERT);
+    }
+
+    @DisplayName("회원 탈퇴를 하면, 회원과 약관 동의 정보를 삭제하고 탈퇴 설문 정보를 반환한다.")
+    @Test
+    void given_whenDeleteMember_thenDeleteMemberAndReturnSurvey() {
+        // given
+        long memberId = 1L;
+        MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
+        Member findMember = createMember(memberId);
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+        willDoNothing().given(memberRepository).delete(findMember);
+        willDoNothing().given(termsInfoRepository).delete(findMember.getTermsInfo());
+        given(memberDeletionSurveyRepository.save(any(MemberDeletionSurvey.class)))
+                .willReturn(MemberTestUtils.createMemberDeletionSurvey(findMember, surveyType));
+
+        // when
+        MemberDeletionSurveyDto surveyResult = sut.delete(memberId, surveyType);
+
+        // then
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(memberRepository).should().delete(findMember);
+        then(termsInfoRepository).should().delete(findMember.getTermsInfo());
+        then(memberDeletionSurveyRepository).should().save(any(MemberDeletionSurvey.class));
+        assertThat(surveyResult.getSurveyType()).isEqualTo(surveyType);
     }
 }

@@ -2,9 +2,11 @@ package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.config.SecurityConfig;
 import com.zelusik.eatery.app.constant.member.Gender;
+import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.app.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
+import com.zelusik.eatery.app.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.service.MemberService;
 import com.zelusik.eatery.global.security.JwtAuthenticationFilter;
@@ -183,5 +185,28 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.nickname").exists())
                 .andExpect(jsonPath("$.favoriteFoodCategories").exists());
+    }
+
+    @DisplayName("회원 탈퇴를 하면, 회원과 약관 동의 정보를 삭제하고 탈퇴 설문 정보를 반환한다.")
+    @Test
+    void given_whenDeleteMember_thenDeleteMemberAndReturnSurvey() throws Exception {
+        // given
+        long memberId = 1L;
+        MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
+        given(memberService.delete(memberId, surveyType))
+                .willReturn(MemberTestUtils.createMemberDeletionSurveyDto(memberId, surveyType));
+
+        // when & then
+        mvc.perform(
+                        delete("/api/members")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(MemberDeletionSurveyRequest.of(surveyType)))
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.memberId").value(memberId))
+                .andExpect(jsonPath("$.survey").value(surveyType.getDescription()));
     }
 }
