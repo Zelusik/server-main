@@ -1,12 +1,12 @@
 package com.zelusik.eatery.app.dto.review.request;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.app.dto.ImageDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -32,10 +32,10 @@ public class ReviewCreateRequest {
     private String content;
 
     @Schema(description = "업로드할 이미지 파일들")
-    private List<MultipartFile> files;
+    private List<ImageDto> images;
 
-    public static ReviewCreateRequest of(PlaceCreateRequest place, List<String> keywords, String autoCreatedContent, String content, List<MultipartFile> files) {
-        return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, files);
+    public static ReviewCreateRequest of(PlaceCreateRequest place, List<String> keywords, String autoCreatedContent, String content, List<ImageDto> images) {
+        return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, images);
     }
 
     public ReviewDtoWithMemberAndPlace toDto(PlaceDto placeDto) {

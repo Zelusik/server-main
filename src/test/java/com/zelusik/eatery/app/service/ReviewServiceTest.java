@@ -2,9 +2,10 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.member.Member;
-import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.review.ReviewKeyword;
+import com.zelusik.eatery.app.dto.ImageDto;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
@@ -73,7 +74,7 @@ class ReviewServiceTest {
         ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
-                List.of(MultipartFileTestUtils.createMockMultipartFile())
+                List.of(MultipartFileTestUtils.createMockImageDto())
         );
 
         // then
@@ -112,7 +113,7 @@ class ReviewServiceTest {
         ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
-                List.of(MultipartFileTestUtils.createMockMultipartFile())
+                List.of(MultipartFileTestUtils.createMockImageDto())
         );
 
         // then

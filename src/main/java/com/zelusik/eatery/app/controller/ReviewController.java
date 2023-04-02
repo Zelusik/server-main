@@ -1,8 +1,6 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.dto.SliceResponse;
-import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
-import com.zelusik.eatery.app.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.dto.review.request.ReviewUpdateRequest;
 import com.zelusik.eatery.app.dto.review.response.FeedResponse;
@@ -56,7 +54,7 @@ public class ReviewController {
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ParameterObject @Valid @ModelAttribute ReviewCreateRequest request
     ) {
-        ReviewResponse response = ReviewResponse.from(reviewService.create(userPrincipal.getMemberId(), request, request.getFiles()));
+        ReviewResponse response = ReviewResponse.from(reviewService.create(userPrincipal.getMemberId(), request, request.getImages()));
 
         return ResponseEntity
                 .created(URI.create("/api/reviews/" + response.getId()))
