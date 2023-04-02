@@ -45,9 +45,9 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                 .append("ri3.review_image_id as ri3_review_image_id, ri3.review_id as ri3_review_id, ri3.original_name as ri3_original_name, ri3.stored_name as ri3_stored_name, ri3.url as ri3_url, ri3.thumbnail_stored_name as ri3_thumbnail_stored_name, ri3.thumbnail_url as ri3_thumbnail_url, ri3.created_at as ri3_created_at, ri3.updated_at as ri3_updated_at, ri3.deleted_at as ri3_deleted_at, ")
                 .append("(6371 * acos(cos(radians(:lat)) * cos(radians(lat)) * cos(radians(lng) - radians(:lng)) + sin(radians(:lat)) * sin(radians(lat)))) as distance ")
                 .append("from place p ")
-                .append("left join review_image ri1 on ri1.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 0) ")
-                .append("left join review_image ri2 on ri2.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 1) ")
-                .append("left join review_image ri3 on ri3.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id where r.place_id = p.place_id order by r.created_at desc limit 1 offset 2) ");
+                .append("left join review_image ri1 on ri1.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id and ri.deleted_at is null where r.place_id = p.place_id order by r.created_at desc limit 1 offset 0) ")
+                .append("left join review_image ri2 on ri2.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id and ri.deleted_at is null where r.place_id = p.place_id order by r.created_at desc limit 1 offset 1) ")
+                .append("left join review_image ri3 on ri3.review_image_id = (select ri.review_image_id from review_image ri join review r on r.review_id = ri.review_id and ri.deleted_at is null where r.place_id = p.place_id order by r.created_at desc limit 1 offset 2) ");
 
         if (daysOfWeek != null && !daysOfWeek.isEmpty()) {
             sql.append("inner join opening_hours oh ")
@@ -124,7 +124,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
                        ri1.created_at            as ri1_created_at,
                        ri1.updated_at            as ri1_updated_at,
                        ri1.deleted_at            as ri1_deleted_at,
-                       ri2.review_image_id        as ri2_review_image_id,
+                       ri2.review_image_id       as ri2_review_image_id,
                        ri2.review_id             as ri2_review_id,
                        ri2.original_name         as ri2_original_name,
                        ri2.stored_name           as ri2_stored_name,
