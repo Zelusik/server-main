@@ -6,6 +6,7 @@ import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
 import com.zelusik.eatery.app.domain.member.TermsInfo;
+import com.zelusik.eatery.app.dto.ImageDto;
 import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
@@ -18,7 +19,6 @@ import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -139,15 +139,15 @@ public class MemberService {
     public MemberDto updateMember(Long memberId, MemberUpdateRequest updateRequest) {
         Member member = findEntityById(memberId);
 
-        MultipartFile profileImageFile = updateRequest.getProfileImage();
-        if (profileImageFile == null || profileImageFile.isEmpty()) {
+        ImageDto imageDto = updateRequest.getProfileImage();
+        if (imageDto == null) {
             member.update(
                     updateRequest.getNickname(),
                     updateRequest.getBirthDay(),
                     updateRequest.getGender()
             );
         } else {
-            ProfileImage profileImage = profileImageService.upload(member, profileImageFile);
+            ProfileImage profileImage = profileImageService.upload(member, imageDto);
             member.update(
                     profileImage.getUrl(),
                     profileImage.getThumbnailUrl(),

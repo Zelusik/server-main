@@ -1,7 +1,9 @@
 package com.zelusik.eatery.app.controller;
 
 import com.zelusik.eatery.app.config.SecurityConfig;
+import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
+import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.service.MemberService;
@@ -16,10 +18,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -124,6 +128,34 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/members")
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(memberId));
+    }
+
+    @DisplayName("프로필 이미지를 제외한 수정할 회원 정보가 주어지고, 내 정보를 수정한다.")
+    @Test
+    void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMyInfo_thenUpdate() throws Exception {
+        // given
+        long memberId = 1L;
+        MemberUpdateRequest memberUpdateInfo = MemberUpdateRequest.of(
+                "update",
+                LocalDate.of(2020, 1, 1),
+                Gender.ETC,
+                null
+        );
+        given(memberService.updateMember(eq(memberId), any(MemberUpdateRequest.class)))
+                .willReturn(MemberTestUtils.createMemberDtoWithId(memberId));
+
+        // when & then
+        // TODO: 프로필 이미지는 어떻게 넣어야 하는지 확인 후 코드 수정 필요
+        mvc.perform(
+                        multipart(HttpMethod.PUT, "/api/members")
+                                .param("nickname", memberUpdateInfo.getNickname())
+                                .param("birthDay", memberUpdateInfo.getBirthDay().toString())
+                                .param("gender", memberUpdateInfo.getGender().toString())
                                 .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )

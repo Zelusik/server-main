@@ -2,11 +2,12 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
+import com.zelusik.eatery.app.dto.ImageDto;
+import com.zelusik.eatery.app.dto.file.S3FileDto;
 import com.zelusik.eatery.app.repository.member.ProfileImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -19,15 +20,16 @@ public class ProfileImageService {
     private static final String DIR_PATH = "member/";
 
     @Transactional
-    public ProfileImage upload(Member member, MultipartFile multipartFile) {
-        S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
+    public ProfileImage upload(Member member, ImageDto profileImage) {
+        S3FileDto image = fileService.uploadFile(profileImage.getImage(), DIR_PATH);
+        S3FileDto thumbnailImage = fileService.uploadFile(profileImage.getThumbnailImage(), DIR_PATH + "thumbnail/");
         return profileImageRepository.save(ProfileImage.of(
                 member,
-                s3ImageDto.originalName(),
-                s3ImageDto.storedName(),
-                s3ImageDto.url(),
-                s3ImageDto.thumbnailStoredName(),
-                s3ImageDto.thumbnailUrl()
+                image.getOriginalName(),
+                image.getStoredName(),
+                image.getUrl(),
+                thumbnailImage.getStoredName(),
+                thumbnailImage.getUrl()
         ));
     }
 }

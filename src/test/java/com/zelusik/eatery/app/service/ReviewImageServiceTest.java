@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.domain.review.Review;
+import com.zelusik.eatery.app.dto.ImageDto;
 import com.zelusik.eatery.app.repository.review.ReviewImageRepository;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
@@ -18,6 +19,8 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @DisplayName("[Service] Review File")
 @ExtendWith(MockitoExtension.class)
@@ -35,17 +38,17 @@ class ReviewImageServiceTest {
     @Test
     void givenImageFiles_whenUploading_thenUploadFiles() {
         // given
-        List<MultipartFile> multipartFiles = List.of(MultipartFileTestUtils.createMockMultipartFile());
+        List<ImageDto> images = List.of(MultipartFileTestUtils.createMockImageDto());
         Review review = ReviewTestUtils.createReviewWithId(1L, "1");
-        given(fileService.uploadImage(any(MultipartFile.class), any(String.class)))
-                .willReturn(S3FileTestUtils.createS3ImageDto());
+        given(fileService.uploadFile(any(MultipartFile.class), any(String.class)))
+                .willReturn(S3FileTestUtils.createS3FileDto());
         given(reviewImageRepository.saveAll(any())).willReturn(List.of());
 
         // when
-        sut.upload(review, multipartFiles);
+        sut.upload(review, images);
 
         // then
-        then(fileService).should().uploadImage(any(MultipartFile.class), any(String.class));
+        verify(fileService, times(2)).uploadFile(any(MultipartFile.class), any(String.class));
         then(reviewImageRepository).should().saveAll(any());
     }
 }

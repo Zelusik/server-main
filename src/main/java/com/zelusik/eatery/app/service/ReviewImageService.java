@@ -3,12 +3,13 @@ package com.zelusik.eatery.app.service;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.review.ReviewImage;
+import com.zelusik.eatery.app.dto.ImageDto;
+import com.zelusik.eatery.app.dto.file.S3FileDto;
 import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import com.zelusik.eatery.app.repository.review.ReviewImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,20 +26,21 @@ public class ReviewImageService {
     /**
      * Review 첨부 파일을 S3 bucket에 업로드한다.
      *
-     * @param review         파일이 첨부될 리뷰
-     * @param multipartFiles 업로드할 파일들
+     * @param review 파일이 첨부될 리뷰
+     * @param images 업로드할 이미지들
      */
     @Transactional
-    public void upload(Review review, List<MultipartFile> multipartFiles) {
-        multipartFiles.forEach(multipartFile -> {
-            S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
+    public void upload(Review review, List<ImageDto> images) {
+        images.forEach(imageDto -> {
+            S3FileDto image = fileService.uploadFile(imageDto.getImage(), DIR_PATH);
+            S3FileDto thumbnailImage = fileService.uploadFile(imageDto.getThumbnailImage(), DIR_PATH + "thumbnail/");
             review.getReviewImages().add(ReviewImage.of(
                     review,
-                    s3ImageDto.originalName(),
-                    s3ImageDto.storedName(),
-                    s3ImageDto.url(),
-                    s3ImageDto.thumbnailStoredName(),
-                    s3ImageDto.thumbnailUrl()
+                    image.getOriginalName(),
+                    image.getStoredName(),
+                    image.getUrl(),
+                    thumbnailImage.getStoredName(),
+                    thumbnailImage.getUrl()
             ));
         });
         reviewImageRepository.saveAll(review.getReviewImages());

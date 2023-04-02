@@ -2,9 +2,10 @@ package com.zelusik.eatery.util;
 
 import com.zelusik.eatery.app.constant.ConstantUtil;
 import com.zelusik.eatery.app.constant.FoodCategory;
-import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.constant.member.LoginType;
+import com.zelusik.eatery.app.domain.member.Member;
+import com.zelusik.eatery.app.domain.member.ProfileImage;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 
 import java.time.LocalDate;
@@ -72,6 +73,21 @@ public class MemberTestUtils {
                 List.of(FoodCategory.KOREAN),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
+                null
+        );
+    }
+
+    public static ProfileImage createProfileImage() {
+        return ProfileImage.of(
+                10L,
+                createMember(1L),
+                "originalFilename",
+                "storedFilename",
+                "url",
+                "thumbnailStoredFilename",
+                "thumbnailUrl",
+                LocalDateTime.of(2023, 1, 1, 0, 0),
+                LocalDateTime.of(2023, 1, 1, 0, 0),
                 null
         );
     }

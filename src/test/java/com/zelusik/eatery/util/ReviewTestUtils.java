@@ -2,9 +2,10 @@ package com.zelusik.eatery.util;
 
 import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.member.Member;
-import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.place.Place;
+import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.review.ReviewKeyword;
+import com.zelusik.eatery.app.dto.ImageDto;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewImageDto;
@@ -22,7 +23,7 @@ public class ReviewTestUtils {
                 List.of("신선한 재료"),
                 "자동 생성된 내용",
                 "제출한 내용",
-                List.of(MultipartFileTestUtils.createMockMultipartFile())
+                List.of(MultipartFileTestUtils.createMockImageDto())
         );
     }
 

@@ -1,14 +1,17 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
+import com.zelusik.eatery.app.constant.member.Gender;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.TermsInfo;
 import com.zelusik.eatery.app.dto.member.MemberDto;
+import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.app.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.app.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.app.repository.member.MemberRepository;
 import com.zelusik.eatery.app.repository.member.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,15 +19,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static com.zelusik.eatery.app.constant.FoodCategory.*;
 import static com.zelusik.eatery.util.MemberTestUtils.*;
-import static com.zelusik.eatery.util.TermsInfoTestUtils.*;
+import static com.zelusik.eatery.util.TermsInfoTestUtils.createTermsInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -35,6 +40,8 @@ class MemberServiceTest {
     @InjectMocks
     private MemberService sut;
 
+    @Mock
+    private ProfileImageService profileImageService;
     @Mock
     private MemberRepository memberRepository;
     @Mock
@@ -140,6 +147,58 @@ class MemberServiceTest {
         // then
         then(memberRepository).should().findBySocialUid(socialUid);
         assertThat(optionalMember.isPresent()).isFalse();
+    }
+
+    @DisplayName("프로필 이미지를 제외하고 수정할 회원 정보가 주어지고, 회원 정보를 수정하면, 주어진 정보로 회원 정보가 수정된다.")
+    @Test
+    void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMemberInfo_thenUpdate() {
+        // given
+        long memberId = 1L;
+        Member findMember = createMember(memberId);
+        MemberUpdateRequest memberUpdateInfo = MemberUpdateRequest.of(
+                "update",
+                LocalDate.of(2020, 1, 1),
+                Gender.ETC,
+                null
+        );
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+
+        // when
+        MemberDto updatedMemberDto = sut.updateMember(memberId, memberUpdateInfo);
+
+        // then
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
+        assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
+        assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
+    }
+
+    @DisplayName("수정할 회원 정보가 주어지고, 회원 정보를 수정하면, 주어진 정보로 회원 정보가 수정된다.")
+    @Test
+    void givenMemberUpdateInfo_whenUpdatingMemberInfo_thenUpdate() {
+        // given
+        long memberId = 1L;
+        Member findMember = createMember(memberId);
+        MemberUpdateRequest memberUpdateInfo = MemberUpdateRequest.of(
+                "update",
+                LocalDate.of(2020, 1, 1),
+                Gender.ETC,
+                MultipartFileTestUtils.createMockImageDto()
+        );
+        given(memberRepository.findByIdAndDeletedAtNull(memberId))
+                .willReturn(Optional.of(findMember));
+        given(profileImageService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage())))
+                .willReturn(createProfileImage());
+
+        // when
+        MemberDto updatedMemberDto = sut.updateMember(memberId, memberUpdateInfo);
+
+        // then
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(profileImageService).should().upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()));
+        assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
+        assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
+        assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
     }
 
     @DisplayName("선호 음식 카테고리 목록이 주어지고, 이를 업데이트하면, 선호 음식 카테고리를 수정한다.")

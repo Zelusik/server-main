@@ -28,11 +28,11 @@ public class CurationElemFileService {
     public CurationElemFile upload(MultipartFile multipartFile) {
         S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
         return curationElemFileRepository.save(CurationElemFile.of(
-                s3ImageDto.originalName(),
-                s3ImageDto.storedName(),
-                s3ImageDto.url(),
-                s3ImageDto.thumbnailStoredName(),
-                s3ImageDto.thumbnailUrl()
+                s3ImageDto.getOriginalName(),
+                s3ImageDto.getStoredName(),
+                s3ImageDto.getUrl(),
+                s3ImageDto.getThumbnailStoredName(),
+                s3ImageDto.getThumbnailUrl()
         ));
     }
 }

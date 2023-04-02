@@ -5,6 +5,7 @@ import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.review.ReviewKeyword;
+import com.zelusik.eatery.app.dto.ImageDto;
 import com.zelusik.eatery.app.dto.place.PlaceDto;
 import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
@@ -22,7 +23,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -43,11 +43,11 @@ public class ReviewService {
      *
      * @param writerId      리뷰를 생성하고자 하는 회원의 PK.
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
-     * @param files         리뷰와 함께 업로드 할 파일 목록
+     * @param images         리뷰와 함께 업로드 할 파일 목록
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
-    public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<MultipartFile> files) {
+    public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
         Place place = placeService.findOptEntityByKakaoPid(placeCreateRequest.getKakaoPid())
@@ -67,7 +67,7 @@ public class ReviewService {
                     reviewKeywordRepository.save(reviewKeyword);
                 });
 
-        reviewImageService.upload(review, files);
+        reviewImageService.upload(review, images);
 
         // 장소 top 3 keyword 설정
         renewPlaceTop3Keywords(place);

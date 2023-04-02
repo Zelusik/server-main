@@ -1,11 +1,11 @@
 package com.zelusik.eatery.app.dto.member.request;
 
 import com.zelusik.eatery.app.constant.member.Gender;
+import com.zelusik.eatery.app.dto.ImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -29,9 +29,9 @@ public class MemberUpdateRequest {
     private Gender gender;
 
     @Schema(description = "변경하고자 하는 프로필 이미지")
-    private MultipartFile profileImage;
+    private ImageDto profileImage;
 
-    public static MemberUpdateRequest of(String nickname, LocalDate birthDay, Gender gender, MultipartFile profileImage) {
+    public static MemberUpdateRequest of(String nickname, LocalDate birthDay, Gender gender, ImageDto profileImage) {
         return new MemberUpdateRequest(nickname, birthDay, gender, profileImage);
     }
 }
