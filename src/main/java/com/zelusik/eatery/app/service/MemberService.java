@@ -2,10 +2,10 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.FoodCategory;
 import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
-import com.zelusik.eatery.app.domain.member.TermsInfo;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
+import com.zelusik.eatery.app.domain.member.TermsInfo;
 import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 import com.zelusik.eatery.app.dto.member.request.MemberUpdateRequest;
@@ -140,7 +140,7 @@ public class MemberService {
         Member member = findEntityById(memberId);
 
         MultipartFile profileImageFile = updateRequest.getProfileImage();
-        if (profileImageFile == null) {
+        if (profileImageFile == null || profileImageFile.isEmpty()) {
             member.update(
                     updateRequest.getNickname(),
                     updateRequest.getBirthDay(),
