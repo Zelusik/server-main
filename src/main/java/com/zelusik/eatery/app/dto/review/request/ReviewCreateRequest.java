@@ -31,7 +31,17 @@ public class ReviewCreateRequest {
     @Schema(description = "업로드할 내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
     private String content;
 
-    @Schema(description = "업로드할 이미지 파일들")
+    @Schema(description = "<p>업로드할 이미지 파일들" +
+            "<p>이미지 요청 데이터는 다음 두 개의 field로 구성됩니다." +
+            "<ul>" +
+            "<li><code>image</code>: 이미지</li>" +
+            "<li><code>thumbnailImage</code>: 리사이징된 썸네일 이미지</li>" +
+            "</ul>" +
+            "<p>요청 데이터 예시는 다음과 같습니다." +
+            "<p><code>images[0].image = 이미지1</code>" +
+            "<p><code>images[0].thumbnailImage = 이미지2</code>" +
+            "<p><code>images[1].image = 이미지3</code>" +
+            "<p><code>images[1].thumbnailImage = 이미지4</code>")
     private List<ImageDto> images;
 
     public static ReviewCreateRequest of(PlaceCreateRequest place, List<String> keywords, String autoCreatedContent, String content, List<ImageDto> images) {

@@ -80,7 +80,7 @@ public class MemberController {
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public MemberResponse updateMember(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @ParameterObject @Valid @ModelAttribute MemberUpdateRequest memberUpdateRequest
+            @Valid @ModelAttribute MemberUpdateRequest memberUpdateRequest
     ) {
         return MemberResponse.from(
                 memberService.updateMember(

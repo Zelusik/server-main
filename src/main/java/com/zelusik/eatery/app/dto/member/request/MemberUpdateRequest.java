@@ -28,7 +28,15 @@ public class MemberUpdateRequest {
     @NotNull
     private Gender gender;
 
-    @Schema(description = "변경하고자 하는 프로필 이미지")
+    @Schema(description = "<p>변경하고자 하는 프로필 이미지" +
+            "<p>이미지 요청 데이터는 다음 두 개의 field로 구성됩니다." +
+            "<ul>" +
+            "<li><code>image</code>: 이미지</li>" +
+            "<li><code>thumbnailImage</code>: 리사이징된 썸네일 이미지</li>" +
+            "</ul>" +
+            "<p>요청 데이터 예시는 다음과 같습니다." +
+            "<p><code>profileImage.image = 이미지1</code>" +
+            "<p><code>profileImage.thumbnailImage = 이미지2</code>")
     private ImageDto profileImage;
 
     public static MemberUpdateRequest of(String nickname, LocalDate birthDay, Gender gender, ImageDto profileImage) {
