@@ -230,10 +230,11 @@ class MemberServiceTest {
         // given
         long memberId = 1L;
         MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
-        Member findMember = createMember(memberId);
+        Member findMember = createMemberWithTermsInfo(memberId);
+        TermsInfo memberTermsInfo = findMember.getTermsInfo();
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+        willDoNothing().given(termsInfoRepository).delete(memberTermsInfo);
         willDoNothing().given(memberRepository).delete(findMember);
-        willDoNothing().given(termsInfoRepository).delete(findMember.getTermsInfo());
         given(memberDeletionSurveyRepository.save(any(MemberDeletionSurvey.class)))
                 .willReturn(MemberTestUtils.createMemberDeletionSurvey(findMember, surveyType));
 
@@ -242,9 +243,10 @@ class MemberServiceTest {
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(termsInfoRepository).should().delete(memberTermsInfo);
         then(memberRepository).should().delete(findMember);
-        then(termsInfoRepository).should().delete(findMember.getTermsInfo());
         then(memberDeletionSurveyRepository).should().save(any(MemberDeletionSurvey.class));
+        assertThat(findMember.getTermsInfo()).isNull(); // 회원의 약관동의 정보가 null이 된다.
         assertThat(surveyResult.getSurveyType()).isEqualTo(surveyType);
     }
 }

@@ -8,6 +8,7 @@ import com.zelusik.eatery.app.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.app.domain.member.ProfileImage;
+import com.zelusik.eatery.app.domain.member.TermsInfo;
 import com.zelusik.eatery.app.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.app.dto.member.MemberDto;
 
@@ -64,6 +65,35 @@ public class MemberTestUtils {
         return Member.of(
                 memberId,
                 null,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                SOCIAL_UID,
+                LoginType.KAKAO,
+                EMAIL,
+                NICKNAME,
+                LocalDate.of(1998, 1, 5),
+                AGE_RANGE,
+                GENDER,
+                List.of(FoodCategory.KOREAN),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    public static Member createMemberWithTermsInfo(Long memberId) {
+        return Member.of(
+                memberId,
+                TermsInfo.of(
+                        1L,
+                        true,
+                        true, LocalDateTime.of(2023, 1, 1, 0, 0),
+                        true, LocalDateTime.of(2023, 1, 1, 0, 0),
+                        true, LocalDateTime.of(2023, 1, 1, 0, 0),
+                        true, LocalDateTime.of(2023, 1, 1, 0, 0),
+                        LocalDateTime.of(2023, 1, 1, 0, 0),
+                        LocalDateTime.of(2023, 1, 1, 0, 0)
+                ),
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
