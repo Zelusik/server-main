@@ -65,7 +65,7 @@ public class MemberService {
         termsInfoRepository.save(termsInfo);
 
         Member member = findEntityById(memberId);
-        member.setTermsInfo(termsInfo);
+        member.addTermsInfo(termsInfo);
 
         return TermsInfoDto.from(termsInfo);
     }
@@ -174,20 +174,26 @@ public class MemberService {
     }
 
     /**
-     * 회원을 삭제한다.
+     * 회원을 삭제한다(soft delete).
+     * 약관 동의 정보도 함께 삭제한다.
+     * 회원 삭제 후, 탈퇴 사유가 담긴 설문 entity를 생성하고 반환한다.
      *
-     * @param memberId 삭제할 회원의 PK
+     * @param memberId   삭제할 회원의 PK
+     * @param surveyType 탈퇴 사유
+     * @return 탈퇴 사유 정보가 담긴 {@link MemberDeletionSurveyDto} 객체
      */
     @Transactional
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
         Member member = findEntityById(memberId);
-        memberRepository.delete(member);
-        termsInfoRepository.delete(member.getTermsInfo());
 
-        return MemberDeletionSurveyDto.from(
-                memberDeletionSurveyRepository.save(
-                        MemberDeletionSurvey.of(member, surveyType)
-                )
-        );
+        TermsInfo memberTermsInfo = member.getTermsInfo();
+        member.removeTermsInfo();
+        termsInfoRepository.delete(memberTermsInfo);
+
+        memberRepository.delete(member);
+
+        MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
+        memberDeletionSurveyRepository.save(deletionSurvey);
+        return MemberDeletionSurveyDto.from(deletionSurvey);
     }
 }

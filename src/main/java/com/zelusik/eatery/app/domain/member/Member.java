@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     @JoinColumn(name = "terms_info_id")
     @OneToOne(fetch = FetchType.LAZY)
     private TermsInfo termsInfo;
@@ -94,6 +94,10 @@ public class Member extends BaseTimeEntity {
                 .build();
     }
 
+    public void addTermsInfo(TermsInfo termsInfo) {
+        this.setTermsInfo(termsInfo);
+    }
+
     public void update(String profileImageUrl, String profileThumbnailImageUrl, String nickname, LocalDate birthDay, Gender gender) {
         this.setProfileImageUrl(profileImageUrl);
         this.setProfileThumbnailImageUrl(profileThumbnailImageUrl);
@@ -110,6 +114,10 @@ public class Member extends BaseTimeEntity {
 
     public void rejoin() {
         this.setDeletedAt(null);
+    }
+
+    public void removeTermsInfo() {
+        this.setTermsInfo(null);
     }
 
     @Builder(access = AccessLevel.PRIVATE)
