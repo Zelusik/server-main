@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE profile_image SET deleted_at = CURRENT_TIMESTAMP WHERE profile_image_id = ?")
 @Entity
 public class ProfileImage extends S3Image {
 
