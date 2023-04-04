@@ -6,7 +6,6 @@ import com.zelusik.eatery.app.constant.member.LoginType;
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.util.domain.FoodCategoryConverter;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -15,7 +14,6 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE member SET deleted_at = CURRENT_TIMESTAMP WHERE member_id = ?")
 @Table(indexes = {
         @Index(columnList = "socialUid")
 })
@@ -74,7 +72,7 @@ public class Member extends BaseTimeEntity {
         return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, null, ageRange, gender, null, null, null, null);
     }
 
-    public static Member of(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public static Member of(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return Member.builder()
                 .id(id)
                 .termsInfo(termsInfo)

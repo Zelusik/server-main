@@ -61,10 +61,18 @@ public class MemberTestUtils {
         );
     }
 
+    public static Member createNotSavedMember() {
+        return createMemberDto().toEntity();
+    }
+
     public static Member createMember(Long memberId) {
+        return createMember(memberId, null, null);
+    }
+
+    public static Member createMember(Long memberId, TermsInfo termsInfo, LocalDateTime deletedAt) {
         return Member.of(
                 memberId,
-                null,
+                termsInfo,
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
@@ -77,12 +85,16 @@ public class MemberTestUtils {
                 List.of(FoodCategory.KOREAN),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
-                null
+                deletedAt
         );
     }
 
+    public static Member createDeletedMember(Long memberId) {
+        return createMember(memberId, null, LocalDateTime.now());
+    }
+
     public static Member createMemberWithTermsInfo(Long memberId) {
-        return Member.of(
+        return createMember(
                 memberId,
                 TermsInfo.of(
                         1L,
@@ -94,19 +106,18 @@ public class MemberTestUtils {
                         LocalDateTime.of(2023, 1, 1, 0, 0),
                         LocalDateTime.of(2023, 1, 1, 0, 0)
                 ),
-                ConstantUtil.defaultProfileImageUrl,
-                ConstantUtil.defaultProfileThumbnailImageUrl,
-                SOCIAL_UID,
-                LoginType.KAKAO,
-                EMAIL,
-                NICKNAME,
-                LocalDate.of(1998, 1, 5),
-                AGE_RANGE,
-                GENDER,
-                List.of(FoodCategory.KOREAN),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
                 null
+        );
+    }
+
+    public static ProfileImage createNotSavedProfileImage(Member member) {
+        return ProfileImage.of(
+                member,
+                "originalFilename",
+                "storedFilename",
+                "url",
+                "thumbnailStoredFilename",
+                "thumbnailUrl"
         );
     }
 

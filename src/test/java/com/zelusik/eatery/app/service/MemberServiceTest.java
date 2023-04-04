@@ -15,6 +15,7 @@ import com.zelusik.eatery.app.repository.member.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.app.repository.member.MemberRepository;
 import com.zelusik.eatery.app.repository.member.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.global.exception.member.MemberNotFoundException;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -234,7 +235,7 @@ class MemberServiceTest {
         TermsInfo memberTermsInfo = findMember.getTermsInfo();
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
         willDoNothing().given(termsInfoRepository).delete(memberTermsInfo);
-        willDoNothing().given(memberRepository).delete(findMember);
+        willDoNothing().given(memberRepository).softDelete(findMember);
         given(memberDeletionSurveyRepository.save(any(MemberDeletionSurvey.class)))
                 .willReturn(MemberTestUtils.createMemberDeletionSurvey(findMember, surveyType));
 
@@ -244,9 +245,36 @@ class MemberServiceTest {
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
         then(termsInfoRepository).should().delete(memberTermsInfo);
-        then(memberRepository).should().delete(findMember);
+        then(memberRepository).should().softDelete(findMember);
         then(memberDeletionSurveyRepository).should().save(any(MemberDeletionSurvey.class));
+
+        then(memberRepository).shouldHaveNoMoreInteractions();
+        then(termsInfoRepository).shouldHaveNoMoreInteractions();
+        then(memberDeletionSurveyRepository).shouldHaveNoMoreInteractions();
+
         assertThat(findMember.getTermsInfo()).isNull(); // 회원의 약관동의 정보가 null이 된다.
         assertThat(surveyResult.getSurveyType()).isEqualTo(surveyType);
+    }
+
+    @DisplayName("이미 삭제된 회원을 삭제하면, 에러가 발생한다.")
+    @Test
+    void givenDeletedMember_whenDeleting_thenThrowException() {
+        // given
+        long memberId = 1L;
+        MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
+        Member findMember = createDeletedMember(memberId);
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+
+        // when
+        Throwable t = catchThrowable(() -> sut.delete(memberId, surveyType));
+
+        // then
+        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+
+        then(memberRepository).shouldHaveNoMoreInteractions();
+        then(termsInfoRepository).shouldHaveNoMoreInteractions();
+        then(memberDeletionSurveyRepository).shouldHaveNoInteractions();
+
+        assertThat(t).isInstanceOf(MemberNotFoundException.class);
     }
 }
