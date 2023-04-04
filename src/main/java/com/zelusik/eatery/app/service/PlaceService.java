@@ -2,6 +2,7 @@ package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
 import com.zelusik.eatery.app.constant.place.PlaceSearchKeyword;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
@@ -13,6 +14,7 @@ import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.place.PlaceRepository;
+import com.zelusik.eatery.app.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.global.exception.scraping.ScrapingServerInternalError;
@@ -38,6 +40,7 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final ReviewKeywordRepository reviewKeywordRepository;
 
     /**
      * 장소 정보를 받아 장소를 저장한다.
@@ -138,6 +141,19 @@ public class PlaceService {
      */
     public Slice<PlaceDtoWithImages> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
         return placeRepository.findMarkedPlaces(memberId, pageable);
+    }
+
+
+
+    /**
+     * 장소의 top 3 keyword를 DB에서 조회 후 갱신한다.
+     *
+     * @param place top 3 keyword를 갱신할 장소
+     */
+    @Transactional
+    public void renewPlaceTop3Keywords(Place place) {
+        List<ReviewKeywordValue> placeTop3Keywords = reviewKeywordRepository.searchTop3Keywords(place.getId());
+        place.setTop3Keywords(placeTop3Keywords);
     }
 
     /**
