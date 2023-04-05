@@ -1,6 +1,7 @@
 package com.zelusik.eatery.app.service;
 
 import com.zelusik.eatery.app.constant.place.DayOfWeek;
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.place.OpeningHours;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.dto.place.OpeningHoursTimeDto;
@@ -10,6 +11,7 @@ import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.app.repository.place.PlaceRepository;
+import com.zelusik.eatery.app.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.global.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.util.PlaceTestUtils;
@@ -60,6 +62,8 @@ class PlaceServiceTest {
     private OpeningHoursRepository openingHoursRepository;
     @Mock
     private BookmarkRepository bookmarkRepository;
+    @Mock
+    private ReviewKeywordRepository reviewKeywordRepository;
 
     @DisplayName("'매일'이 적힌 영업시간이 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
     @MethodSource("openingHoursEveryDaysExamples")
@@ -332,6 +336,31 @@ class PlaceServiceTest {
         then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 3, pageable);
         then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 10, pageable);
         assertThat(actualResult.getNumberOfElements()).isNotZero();
+    }
+
+    @DisplayName("장소가 주어지고, 장소의 top 3 keyword를 갱신하면, 업데이트한다.")
+    @Test
+    void givenPlace_whenRenewTop3Keywords_thenUpdate() {
+        // given
+        long placeId = 1L;
+        Place place = PlaceTestUtils.createPlace(placeId, "1");
+        List<ReviewKeywordValue> top3Keywords = List.of(
+                ReviewKeywordValue.BEST_FLAVOR,
+                ReviewKeywordValue.GOOD_FOR_BLIND_DATE,
+                ReviewKeywordValue.GOOD_PRICE
+        );
+        given(reviewKeywordRepository.searchTop3Keywords(placeId)).willReturn(top3Keywords);
+
+        // when
+        sut.renewPlaceTop3Keywords(place);
+
+        // then
+        then(reviewKeywordRepository).should().searchTop3Keywords(placeId);
+        then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
+        assertThat(place.getTop3Keywords().size()).isEqualTo(3);
+        assertThat(place.getTop3Keywords().get(0)).isEqualTo(ReviewKeywordValue.BEST_FLAVOR);
+        assertThat(place.getTop3Keywords().get(1)).isEqualTo(ReviewKeywordValue.GOOD_FOR_BLIND_DATE);
+        assertThat(place.getTop3Keywords().get(2)).isEqualTo(ReviewKeywordValue.GOOD_PRICE);
     }
 
     static Stream<Arguments> openingHoursEveryDaysExamples() {

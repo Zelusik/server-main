@@ -16,6 +16,7 @@ import com.zelusik.eatery.app.repository.member.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.app.repository.member.MemberRepository;
 import com.zelusik.eatery.app.repository.member.TermsInfoRepository;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.global.exception.member.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -174,9 +175,9 @@ public class MemberService {
     }
 
     /**
-     * 회원을 삭제한다(soft delete).
-     * 약관 동의 정보도 함께 삭제한다.
-     * 회원 삭제 후, 탈퇴 사유가 담긴 설문 entity를 생성하고 반환한다.
+     * <p>회원을 삭제한다(soft delete).
+     * <p>약관 동의 정보도 함께 삭제한다.
+     * <p>회원 삭제 후, 탈퇴 사유가 담긴 설문 entity를 생성하고 반환한다.
      *
      * @param memberId   삭제할 회원의 PK
      * @param surveyType 탈퇴 사유
@@ -186,11 +187,17 @@ public class MemberService {
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
         Member member = findEntityById(memberId);
 
-        TermsInfo memberTermsInfo = member.getTermsInfo();
-        member.removeTermsInfo();
-        termsInfoRepository.delete(memberTermsInfo);
+        if (member.getDeletedAt() != null) {
+            throw new MemberNotFoundException();
+        }
 
-        memberRepository.delete(member);
+        TermsInfo memberTermsInfo = member.getTermsInfo();
+        if (memberTermsInfo != null) {
+            member.removeTermsInfo();
+            termsInfoRepository.delete(memberTermsInfo);
+        }
+
+        memberRepository.softDelete(member);
 
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);

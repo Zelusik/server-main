@@ -3,11 +3,7 @@ package com.zelusik.eatery.app.domain.review;
 import com.zelusik.eatery.app.domain.BaseTimeEntity;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,7 +12,6 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE review SET deleted_at = CURRENT_TIMESTAMP WHERE review_id = ?")
 @Entity
 public class Review extends BaseTimeEntity {
 
@@ -49,14 +44,31 @@ public class Review extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     public static Review of(Member writer, Place place, String autoCreatedContent, String content) {
-        return new Review(writer, place, autoCreatedContent, content);
+        return of(null, writer, place, autoCreatedContent, content, null, null, null);
     }
 
-    private Review(Member writer, Place place, String autoCreatedContent, String content) {
+    public static Review of(Long id, Member writer, Place place, String autoCreatedContent, String content, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return Review.builder()
+                .id(id)
+                .writer(writer)
+                .place(place)
+                .autoCreatedContent(autoCreatedContent)
+                .content(content)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .deletedAt(deletedAt)
+                .build();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Review(Long id, Member writer, Place place, String autoCreatedContent, String content, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
         this.writer = writer;
         this.place = place;
         this.autoCreatedContent = autoCreatedContent;
         this.content = content;
+        this.deletedAt = deletedAt;
     }
 
     public void update(String content) {

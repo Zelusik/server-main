@@ -58,7 +58,7 @@ public class ReviewImageService {
      * @param reviewImages 삭제할 ReviewImage 목록
      */
     @Transactional
-    public void deleteAll(List<ReviewImage> reviewImages) {
-        reviewImageRepository.deleteAll(reviewImages);
+    public void softDeleteAll(List<ReviewImage> reviewImages) {
+        reviewImageRepository.softDeleteAll(reviewImages);
     }
 }

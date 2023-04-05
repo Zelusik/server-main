@@ -5,13 +5,13 @@ import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.review.Review;
 import com.zelusik.eatery.app.domain.review.ReviewKeyword;
-import com.zelusik.eatery.app.dto.ImageDto;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.app.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.app.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.app.repository.review.ReviewRepository;
+import com.zelusik.eatery.global.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
@@ -60,14 +61,14 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
-        Place expectedPlace = PlaceTestUtils.createPlace(1L, kakaoPid);
+        Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
-        Review expectedReview = ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace);
+        Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
         given(placeService.findOptEntityByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
         given(memberService.findEntityById(writerId)).willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
-                .willReturn(ReviewTestUtils.createReviewKeyword(1L, expectedReview, ReviewKeywordValue.FRESH));
+                .willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
         willDoNothing().given(reviewImageService).upload(any(Review.class), any());
 
         // when
@@ -93,9 +94,9 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
-        Place expectedPlace = PlaceTestUtils.createPlace(1L, kakaoPid);
+        Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
-        Review expectedReview = ReviewTestUtils.createReviewWithId(expectedMember, expectedPlace);
+        Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
         given(placeService.findOptEntityByKakaoPid(kakaoPid))
                 .willReturn(Optional.empty());
         given(placeService.create(reviewCreateRequest.getPlace()))
@@ -105,7 +106,7 @@ class ReviewServiceTest {
         given(reviewRepository.save(any(Review.class)))
                 .willReturn(expectedReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
-                .willReturn(ReviewTestUtils.createReviewKeyword(1L, expectedReview, ReviewKeywordValue.FRESH));
+                .willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
         willDoNothing().given(reviewImageService).upload(any(Review.class), any());
         given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
 
@@ -131,9 +132,9 @@ class ReviewServiceTest {
     @Test
     void givenPlaceId_whenSearchReviewListOfCertainPlace_thenReturnReviewList() {
         // given
-        long placeId = 1L;
+        long placeId = 3L;
         Pageable pageable = Pageable.ofSize(15);
-        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId(placeId, "1")));
+        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReview(1L, 2L, placeId, "3", 4L, 5L)));
         given(reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable))
                 .willReturn(expectedSearchResult);
 
@@ -149,9 +150,9 @@ class ReviewServiceTest {
     @Test
     void givenMemberId_whenSearchReviewsOfWriter_thenReturnReviews() {
         // given
-        long writerId = 1L;
+        long writerId = 2L;
         Pageable pageable = Pageable.ofSize(15);
-        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewWithId(1L, "1")));
+        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReview(1L, writerId, 3L, "3", 4L, 5L)));
         given(reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)).willReturn(expectedSearchResult);
         given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
 
@@ -162,5 +163,71 @@ class ReviewServiceTest {
         then(reviewRepository).should().findByWriter_IdAndDeletedAtNull(writerId, pageable);
         then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
         assertThat(actualSearchResult.hasContent()).isTrue();
+    }
+
+    @DisplayName("리뷰를 삭제하면, 리뷰와 모든 리뷰 이미지들을 soft delete하고 모든 리뷰 키워드들을 삭제한다.")
+    @Test
+    void given_whenSoftDeleteReview_thenSoftDeleteReviewAndAllReviewImagesAndDeleteAllReviewKeywords() {
+        // given
+        long memberId = 1L;
+        long reviewId = 3L;
+        Member loginMember = MemberTestUtils.createMember(memberId);
+        Place place = PlaceTestUtils.createPlace(2L, "2");
+        Review findReview = ReviewTestUtils.createReviewWithKeywordsAndImages(reviewId, loginMember, place);
+        given(memberService.findEntityById(memberId)).willReturn(loginMember);
+        given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
+        willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
+        willDoNothing().given(reviewKeywordRepository).deleteAll(findReview.getKeywords());
+        willDoNothing().given(reviewRepository).softDelete(findReview);
+        willDoNothing().given(placeService).renewPlaceTop3Keywords(findReview.getPlace());
+
+        // when
+        sut.delete(memberId, reviewId);
+
+        // then
+        then(memberService).should().findEntityById(memberId);
+        then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
+        then(reviewImageService).should().softDeleteAll(findReview.getReviewImages());
+        then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
+        then(reviewRepository).should().softDelete(findReview);
+        then(placeService).should().renewPlaceTop3Keywords(findReview.getPlace());
+
+        then(memberService).shouldHaveNoMoreInteractions();
+        then(reviewRepository).shouldHaveNoMoreInteractions();
+        then(reviewImageService).shouldHaveNoMoreInteractions();
+        then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoMoreInteractions();
+        then(bookmarkRepository).shouldHaveNoInteractions();
+    }
+
+    @DisplayName("리뷰 삭제 권한이 없는 회원의 PK가 주어지고, 리뷰를 soft delete하면, 예외가 발생한다.")
+    @Test
+    void givenUnauthorizedMemberId_whenSoftDeleteReview_thenThrowException() {
+        // given
+        long loginMemberId = 1L;
+        long reviewWriterId = 2L;
+        long reviewId = 3L;
+        Place place = PlaceTestUtils.createPlace(4L, "2");
+        Member loginMember = MemberTestUtils.createMember(loginMemberId);
+        Member reviewWriter = MemberTestUtils.createMember(reviewWriterId);
+        Review findReview = ReviewTestUtils.createReviewWithKeywordsAndImages(reviewId, reviewWriter, place);
+        given(memberService.findEntityById(loginMemberId)).willReturn(loginMember);
+        given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
+
+        // when
+        Throwable t = catchThrowable(() -> sut.delete(loginMemberId, reviewId));
+
+        // then
+        then(memberService).should().findEntityById(loginMemberId);
+        then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
+
+        then(memberService).shouldHaveNoMoreInteractions();
+        then(reviewRepository).shouldHaveNoMoreInteractions();
+        then(reviewImageService).shouldHaveNoInteractions();
+        then(reviewKeywordRepository).shouldHaveNoInteractions();
+        then(placeService).shouldHaveNoInteractions();
+        then(bookmarkRepository).shouldHaveNoInteractions();
+
+        assertThat(t).isInstanceOf(ReviewDeletePermissionDeniedException.class);
     }
 }
