@@ -35,11 +35,9 @@ public class Review extends BaseTimeEntity {
     @Column(length = 400)
     private String content;
 
-    @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "review")
     private List<ReviewKeyword> keywords = new LinkedList<>();
 
-    @Setter(AccessLevel.PRIVATE)
     @OneToMany(mappedBy = "review")
     private List<ReviewImage> reviewImages = new LinkedList<>();
 
