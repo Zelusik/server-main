@@ -53,8 +53,6 @@ spring:
     port: 6379
   jpa:
     hibernate.ddl-auto: update
-    defer-datasource-initialization: true
-  sql.init.mode: always
 
 ---
 # Settings for production(dev-server)
@@ -83,7 +81,6 @@ spring:
     properties:
       hibernate:
         format_sql: false
-  sql.init.mode: never
 
 ---
 # Settings for test
@@ -96,5 +93,3 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate.ddl-auto: create
-    defer-datasource-initialization: true
-  sql.init.mode: always
