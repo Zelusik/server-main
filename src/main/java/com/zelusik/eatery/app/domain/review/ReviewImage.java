@@ -5,14 +5,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "UPDATE review_image SET deleted_at = CURRENT_TIMESTAMP WHERE review_image_id = ?")
 @Entity
 public class ReviewImage extends S3Image {
 

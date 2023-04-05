@@ -10,10 +10,8 @@ import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.app.dto.review.ReviewImageDto;
 import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ReviewTestUtils {
@@ -137,6 +135,17 @@ public class ReviewTestUtils {
                 reviewKeywordValue,
                 LocalDateTime.now(),
                 LocalDateTime.now()
+        );
+    }
+
+    public static ReviewImage createNotSavedReviewImage(Review review) {
+        return ReviewImage.of(
+                review,
+                "original file name",
+                "stored file name",
+                "url",
+                "thumbnail stored file name",
+                "thumbnail url"
         );
     }
 

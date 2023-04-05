@@ -59,6 +59,6 @@ public class ReviewImageService {
      */
     @Transactional
     public void softDeleteAll(List<ReviewImage> reviewImages) {
-        reviewImages.forEach(reviewImage -> reviewImageRepository.delete(reviewImage));
+        reviewImageRepository.softDeleteAll(reviewImages);
     }
 }
