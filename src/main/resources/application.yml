@@ -10,8 +10,8 @@ logging:
 spring:
   servlet:
     multipart:
-      max-request-size: 10MB
-      max-file-size: 10MB
+      max-request-size: 30MB
+      max-file-size: 3MB
   jpa:
     open-in-view: false
     properties:
@@ -21,8 +21,8 @@ spring:
 
 server:
   tomcat:
-    max-swallow-size: 10MB
-    max-http-form-post-size: 10MB
+    max-swallow-size: 3MB
+    max-http-form-post-size: 3MB
 
 cloud:
   aws:
