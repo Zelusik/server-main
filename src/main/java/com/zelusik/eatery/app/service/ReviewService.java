@@ -153,14 +153,13 @@ public class ReviewService {
     @Transactional
     public void delete(Long memberId, Long reviewId) {
         Member member = memberService.findEntityById(memberId);
-        Review review = findEntityById(reviewId);
+        Review review = this.findEntityById(reviewId);
 
         validateReviewDeletePermission(member, review);
 
-        reviewImageService.deleteAll(review.getReviewImages());
+        reviewImageService.softDeleteAll(review.getReviewImages());
         reviewKeywordRepository.deleteAll(review.getKeywords());
-        reviewRepository.delete(review);
-        reviewRepository.flush();
+        reviewRepository.softDelete(review);
 
         placeService.renewPlaceTop3Keywords(review.getPlace());
     }

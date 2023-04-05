@@ -82,6 +82,21 @@ public class PlaceTestUtils {
         );
     }
 
+    public static Place createNotSavedPlace(String kakaoPid) {
+        return Place.of(
+                kakaoPid,
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                null,
+                new Point("37.5595073462493", "126.921462488105"),
+                null
+        );
+    }
+
     public static Place createPlace(Long id, String kakaoPid) {
         return createPlace(id, kakaoPid, null, "37.5595073462493", "126.921462488105", null);
     }
