@@ -10,8 +10,8 @@ logging:
 spring:
   servlet:
     multipart:
-      max-request-size: 10MB
-      max-file-size: 10MB
+      max-request-size: 30MB
+      max-file-size: 3MB
   jpa:
     open-in-view: false
     properties:
@@ -21,8 +21,8 @@ spring:
 
 server:
   tomcat:
-    max-swallow-size: 10MB
-    max-http-form-post-size: 10MB
+    max-swallow-size: 3MB
+    max-http-form-post-size: 3MB
 
 cloud:
   aws:
@@ -53,8 +53,6 @@ spring:
     port: 6379
   jpa:
     hibernate.ddl-auto: update
-    defer-datasource-initialization: true
-  sql.init.mode: always
 
 ---
 # Settings for production(dev-server)
@@ -83,7 +81,6 @@ spring:
     properties:
       hibernate:
         format_sql: false
-  sql.init.mode: never
 
 ---
 # Settings for test
@@ -96,5 +93,3 @@ spring:
     driver-class-name: org.h2.Driver
   jpa:
     hibernate.ddl-auto: create
-    defer-datasource-initialization: true
-  sql.init.mode: always
