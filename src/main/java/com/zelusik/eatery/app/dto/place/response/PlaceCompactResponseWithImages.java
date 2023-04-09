@@ -1,5 +1,6 @@
 package com.zelusik.eatery.app.dto.place.response;
 
+import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.place.Address;
 import com.zelusik.eatery.app.domain.place.Point;
 import com.zelusik.eatery.app.dto.file.response.ImageResponse;
@@ -17,6 +18,13 @@ public class PlaceCompactResponseWithImages {
 
     @Schema(description = "장소의 id(PK)", example = "1")
     private Long id;
+
+    @Schema(
+            description = "<p>가장 많이 태그된 top 3 keywords." +
+                    "<p>이 장소에 대한 리뷰가 없다면, empty array로 응답합니다.",
+            example = "[\"신선한 재료\", \"최고의 맛\"]"
+    )
+    List<String> top3Keywords;
 
     @Schema(description = "이름", example = "연남토마 본점")
     private String name;
@@ -36,8 +44,8 @@ public class PlaceCompactResponseWithImages {
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static PlaceCompactResponseWithImages of(Long id, String name, String category, Address address, Point point, List<ImageResponse> images, Boolean isMarked) {
-        return new PlaceCompactResponseWithImages(id, name, category, address, point, images, isMarked);
+    public static PlaceCompactResponseWithImages of(Long id, List<String> top3Keywords, String name, String category, Address address, Point point, List<ImageResponse> images, Boolean isMarked) {
+        return new PlaceCompactResponseWithImages(id, top3Keywords, name, category, address, point, images, isMarked);
     }
 
     public static PlaceCompactResponseWithImages from(PlaceDtoWithImages dto) {
@@ -48,6 +56,9 @@ public class PlaceCompactResponseWithImages {
 
         return PlaceCompactResponseWithImages.of(
                 dto.getId(),
+                dto.getTop3Keywords().stream()
+                        .map(ReviewKeywordValue::getDescription)
+                        .toList(),
                 dto.getName(),
                 category,
                 dto.getAddress(),
