@@ -118,6 +118,10 @@ public class Member extends BaseTimeEntity {
         this.setTermsInfo(null);
     }
 
+    public void softDelete() {
+        this.setDeletedAt(LocalDateTime.now());
+    }
+
     @Builder(access = AccessLevel.PRIVATE)
     private Member(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(createdAt, updatedAt);

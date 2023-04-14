@@ -14,6 +14,7 @@ import com.zelusik.eatery.global.exception.curation.CurationNotFoundException;
 import com.zelusik.eatery.global.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.global.exception.kakao.KakaoTokenValidateException;
 import com.zelusik.eatery.global.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.global.exception.member.ProfileImageNotFoundException;
 import com.zelusik.eatery.global.exception.place.NotAcceptableFoodCategory;
 import com.zelusik.eatery.global.exception.place.NotAcceptablePlaceSearchKeyword;
 import com.zelusik.eatery.global.exception.place.PlaceNotFoundException;
@@ -120,6 +121,7 @@ public enum ExceptionType {
      * 회원({@link Member}) 관련 예외
      */
     MEMBER_ID_NOT_FOUND(2000, "회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
+    PROFILE_IMAGE_NOT_FOUND(2001, "프로필 이미지를 찾을 수 없습니다.", ProfileImageNotFoundException.class),
 
     /**
      * 장소({@link Place}) 관련 예외
