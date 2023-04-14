@@ -235,7 +235,7 @@ class MemberServiceTest {
         TermsInfo memberTermsInfo = findMember.getTermsInfo();
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
         willDoNothing().given(termsInfoRepository).delete(memberTermsInfo);
-        willDoNothing().given(memberRepository).softDelete(findMember);
+        willDoNothing().given(memberRepository).flush();
         given(memberDeletionSurveyRepository.save(any(MemberDeletionSurvey.class)))
                 .willReturn(MemberTestUtils.createMemberDeletionSurvey(findMember, surveyType));
 
@@ -245,7 +245,7 @@ class MemberServiceTest {
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
         then(termsInfoRepository).should().delete(memberTermsInfo);
-        then(memberRepository).should().softDelete(findMember);
+        then(memberRepository).should().flush();
         then(memberDeletionSurveyRepository).should().save(any(MemberDeletionSurvey.class));
 
         then(memberRepository).shouldHaveNoMoreInteractions();

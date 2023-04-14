@@ -178,7 +178,7 @@ class ReviewServiceTest {
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
         willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
         willDoNothing().given(reviewKeywordRepository).deleteAll(findReview.getKeywords());
-        willDoNothing().given(reviewRepository).softDelete(findReview);
+        willDoNothing().given(reviewRepository).flush();
         willDoNothing().given(placeService).renewPlaceTop3Keywords(findReview.getPlace());
 
         // when
@@ -189,7 +189,7 @@ class ReviewServiceTest {
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
         then(reviewImageService).should().softDeleteAll(findReview.getReviewImages());
         then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
-        then(reviewRepository).should().softDelete(findReview);
+        then(reviewRepository).should().flush();
         then(placeService).should().renewPlaceTop3Keywords(findReview.getPlace());
 
         then(memberService).shouldHaveNoMoreInteractions();

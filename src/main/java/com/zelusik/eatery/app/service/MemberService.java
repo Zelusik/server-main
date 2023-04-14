@@ -140,15 +140,18 @@ public class MemberService {
     public MemberDto updateMember(Long memberId, MemberUpdateRequest updateRequest) {
         Member member = findEntityById(memberId);
 
-        ImageDto imageDto = updateRequest.getProfileImage();
-        if (imageDto == null) {
+        ImageDto imageDtoForUpdate = updateRequest.getProfileImage();
+        if (imageDtoForUpdate == null) {
             member.update(
                     updateRequest.getNickname(),
                     updateRequest.getBirthDay(),
                     updateRequest.getGender()
             );
         } else {
-            ProfileImage profileImage = profileImageService.upload(member, imageDto);
+            ProfileImage oldProfileImage = profileImageService.findEntityByMember(member);
+            profileImageService.softDelete(oldProfileImage);
+
+            ProfileImage profileImage = profileImageService.upload(member, imageDtoForUpdate);
             member.update(
                     profileImage.getUrl(),
                     profileImage.getThumbnailUrl(),
@@ -197,10 +200,21 @@ public class MemberService {
             termsInfoRepository.delete(memberTermsInfo);
         }
 
-        memberRepository.softDelete(member);
+        softDelete(member);
 
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);
         return MemberDeletionSurveyDto.from(deletionSurvey);
+    }
+
+    /**
+     * <p>Member soft delete.
+     * <p>Member의 deletedAt 값을 현재 시간으로 update한다.
+     *
+     * @param member
+     */
+    private void softDelete(Member member) {
+        member.softDelete();
+        memberRepository.flush();
     }
 }

@@ -9,11 +9,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
+    @EntityGraph(attributePaths = {"writer", "place"})
     Optional<Review> findByIdAndDeletedAtNull(Long reviewId);
 
     @EntityGraph(attributePaths = {"writer"})
@@ -24,12 +24,4 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @EntityGraph(attributePaths = {"writer", "place"})
     Slice<Review> findAllByDeletedAtNull(Pageable pageable);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE Review r SET r.deletedAt = CURRENT_TIMESTAMP WHERE r = :review")
-    void softDelete(@Param("review") Review review);
-
-    @Modifying(clearAutomatically = true)
-    @Query("UPDATE Review r SET r.deletedAt = CURRENT_TIMESTAMP WHERE r IN (:reviews)")
-    void softDeleteAll(@Param("reviews") List<Review> reviews);
 }

@@ -1,11 +1,7 @@
 package com.zelusik.eatery.app.domain.member;
 
 import com.zelusik.eatery.app.domain.S3Image;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -24,6 +20,7 @@ public class ProfileImage extends S3Image {
     @OneToOne(fetch = FetchType.LAZY)
     private Member member;
 
+    @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
     public static ProfileImage of(Member member, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
@@ -54,6 +51,10 @@ public class ProfileImage extends S3Image {
                 .updatedAt(updatedAt)
                 .deletedAt(deletedAt)
                 .build();
+    }
+
+    public void softDelete() {
+        this.setDeletedAt(LocalDateTime.now());
     }
 
     @Builder(access = AccessLevel.PRIVATE)

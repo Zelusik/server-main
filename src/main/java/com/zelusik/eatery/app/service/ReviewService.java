@@ -1,6 +1,5 @@
 package com.zelusik.eatery.app.service;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.app.domain.member.Member;
 import com.zelusik.eatery.app.domain.place.Place;
 import com.zelusik.eatery.app.domain.review.Review;
@@ -43,7 +42,7 @@ public class ReviewService {
      *
      * @param writerId      리뷰를 생성하고자 하는 회원의 PK.
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
-     * @param images         리뷰와 함께 업로드 할 파일 목록
+     * @param images        리뷰와 함께 업로드 할 파일 목록
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
@@ -134,7 +133,7 @@ public class ReviewService {
      */
     @Transactional
     public ReviewDtoWithMemberAndPlace update(Long memberId, Long reviewId, @Nullable String content) {
-        Review review = this.findEntityById(reviewId);
+        Review review = findEntityById(reviewId);
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
 
@@ -153,15 +152,20 @@ public class ReviewService {
     @Transactional
     public void delete(Long memberId, Long reviewId) {
         Member member = memberService.findEntityById(memberId);
-        Review review = this.findEntityById(reviewId);
+        Review review = findEntityById(reviewId);
 
         validateReviewDeletePermission(member, review);
 
         reviewImageService.softDeleteAll(review.getReviewImages());
         reviewKeywordRepository.deleteAll(review.getKeywords());
-        reviewRepository.softDelete(review);
+        softDelete(review);
 
         placeService.renewPlaceTop3Keywords(review.getPlace());
+    }
+
+    private void softDelete(Review review) {
+        review.softDelete();
+        reviewRepository.flush();
     }
 
     /**

@@ -1,10 +1,7 @@
 package com.zelusik.eatery.app.domain.review;
 
 import com.zelusik.eatery.app.domain.S3Image;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,6 +20,7 @@ public class ReviewImage extends S3Image {
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
+    @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
     public static ReviewImage of(Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
@@ -42,6 +40,10 @@ public class ReviewImage extends S3Image {
                 .updatedAt(updatedAt)
                 .deletedAt(deletedAt)
                 .build();
+    }
+
+    public void softDelete() {
+        this.setDeletedAt(LocalDateTime.now());
     }
 
     @Builder(access = AccessLevel.PRIVATE)
