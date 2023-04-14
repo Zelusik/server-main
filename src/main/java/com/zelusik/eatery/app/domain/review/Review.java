@@ -41,6 +41,7 @@ public class Review extends BaseTimeEntity {
     @OneToMany(mappedBy = "review")
     private List<ReviewImage> reviewImages = new LinkedList<>();
 
+    @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
     public static Review of(Member writer, Place place, String autoCreatedContent, String content) {
@@ -60,6 +61,14 @@ public class Review extends BaseTimeEntity {
                 .build();
     }
 
+    public void update(String content) {
+        this.setContent(content);
+    }
+
+    public void softDelete() {
+        this.setDeletedAt(LocalDateTime.now());
+    }
+
     @Builder(access = AccessLevel.PRIVATE)
     private Review(Long id, Member writer, Place place, String autoCreatedContent, String content, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         super(createdAt, updatedAt);
@@ -69,9 +78,5 @@ public class Review extends BaseTimeEntity {
         this.autoCreatedContent = autoCreatedContent;
         this.content = content;
         this.deletedAt = deletedAt;
-    }
-
-    public void update(String content) {
-        this.setContent(content);
     }
 }
