@@ -1,7 +1,7 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.dto.file.S3FileDto;
-import com.zelusik.eatery.app.service.S3ImageDto;
+import com.zelusik.eatery.dto.file.S3FileDto;
+import com.zelusik.eatery.service.S3ImageDto;
 
 public class S3FileTestUtils {
     

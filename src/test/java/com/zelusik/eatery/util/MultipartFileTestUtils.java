@@ -1,6 +1,6 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.dto.ImageDto;
+import com.zelusik.eatery.dto.ImageDto;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
