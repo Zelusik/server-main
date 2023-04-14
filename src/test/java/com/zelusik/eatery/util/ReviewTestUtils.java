@@ -1,15 +1,15 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.app.domain.member.Member;
-import com.zelusik.eatery.app.domain.place.Place;
-import com.zelusik.eatery.app.domain.review.Review;
-import com.zelusik.eatery.app.domain.review.ReviewImage;
-import com.zelusik.eatery.app.domain.review.ReviewKeyword;
-import com.zelusik.eatery.app.dto.review.ReviewDtoWithMember;
-import com.zelusik.eatery.app.dto.review.ReviewDtoWithMemberAndPlace;
-import com.zelusik.eatery.app.dto.review.ReviewImageDto;
-import com.zelusik.eatery.app.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.domain.member.Member;
+import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.domain.review.ReviewImage;
+import com.zelusik.eatery.domain.review.ReviewKeyword;
+import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
+import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
+import com.zelusik.eatery.dto.review.ReviewImageDto;
+import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;

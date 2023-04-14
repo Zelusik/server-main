@@ -1,13 +1,13 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.app.constant.place.DayOfWeek;
-import com.zelusik.eatery.app.constant.place.KakaoCategoryGroupCode;
-import com.zelusik.eatery.app.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.app.domain.place.*;
-import com.zelusik.eatery.app.dto.place.OpeningHoursDto;
-import com.zelusik.eatery.app.dto.place.PlaceDto;
-import com.zelusik.eatery.app.dto.place.PlaceDtoWithImages;
-import com.zelusik.eatery.app.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.constant.place.DayOfWeek;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.*;
+import com.zelusik.eatery.dto.place.OpeningHoursDto;
+import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
