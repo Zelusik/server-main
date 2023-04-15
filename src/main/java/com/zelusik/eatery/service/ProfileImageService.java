@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -47,9 +49,8 @@ public class ProfileImageService {
      * @param member Member
      * @return 조회된 ProfileImage
      */
-    public ProfileImage findEntityByMember(Member member) {
-        return profileImageRepository.findByMember(member)
-                .orElseThrow(() -> new ProfileImageNotFoundException("Member id=" + member.getId()));
+    public Optional<ProfileImage> findEntityByMember(Member member) {
+        return profileImageRepository.findByMemberAndDeletedAtIsNull(member);
     }
 
     /**
@@ -61,5 +62,6 @@ public class ProfileImageService {
     @Transactional
     public void softDelete(ProfileImage profileImage) {
         profileImage.softDelete();
+        profileImageRepository.flush();
     }
 }

@@ -121,9 +121,13 @@ public class MemberTestUtils {
         );
     }
 
-    public static ProfileImage createProfileImage() {
+    public static ProfileImage createProfileImage(Long profileImageId) {
+        return createProfileImage(createMember(1L),  profileImageId);
+    }
+
+    public static ProfileImage createProfileImage(Member member, Long profileImageId) {
         return ProfileImage.of(
-                10L,
+                profileImageId,
                 createMember(1L),
                 "originalFilename",
                 "storedFilename",

@@ -15,10 +15,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -41,7 +42,7 @@ class ProfileImageServiceTest {
         long memberId = 1L;
         Member member = MemberTestUtils.createMember(memberId);
         ImageDto imageDto = MultipartFileTestUtils.createMockImageDto();
-        ProfileImage expectedResult = MemberTestUtils.createProfileImage();
+        ProfileImage expectedResult = MemberTestUtils.createProfileImage(10L);
         given(fileService.uploadFile(any(MultipartFile.class), any(String.class)))
                 .willReturn(S3FileTestUtils.createS3FileDto());
         given(profileImageRepository.save(any(ProfileImage.class))).willReturn(expectedResult);
@@ -54,5 +55,39 @@ class ProfileImageServiceTest {
         then(profileImageRepository).should().save(any(ProfileImage.class));
         assertThat(actualResult).isNotNull();
         assertThat(actualResult.getId()).isEqualTo(expectedResult.getId());
+    }
+
+    @DisplayName("주어진 회원에 해당되는 profile image를 조회하면, 조회된 profile image의 optional 객체를 반환한다.")
+    @Test
+    void givenMember_whenFindingByMember_thenReturnOptionalProfileImage() {
+        // given
+        long memberId = 1L;
+        Member member = MemberTestUtils.createMember(memberId);
+        ProfileImage profileImage = MemberTestUtils.createProfileImage(member, 10L);
+        given(profileImageRepository.findByMemberAndDeletedAtIsNull(member))
+                .willReturn(Optional.of(profileImage));
+
+        // when
+        Optional<ProfileImage> findProfileImage = sut.findEntityByMember(member);
+
+        // then
+        then(profileImageRepository).should().findByMemberAndDeletedAtIsNull(member);
+        then(profileImageRepository).shouldHaveNoMoreInteractions();
+        assertThat(findProfileImage.isPresent()).isTrue();
+    }
+
+    @DisplayName("주어진 profile image를 soft delete하면 deletedAt 필드가 현재시각으로 update된다.")
+    @Test
+    void givenProfileImage_whenSoftDeleting_thenUpdateDeletedAt() {
+        // given
+        ProfileImage profileImage = MemberTestUtils.createProfileImage(10L);
+        willDoNothing().given(profileImageRepository).flush();
+
+        // when
+        sut.softDelete(profileImage);
+
+        // then
+        then(profileImageRepository).should().flush();
+        assertThat(profileImage.getDeletedAt()).isNotNull();
     }
 }
