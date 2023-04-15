@@ -195,7 +195,7 @@ class MemberServiceTest {
         given(memberRepository.findByIdAndDeletedAtNull(memberId))
                 .willReturn(Optional.of(findMember));
         given(profileImageService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage())))
-                .willReturn(createProfileImage());
+                .willReturn(createProfileImage(10L));
 
         // when
         MemberDto updatedMemberDto = sut.updateMember(memberId, memberUpdateInfo);

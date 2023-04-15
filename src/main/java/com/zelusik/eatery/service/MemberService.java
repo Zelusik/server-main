@@ -148,8 +148,8 @@ public class MemberService {
                     updateRequest.getGender()
             );
         } else {
-            ProfileImage oldProfileImage = profileImageService.findEntityByMember(member);
-            profileImageService.softDelete(oldProfileImage);
+            Optional<ProfileImage> oldProfileImage = profileImageService.findEntityByMember(member);
+            oldProfileImage.ifPresent(profileImageService::softDelete);
 
             ProfileImage profileImage = profileImageService.upload(member, imageDtoForUpdate);
             member.update(

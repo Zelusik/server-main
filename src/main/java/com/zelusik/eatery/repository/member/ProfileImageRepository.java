@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface ProfileImageRepository extends JpaRepository<ProfileImage, Long> {
 
-    Optional<ProfileImage> findByMember(Member member);
+    Optional<ProfileImage> findByMemberAndDeletedAtIsNull(Member member);
 }
