@@ -11,13 +11,13 @@ import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
 import com.zelusik.eatery.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
+import com.zelusik.eatery.exception.place.PlaceNotFoundException;
+import com.zelusik.eatery.exception.scraping.OpeningHoursUnexpectedFormatException;
+import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
-import com.zelusik.eatery.exception.place.PlaceNotFoundException;
-import com.zelusik.eatery.exception.scraping.OpeningHoursUnexpectedFormatException;
-import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -123,11 +123,7 @@ public class PlaceService {
      * @return 조회한 장소 목록
      */
     public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
-        Slice<PlaceDtoWithImages> places = placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 3, pageable);
-        if (!places.hasContent()) {
-            places = placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 10, pageable);
-        }
-        return places;
+        return placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 50, pageable);
     }
 
     /**
@@ -142,8 +138,6 @@ public class PlaceService {
     public Slice<PlaceDtoWithImages> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
         return placeRepository.findMarkedPlaces(memberId, pageable);
     }
-
-
 
     /**
      * 장소의 top 3 keyword를 DB에서 조회 후 갱신한다.
