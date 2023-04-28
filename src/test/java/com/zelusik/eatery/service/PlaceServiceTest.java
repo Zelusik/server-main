@@ -304,38 +304,16 @@ class PlaceServiceTest {
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
-        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(expectedResult);
+        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 50, pageable)).willReturn(expectedResult);
 
         // when
         Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
-        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 3, pageable);
+        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 50, pageable);
         then(placeRepository).shouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
-    }
-
-    @DisplayName("3km 밖에 있고 10km 안에 있는 장소들이 주어지고, 중심 좌표 근처의 장소들을 조회하면, 거리순으로 정렬된 장소 목록을 반환한다.")
-    @Test
-    void givenPlaces3kmAwayAndWithin10km_whenFindNearBy_thenReturnPlaces() {
-        // given
-        long memberId = 1L;
-        String lat = "37";
-        String lng = "127";
-        Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDtoWithImages> emptyResult = new SliceImpl<>(List.of(), pageable, false);
-        SliceImpl<PlaceDtoWithImages> expectedResultWithin10km = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
-        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(emptyResult);
-        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
-
-        // when
-        Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
-
-        // then
-        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 3, pageable);
-        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 10, pageable);
-        assertThat(actualResult.getNumberOfElements()).isNotZero();
     }
 
     @DisplayName("장소가 주어지고, 장소의 top 3 keyword를 갱신하면, 업데이트한다.")
