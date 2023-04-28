@@ -141,7 +141,7 @@ public class PlaceController {
             ) @RequestParam(required = false, defaultValue = "20") int size
     ) {
         return new SliceResponse<MarkedPlaceResponse>().from(
-                placeService.findMarkedPlaceDtos(
+                placeService.findMarkedDtos(
                         userPrincipal.getMemberId(),
                         PageRequest.of(page, size)
                 ).map(MarkedPlaceResponse::from)

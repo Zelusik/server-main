@@ -82,7 +82,7 @@ public class MemberController {
             @Valid @ModelAttribute MemberUpdateRequest memberUpdateRequest
     ) {
         return MemberResponse.from(
-                memberService.updateMember(
+                memberService.update(
                         userPrincipal.getMemberId(),
                         memberUpdateRequest
                 )

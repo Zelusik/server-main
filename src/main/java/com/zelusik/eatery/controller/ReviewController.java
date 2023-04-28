@@ -84,7 +84,7 @@ public class ReviewController {
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return new SliceResponse<ReviewListElemResponse>()
-                .from(reviewService.searchDtosByPlaceId(placeId, pageRequest)
+                .from(reviewService.findDtosByPlaceId(placeId, pageRequest)
                         .map(ReviewListElemResponse::from));
     }
 
@@ -109,7 +109,7 @@ public class ReviewController {
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return new SliceResponse<FeedResponse>()
-                .from(reviewService.searchDtosOrderByCreatedAt(userPrincipal.getMemberId(), pageRequest)
+                .from(reviewService.findDtosOrderByCreatedAt(userPrincipal.getMemberId(), pageRequest)
                         .map(FeedResponse::from));
     }
 
@@ -132,7 +132,7 @@ public class ReviewController {
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return new SliceResponse<ReviewResponse>()
-                .from(reviewService.searchDtosByWriterId(userPrincipal.getMemberId(), pageRequest)
+                .from(reviewService.findDtosByWriterId(userPrincipal.getMemberId(), pageRequest)
                         .map(ReviewResponse::from));
     }
 

@@ -273,7 +273,7 @@ class PlaceServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
-        Optional<Place> actualPlace = sut.findOptEntityByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findOptionalByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -288,7 +288,7 @@ class PlaceServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.empty());
 
         // when
-        Optional<Place> actualPlace = sut.findOptEntityByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findOptionalByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -304,13 +304,13 @@ class PlaceServiceTest {
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
-        given(placeRepository.findNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(expectedResult);
+        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(expectedResult);
 
         // when
         Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
-        then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 3, pageable);
+        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 3, pageable);
         then(placeRepository).shouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
@@ -326,15 +326,15 @@ class PlaceServiceTest {
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDtoWithImages> emptyResult = new SliceImpl<>(List.of(), pageable, false);
         SliceImpl<PlaceDtoWithImages> expectedResultWithin10km = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
-        given(placeRepository.findNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(emptyResult);
-        given(placeRepository.findNearBy(memberId, null, null, lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
+        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 3, pageable)).willReturn(emptyResult);
+        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 10, pageable)).willReturn(expectedResultWithin10km);
 
         // when
         Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
-        then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 3, pageable);
-        then(placeRepository).should().findNearBy(memberId, null, null, lat, lng, 10, pageable);
+        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 3, pageable);
+        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 10, pageable);
         assertThat(actualResult.getNumberOfElements()).isNotZero();
     }
 
@@ -352,7 +352,7 @@ class PlaceServiceTest {
         given(reviewKeywordRepository.searchTop3Keywords(placeId)).willReturn(top3Keywords);
 
         // when
-        sut.renewPlaceTop3Keywords(place);
+        sut.renewTop3Keywords(place);
 
         // then
         then(reviewKeywordRepository).should().searchTop3Keywords(placeId);

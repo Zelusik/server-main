@@ -20,7 +20,7 @@ public interface PlaceJdbcTemplateRepository {
      * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    Slice<PlaceDtoWithImages> findNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable);
+    Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소 목록(Slice)을 조회합니다.
@@ -30,5 +30,5 @@ public interface PlaceJdbcTemplateRepository {
      * @param pageable paging 정보
      * @return 조회된 장소 목록(Slice)
      */
-    Slice<PlaceDtoWithImages> findMarkedPlaces(Long memberId, Pageable pageable);
+    Slice<PlaceDtoWithImages> findMarked(Long memberId, Pageable pageable);
 }

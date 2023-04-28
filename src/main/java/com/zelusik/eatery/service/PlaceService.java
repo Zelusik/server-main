@@ -81,7 +81,7 @@ public class PlaceService {
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 entity
      */
-    public Place findEntityById(Long placeId) {
+    public Place findById(Long placeId) {
         return placeRepository.findById(placeId)
                 .orElseThrow(PlaceNotFoundException::new);
     }
@@ -93,7 +93,7 @@ public class PlaceService {
      * @return 조회한 장소 dto
      */
     public PlaceDtoWithImages findDtoById(Long memberId, Long placeId) {
-        Place place = findEntityById(placeId);
+        Place place = findById(placeId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
         List<ReviewImageDto> images = reviewImageService.findLatest3ByPlace(place);
 
@@ -106,7 +106,7 @@ public class PlaceService {
      * @param kakaoPid 조회하고자 하는 장소의 kakaoPid
      * @return 조회한 장소의 optional entity
      */
-    public Optional<Place> findOptEntityByKakaoPid(String kakaoPid) {
+    public Optional<Place> findOptionalByKakaoPid(String kakaoPid) {
         return placeRepository.findByKakaoPid(kakaoPid);
     }
 
@@ -123,7 +123,7 @@ public class PlaceService {
      * @return 조회한 장소 목록
      */
     public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
-        return placeRepository.findNearBy(memberId, daysOfWeek, keyword, lat, lng, 50, pageable);
+        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, lat, lng, 50, pageable);
     }
 
     /**
@@ -135,8 +135,8 @@ public class PlaceService {
      * @param pageable paging 정보
      * @return 조회한 장소 목록과 사진 데이터
      */
-    public Slice<PlaceDtoWithImages> findMarkedPlaceDtos(Long memberId, Pageable pageable) {
-        return placeRepository.findMarkedPlaces(memberId, pageable);
+    public Slice<PlaceDtoWithImages> findMarkedDtos(Long memberId, Pageable pageable) {
+        return placeRepository.findMarked(memberId, pageable);
     }
 
     /**
@@ -145,7 +145,7 @@ public class PlaceService {
      * @param place top 3 keyword를 갱신할 장소
      */
     @Transactional
-    public void renewPlaceTop3Keywords(Place place) {
+    public void renewTop3Keywords(Place place) {
         List<ReviewKeywordValue> placeTop3Keywords = reviewKeywordRepository.searchTop3Keywords(place.getId());
         place.setTop3Keywords(placeTop3Keywords);
     }

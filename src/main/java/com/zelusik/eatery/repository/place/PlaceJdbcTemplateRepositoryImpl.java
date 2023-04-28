@@ -38,7 +38,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
     }
 
     @Override
-    public Slice<PlaceDtoWithImages> findNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable) {
+    public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable) {
         StringBuilder sql = new StringBuilder("select p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ")
                 .append("ri1.review_image_id as ri1_review_image_id, ri1.review_id as ri1_review_id, ri1.original_name as ri1_original_name, ri1.stored_name as ri1_stored_name, ri1.url as ri1_url, ri1.thumbnail_stored_name as ri1_thumbnail_stored_name, ri1.thumbnail_url as ri1_thumbnail_url, ri1.created_at as ri1_created_at, ri1.updated_at as ri1_updated_at, ri1.deleted_at as ri1_deleted_at, ")
                 .append("ri2.review_image_id as ri2_review_image_id, ri2.review_id as ri2_review_id, ri2.original_name as ri2_original_name, ri2.stored_name as ri2_stored_name, ri2.url as ri2_url, ri2.thumbnail_stored_name as ri2_thumbnail_stored_name, ri2.thumbnail_url as ri2_thumbnail_url, ri2.created_at as ri2_created_at, ri2.updated_at as ri2_updated_at, ri2.deleted_at as ri2_deleted_at, ")
@@ -92,7 +92,7 @@ public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateReposit
     }
 
     @Override
-    public Slice<PlaceDtoWithImages> findMarkedPlaces(Long memberId, Pageable pageable) {
+    public Slice<PlaceDtoWithImages> findMarked(Long memberId, Pageable pageable) {
         String sql = """
                 select p.place_id,
                        p.top3keywords,
