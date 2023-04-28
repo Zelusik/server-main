@@ -51,7 +51,7 @@ class JwtTokenServiceTest {
                 .willReturn(createRedisRefreshToken(memberId));
 
         // when
-        TokenResponse tokenResponse = sut.createJwtTokens(memberId, loginType);
+        TokenResponse tokenResponse = sut.create(memberId, loginType);
         String actualAccessToken = tokenResponse.getAccessToken();
         String actualRefreshToken = tokenResponse.getRefreshToken();
 

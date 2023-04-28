@@ -3,7 +3,6 @@ package com.zelusik.eatery.controller;
 import com.zelusik.eatery.config.SecurityConfig;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
-import com.zelusik.eatery.controller.MemberController;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
@@ -149,7 +148,7 @@ class MemberControllerTest {
                 Gender.ETC,
                 null
         );
-        given(memberService.updateMember(eq(memberId), any(MemberUpdateRequest.class)))
+        given(memberService.update(eq(memberId), any(MemberUpdateRequest.class)))
                 .willReturn(MemberTestUtils.createMemberDtoWithId(memberId));
 
         // when & then

@@ -29,7 +29,7 @@ public class JwtTokenService {
      * @return 생성된 access token과 refresh token 정보가 담긴 <code>TokenResponse</code> 객체
      */
     @Transactional
-    public TokenResponse createJwtTokens(Long memberId, LoginType loginType) {
+    public TokenResponse create(Long memberId, LoginType loginType) {
         JwtTokenInfoDto accessTokenInfo = jwtTokenProvider.createAccessToken(memberId, loginType);
         JwtTokenInfoDto refreshTokenInfo = jwtTokenProvider.createRefreshToken(memberId, loginType);
         redisRefreshTokenRepository.save(RedisRefreshToken.of(refreshTokenInfo.token(), memberId));
@@ -57,7 +57,7 @@ public class JwtTokenService {
                 .orElseThrow(TokenValidateException::new);
         redisRefreshTokenRepository.delete(oldRedisRefreshToken);
 
-        return createJwtTokens(
+        return create(
                 oldRedisRefreshToken.getMemberId(),
                 jwtTokenProvider.getLoginType(oldRefreshToken)
         );

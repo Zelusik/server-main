@@ -32,8 +32,8 @@ public class BookmarkService {
     public BookmarkDto mark(Long memberId, Long placeId) {
         validateNotAlreadyMarked(memberId, placeId);
 
-        Member member = memberService.findEntityById(memberId);
-        Place place = placeService.findEntityById(placeId);
+        Member member = memberService.findById(memberId);
+        Place place = placeService.findById(placeId);
 
         Bookmark bookmark = Bookmark.of(member, place);
         bookmarkRepository.save(bookmark);

@@ -47,7 +47,7 @@ public class CurationService {
     @Transactional
     public CurationDto addCurationElem(Long curationId, CurationElemCreateRequest curationElemCreateRequest) {
         PlaceCreateRequest placeCreateRequest = curationElemCreateRequest.getPlace();
-        Place place = placeService.findOptEntityByKakaoPid(placeCreateRequest.getKakaoPid())
+        Place place = placeService.findOptionalByKakaoPid(placeCreateRequest.getKakaoPid())
                 .orElseGet(() -> placeService.create(placeCreateRequest));
 
         Curation curation = findEntityById(curationId);

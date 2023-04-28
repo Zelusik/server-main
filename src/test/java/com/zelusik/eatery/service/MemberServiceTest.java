@@ -171,7 +171,7 @@ class MemberServiceTest {
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
 
         // when
-        MemberDto updatedMemberDto = sut.updateMember(memberId, memberUpdateInfo);
+        MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
@@ -198,7 +198,7 @@ class MemberServiceTest {
                 .willReturn(createProfileImage(10L));
 
         // when
-        MemberDto updatedMemberDto = sut.updateMember(memberId, memberUpdateInfo);
+        MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);

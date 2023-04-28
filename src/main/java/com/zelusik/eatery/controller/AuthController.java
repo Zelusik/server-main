@@ -65,7 +65,7 @@ public class AuthController {
             memberService.rejoin(memberDto.getId());
         }
 
-        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.getId(), LoginType.KAKAO);
+        TokenResponse tokenResponse = jwtTokenService.create(memberDto.getId(), LoginType.KAKAO);
 
         return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
     }
@@ -94,7 +94,7 @@ public class AuthController {
             memberService.rejoin(memberDto.getId());
         }
 
-        TokenResponse tokenResponse = jwtTokenService.createJwtTokens(memberDto.getId(), LoginType.APPLE);
+        TokenResponse tokenResponse = jwtTokenService.create(memberDto.getId(), LoginType.APPLE);
 
         return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
     }

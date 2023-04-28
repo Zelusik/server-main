@@ -65,7 +65,7 @@ public class MemberService {
         );
         termsInfoRepository.save(termsInfo);
 
-        Member member = findEntityById(memberId);
+        Member member = findById(memberId);
         member.addTermsInfo(termsInfo);
 
         return TermsInfoDto.from(termsInfo);
@@ -78,7 +78,7 @@ public class MemberService {
      * @return 조회한 회원 entity
      * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
      */
-    public Member findEntityById(Long memberId) {
+    public Member findById(Long memberId) {
         return memberRepository.findByIdAndDeletedAtNull(memberId)
                 .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
@@ -91,7 +91,7 @@ public class MemberService {
      * @return 조회한 회원 entity
      * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
      */
-    private Member findEntityByIdWithDeleted(Long memberId) {
+    private Member findByIdWithDeleted(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
@@ -103,7 +103,7 @@ public class MemberService {
      * @return 조회한 회원 dto
      */
     public MemberDto findDtoById(Long memberId) {
-        return MemberDto.from(findEntityById(memberId));
+        return MemberDto.from(findById(memberId));
     }
 
     /**
@@ -125,7 +125,7 @@ public class MemberService {
      */
     @Transactional
     public void rejoin(Long memberId) {
-        Member member = findEntityByIdWithDeleted(memberId);
+        Member member = findByIdWithDeleted(memberId);
         member.rejoin();
     }
 
@@ -137,8 +137,8 @@ public class MemberService {
      * @return 수정된 회원 dto
      */
     @Transactional
-    public MemberDto updateMember(Long memberId, MemberUpdateRequest updateRequest) {
-        Member member = findEntityById(memberId);
+    public MemberDto update(Long memberId, MemberUpdateRequest updateRequest) {
+        Member member = findById(memberId);
 
         ImageDto imageDtoForUpdate = updateRequest.getProfileImage();
         if (imageDtoForUpdate == null) {
@@ -148,7 +148,7 @@ public class MemberService {
                     updateRequest.getGender()
             );
         } else {
-            Optional<ProfileImage> oldProfileImage = profileImageService.findEntityByMember(member);
+            Optional<ProfileImage> oldProfileImage = profileImageService.findByMember(member);
             oldProfileImage.ifPresent(profileImageService::softDelete);
 
             ProfileImage profileImage = profileImageService.upload(member, imageDtoForUpdate);
@@ -172,7 +172,7 @@ public class MemberService {
      */
     @Transactional
     public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategory> favoriteFoodCategories) {
-        Member member = findEntityById(memberId);
+        Member member = findById(memberId);
         member.setFavoriteFoodCategories(favoriteFoodCategories);
         return MemberDto.from(member);
     }
@@ -188,7 +188,7 @@ public class MemberService {
      */
     @Transactional
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
-        Member member = findEntityById(memberId);
+        Member member = findById(memberId);
 
         if (member.getDeletedAt() != null) {
             throw new MemberNotFoundException();

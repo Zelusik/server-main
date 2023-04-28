@@ -5,7 +5,6 @@ import com.zelusik.eatery.domain.member.ProfileImage;
 import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.dto.file.S3FileDto;
 import com.zelusik.eatery.repository.member.ProfileImageRepository;
-import com.zelusik.eatery.exception.member.ProfileImageNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +48,7 @@ public class ProfileImageService {
      * @param member Member
      * @return 조회된 ProfileImage
      */
-    public Optional<ProfileImage> findEntityByMember(Member member) {
+    public Optional<ProfileImage> findByMember(Member member) {
         return profileImageRepository.findByMemberAndDeletedAtIsNull(member);
     }
 

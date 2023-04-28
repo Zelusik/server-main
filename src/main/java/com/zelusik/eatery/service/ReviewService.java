@@ -49,10 +49,10 @@ public class ReviewService {
     public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
-        Place place = placeService.findOptEntityByKakaoPid(placeCreateRequest.getKakaoPid())
+        Place place = placeService.findOptionalByKakaoPid(placeCreateRequest.getKakaoPid())
                 .orElseGet(() -> placeService.create(placeCreateRequest));
 
-        Member writer = memberService.findEntityById(writerId);
+        Member writer = memberService.findById(writerId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
 
         // 리뷰 저장
@@ -69,7 +69,7 @@ public class ReviewService {
         reviewImageService.upload(review, images);
 
         // 장소 top 3 keyword 설정
-        placeService.renewPlaceTop3Keywords(place);
+        placeService.renewTop3Keywords(place);
 
         return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);
     }
@@ -80,7 +80,7 @@ public class ReviewService {
      * @param reviewId 조회하고자 하는 리뷰의 PK
      * @return 조회된 리뷰
      */
-    private Review findEntityById(Long reviewId) {
+    private Review findById(Long reviewId) {
         return reviewRepository.findByIdAndDeletedAtNull(reviewId)
                 .orElseThrow(ReviewNotFoundException::new);
     }
@@ -92,7 +92,7 @@ public class ReviewService {
      * @param pageable paging 정보
      * @return 조회된 리뷰 목록(Slice)
      */
-    public Slice<ReviewDtoWithMember> searchDtosByPlaceId(Long placeId, Pageable pageable) {
+    public Slice<ReviewDtoWithMember> findDtosByPlaceId(Long placeId, Pageable pageable) {
         return reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable).map(ReviewDtoWithMember::from);
     }
 
@@ -102,9 +102,8 @@ public class ReviewService {
      * @param pageable paging 정보
      * @return 조회된 리뷰 목록(slice)
      */
-    public Slice<ReviewDtoWithMemberAndPlace> searchDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
+    public Slice<ReviewDtoWithMemberAndPlace> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-
         return reviewRepository.findAllByDeletedAtNull(pageable)
                 .map(review -> ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList));
     }
@@ -116,9 +115,8 @@ public class ReviewService {
      * @param pageable paging, sorting 정보
      * @return 조회된 리뷰 목록(slice)
      */
-    public Slice<ReviewDtoWithMemberAndPlace> searchDtosByWriterId(Long writerId, Pageable pageable) {
+    public Slice<ReviewDtoWithMemberAndPlace> findDtosByWriterId(Long writerId, Pageable pageable) {
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
-
         return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)
                 .map(review -> ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList));
     }
@@ -133,7 +131,7 @@ public class ReviewService {
      */
     @Transactional
     public ReviewDtoWithMemberAndPlace update(Long memberId, Long reviewId, @Nullable String content) {
-        Review review = findEntityById(reviewId);
+        Review review = findById(reviewId);
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
 
@@ -151,8 +149,8 @@ public class ReviewService {
      */
     @Transactional
     public void delete(Long memberId, Long reviewId) {
-        Member member = memberService.findEntityById(memberId);
-        Review review = findEntityById(reviewId);
+        Member member = memberService.findById(memberId);
+        Review review = findById(reviewId);
 
         validateReviewDeletePermission(member, review);
 
@@ -160,7 +158,7 @@ public class ReviewService {
         reviewKeywordRepository.deleteAll(review.getKeywords());
         softDelete(review);
 
-        placeService.renewPlaceTop3Keywords(review.getPlace());
+        placeService.renewTop3Keywords(review.getPlace());
     }
 
     private void softDelete(Review review) {

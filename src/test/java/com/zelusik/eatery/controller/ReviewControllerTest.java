@@ -1,7 +1,6 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.config.SecurityConfig;
-import com.zelusik.eatery.controller.ReviewController;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.service.ReviewService;
 import com.zelusik.eatery.security.JwtAuthenticationFilter;
@@ -90,7 +89,7 @@ class ReviewControllerTest {
     void givenPlaceId_whenSearchReviewsOfCertainPlace_thenReturnReviews() throws Exception {
         // given
         long placeId = 1L;
-        given(reviewService.searchDtosByPlaceId(eq(placeId), any(Pageable.class)))
+        given(reviewService.findDtosByPlaceId(eq(placeId), any(Pageable.class)))
                 .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithMember())));
 
         // when & then
@@ -108,7 +107,7 @@ class ReviewControllerTest {
     void whenSearchMyReviews_thenReturnReviews() throws Exception {
         // given
         long memberId = 1L;
-        given(reviewService.searchDtosByWriterId(eq(memberId), any(Pageable.class)))
+        given(reviewService.findDtosByWriterId(eq(memberId), any(Pageable.class)))
                 .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithMemberAndPlace())));
 
         // when & then

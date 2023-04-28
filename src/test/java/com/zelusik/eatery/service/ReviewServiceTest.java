@@ -64,8 +64,8 @@ class ReviewServiceTest {
         Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
-        given(placeService.findOptEntityByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
-        given(memberService.findEntityById(writerId)).willReturn(expectedMember);
+        given(placeService.findOptionalByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
+        given(memberService.findById(writerId)).willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
                 .willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
@@ -79,8 +79,8 @@ class ReviewServiceTest {
         );
 
         // then
-        then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
-        then(memberService).should().findEntityById(writerId);
+        then(placeService).should().findOptionalByKakaoPid(kakaoPid);
+        then(memberService).should().findById(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewImageService).should().upload(any(Review.class), any());
@@ -97,11 +97,11 @@ class ReviewServiceTest {
         Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
-        given(placeService.findOptEntityByKakaoPid(kakaoPid))
+        given(placeService.findOptionalByKakaoPid(kakaoPid))
                 .willReturn(Optional.empty());
         given(placeService.create(reviewCreateRequest.getPlace()))
                 .willReturn(expectedPlace);
-        given(memberService.findEntityById(writerId))
+        given(memberService.findById(writerId))
                 .willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class)))
                 .willReturn(expectedReview);
@@ -118,9 +118,9 @@ class ReviewServiceTest {
         );
 
         // then
-        then(placeService).should().findOptEntityByKakaoPid(kakaoPid);
+        then(placeService).should().findOptionalByKakaoPid(kakaoPid);
         then(placeService).should().create(reviewCreateRequest.getPlace());
-        then(memberService).should().findEntityById(writerId);
+        then(memberService).should().findById(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewImageService).should().upload(any(Review.class), any());
@@ -139,7 +139,7 @@ class ReviewServiceTest {
                 .willReturn(expectedSearchResult);
 
         // when
-        Slice<ReviewDtoWithMember> actualSearchResult = sut.searchDtosByPlaceId(placeId, pageable);
+        Slice<ReviewDtoWithMember> actualSearchResult = sut.findDtosByPlaceId(placeId, pageable);
 
         // then
         then(reviewRepository).should().findByPlace_IdAndDeletedAtNull(placeId, pageable);
@@ -157,7 +157,7 @@ class ReviewServiceTest {
         given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
 
         // when
-        Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.searchDtosByWriterId(writerId, pageable);
+        Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.findDtosByWriterId(writerId, pageable);
 
         // then
         then(reviewRepository).should().findByWriter_IdAndDeletedAtNull(writerId, pageable);
@@ -174,23 +174,23 @@ class ReviewServiceTest {
         Member loginMember = MemberTestUtils.createMember(memberId);
         Place place = PlaceTestUtils.createPlace(2L, "2");
         Review findReview = ReviewTestUtils.createReviewWithKeywordsAndImages(reviewId, loginMember, place);
-        given(memberService.findEntityById(memberId)).willReturn(loginMember);
+        given(memberService.findById(memberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
         willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
         willDoNothing().given(reviewKeywordRepository).deleteAll(findReview.getKeywords());
         willDoNothing().given(reviewRepository).flush();
-        willDoNothing().given(placeService).renewPlaceTop3Keywords(findReview.getPlace());
+        willDoNothing().given(placeService).renewTop3Keywords(findReview.getPlace());
 
         // when
         sut.delete(memberId, reviewId);
 
         // then
-        then(memberService).should().findEntityById(memberId);
+        then(memberService).should().findById(memberId);
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
         then(reviewImageService).should().softDeleteAll(findReview.getReviewImages());
         then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
         then(reviewRepository).should().flush();
-        then(placeService).should().renewPlaceTop3Keywords(findReview.getPlace());
+        then(placeService).should().renewTop3Keywords(findReview.getPlace());
 
         then(memberService).shouldHaveNoMoreInteractions();
         then(reviewRepository).shouldHaveNoMoreInteractions();
@@ -211,14 +211,14 @@ class ReviewServiceTest {
         Member loginMember = MemberTestUtils.createMember(loginMemberId);
         Member reviewWriter = MemberTestUtils.createMember(reviewWriterId);
         Review findReview = ReviewTestUtils.createReviewWithKeywordsAndImages(reviewId, reviewWriter, place);
-        given(memberService.findEntityById(loginMemberId)).willReturn(loginMember);
+        given(memberService.findById(loginMemberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
 
         // when
         Throwable t = catchThrowable(() -> sut.delete(loginMemberId, reviewId));
 
         // then
-        then(memberService).should().findEntityById(loginMemberId);
+        then(memberService).should().findById(loginMemberId);
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
 
         then(memberService).shouldHaveNoMoreInteractions();

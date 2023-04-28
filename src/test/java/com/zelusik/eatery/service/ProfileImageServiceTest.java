@@ -68,7 +68,7 @@ class ProfileImageServiceTest {
                 .willReturn(Optional.of(profileImage));
 
         // when
-        Optional<ProfileImage> findProfileImage = sut.findEntityByMember(member);
+        Optional<ProfileImage> findProfileImage = sut.findByMember(member);
 
         // then
         then(profileImageRepository).should().findByMemberAndDeletedAtIsNull(member);
