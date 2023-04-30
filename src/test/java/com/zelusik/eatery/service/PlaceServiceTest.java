@@ -1,19 +1,21 @@
 package com.zelusik.eatery.service;
 
 import com.zelusik.eatery.constant.place.DayOfWeek;
+import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.dto.place.OpeningHoursTimeDto;
 import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingInfo;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.exception.place.PlaceNotFoundException;
+import com.zelusik.eatery.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
-import com.zelusik.eatery.exception.place.PlaceNotFoundException;
-import com.zelusik.eatery.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -314,6 +316,26 @@ class PlaceServiceTest {
         then(placeRepository).shouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
+    }
+
+    @DisplayName("내가 저장한 장소들에 대한 filtering keyword를 조회하면, 검색된 결과(List)가 반환된다.")
+    @Test
+    void given_whenGetFilteringKeywords_thenReturnFilteringKeywords() {
+        // given
+        long memberId = 1L;
+        given(placeRepository.getFilteringKeywords(memberId))
+                .willReturn(List.of(
+                        PlaceFilteringKeywordDto.of("연남동", 5, FilteringType.ADDRESS),
+                        PlaceFilteringKeywordDto.of("신선한 재료", 3, FilteringType.TOP_3_KEYWORDS)
+                ));
+
+        // when
+        List<PlaceFilteringKeywordDto> filteringKeywords = sut.getFilteringKeywords(memberId);
+
+        // then
+        then(placeRepository).should().getFilteringKeywords(memberId);
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        assertThat(filteringKeywords.size()).isEqualTo(2);
     }
 
     @DisplayName("장소가 주어지고, 장소의 top 3 keyword를 갱신하면, 업데이트한다.")

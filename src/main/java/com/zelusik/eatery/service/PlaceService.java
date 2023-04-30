@@ -5,10 +5,7 @@ import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.dto.place.OpeningHoursTimeDto;
-import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
-import com.zelusik.eatery.dto.place.PlaceScrapingInfo;
+import com.zelusik.eatery.dto.place.*;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
@@ -136,6 +133,16 @@ public class PlaceService {
      */
     public Slice<PlaceDtoWithImages> findMarkedDtos(Long memberId, Pageable pageable) {
         return placeRepository.findMarked(memberId, pageable);
+    }
+
+    /**
+     * {@code memberId}에 해당하는 회원의 저장한 장소들에 대해 filtering keyword 목록을 조회한다.
+     *
+     * @param memberId filtering keywords를 조회하고자 하는 회원의 PK
+     * @return 조회된 filtering keywords
+     */
+    public List<PlaceFilteringKeywordDto> getFilteringKeywords(Long memberId) {
+        return placeRepository.getFilteringKeywords(memberId);
     }
 
     /**

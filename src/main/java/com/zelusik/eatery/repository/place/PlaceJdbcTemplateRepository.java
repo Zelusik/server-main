@@ -3,6 +3,7 @@ package com.zelusik.eatery.repository.place;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -31,4 +32,12 @@ public interface PlaceJdbcTemplateRepository {
      * @return 조회된 장소 목록(Slice)
      */
     Slice<PlaceDtoWithImages> findMarked(Long memberId, Pageable pageable);
+
+    /**
+     * 북마크에 저장한 장소들에 대해 filtering keywords를 조회한다.
+     *
+     * @param memberId filtering keyword 목록을 조회하고자 하는 회원의 PK
+     * @return 조회된 filtering keywords
+     */
+    List<PlaceFilteringKeywordDto> getFilteringKeywords(Long memberId);
 }

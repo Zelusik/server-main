@@ -4,12 +4,9 @@ import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
-import com.zelusik.eatery.dto.place.response.MarkedPlaceResponse;
-import com.zelusik.eatery.dto.place.response.PlaceCompactResponseWithImages;
-import com.zelusik.eatery.dto.place.response.PlaceResponse;
-import com.zelusik.eatery.dto.place.response.PlaceResponseWithImages;
-import com.zelusik.eatery.service.PlaceService;
+import com.zelusik.eatery.dto.place.response.*;
 import com.zelusik.eatery.security.UserPrincipal;
+import com.zelusik.eatery.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -146,5 +143,21 @@ public class PlaceController {
                         PageRequest.of(page, size)
                 ).map(MarkedPlaceResponse::from)
         );
+    }
+
+    @Operation(
+            summary = "저장한 장소들에 대한 필터링 키워드 조회",
+            description = "<p>저장한 장소들에 대한 필터링 키워드를 조회합니다." +
+                    "<p>필터링 키워드에 대한 설명은 <strong><a href=\"https://www.notion.so/asdfqweasd/f6f39969ea1e48f8afee61e696e4d038?pvs=4\">[노션]데이터</a> - MY 저장 페이지: 상단버튼</strong>을 참고해주세요.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/bookmarks/filtering-keywords")
+    public PlaceFilteringKeywordListResponse getFilteringKeywords(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        List<PlaceFilteringKeywordResponse> filteringKeywords = placeService.getFilteringKeywords(userPrincipal.getMemberId()).stream()
+                .map(PlaceFilteringKeywordResponse::from)
+                .toList();
+        return PlaceFilteringKeywordListResponse.of(filteringKeywords);
     }
 }
