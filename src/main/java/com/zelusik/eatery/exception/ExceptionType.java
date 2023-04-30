@@ -126,8 +126,8 @@ public enum ExceptionType {
     /**
      * 장소({@link Place}) 관련 예외
      */
-    OPENING_HOURS_UNEXPECTED_FORMAT(3000, "가게 영업시간이 처리할 수 없는 형태입니다. 서버 관리자에게 문의해주세요.게", OpeningHoursUnexpectedFormatException.class),
-    PLACE_NOT_FOUND(3001, "가게를 찾을 수 없습니다.", PlaceNotFoundException.class),
+    OPENING_HOURS_UNEXPECTED_FORMAT(3000, "장소 영업시간이 처리할 수 없는 형태입니다. 서버 관리자에게 문의해주세요.게", OpeningHoursUnexpectedFormatException.class),
+    PLACE_NOT_FOUND(3001, "장소를 찾을 수 없습니다.", PlaceNotFoundException.class),
     NOT_ACCEPTABLE_PLACE_SEARCH_KEYWORD(3002, "유효하지 않은 검색 키워드입니다.", NotAcceptablePlaceSearchKeyword.class),
     NOT_ACCEPTABLE_FOOD_CATEGORY(3003, "유효하지 않은 음식 카테고리입니다.", NotAcceptableFoodCategory.class),
 

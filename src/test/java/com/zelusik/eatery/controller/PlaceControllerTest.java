@@ -1,8 +1,10 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.config.SecurityConfig;
+import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.security.UserPrincipal;
@@ -116,5 +118,26 @@ class PlaceControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true))
                 .andExpect(jsonPath("$.numOfElements").value(1));
+    }
+
+    @DisplayName("내가 저장한 장소들에 대한 filtering keyword를 조회하면, 조회 결과가 응답된다.")
+    @Test
+    void given_whenGetFilteringKeywords_thenReturnFilteringKeywords() throws Exception {
+        // given
+        long memberId = 1L;
+        given(placeService.getFilteringKeywords(memberId))
+                .willReturn(List.of(
+                        PlaceFilteringKeywordDto.of("연남동", 5, FilteringType.ADDRESS),
+                        PlaceFilteringKeywordDto.of("신선한 재료", 3, FilteringType.TOP_3_KEYWORDS)
+                ));
+
+        // when & then
+        mvc.perform(
+                        get("/api/places/bookmarks/filtering-keywords")
+                                .with(csrf())
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId))))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.keywords").isArray());
     }
 }
