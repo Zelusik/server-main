@@ -25,7 +25,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-@Tag(name = "가게 관련 API")
+@Tag(name = "장소 관련 API")
 @RequiredArgsConstructor
 @RequestMapping("/api/places")
 @RestController
@@ -34,14 +34,14 @@ public class PlaceController {
     private final PlaceService placeService;
 
     @Operation(
-            summary = "가게 저장",
+            summary = "장소 저장",
             description = "장소 정보를 전달받아 장소를 서버에 저장합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
             @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
             @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 스크래핑 할 Flask 서버에서 에러가 발생한 경우.", responseCode = "500", content = @Content),
-            @ApiResponse(description = "[3000] 상세 페이지에서 읽어온 가게 영업시간이 처리할 수 없는 형태일 경우.", responseCode = "500", content = @Content)
+            @ApiResponse(description = "[3000] 상세 페이지에서 읽어온 장소 영업시간이 처리할 수 없는 형태일 경우.", responseCode = "500", content = @Content)
     })
     @PostMapping
     public ResponseEntity<PlaceResponse> save(
@@ -56,13 +56,13 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "가게 단건 조회",
-            description = "가게의 PK를 받아 해당하는 가게 정보를 조회합니다.",
+            summary = "장소 단건 조회",
+            description = "장소의 PK를 받아 해당하는 장소 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
-            @ApiResponse(description = "[3001] 찾고자 하는 가게가 존재하지 않는 경우", responseCode = "404", content = @Content)
+            @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping("/{placeId}")
     public PlaceResponseWithImages find(
@@ -73,9 +73,9 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "주변 가게 검색 (거리순 정렬)",
-            description = "<p>중심 좌표를 받아 중심 좌표에서 가까운 가게들을 검색합니다." +
-                    "<p>주변 3km 내에 있는 가게만 우선적으로 검색하며, 3km 이내에 아무런 가게가 없다면 10km로 검색 범위를 확대해 다시 검색합니다." +
+            summary = "주변 장소 검색 (거리순 정렬)",
+            description = "<p>중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다." +
+                    "<p>주변 3km 내에 있는 장소만 우선적으로 검색하며, 3km 이내에 아무런 장소가 없다면 10km로 검색 범위를 확대해 다시 검색합니다." +
                     "<p>요청 데이터 중 <code>daysOfWeek</code>가 없으면 전체 날짜에 대해, <code>keyword</code>가 없으면 전체 약속 상황에 대해 검색합니다." +
                     "<p>현재 \"약속 상황\" 필터링은 미구현 상태입니다. (구현 예정)",
             security = @SecurityRequirement(name = "access-token")
