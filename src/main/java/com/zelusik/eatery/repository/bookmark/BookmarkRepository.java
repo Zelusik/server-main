@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface BookmarkRepository extends
         JpaRepository<Bookmark, Long>,
-        BookmarkJdbcTemplateRepository {
+        BookmarkRepositoryJCustom {
 
     boolean existsByMember_IdAndPlace_Id(Long memberId, Long placeId);
 

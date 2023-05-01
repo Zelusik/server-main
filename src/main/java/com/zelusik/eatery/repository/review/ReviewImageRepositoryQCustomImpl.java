@@ -2,7 +2,6 @@ package com.zelusik.eatery.repository.review;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.domain.review.QReviewImage;
 import com.zelusik.eatery.domain.review.ReviewImage;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +12,7 @@ import static com.zelusik.eatery.domain.review.QReview.review;
 import static com.zelusik.eatery.domain.review.QReviewImage.reviewImage;
 
 @RequiredArgsConstructor
-public class ReviewImageQuerydslRepositoryImpl implements ReviewImageQuerydslRepository {
+public class ReviewImageRepositoryQCustomImpl implements ReviewImageRepositoryQCustom {
 
     private final JPAQueryFactory queryFactory;
 

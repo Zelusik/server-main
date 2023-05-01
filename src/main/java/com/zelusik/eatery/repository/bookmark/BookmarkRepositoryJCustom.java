@@ -2,7 +2,7 @@ package com.zelusik.eatery.repository.bookmark;
 
 import java.util.List;
 
-public interface BookmarkJdbcTemplateRepository {
+public interface BookmarkRepositoryJCustom {
 
     List<Long> findAllMarkedPlaceId(Long memberId);
 }

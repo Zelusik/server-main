@@ -7,11 +7,11 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import javax.sql.DataSource;
 import java.util.List;
 
-public class BookmarkJdbcTemplateRepositoryImpl implements BookmarkJdbcTemplateRepository {
+public class BookmarkRepositoryJCustomImpl implements BookmarkRepositoryJCustom {
 
     private final NamedParameterJdbcTemplate template;
 
-    public BookmarkJdbcTemplateRepositoryImpl(DataSource dataSource) {
+    public BookmarkRepositoryJCustomImpl(DataSource dataSource) {
         this.template = new NamedParameterJdbcTemplate(dataSource);
     }
 

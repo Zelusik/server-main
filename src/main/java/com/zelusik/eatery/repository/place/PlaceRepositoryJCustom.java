@@ -9,7 +9,7 @@ import org.springframework.data.domain.Slice;
 
 import java.util.List;
 
-public interface PlaceJdbcTemplateRepository {
+public interface PlaceRepositoryJCustom {
 
     /**
      * 중심 좌표 기준, 가까운 순으로 장소 목록을 조회한다.
