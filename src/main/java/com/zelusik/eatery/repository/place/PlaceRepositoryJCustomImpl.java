@@ -29,12 +29,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class PlaceJdbcTemplateRepositoryImpl implements PlaceJdbcTemplateRepository {
+public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
     private final NamedParameterJdbcTemplate template;
     private final BookmarkRepository bookmarkRepository;
 
-    public PlaceJdbcTemplateRepositoryImpl(
+    public PlaceRepositoryJCustomImpl(
             DataSource dataSource,
             BookmarkRepository bookmarkRepository
     ) {

@@ -4,7 +4,7 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 
 import java.util.List;
 
-public interface ReviewKeywordJdbcTemplateRepository {
+public interface ReviewKeywordRepositoryJCustom {
 
     /**
      * 특정 장소에 대한 top 3 keywords를 DB에서 계산하여 조회한다.

@@ -5,7 +5,7 @@ import com.zelusik.eatery.domain.review.ReviewImage;
 
 import java.util.List;
 
-public interface ReviewImageQuerydslRepository {
+public interface ReviewImageRepositoryQCustom {
 
     List<ReviewImage> findLatest3ByPlace(Place place);
 }

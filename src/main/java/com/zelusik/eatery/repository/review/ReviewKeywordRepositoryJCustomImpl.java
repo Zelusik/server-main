@@ -8,11 +8,11 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import javax.sql.DataSource;
 import java.util.List;
 
-public class ReviewKeywordJdbcTemplateRepositoryImpl implements ReviewKeywordJdbcTemplateRepository {
+public class ReviewKeywordRepositoryJCustomImpl implements ReviewKeywordRepositoryJCustom {
 
     private final NamedParameterJdbcTemplate template;
 
-    public ReviewKeywordJdbcTemplateRepositoryImpl(DataSource dataSource) {
+    public ReviewKeywordRepositoryJCustomImpl(DataSource dataSource) {
         this.template = new NamedParameterJdbcTemplate(dataSource);
     }
 
