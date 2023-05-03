@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -120,6 +121,22 @@ public class PlaceController {
     }
 
     @Operation(
+            summary = "저장한 장소들에 대한 필터링 키워드 조회",
+            description = "<p>저장한 장소들에 대한 필터링 키워드를 조회합니다." +
+                    "<p>필터링 키워드에 대한 설명은 <strong><a href=\"https://www.notion.so/asdfqweasd/f6f39969ea1e48f8afee61e696e4d038?pvs=4\">[노션]데이터</a> - MY 저장 페이지: 상단버튼</strong>을 참고해주세요.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/bookmarks/filtering-keywords")
+    public PlaceFilteringKeywordListResponse getFilteringKeywords(
+            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        List<PlaceFilteringKeywordResponse> filteringKeywords = placeService.getFilteringKeywords(userPrincipal.getMemberId()).stream()
+                .map(PlaceFilteringKeywordResponse::from)
+                .toList();
+        return PlaceFilteringKeywordListResponse.of(filteringKeywords);
+    }
+
+    @Operation(
             summary = "북마크에 저장한 장소 조회",
             description = "<p>북마크에 저장한 장소들을 조회합니다." +
                     "<p>정렬 기준은 최근에 북마크에 저장한 순서입니다.",
@@ -137,27 +154,10 @@ public class PlaceController {
                     example = "20"
             ) @RequestParam(required = false, defaultValue = "20") int size
     ) {
-        return new SliceResponse<MarkedPlaceResponse>().from(
-                placeService.findMarkedDtos(
-                        userPrincipal.getMemberId(),
-                        PageRequest.of(page, size)
-                ).map(MarkedPlaceResponse::from)
-        );
-    }
-
-    @Operation(
-            summary = "저장한 장소들에 대한 필터링 키워드 조회",
-            description = "<p>저장한 장소들에 대한 필터링 키워드를 조회합니다." +
-                    "<p>필터링 키워드에 대한 설명은 <strong><a href=\"https://www.notion.so/asdfqweasd/f6f39969ea1e48f8afee61e696e4d038?pvs=4\">[노션]데이터</a> - MY 저장 페이지: 상단버튼</strong>을 참고해주세요.",
-            security = @SecurityRequirement(name = "access-token")
-    )
-    @GetMapping("/bookmarks/filtering-keywords")
-    public PlaceFilteringKeywordListResponse getFilteringKeywords(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal
-    ) {
-        List<PlaceFilteringKeywordResponse> filteringKeywords = placeService.getFilteringKeywords(userPrincipal.getMemberId()).stream()
-                .map(PlaceFilteringKeywordResponse::from)
-                .toList();
-        return PlaceFilteringKeywordListResponse.of(filteringKeywords);
+        Slice<MarkedPlaceResponse> markedPlaces = placeService.findMarkedDtos(
+                userPrincipal.getMemberId(),
+                PageRequest.of(page, size)
+        ).map(MarkedPlaceResponse::from);
+        return new SliceResponse<MarkedPlaceResponse>().from(markedPlaces);
     }
 }

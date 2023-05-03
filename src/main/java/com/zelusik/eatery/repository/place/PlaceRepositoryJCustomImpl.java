@@ -43,7 +43,15 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable) {
+    public Slice<PlaceDtoWithImages> findDtosNearBy(
+            Long memberId,
+            List<DayOfWeek> daysOfWeek,
+            PlaceSearchKeyword keyword,
+            String lat,
+            String lng,
+            int distanceLimit,
+            Pageable pageable
+    ) {
         StringBuilder sql = new StringBuilder("select p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ")
                 .append("ri1.review_image_id as ri1_review_image_id, ri1.review_id as ri1_review_id, ri1.original_name as ri1_original_name, ri1.stored_name as ri1_stored_name, ri1.url as ri1_url, ri1.thumbnail_stored_name as ri1_thumbnail_stored_name, ri1.thumbnail_url as ri1_thumbnail_url, ri1.created_at as ri1_created_at, ri1.updated_at as ri1_updated_at, ri1.deleted_at as ri1_deleted_at, ")
                 .append("ri2.review_image_id as ri2_review_image_id, ri2.review_id as ri2_review_id, ri2.original_name as ri2_original_name, ri2.stored_name as ri2_stored_name, ri2.url as ri2_url, ri2.thumbnail_stored_name as ri2_thumbnail_stored_name, ri2.thumbnail_url as ri2_thumbnail_url, ri2.created_at as ri2_created_at, ri2.updated_at as ri2_updated_at, ri2.deleted_at as ri2_deleted_at, ")
@@ -322,6 +330,40 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         return template.query(query, params, placeTop3KeywordFilteringKeywordRowMapper());
     }
 
+    private List<ReviewImageDto> getRecent3ReviewImageDtosOrderByLatest(ResultSet rs) throws SQLException {
+        List<ReviewImageDto> reviewImageDtos = new ArrayList<>();
+
+        for (int i = 1; i <= 3; i++) {
+            ReviewImageDto ri = getReviewImageDtoByAlias(rs, "ri" + i);
+            if (ri != null) {
+                reviewImageDtos.add(ri);
+            }
+        }
+
+        return reviewImageDtos;
+    }
+
+    private ReviewImageDto getReviewImageDtoByAlias(ResultSet rs, String alias) throws SQLException {
+        long reviewImageId = rs.getLong(alias + "_review_image_id");
+
+        if (reviewImageId == 0) {
+            return null;
+        }
+
+        return ReviewImageDto.of(
+                reviewImageId,
+                rs.getLong(alias + "_review_id"),
+                rs.getString(alias + "_original_name"),
+                rs.getString(alias + "_stored_name"),
+                rs.getString(alias + "_url"),
+                rs.getString(alias + "_thumbnail_stored_name"),
+                rs.getString(alias + "_thumbnail_url"),
+                rs.getTimestamp(alias + "_created_at").toLocalDateTime(),
+                rs.getTimestamp(alias + "_updated_at").toLocalDateTime(),
+                rs.getTimestamp(alias + "_deleted_at") == null ? null : rs.getTimestamp(alias + "_deleted_at").toLocalDateTime()
+        );
+    }
+
     private RowMapper<PlaceDtoWithImages> placeDtoWithImagesRowMapper(Long memberId) {
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
 
@@ -357,46 +399,12 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                     ),
                     rs.getString("closing_hours"),
                     null,
-                    getTop3ReviewImageDtosOrderByLatest(rs),
+                    getRecent3ReviewImageDtosOrderByLatest(rs),
                     isMarked,
                     rs.getTimestamp("created_at").toLocalDateTime(),
                     rs.getTimestamp("updated_at").toLocalDateTime()
             );
         };
-    }
-
-    private List<ReviewImageDto> getTop3ReviewImageDtosOrderByLatest(ResultSet rs) throws SQLException {
-        List<ReviewImageDto> reviewImageDtos = new ArrayList<>();
-
-        for (int i = 1; i <= 3; i++) {
-            ReviewImageDto ri = getReviewImageDtoByAlias(rs, "ri" + i);
-            if (ri != null) {
-                reviewImageDtos.add(ri);
-            }
-        }
-
-        return reviewImageDtos;
-    }
-
-    private ReviewImageDto getReviewImageDtoByAlias(ResultSet rs, String alias) throws SQLException {
-        long reviewImageId = rs.getLong(alias + "_review_image_id");
-
-        if (reviewImageId == 0) {
-            return null;
-        }
-
-        return ReviewImageDto.of(
-                reviewImageId,
-                rs.getLong(alias + "_review_id"),
-                rs.getString(alias + "_original_name"),
-                rs.getString(alias + "_stored_name"),
-                rs.getString(alias + "_url"),
-                rs.getString(alias + "_thumbnail_stored_name"),
-                rs.getString(alias + "_thumbnail_url"),
-                rs.getTimestamp(alias + "_created_at").toLocalDateTime(),
-                rs.getTimestamp(alias + "_updated_at").toLocalDateTime(),
-                rs.getTimestamp(alias + "_deleted_at") == null ? null : rs.getTimestamp(alias + "_deleted_at").toLocalDateTime()
-        );
     }
 
     private RowMapper<PlaceFilteringKeywordDto> placeFilteringKeywordRowMapper(FilteringType filteringType) {
