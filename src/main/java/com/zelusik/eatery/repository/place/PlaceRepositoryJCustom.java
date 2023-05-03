@@ -31,7 +31,7 @@ public interface PlaceRepositoryJCustom {
      * @param pageable paging 정보
      * @return 조회된 장소 목록(Slice)
      */
-    Slice<PlaceDtoWithImages> findMarked(Long memberId, Pageable pageable);
+    Slice<PlaceDtoWithImages> findMarkedPlaces(Long memberId, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소들에 대해 filtering keywords를 조회한다.

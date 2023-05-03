@@ -132,7 +132,7 @@ public class PlaceService {
      * @return 조회한 장소 목록과 사진 데이터
      */
     public Slice<PlaceDtoWithImages> findMarkedDtos(Long memberId, Pageable pageable) {
-        return placeRepository.findMarked(memberId, pageable);
+        return placeRepository.findMarkedPlaces(memberId, pageable);
     }
 
     /**

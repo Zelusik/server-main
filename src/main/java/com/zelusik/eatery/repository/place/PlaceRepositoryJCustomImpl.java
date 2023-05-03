@@ -105,7 +105,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDtoWithImages> findMarked(Long memberId, Pageable pageable) {
+    public Slice<PlaceDtoWithImages> findMarkedPlaces(Long memberId, Pageable pageable) {
         String sql = """
                 select p.place_id,
                        p.top3keywords,
