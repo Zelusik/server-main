@@ -297,6 +297,29 @@ class PlaceServiceTest {
         assertThat(actualPlace).isEmpty();
     }
 
+    @DisplayName("필터링 조건이 주어지고, 북마크에 저장한 장소들을 조회하면, 저장된 장소들이 반환된다.")
+    @Test
+    void givenFilteringCondition_whenFindingMarkedPlaces_thenReturnMarkedPlaces() {
+        // given
+        long memberId = 1L;
+        long placeId = 2L;
+        FilteringType filteringType = FilteringType.CATEGORY;
+        String filteringKeyword = "고기,육류";
+        Pageable pageable = Pageable.ofSize(30);
+        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours(placeId)));
+        given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable))
+                .willReturn(expectedResult);
+
+        // when
+        Slice<PlaceDtoWithImages> actualResult = sut.findMarkedDtos(memberId, filteringType, filteringKeyword, pageable);
+
+        // then
+        then(placeRepository).should().findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
+        assertThat(actualResult.getContent().get(0).getId()).isEqualTo(placeId);
+    }
+
     @DisplayName("장소들이 존재하고, 중심 좌표 근처의 장소를 조회하면, 거리순으로 정렬된 장소 목록을 반환한다.")
     @Test
     void givenPlaces_whenFindNearBy_thenReturnPlaceSliceSortedByDistance() {

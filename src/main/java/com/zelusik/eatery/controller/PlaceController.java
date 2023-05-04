@@ -1,7 +1,9 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.constant.place.DayOfWeek;
+import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.place.response.*;
@@ -146,6 +148,19 @@ public class PlaceController {
     public SliceResponse<MarkedPlaceResponse> findMarkedPlaces(
             @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
+                    description = "<p>Filtering 조건 유형. 값은 다음과 같습니다." +
+                            "<ul>" +
+                            "<li><code>CATEGORY</code>: 음식 카테고리 (second category)</li>" +
+                            "<li><code>TOP_3_KEYWORDS</code>: 장소의 top 3 keyword</li>" +
+                            "<li><code>ADDRESS</code>: 장소의 주소 (ex. 영통구, 연남동 등)</li>" +
+                            "</ul>",
+                    example = "CATEGORY"
+            ) @RequestParam(required = false, defaultValue = "NONE") FilteringType type,
+            @Parameter(
+                    description = "<p>필터링 키워드 조회 API(<code>/api/places/bookmarks/filtering-keywords</code>)에서 전달받은 filtering keyword",
+                    example = "육류,고기"
+            ) @RequestParam(required = false) String keyword,
+            @Parameter(
                     description = "페이지 번호(0부터 시작합니다). 기본값은 0입니다.",
                     example = "0"
             ) @RequestParam(required = false, defaultValue = "0") int page,
@@ -154,9 +169,19 @@ public class PlaceController {
                     example = "20"
             ) @RequestParam(required = false, defaultValue = "20") int size
     ) {
+        if (type == FilteringType.TOP_3_KEYWORDS) {
+            keyword = ReviewKeywordValue.valueOfDescription(keyword).toString();
+        }
+
+        System.out.println("userPrincipal.getMemberId() = " + userPrincipal.getMemberId());
+        System.out.println("userPrincipal.getMemberId().getClass() = " + userPrincipal.getMemberId().getClass());
+        System.out.println("type = " + type);
+        System.out.println("type.getClass() = " + type.getClass());
+        System.out.println("keyword = " + keyword);
+        System.out.println("keyword.getClass() = " + keyword.getClass());
+        
         Slice<MarkedPlaceResponse> markedPlaces = placeService.findMarkedDtos(
-                userPrincipal.getMemberId(),
-                PageRequest.of(page, size)
+                userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size)
         ).map(MarkedPlaceResponse::from);
         return new SliceResponse<MarkedPlaceResponse>().from(markedPlaces);
     }

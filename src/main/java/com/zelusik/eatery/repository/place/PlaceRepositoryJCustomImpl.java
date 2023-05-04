@@ -83,8 +83,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .append("ri3.review_image_id, ri3.review_id, ri3.original_name, ri3.stored_name, ri3.url, ri3.thumbnail_stored_name, ri3.thumbnail_url, ri3.created_at, ri3.updated_at, ri3.deleted_at ")
                 .append("HAVING distance <= :distance_limit ")
                 .append("ORDER BY distance ")
-                .append("LIMIT :size_of_page ")
-                .append("OFFSET :offset");
+                .append("LIMIT :size_of_page OFFSET :offset;");
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("lat", lat)
@@ -105,7 +104,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDtoWithImages> findMarkedPlaces(Long memberId, Pageable pageable) {
+    public Slice<PlaceDtoWithImages> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
         String sql = """
                 SELECT p.place_id,
                        p.top3keywords,
@@ -181,10 +180,17 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                                                                               ORDER BY r.created_at DESC
                                                                               LIMIT 1 OFFSET 2)
                 WHERE bm.member_id = :member_id
-                ORDER BY bm.created_at DESC
-                LIMIT :size_of_page
-                OFFSET :offset;
                 """;
+
+        sql += switch (filteringType) {
+            case CATEGORY -> "AND p.second_category = '" + filteringKeyword + "' ";
+            case TOP_3_KEYWORDS -> "AND p.top3keywords LIKE '%" + filteringKeyword + "%' ";
+            case ADDRESS -> "AND p.lot_number_address LIKE '%" + filteringKeyword + "%' ";
+            case NONE -> "";
+        };
+
+        sql += "ORDER BY bm.created_at DESC ";
+        sql += "LIMIT :size_of_page OFFSET :offset;";
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("member_id", memberId)

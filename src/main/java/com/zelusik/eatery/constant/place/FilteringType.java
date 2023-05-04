@@ -7,8 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
         "<li><code>CATEGORY</code>: 음식 카테고리 (second category)</li>" +
         "<li><code>TOP_3_KEYWORDS</code>: 장소의 top 3 keyword</li>" +
         "<li><code>ADDRESS</code>: 장소의 주소 (ex. 영통구, 연남동 등)</li>" +
-        "</ul",
+        "</ul>",
         example = "ADDRESS")
 public enum FilteringType {
-    CATEGORY, TOP_3_KEYWORDS, ADDRESS
+    CATEGORY, TOP_3_KEYWORDS, ADDRESS, NONE
 }

@@ -31,6 +31,7 @@ import static com.zelusik.eatery.constant.place.DayOfWeek.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -139,5 +140,32 @@ class PlaceControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.keywords").isArray());
+    }
+
+    @DisplayName("필터링 조건이 주어지고, 북마크에 저장한 장소들을 조회하면, 저장된 장소들이 반환된다.")
+    @Test
+    void givenFilteringConditions_whenFindingMarkedPlaces_thenReturnMarkedPlaces() throws Exception {
+        // given
+        long memberId = 1L;
+        long placeId = 2L;
+        FilteringType filteringType = FilteringType.TOP_3_KEYWORDS;
+        String filteringKeywordDescription = "신선한 재료";
+        String filteringKeyword = "FRESH";
+        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours(placeId)));
+        given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class)))
+                .willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(get("/api/places/bookmarks")
+                        .queryParam("type", filteringType.toString())
+                        .queryParam("keyword", filteringKeywordDescription)
+                        .with(csrf())
+                        .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId))))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents").isArray())
+                .andExpect(jsonPath("$.size").value(1));
+        then(placeService).should().findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class));
+        then(placeService).shouldHaveNoMoreInteractions();
     }
 }
