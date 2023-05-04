@@ -303,7 +303,7 @@ class PlaceServiceTest {
         // given
         long memberId = 1L;
         long placeId = 2L;
-        FilteringType filteringType = FilteringType.CATEGORY;
+        FilteringType filteringType = FilteringType.SECOND_CATEGORY;
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours(placeId)));

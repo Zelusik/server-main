@@ -150,7 +150,8 @@ public class PlaceController {
             @Parameter(
                     description = "<p>Filtering 조건 유형. 값은 다음과 같습니다." +
                             "<ul>" +
-                            "<li><code>CATEGORY</code>: 음식 카테고리 (second category)</li>" +
+                            "<li><code>FIRST_CATEGORY</code>: 음식 카테고리(first category). 한식, 일식 등)</li>" +
+                            "<li><code>SECOND_CATEGORY</code>: 음식 카테고리(second category) 햄버거, 피자, 국밥 등</li>" +
                             "<li><code>TOP_3_KEYWORDS</code>: 장소의 top 3 keyword</li>" +
                             "<li><code>ADDRESS</code>: 장소의 주소 (ex. 영통구, 연남동 등)</li>" +
                             "</ul>",
@@ -172,14 +173,6 @@ public class PlaceController {
         if (type == FilteringType.TOP_3_KEYWORDS) {
             keyword = ReviewKeywordValue.valueOfDescription(keyword).toString();
         }
-
-        System.out.println("userPrincipal.getMemberId() = " + userPrincipal.getMemberId());
-        System.out.println("userPrincipal.getMemberId().getClass() = " + userPrincipal.getMemberId().getClass());
-        System.out.println("type = " + type);
-        System.out.println("type.getClass() = " + type.getClass());
-        System.out.println("keyword = " + keyword);
-        System.out.println("keyword.getClass() = " + keyword.getClass());
-        
         Slice<MarkedPlaceResponse> markedPlaces = placeService.findMarkedDtos(
                 userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size)
         ).map(MarkedPlaceResponse::from);

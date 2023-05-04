@@ -183,7 +183,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 """;
 
         sql += switch (filteringType) {
-            case CATEGORY -> "AND p.second_category = '" + filteringKeyword + "' ";
+            case FIRST_CATEGORY -> "AND p.first_category = '" + filteringKeyword + "' ";
+            case SECOND_CATEGORY -> "AND p.second_category = '" + filteringKeyword + "' ";
             case TOP_3_KEYWORDS -> "AND p.top3keywords LIKE '%" + filteringKeyword + "%' ";
             case ADDRESS -> "AND p.lot_number_address LIKE '%" + filteringKeyword + "%' ";
             case NONE -> "";
@@ -214,7 +215,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         int minCount = numOfMarkedPlaces < 20 ? 3 : 5;
 
         List<PlaceFilteringKeywordDto> filteringKeywords = new ArrayList<>();
-        filteringKeywords.addAll(getCategoryFilteringKeywords(memberId, minCount));
+        filteringKeywords.addAll(getFirstCategoryFilteringKeyword(memberId, minCount));
+        filteringKeywords.addAll(getSecondCategoryFilteringKeywords(memberId, minCount));
         filteringKeywords.addAll(getAddressFilteringKeywords(memberId, minCount));
         filteringKeywords.addAll(getTop3KeywordFilteringKeywords(memberId, minCount));
 
@@ -243,13 +245,38 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     /**
+     * 저장된 장소들의 카테고리(first category)에 대해 filtering keywords를 조회한다.
+     *
+     * @param memberId PK of member
+     * @param minCount filtering keyword가 되기 위한 최소 개수 조건. 3 또는 5
+     * @return 조회된 filtering keywords
+     */
+    private List<PlaceFilteringKeywordDto> getFirstCategoryFilteringKeyword(Long memberId, int minCount) {
+        String query = """
+                SELECT p.first_category        AS keyword,
+                       COUNT(p.first_category) AS cnt
+                FROM bookmark bm
+                         JOIN place p ON bm.place_id = p.place_id
+                WHERE bm.member_id = :member_id
+                GROUP BY p.first_category
+                HAVING cnt >= :min_count;
+                """;
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("member_id", memberId)
+                .addValue("min_count", minCount);
+
+        return template.query(query, params, placeFilteringKeywordRowMapper(FilteringType.SECOND_CATEGORY));
+    }
+
+    /**
      * 저장된 장소들의 카테고리(second category)에 대해 filtering keywords를 조회한다.
      *
      * @param memberId PK of member
      * @param minCount filtering keyword가 되기 위한 최소 개수 조건. 3 또는 5
      * @return 조회된 filtering keywords
      */
-    private List<PlaceFilteringKeywordDto> getCategoryFilteringKeywords(Long memberId, int minCount) {
+    private List<PlaceFilteringKeywordDto> getSecondCategoryFilteringKeywords(Long memberId, int minCount) {
         String query = """
                 SELECT p.second_category        AS keyword,
                        COUNT(p.second_category) AS cnt
@@ -265,7 +292,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("member_id", memberId)
                 .addValue("min_count", minCount);
 
-        return template.query(query, params, placeFilteringKeywordRowMapper(FilteringType.CATEGORY));
+        return template.query(query, params, placeFilteringKeywordRowMapper(FilteringType.SECOND_CATEGORY));
     }
 
     /**
