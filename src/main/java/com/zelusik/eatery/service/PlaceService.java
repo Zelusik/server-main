@@ -1,6 +1,7 @@
 package com.zelusik.eatery.service;
 
 import com.zelusik.eatery.constant.place.DayOfWeek;
+import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
@@ -131,8 +132,8 @@ public class PlaceService {
      * @param pageable paging 정보
      * @return 조회한 장소 목록과 사진 데이터
      */
-    public Slice<PlaceDtoWithImages> findMarkedDtos(Long memberId, Pageable pageable) {
-        return placeRepository.findMarked(memberId, pageable);
+    public Slice<PlaceDtoWithImages> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+        return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
     }
 
     /**
