@@ -172,14 +172,6 @@ public class PlaceController {
         if (type == FilteringType.TOP_3_KEYWORDS) {
             keyword = ReviewKeywordValue.valueOfDescription(keyword).toString();
         }
-
-        System.out.println("userPrincipal.getMemberId() = " + userPrincipal.getMemberId());
-        System.out.println("userPrincipal.getMemberId().getClass() = " + userPrincipal.getMemberId().getClass());
-        System.out.println("type = " + type);
-        System.out.println("type.getClass() = " + type.getClass());
-        System.out.println("keyword = " + keyword);
-        System.out.println("keyword.getClass() = " + keyword.getClass());
-        
         Slice<MarkedPlaceResponse> markedPlaces = placeService.findMarkedDtos(
                 userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size)
         ).map(MarkedPlaceResponse::from);
