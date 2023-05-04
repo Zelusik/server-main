@@ -266,7 +266,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("member_id", memberId)
                 .addValue("min_count", minCount);
 
-        return template.query(query, params, placeFilteringKeywordRowMapper(FilteringType.SECOND_CATEGORY));
+        return template.query(query, params, placeFilteringKeywordRowMapper(FilteringType.FIRST_CATEGORY));
     }
 
     /**
