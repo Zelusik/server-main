@@ -221,11 +221,11 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         filteringKeywords.addAll(getSecondCategoryFilteringKeywords(memberId, minCount));
         filteringKeywords.addAll(getAddressFilteringKeywords(memberId, minCount));
         filteringKeywords.addAll(getTop3KeywordFilteringKeywords(memberId, minCount));
+        filteringKeywords.sort(Comparator.comparing(PlaceFilteringKeywordDto::getCount));
 
-        return filteringKeywords.stream()
-                .sorted(Comparator.comparing(PlaceFilteringKeywordDto::getCount).reversed())
-                .toList()
-                .subList(0, MAX_NUM_OF_FILTERING_KEYWORDS);
+        return filteringKeywords.size() < MAX_NUM_OF_FILTERING_KEYWORDS
+                ? filteringKeywords
+                : filteringKeywords.subList(0, MAX_NUM_OF_FILTERING_KEYWORDS);
     }
 
     /**
