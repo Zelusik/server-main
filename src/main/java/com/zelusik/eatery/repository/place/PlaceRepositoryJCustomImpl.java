@@ -29,6 +29,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import static com.zelusik.eatery.constant.ConstantUtil.MAX_NUM_OF_FILTERING_KEYWORDS;
+
 public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
     private final NamedParameterJdbcTemplate template;
@@ -222,7 +224,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
         return filteringKeywords.stream()
                 .sorted(Comparator.comparing(PlaceFilteringKeywordDto::getCount).reversed())
-                .toList();
+                .toList()
+                .subList(0, MAX_NUM_OF_FILTERING_KEYWORDS);
     }
 
     /**
