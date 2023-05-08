@@ -47,7 +47,7 @@ public class MemberController {
     })
     @PostMapping("/terms")
     public ResponseEntity<TermsInfoResponse> agree(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody TermsAgreeRequest request
     ) {
         TermsInfoResponse response = TermsInfoResponse.from(memberService.agreeToTerms(userPrincipal.getMemberId(), request));
@@ -64,7 +64,7 @@ public class MemberController {
     )
     @GetMapping
     public MemberResponse getMyInfo(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         return MemberResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
     }
@@ -78,7 +78,7 @@ public class MemberController {
     )
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public MemberResponse updateMember(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @ModelAttribute MemberUpdateRequest memberUpdateRequest
     ) {
         return MemberResponse.from(
@@ -96,7 +96,7 @@ public class MemberController {
     )
     @PutMapping("/favorite-food")
     public MemberResponse updateFavoriteFoodCategories(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
     ) {
         List<FoodCategory> favoriteFoodCategories = request.getFavoriteFoodCategories().stream()
@@ -112,7 +112,7 @@ public class MemberController {
     )
     @DeleteMapping
     public MemberDeletionSurveyResponse delete(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody MemberDeletionSurveyRequest memberDeletionSurveyRequest
     ) {
         return MemberDeletionSurveyResponse.from(

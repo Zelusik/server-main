@@ -51,7 +51,7 @@ public class ReviewController {
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReviewResponse> create(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ParameterObject @Valid @ModelAttribute ReviewCreateRequest request
     ) {
         ReviewResponse response = ReviewResponse.from(reviewService.create(userPrincipal.getMemberId(), request, request.getImages()));
@@ -97,7 +97,7 @@ public class ReviewController {
     )
     @GetMapping("/feed")
     public SliceResponse<FeedResponse> searchFeed(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
                     example = "0"
@@ -120,7 +120,7 @@ public class ReviewController {
     )
     @GetMapping("/me")
     public SliceResponse<ReviewResponse> searchOfMe(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
                     example = "0"
@@ -147,7 +147,7 @@ public class ReviewController {
     })
     @PatchMapping("/{reviewId}")
     public ReviewResponse update(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "수정할 리뷰의 PK",
                     example = "1"
@@ -168,7 +168,7 @@ public class ReviewController {
     })
     @DeleteMapping("/{reviewId}")
     public void delete(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "삭제할 리뷰의 PK",
                     example = "1"
