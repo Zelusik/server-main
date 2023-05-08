@@ -22,8 +22,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -108,12 +106,8 @@ public class AuthController {
             @ApiResponse(description = "[1502] 유효하지 않은 token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
     })
     @PostMapping("/token")
-    public ResponseEntity<TokenResponse> tokenRefresh(@Valid @RequestBody TokenRefreshRequest request) {
-        TokenResponse tokenResponse = jwtTokenService.refresh(request.getRefreshToken());
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(tokenResponse);
+    public TokenResponse tokenRefresh(@Valid @RequestBody TokenRefreshRequest request) {
+        return jwtTokenService.refresh(request.getRefreshToken());
     }
 
     @Operation(

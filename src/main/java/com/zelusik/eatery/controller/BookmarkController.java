@@ -1,8 +1,8 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.dto.bookmark.response.BookmarkResponse;
-import com.zelusik.eatery.service.BookmarkService;
 import com.zelusik.eatery.security.UserPrincipal;
+import com.zelusik.eatery.service.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,7 +37,7 @@ public class BookmarkController {
     })
     @PostMapping
     public ResponseEntity<BookmarkResponse> mark(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "북마크에 저장하고자 하는 장소의 PK",
                     example = "1"
@@ -61,7 +61,7 @@ public class BookmarkController {
     })
     @DeleteMapping
     public void delete(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "저장된 북마크를 삭제하고자 하는 장소의 PK",
                     example = "1"

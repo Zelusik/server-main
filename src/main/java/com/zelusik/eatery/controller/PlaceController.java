@@ -48,7 +48,7 @@ public class PlaceController {
     })
     @PostMapping
     public ResponseEntity<PlaceResponse> save(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody PlaceCreateRequest request
     ) {
         PlaceResponse response = PlaceResponse.from(placeService.createAndReturnDto(userPrincipal.getMemberId(), request));
@@ -69,7 +69,7 @@ public class PlaceController {
     })
     @GetMapping("/{placeId}")
     public PlaceResponseWithImages find(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long placeId
     ) {
         return PlaceResponseWithImages.from(placeService.findDtoById(userPrincipal.getMemberId(), placeId));
@@ -85,7 +85,7 @@ public class PlaceController {
     )
     @GetMapping("/search")
     public SliceResponse<PlaceCompactResponseWithImages> searchNearBy(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
                     example = "월,화,수"
@@ -130,7 +130,7 @@ public class PlaceController {
     )
     @GetMapping("/bookmarks/filtering-keywords")
     public PlaceFilteringKeywordListResponse getFilteringKeywords(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal
+            @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         List<PlaceFilteringKeywordResponse> filteringKeywords = placeService.getFilteringKeywords(userPrincipal.getMemberId()).stream()
                 .map(PlaceFilteringKeywordResponse::from)
@@ -146,7 +146,7 @@ public class PlaceController {
     )
     @GetMapping("/bookmarks")
     public SliceResponse<MarkedPlaceResponse> findMarkedPlaces(
-            @Parameter(hidden = true) @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "<p>Filtering 조건 유형. 값은 다음과 같습니다." +
                             "<ul>" +
