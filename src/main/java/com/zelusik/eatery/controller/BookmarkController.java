@@ -1,8 +1,8 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.dto.bookmark.response.BookmarkResponse;
-import com.zelusik.eatery.service.BookmarkService;
 import com.zelusik.eatery.security.UserPrincipal;
+import com.zelusik.eatery.service.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
