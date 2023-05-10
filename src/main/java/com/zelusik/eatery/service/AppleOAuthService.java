@@ -3,8 +3,8 @@ package com.zelusik.eatery.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.dto.auth.AppleOAuthPublicKey;
-import com.zelusik.eatery.dto.auth.AppleOAuthUserInfo;
+import com.zelusik.eatery.dto.apple.AppleOAuthPublicKey;
+import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
 import com.zelusik.eatery.exception.auth.AppleOAuthLoginException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import io.jsonwebtoken.Claims;
@@ -48,7 +48,7 @@ public class AppleOAuthService {
      * @param identityToken 회원 정보가 담긴 identity token
      * @return 회원 정보
      */
-    public AppleOAuthUserInfo getUserInfo(String identityToken) {
+    public AppleOAuthUserResponse getUserInfo(String identityToken) {
         Map<String, Object> headerOfIdentityToken;
         try {
             headerOfIdentityToken = new ObjectMapper().readValue(
@@ -73,7 +73,7 @@ public class AppleOAuthService {
             throw new TokenValidateException(ex);
         }
 
-        return AppleOAuthUserInfo.from(claims);
+        return AppleOAuthUserResponse.from(claims);
     }
 
     /**

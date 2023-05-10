@@ -1,8 +1,8 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.dto.auth.AppleOAuthUserInfo;
-import com.zelusik.eatery.dto.auth.KakaoOAuthUserInfo;
+import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
+import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.auth.request.AppleLoginRequest;
 import com.zelusik.eatery.dto.auth.request.KakaoLoginRequest;
 import com.zelusik.eatery.dto.auth.request.TokenRefreshRequest;
@@ -54,7 +54,7 @@ public class AuthController {
     })
     @PostMapping("/login/kakao")
     public LoginResponse kakaoLogin(@Valid @RequestBody KakaoLoginRequest request) {
-        KakaoOAuthUserInfo userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
+        KakaoOAuthUserResponse userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
@@ -83,7 +83,7 @@ public class AuthController {
     })
     @PostMapping("/login/apple")
     public LoginResponse appleLogin(@Valid @RequestBody AppleLoginRequest request) {
-        AppleOAuthUserInfo userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
+        AppleOAuthUserResponse userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName())));

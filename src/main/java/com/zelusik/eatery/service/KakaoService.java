@@ -3,7 +3,7 @@ package com.zelusik.eatery.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.dto.auth.KakaoOAuthUserInfo;
+import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.exception.ErrorResponse;
 import com.zelusik.eatery.exception.kakao.KakaoServerException;
 import com.zelusik.eatery.exception.kakao.KakaoTokenValidateException;
@@ -29,7 +29,7 @@ public class KakaoService {
         this.httpRequestService = httpRequestService;
     }
 
-    public KakaoOAuthUserInfo getUserInfo(String accessToken) {
+    public KakaoOAuthUserResponse getUserInfo(String accessToken) {
         String requestUrl = "https://kapi.kakao.com/v2/user/me";
 
         // HTTP header 생성
@@ -62,7 +62,7 @@ public class KakaoService {
             attributes = Collections.emptyMap();
         }
 
-        return KakaoOAuthUserInfo.from(attributes);
+        return KakaoOAuthUserResponse.from(attributes);
     }
 
     private ErrorResponse getErrorDetails(Exception ex) {

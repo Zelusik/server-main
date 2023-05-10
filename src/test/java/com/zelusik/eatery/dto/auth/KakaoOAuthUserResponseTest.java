@@ -3,6 +3,7 @@ package com.zelusik.eatery.dto.auth;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DisplayName("[DTO] Kakao 사용자 정보 응답 데이터 테스트")
-class KakaoOAuthUserInfoTest {
+class KakaoOAuthUserResponseTest {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @DisplayName("Kakao 인증 응답이 주어지면 KakaoOAuthInfo 객체로 변환한다.")
@@ -57,7 +58,7 @@ class KakaoOAuthUserInfoTest {
         });
 
         // when
-        KakaoOAuthUserInfo result = KakaoOAuthUserInfo.from(attributes);
+        KakaoOAuthUserResponse result = KakaoOAuthUserResponse.from(attributes);
 
         // then
         assertThat(result.getSocialUid()).isEqualTo("1234567890");
@@ -106,7 +107,7 @@ class KakaoOAuthUserInfoTest {
         });
 
         // when
-        KakaoOAuthUserInfo result = KakaoOAuthUserInfo.from(attributes);
+        KakaoOAuthUserResponse result = KakaoOAuthUserResponse.from(attributes);
 
         // then
         assertThat(result.getSocialUid()).isEqualTo("1234567890");

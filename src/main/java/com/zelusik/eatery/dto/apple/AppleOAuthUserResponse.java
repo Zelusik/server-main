@@ -1,4 +1,4 @@
-package com.zelusik.eatery.dto.auth;
+package com.zelusik.eatery.dto.apple;
 
 import com.zelusik.eatery.constant.ConstantUtil;
 import com.zelusik.eatery.constant.member.Gender;
@@ -12,15 +12,15 @@ import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class AppleOAuthUserInfo {
+public class AppleOAuthUserResponse {
 
     private String sub;
     private String email;
     private Boolean emailVerified;
     private Boolean isPrivateEmail;
 
-    public static AppleOAuthUserInfo from(Claims claims) {
-        return new AppleOAuthUserInfo(
+    public static AppleOAuthUserResponse from(Claims claims) {
+        return new AppleOAuthUserResponse(
                 claims.getSubject(),
                 claims.get("email", String.class),
                 Boolean.valueOf(claims.get("email_verified", String.class)),

@@ -1,4 +1,4 @@
-package com.zelusik.eatery.dto.auth;
+package com.zelusik.eatery.dto.apple;
 
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import lombok.AccessLevel;
