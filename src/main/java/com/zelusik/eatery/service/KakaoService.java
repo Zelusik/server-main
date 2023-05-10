@@ -19,12 +19,12 @@ import java.util.Collections;
 import java.util.Map;
 
 @Service
-public class KakaoOAuthService {
+public class KakaoService {
 
     private final ObjectMapper objectMapper;
     private final HttpRequestService httpRequestService;
 
-    public KakaoOAuthService(HttpRequestService httpRequestService) {
+    public KakaoService(HttpRequestService httpRequestService) {
         this.objectMapper = new ObjectMapper();
         this.httpRequestService = httpRequestService;
     }

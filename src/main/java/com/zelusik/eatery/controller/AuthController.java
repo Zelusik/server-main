@@ -13,7 +13,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.service.AppleOAuthService;
 import com.zelusik.eatery.service.JwtTokenService;
-import com.zelusik.eatery.service.KakaoOAuthService;
+import com.zelusik.eatery.service.KakaoService;
 import com.zelusik.eatery.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,7 +35,7 @@ import javax.validation.constraints.NotBlank;
 @RestController
 public class AuthController {
 
-    private final KakaoOAuthService kakaoOAuthService;
+    private final KakaoService kakaoService;
     private final AppleOAuthService appleOAuthService;
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
@@ -54,7 +54,7 @@ public class AuthController {
     })
     @PostMapping("/login/kakao")
     public LoginResponse kakaoLogin(@Valid @RequestBody KakaoLoginRequest request) {
-        KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
+        KakaoOAuthUserInfo userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
