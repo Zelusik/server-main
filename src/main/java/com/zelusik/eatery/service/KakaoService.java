@@ -10,7 +10,6 @@ import com.zelusik.eatery.exception.kakao.KakaoServerException;
 import com.zelusik.eatery.exception.kakao.KakaoTokenValidateException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -26,8 +25,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 
 @Service
 public class KakaoService {
@@ -82,8 +79,8 @@ public class KakaoService {
     /**
      * Kakao api를 활용해 키워드에 해당하는 지하철역, 관광명소, 학교를 검색한다.
      *
-     * @param keyword 검색 키워드
-     * @param page    page 번호. 1부터 시작한다.
+     * @param keyword  검색 키워드
+     * @param pageable paging 정보
      * @return 검색 결과
      * @see <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-keyword">Kakao developers - 키워드로 장소 검색하기</a>
      */
