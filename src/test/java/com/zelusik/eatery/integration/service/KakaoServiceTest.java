@@ -1,6 +1,8 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.integration.service;
 
 import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
+import com.zelusik.eatery.service.HttpRequestService;
+import com.zelusik.eatery.service.KakaoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

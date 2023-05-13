@@ -1,4 +1,4 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.constant.FoodCategory;
 import com.zelusik.eatery.constant.member.Gender;
@@ -16,6 +16,8 @@ import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.member.TermsInfoRepository;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.exception.member.MemberNotFoundException;
+import com.zelusik.eatery.service.MemberService;
+import com.zelusik.eatery.service.ProfileImageService;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;

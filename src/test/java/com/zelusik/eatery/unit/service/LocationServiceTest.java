@@ -1,8 +1,9 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.location.LocationDto;
 import com.zelusik.eatery.repository.location.LocationRepository;
+import com.zelusik.eatery.service.LocationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

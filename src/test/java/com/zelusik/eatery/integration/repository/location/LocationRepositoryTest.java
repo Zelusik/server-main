@@ -1,9 +1,10 @@
-package com.zelusik.eatery.repository.location;
+package com.zelusik.eatery.integration.repository.location;
 
 import com.zelusik.eatery.config.QuerydslConfig;
 import com.zelusik.eatery.domain.Location;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.location.LocationDto;
+import com.zelusik.eatery.repository.location.LocationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

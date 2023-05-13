@@ -1,8 +1,9 @@
-package com.zelusik.eatery.controller;
+package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.SecurityConfig;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
+import com.zelusik.eatery.controller.PlaceController;
 import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;

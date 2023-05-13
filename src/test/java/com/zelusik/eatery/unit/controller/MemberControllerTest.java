@@ -1,8 +1,9 @@
-package com.zelusik.eatery.controller;
+package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.SecurityConfig;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
+import com.zelusik.eatery.controller.MemberController;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;

@@ -1,9 +1,11 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.member.ProfileImage;
 import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.repository.member.ProfileImageRepository;
+import com.zelusik.eatery.service.FileService;
+import com.zelusik.eatery.service.ProfileImageService;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.S3FileTestUtils;

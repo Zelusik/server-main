@@ -1,7 +1,8 @@
-package com.zelusik.eatery.controller;
+package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.SecurityConfig;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.controller.MeetingPlaceController;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
 import com.zelusik.eatery.dto.location.LocationDto;

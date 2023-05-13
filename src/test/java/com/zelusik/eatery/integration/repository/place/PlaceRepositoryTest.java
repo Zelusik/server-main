@@ -1,10 +1,12 @@
-package com.zelusik.eatery.repository.place;
+package com.zelusik.eatery.integration.repository.place;
 
 import com.zelusik.eatery.config.QuerydslConfig;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.repository.place.OpeningHoursRepository;
+import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.Member;
@@ -12,6 +12,10 @@ import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
+import com.zelusik.eatery.service.MemberService;
+import com.zelusik.eatery.service.PlaceService;
+import com.zelusik.eatery.service.ReviewImageService;
+import com.zelusik.eatery.service.ReviewService;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;

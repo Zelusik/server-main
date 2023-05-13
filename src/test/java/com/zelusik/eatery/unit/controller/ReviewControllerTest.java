@@ -1,6 +1,7 @@
-package com.zelusik.eatery.controller;
+package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.SecurityConfig;
+import com.zelusik.eatery.controller.ReviewController;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.service.ReviewService;
 import com.zelusik.eatery.security.JwtAuthenticationFilter;
