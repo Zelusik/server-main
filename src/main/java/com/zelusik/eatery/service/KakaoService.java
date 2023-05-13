@@ -3,10 +3,17 @@ package com.zelusik.eatery.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.exception.ErrorResponse;
+import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
+import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
 import com.zelusik.eatery.exception.kakao.KakaoServerException;
 import com.zelusik.eatery.exception.kakao.KakaoTokenValidateException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -14,15 +21,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 
 @Service
 public class KakaoService {
 
     private final ObjectMapper objectMapper;
     private final HttpRequestService httpRequestService;
+
+    @Value("${kakao.rest-api.key}")
+    private String apiKey;
 
     public KakaoService(HttpRequestService httpRequestService) {
         this.objectMapper = new ObjectMapper();
@@ -63,6 +77,50 @@ public class KakaoService {
         }
 
         return KakaoOAuthUserResponse.from(attributes);
+    }
+
+    /**
+     * Kakao api를 활용해 키워드에 해당하는 지하철역, 관광명소, 학교를 검색한다.
+     *
+     * @param keyword 검색 키워드
+     * @param page    page 번호. 1부터 시작한다.
+     * @return 검색 결과
+     * @see <a href="https://developers.kakao.com/docs/latest/ko/local/dev-guide#search-by-keyword">Kakao developers - 키워드로 장소 검색하기</a>
+     */
+    @SuppressWarnings("unchecked")
+    public Slice<KakaoPlaceResponse> searchKakaoPlacesByKeyword(String keyword, Pageable pageable) {
+        String requestUri = UriComponentsBuilder
+                .fromUriString("https://dapi.kakao.com/v2/local/search/keyword.json")
+                .queryParam("page", pageable.getPageNumber() + 1)
+                .queryParam("size", pageable.getPageSize())
+                .queryParam("category_group_code", "SW8,AT4,SC4")
+                .queryParam("query", keyword)
+                .build().toUriString();
+
+        // Set header
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "KakaoAK " + apiKey);
+
+        // Send http request
+        ResponseEntity<String> response;
+        try {
+            response = httpRequestService.sendHttpRequest(requestUri, HttpMethod.GET, headers);
+        } catch (Exception ex) {
+            ErrorResponse errorDetails = getErrorDetails(ex);
+            throw new KakaoServerException(HttpStatus.INTERNAL_SERVER_ERROR, errorDetails.code(), errorDetails.message(), ex);
+        }
+
+        Map<String, Object> attributes = new JSONObject(response.getBody()).toMap();
+
+        Map<String, Object> metadata = (Map<String, Object>) attributes.get("meta");
+        boolean isEnd = Boolean.parseBoolean(String.valueOf(metadata.get("is_end")));
+
+        List<Map<String, Object>> documents = (List<Map<String, Object>>) attributes.get("documents");
+        List<KakaoPlaceResponse> content = documents.stream()
+                .map(KakaoPlaceResponse::from)
+                .toList();
+
+        return new SliceImpl<>(content, pageable, !isEnd);
     }
 
     private ErrorResponse getErrorDetails(Exception ex) {

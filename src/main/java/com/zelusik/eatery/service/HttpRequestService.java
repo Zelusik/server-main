@@ -1,6 +1,8 @@
 package com.zelusik.eatery.service;
 
+import com.zelusik.eatery.log.LogUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class HttpRequestService {
@@ -25,6 +28,9 @@ public class HttpRequestService {
      */
     public ResponseEntity<String> sendHttpRequest(String requestUrl, HttpMethod httpMethod, HttpHeaders headers) {
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
+
+        log.info("[{}] Send http request with uri={}, method={}, headers={}", LogUtils.getLogTraceId(), requestUrl, httpMethod, headers);
+
         return restTemplate.exchange(
                 requestUrl,
                 httpMethod,

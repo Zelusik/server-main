@@ -33,6 +33,10 @@ public class Location {
     @Embedded
     private Point point;
 
+    public static Location of(String sido, String sgg, String emdg, Point point) {
+        return of(null, sido, sgg, emdg, point);
+    }
+
     public static Location of(Long id, String sido, String sgg, String emdg, Point point) {
         return Location.builder()
                 .id(id)
