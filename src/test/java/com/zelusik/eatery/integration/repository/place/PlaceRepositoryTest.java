@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * 대한민국 북-남 거리 약 1,100km
  */
 
-@DisplayName("[Repository] Place")
+@DisplayName("[Integration] Place Repository")
 @ActiveProfiles("test")
 @Import(QuerydslConfig.class)
 @DataJpaTest

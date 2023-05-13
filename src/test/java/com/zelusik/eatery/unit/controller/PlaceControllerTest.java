@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Controller] Place")
+@DisplayName("[Unit] Place Controller")
 @MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest(
         controllers = PlaceController.class,

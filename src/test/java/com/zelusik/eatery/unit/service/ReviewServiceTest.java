@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Service] Review")
+@DisplayName("[Unit] Review Service")
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
 

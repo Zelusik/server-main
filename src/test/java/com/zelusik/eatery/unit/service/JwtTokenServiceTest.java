@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Service] JwtToken")
+@DisplayName("[Unit] JwtToken Service")
 @ExtendWith(MockitoExtension.class)
 class JwtTokenServiceTest {
 

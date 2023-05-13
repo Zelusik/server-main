@@ -15,6 +15,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("[Integration] Kakao Service")
 @SpringBootTest(classes = {KakaoService.class, ObjectMapper.class, HttpRequestService.class, RestTemplate.class})
 class KakaoServiceTest {
 
@@ -27,7 +28,7 @@ class KakaoServiceTest {
         // given
 
         // when
-        Slice<KakaoPlaceResponse> kakaoPlaceResponses = sut.searchKakaoPlacesByKeyword("수원", PageRequest.of(1, PAGE_SIZE_OF_SEARCHING_MEETING_PLACES));
+        Slice<KakaoPlaceResponse> kakaoPlaceResponses = sut.searchKakaoPlacesByKeyword("서울", PageRequest.of(1, PAGE_SIZE_OF_SEARCHING_MEETING_PLACES));
 
         // then
         assertThat(kakaoPlaceResponses).isNotEmpty();

@@ -25,7 +25,7 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("[Service] ProfileImage")
+@DisplayName("[Unit] ProfileImage Service")
 @ExtendWith(MockitoExtension.class)
 class ProfileImageServiceTest {
 

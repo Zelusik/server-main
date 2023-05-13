@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Controller] Member")
+@DisplayName("[Unit] Member Controller")
 @MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest(
         controllers = MemberController.class,

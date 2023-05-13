@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("[Service] S3 File")
+@DisplayName("[Unit] S3 File Service")
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
 

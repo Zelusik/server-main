@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("[Service] Location")
+@DisplayName("[Unit] Location Service")
 @ExtendWith(MockitoExtension.class)
 class LocationServiceTest {
 

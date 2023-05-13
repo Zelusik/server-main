@@ -50,7 +50,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("[Service] Place")
+@DisplayName("[Unit] Place Service")
 @ExtendWith(MockitoExtension.class)
 class PlaceServiceTest {
 

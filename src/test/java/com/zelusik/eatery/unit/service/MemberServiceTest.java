@@ -40,7 +40,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Service] Member")
+@DisplayName("[Unit] Member Service")
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 

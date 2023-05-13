@@ -24,7 +24,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("[Service] Review File")
+@DisplayName("[Unit] Review File Service")
 @ExtendWith(MockitoExtension.class)
 class ReviewImageServiceTest {
 

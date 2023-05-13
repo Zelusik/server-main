@@ -20,7 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("[Repository] Location")
+@DisplayName("[Integration] Location Repository")
 @Import(QuerydslConfig.class)
 @ActiveProfiles("test")
 @DataJpaTest
