@@ -1,5 +1,5 @@
 eatery.app.version: v.0.0.1
-kakao.rest-api.key: { KAKAO_REST-API_KEY }
+kakao.rest-api.key: ${KAKAO_REST-API_KEY}
 
 logging:
   level:
