@@ -1,5 +1,6 @@
 package com.zelusik.eatery.dto.place;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,8 +11,13 @@ import java.util.Map;
 @Getter
 public class PlaceScrapingInfo {
 
+    @SerializedName("opening_hours")
     private String openingHours;
+
+    @SerializedName("closing_hours")
     private String closingHours;
+
+    @SerializedName("homepage_url")
     private String homepageUrl;
 
     public static PlaceScrapingInfo of(String openingHours, String closingHours, String homepageUrl) {

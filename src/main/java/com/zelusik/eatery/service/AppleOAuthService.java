@@ -1,19 +1,17 @@
 package com.zelusik.eatery.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.dto.apple.AppleOAuthPublicKey;
 import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
 import com.zelusik.eatery.exception.auth.AppleOAuthLoginException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -21,19 +19,13 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class AppleOAuthService {
 
-    private final ObjectMapper objectMapper;
     private final HttpRequestService httpRequestService;
-
-    public AppleOAuthService(HttpRequestService httpRequestService) {
-        this.objectMapper = new ObjectMapper();
-        this.httpRequestService = httpRequestService;
-    }
 
     /**
      * <p>Identity token에서 회원 정보를 읽어온다.
@@ -49,16 +41,7 @@ public class AppleOAuthService {
      * @return 회원 정보
      */
     public AppleOAuthUserResponse getUserInfo(String identityToken) {
-        Map<String, Object> headerOfIdentityToken;
-        try {
-            headerOfIdentityToken = new ObjectMapper().readValue(
-                    Base64.getDecoder().decode(identityToken.substring(0, identityToken.indexOf("."))),
-                    new TypeReference<>() {
-                    }
-            );
-        } catch (IOException ex) {
-            throw new AppleOAuthLoginException(ex);
-        }
+        Map<String, Object> headerOfIdentityToken = new JSONObject(Base64.getDecoder().decode(identityToken.substring(0, identityToken.indexOf(".")))).toMap();
 
         PublicKey publicKey = getAppleOAuthPublicKey(headerOfIdentityToken);
 
@@ -92,14 +75,7 @@ public class AppleOAuthService {
             throw new RuntimeException(e);
         }
 
-        Map<String, Object> attributes;
-        try {
-            attributes = objectMapper.readValue(response.getBody(), new TypeReference<>() {
-            });
-        } catch (JsonProcessingException e) {
-            attributes = Collections.emptyMap();
-        }
-
+        Map<String, Object> attributes = new JSONObject(response.getBody()).toMap();
         AppleOAuthPublicKey appleOAuthPublicKey = AppleOAuthPublicKey.from(attributes);
         AppleOAuthPublicKey.Key matchedKey = appleOAuthPublicKey.getMatchedKeyBy(
                 String.valueOf(headerOfIdentityToken.get("kid")),

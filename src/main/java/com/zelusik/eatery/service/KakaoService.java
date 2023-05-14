@@ -1,13 +1,11 @@
 package com.zelusik.eatery.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.dto.exception.ErrorResponse;
 import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
 import com.zelusik.eatery.exception.kakao.KakaoServerException;
 import com.zelusik.eatery.exception.kakao.KakaoTokenValidateException;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -22,23 +20,17 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class KakaoService {
 
-    private final ObjectMapper objectMapper;
     private final HttpRequestService httpRequestService;
 
     @Value("${kakao.rest-api.key}")
     private String apiKey;
-
-    public KakaoService(HttpRequestService httpRequestService) {
-        this.objectMapper = new ObjectMapper();
-        this.httpRequestService = httpRequestService;
-    }
 
     public KakaoOAuthUserResponse getUserInfo(String accessToken) {
         String requestUrl = "https://kapi.kakao.com/v2/user/me";
@@ -64,15 +56,7 @@ public class KakaoService {
             throw new KakaoServerException(HttpStatus.INTERNAL_SERVER_ERROR, errorDetails.code(), errorDetails.message(), ex);
         }
 
-        // Response의 body에서 user info 추출
-        Map<String, Object> attributes;
-        try {
-            attributes = objectMapper.readValue(response.getBody(), new TypeReference<>() {
-            });
-        } catch (JsonProcessingException e) {
-            attributes = Collections.emptyMap();
-        }
-
+        Map<String, Object> attributes = new JSONObject(response.getBody()).toMap();
         return KakaoOAuthUserResponse.from(attributes);
     }
 
