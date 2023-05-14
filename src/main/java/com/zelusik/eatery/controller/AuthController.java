@@ -1,8 +1,8 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.dto.auth.AppleOAuthUserInfo;
-import com.zelusik.eatery.dto.auth.KakaoOAuthUserInfo;
+import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
+import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.auth.request.AppleLoginRequest;
 import com.zelusik.eatery.dto.auth.request.KakaoLoginRequest;
 import com.zelusik.eatery.dto.auth.request.TokenRefreshRequest;
@@ -13,7 +13,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.service.AppleOAuthService;
 import com.zelusik.eatery.service.JwtTokenService;
-import com.zelusik.eatery.service.KakaoOAuthService;
+import com.zelusik.eatery.service.KakaoService;
 import com.zelusik.eatery.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,7 +35,7 @@ import javax.validation.constraints.NotBlank;
 @RestController
 public class AuthController {
 
-    private final KakaoOAuthService kakaoOAuthService;
+    private final KakaoService kakaoService;
     private final AppleOAuthService appleOAuthService;
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
@@ -54,7 +54,7 @@ public class AuthController {
     })
     @PostMapping("/login/kakao")
     public LoginResponse kakaoLogin(@Valid @RequestBody KakaoLoginRequest request) {
-        KakaoOAuthUserInfo userInfo = kakaoOAuthService.getUserInfo(request.getKakaoAccessToken());
+        KakaoOAuthUserResponse userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
@@ -83,7 +83,7 @@ public class AuthController {
     })
     @PostMapping("/login/apple")
     public LoginResponse appleLogin(@Valid @RequestBody AppleLoginRequest request) {
-        AppleOAuthUserInfo userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
+        AppleOAuthUserResponse userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName())));

@@ -1,13 +1,9 @@
 package com.zelusik.eatery.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.zelusik.eatery.dto.place.PlaceScrapingInfo;
-import com.zelusik.eatery.exception.ExceptionUtils;
 import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
-import com.zelusik.eatery.log.LogUtils;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,24 +12,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Map;
-
-@Slf4j
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
 public class WebScrapingService {
 
-    private final ObjectMapper objectMapper;
     private final HttpRequestService httpRequestService;
+    private final Gson gson;
 
-    @Value("${web-scraping.server.url:127.0.0.1:5000}")
+    @Value("${web-scraping.server.url:http://127.0.0.1:5000}")
     private String scrapingServerUrl;
 
-    public WebScrapingService(HttpRequestService httpRequestService) {
-        this.objectMapper = new ObjectMapper();
-        this.httpRequestService = httpRequestService;
-    }
 
     /**
      * Web scraping server에서 장소의 추가 정보를 scarping한다.
@@ -48,31 +37,13 @@ public class WebScrapingService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
+        ResponseEntity<String> response;
         try {
-            ResponseEntity<String> response = httpRequestService.sendHttpRequest(requestUrl, HttpMethod.GET, headers);
-            Map<String, Object> responseMap = mapResponseEntityToStringObjectMap(response);
-
-            return PlaceScrapingInfo.from(responseMap);
-        } catch (Exception e) {
-            throw new ScrapingServerInternalError(e);
+            response = httpRequestService.sendHttpRequest(requestUrl, HttpMethod.GET, headers);
+        } catch (Exception ex) {
+            throw new ScrapingServerInternalError(ex);
         }
-    }
 
-    /**
-     * ResponseEntity를 Map 데이터로 변환한다.
-     *
-     * @param responseEntity Map으로 변환하고자 하는 ResponseEntity 데이터
-     * @return 변환된 Map 데이터
-     */
-    private Map<String, Object> mapResponseEntityToStringObjectMap(ResponseEntity<String> responseEntity) {
-        Map<String, Object> attributes;
-        try {
-            attributes = objectMapper.readValue(responseEntity.getBody(), new TypeReference<>() {
-            });
-        } catch (JsonProcessingException ex) {
-            log.info("[{}] !Catch Exception! WebScrapingService.mapResponseEntityToStringObjectMap() ex={}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
-            attributes = Collections.emptyMap();
-        }
-        return attributes;
+        return gson.fromJson(response.getBody(), PlaceScrapingInfo.class);
     }
 }

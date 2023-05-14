@@ -1,4 +1,4 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
@@ -16,6 +16,9 @@ import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
+import com.zelusik.eatery.service.PlaceService;
+import com.zelusik.eatery.service.ReviewImageService;
+import com.zelusik.eatery.service.WebScrapingService;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +50,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("[Service] Place")
+@DisplayName("[Unit] Place Service")
 @ExtendWith(MockitoExtension.class)
 class PlaceServiceTest {
 

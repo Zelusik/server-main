@@ -1,8 +1,9 @@
-package com.zelusik.eatery.controller;
+package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.SecurityConfig;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
+import com.zelusik.eatery.controller.MemberController;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Controller] Member")
+@DisplayName("[Unit] Member Controller")
 @MockBean(JpaMetamodelMappingContext.class)
 @WebMvcTest(
         controllers = MemberController.class,

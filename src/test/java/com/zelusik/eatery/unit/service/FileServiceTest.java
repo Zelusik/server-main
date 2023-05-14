@@ -1,9 +1,10 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.zelusik.eatery.dto.file.S3FileDto;
+import com.zelusik.eatery.service.FileService;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("[Service] S3 File")
+@DisplayName("[Unit] S3 File Service")
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {
 

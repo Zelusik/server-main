@@ -1,8 +1,10 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.repository.review.ReviewImageRepository;
+import com.zelusik.eatery.service.FileService;
+import com.zelusik.eatery.service.ReviewImageService;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
 import com.zelusik.eatery.util.S3FileTestUtils;
@@ -22,7 +24,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("[Service] Review File")
+@DisplayName("[Unit] Review File Service")
 @ExtendWith(MockitoExtension.class)
 class ReviewImageServiceTest {
 

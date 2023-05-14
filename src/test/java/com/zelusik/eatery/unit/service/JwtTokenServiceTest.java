@@ -1,4 +1,4 @@
-package com.zelusik.eatery.service;
+package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.dto.auth.RedisRefreshToken;
@@ -7,6 +7,7 @@ import com.zelusik.eatery.repository.RedisRefreshTokenRepository;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import com.zelusik.eatery.security.JwtTokenInfoDto;
 import com.zelusik.eatery.security.JwtTokenProvider;
+import com.zelusik.eatery.service.JwtTokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Service] JwtToken")
+@DisplayName("[Unit] JwtToken Service")
 @ExtendWith(MockitoExtension.class)
 class JwtTokenServiceTest {
 

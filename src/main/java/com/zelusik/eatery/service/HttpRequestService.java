@@ -1,5 +1,8 @@
 package com.zelusik.eatery.service;
 
+import com.zelusik.eatery.log.LogUtils;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -8,8 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class HttpRequestService {
+
+    private final RestTemplate restTemplate;
 
     /**
      * 외부 server에 HTTP request를 보낸다.
@@ -21,7 +28,10 @@ public class HttpRequestService {
      */
     public ResponseEntity<String> sendHttpRequest(String requestUrl, HttpMethod httpMethod, HttpHeaders headers) {
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
-        return new RestTemplate().exchange(
+
+        log.info("[{}] Send http request with uri={}, method={}, headers={}", LogUtils.getLogTraceId(), requestUrl, httpMethod, headers);
+
+        return restTemplate.exchange(
                 requestUrl,
                 httpMethod,
                 kakaoUserInfoRequest,

@@ -1,4 +1,4 @@
-package com.zelusik.eatery.dto.auth;
+package com.zelusik.eatery.dto.kakao;
 
 import com.zelusik.eatery.constant.ConstantUtil;
 import com.zelusik.eatery.constant.member.Gender;
@@ -17,7 +17,7 @@ import java.util.Map;
 @SuppressWarnings("unchecked")  // TODO: Map -> Object 변환 로직이 있어서 generic type casting 문제를 무시한다. 더 좋은 방법이 있다면 고려할 수 있음.
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class KakaoOAuthUserInfo {
+public class KakaoOAuthUserResponse {
 
     private String id;
     private LocalDateTime connectedAt;
@@ -87,8 +87,8 @@ public class KakaoOAuthUserInfo {
         }
     }
 
-    public static KakaoOAuthUserInfo from(Map<String, Object> attributes) {
-        return new KakaoOAuthUserInfo(
+    public static KakaoOAuthUserResponse from(Map<String, Object> attributes) {
+        return new KakaoOAuthUserResponse(
                 String.valueOf(attributes.get("id")),
                 ZonedDateTime.parse(
                         String.valueOf(attributes.get("connected_at")),
