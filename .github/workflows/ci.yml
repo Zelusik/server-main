@@ -1,10 +1,18 @@
-name: 'Eatery CI'
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Reet-Place develop CI
 
 on:
   pull_request:
-    branches:
-      - 'main'
-      - 'develop'
+    branches: [ "develop" ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -12,17 +20,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
           java-version: '17'
+          distribution: 'temurin'
 
-      - name: Grant execution permission for gradlew
-        run: chmod +x gradlew
+      - run: touch ./src/main/resources/application.properties
+      - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application.properties
+      - uses: actions/upload-artifact@v2
+        with:
+          name: application.properties
+          path: ./src/main/resources/application.properties
 
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
           arguments: build
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
