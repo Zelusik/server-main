@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
 
     @Bean
-    public OpenAPI eateryApi(@Value("eatery.app.version") String appVersion) {
+    public OpenAPI eateryApi(@Value("${eatery.app.version}") String appVersion) {
         return new OpenAPI()
                 .info(
                         new Info()
