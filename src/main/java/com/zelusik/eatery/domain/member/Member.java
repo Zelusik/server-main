@@ -4,7 +4,6 @@ import com.zelusik.eatery.constant.FoodCategory;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.domain.BaseTimeEntity;
-import com.zelusik.eatery.util.domain.FoodCategoryConverter;
 import lombok.*;
 
 import javax.persistence.*;
@@ -62,7 +61,8 @@ public class Member extends BaseTimeEntity {
     private Gender gender;
 
     @Setter
-    @Convert(converter = FoodCategoryConverter.class)
+    @CollectionTable(name = "member_favorite_food_gategory", joinColumns = @JoinColumn(name = "member_id"))
+    @ElementCollection
     private List<FoodCategory> favoriteFoodCategories;
 
     @Setter(AccessLevel.PRIVATE)
