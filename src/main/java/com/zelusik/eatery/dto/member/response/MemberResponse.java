@@ -34,7 +34,7 @@ public class MemberResponse {
     @Schema(description = "생년월일", example = "1998-01-05")
     private LocalDate birthDay;
 
-    @Schema(description = "선호 음식 카테고리 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
+    @Schema(description = "선호 음식 카테고리 목록", example = "[\"한식\", \"중식\"]")
     private List<String> favoriteFoodCategories;
 
     public static MemberResponse of(Long id, ImageResponse image, String email, String nickname, Gender gender, LocalDate birthDay, List<FoodCategory> favoriteFoodCategories) {
