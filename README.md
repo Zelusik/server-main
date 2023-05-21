@@ -19,9 +19,9 @@
 <img width="700px" src="https://github.com/Zelusik/backend/assets/60748900/c78a62f2-e812-409d-b9be-6c98e8d779f9" alt="find eat image">
 
 <br>
-<h2>프로젝트 기간</h2>
+<h2>개발 기간</h2>
 <ul>
-    <li>개발 : 2023.02 ~ 진행 중</li>
+    <li>개발 : 2023.01 ~ 진행 중</li>
 </ul>
 
 <br>
