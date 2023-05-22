@@ -1,6 +1,6 @@
 package com.zelusik.eatery.controller;
 
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
@@ -98,8 +98,8 @@ public class MemberController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
     ) {
-        List<FoodCategory> favoriteFoodCategories = request.getFavoriteFoodCategories().stream()
-                .map(FoodCategory::valueOfDescription)
+        List<FoodCategoryValue> favoriteFoodCategories = request.getFavoriteFoodCategories().stream()
+                .map(FoodCategoryValue::valueOfDescription)
                 .toList();
         return MemberResponse.from(memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), favoriteFoodCategories));
     }

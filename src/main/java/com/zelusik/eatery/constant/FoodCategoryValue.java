@@ -28,7 +28,7 @@ import java.util.Arrays;
         example = "KOREAN")
 @AllArgsConstructor
 @Getter
-public enum FoodCategory {
+public enum FoodCategoryValue {
 
     KOREAN("한식", new String[]{"한식", "샤브샤브"}),
     JAPANESE("일식", new String[]{"일식"}),
@@ -48,7 +48,7 @@ public enum FoodCategory {
     private final String name;
     private final String[] matchingKakaoCategories;
 
-    public static FoodCategory valueOfDescription(String description) {
+    public static FoodCategoryValue valueOfDescription(String description) {
         String trimmedDescription = description.replace(" ", "");
 
         return Arrays.stream(values())

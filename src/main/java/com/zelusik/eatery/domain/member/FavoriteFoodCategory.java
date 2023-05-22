@@ -1,6 +1,6 @@
 package com.zelusik.eatery.domain.member;
 
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,13 +28,13 @@ public class FavoriteFoodCategory {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private FoodCategory category;
+    private FoodCategoryValue category;
 
-    public static FavoriteFoodCategory of(Member member, FoodCategory category) {
+    public static FavoriteFoodCategory of(Member member, FoodCategoryValue category) {
         return new FavoriteFoodCategory(null, member, category);
     }
 
-    public static FavoriteFoodCategory of(Long id, Member member, FoodCategory category) {
+    public static FavoriteFoodCategory of(Long id, Member member, FoodCategoryValue category) {
         return new FavoriteFoodCategory(id, member, category);
     }
 }

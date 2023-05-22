@@ -1,6 +1,6 @@
 package com.zelusik.eatery.dto.member;
 
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
@@ -29,7 +29,7 @@ public class MemberDto {
     private LocalDate birthDay;
     private Integer ageRange;
     private Gender gender;
-    private List<FoodCategory> favoriteFoodCategories;
+    private List<FoodCategoryValue> favoriteFoodCategories;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
@@ -38,7 +38,7 @@ public class MemberDto {
         return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, null, ageRange, gender, null, null, null, null);
     }
 
-    public static MemberDto of(Long id, TermsInfoDto termsInfoDto, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategory> favoriteFoodCategories, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static MemberDto of(Long id, TermsInfoDto termsInfoDto, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategoryValue> favoriteFoodCategories, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return new MemberDto(id, termsInfoDto, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, birthDay, ageRange, gender, favoriteFoodCategories, createdAt, updatedAt, deletedAt);
     }
 

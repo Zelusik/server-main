@@ -1,7 +1,7 @@
 package com.zelusik.eatery.util;
 
 import com.zelusik.eatery.constant.ConstantUtil;
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
@@ -51,7 +51,7 @@ public class MemberTestUtils {
                 LocalDate.of(1998, 1, 5),
                 AGE_RANGE,
                 GENDER,
-                List.of(FoodCategory.KOREAN),
+                List.of(FoodCategoryValue.KOREAN),
                 null,
                 null,
                 null
@@ -85,9 +85,9 @@ public class MemberTestUtils {
         );
 
         List<FavoriteFoodCategory> favoriteFoodCategories = List.of(
-                createFavoriteFoodCategory(100L, member, FoodCategory.KOREAN),
-                createFavoriteFoodCategory(101L, member, FoodCategory.WESTERN),
-                createFavoriteFoodCategory(102L, member, FoodCategory.BAR)
+                createFavoriteFoodCategory(100L, member, FoodCategoryValue.KOREAN),
+                createFavoriteFoodCategory(101L, member, FoodCategoryValue.WESTERN),
+                createFavoriteFoodCategory(102L, member, FoodCategoryValue.BAR)
         );
         member.getFavoriteFoodCategories().addAll(favoriteFoodCategories);
 
@@ -163,7 +163,7 @@ public class MemberTestUtils {
         );
     }
 
-    public static FavoriteFoodCategory createFavoriteFoodCategory(Long id, Member member, FoodCategory foodCategory) {
-        return FavoriteFoodCategory.of(id, member, foodCategory);
+    public static FavoriteFoodCategory createFavoriteFoodCategory(Long id, Member member, FoodCategoryValue foodCategoryValue) {
+        return FavoriteFoodCategory.of(id, member, foodCategoryValue);
     }
 }

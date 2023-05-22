@@ -1,6 +1,6 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
@@ -22,7 +22,6 @@ import com.zelusik.eatery.service.MemberService;
 import com.zelusik.eatery.service.ProfileImageService;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +34,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.zelusik.eatery.constant.FoodCategory.*;
+import static com.zelusik.eatery.constant.FoodCategoryValue.*;
 import static com.zelusik.eatery.util.MemberTestUtils.*;
 import static com.zelusik.eatery.util.TermsInfoTestUtils.createTermsInfo;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -222,7 +221,7 @@ class MemberServiceTest {
         // given
         long memberId = 1L;
         Member member = createMember(memberId);
-        List<FoodCategory> foodCategories = List.of(KOREAN, WESTERN, DESERT);
+        List<FoodCategoryValue> foodCategories = List.of(KOREAN, WESTERN, DESERT);
         List<FavoriteFoodCategory> favoriteFoodCategories = List.of(
                 createFavoriteFoodCategory(100L, member, KOREAN),
                 createFavoriteFoodCategory(101L, member, WESTERN),

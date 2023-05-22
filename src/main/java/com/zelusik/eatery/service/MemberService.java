@@ -1,6 +1,6 @@
 package com.zelusik.eatery.service;
 
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.domain.member.*;
 import com.zelusik.eatery.dto.ImageDto;
@@ -170,7 +170,7 @@ public class MemberService {
      * @param favoriteFoodCategories 변경하고자 하는 음식 취향 목록
      */
     @Transactional
-    public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategory> favoriteFoodCategories) {
+    public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategoryValue> favoriteFoodCategories) {
         Member member = findById(memberId);
 
         favoriteFoodCategoryRepository.deleteAll(member.getFavoriteFoodCategories());
