@@ -3,6 +3,7 @@ package com.zelusik.eatery.dto.member;
 import com.zelusik.eatery.constant.FoodCategory;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
 import lombok.AccessLevel;
@@ -54,7 +55,9 @@ public class MemberDto {
                 entity.getBirthDay(),
                 entity.getAgeRange(),
                 entity.getGender(),
-                entity.getFavoriteFoodCategories(),
+                entity.getFavoriteFoodCategories().stream()
+                        .map(FavoriteFoodCategory::getCategory)
+                        .toList(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getDeletedAt()

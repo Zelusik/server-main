@@ -5,10 +5,7 @@ import com.zelusik.eatery.constant.FoodCategory;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
-import com.zelusik.eatery.domain.member.Member;
-import com.zelusik.eatery.domain.member.MemberDeletionSurvey;
-import com.zelusik.eatery.domain.member.ProfileImage;
-import com.zelusik.eatery.domain.member.TermsInfo;
+import com.zelusik.eatery.domain.member.*;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.dto.member.MemberDto;
 
@@ -70,7 +67,7 @@ public class MemberTestUtils {
     }
 
     public static Member createMember(Long memberId, TermsInfo termsInfo, LocalDateTime deletedAt) {
-        return Member.of(
+        Member member = Member.of(
                 memberId,
                 termsInfo,
                 ConstantUtil.defaultProfileImageUrl,
@@ -82,11 +79,19 @@ public class MemberTestUtils {
                 LocalDate.of(1998, 1, 5),
                 AGE_RANGE,
                 GENDER,
-                List.of(FoodCategory.KOREAN),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 deletedAt
         );
+
+        List<FavoriteFoodCategory> favoriteFoodCategories = List.of(
+                createFavoriteFoodCategory(100L, member, FoodCategory.KOREAN),
+                createFavoriteFoodCategory(101L, member, FoodCategory.WESTERN),
+                createFavoriteFoodCategory(102L, member, FoodCategory.BAR)
+        );
+        member.getFavoriteFoodCategories().addAll(favoriteFoodCategories);
+
+        return member;
     }
 
     public static Member createDeletedMember(Long memberId) {
@@ -156,5 +161,9 @@ public class MemberTestUtils {
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0)
         );
+    }
+
+    public static FavoriteFoodCategory createFavoriteFoodCategory(Long id, Member member, FoodCategory foodCategory) {
+        return FavoriteFoodCategory.of(id, member, foodCategory);
     }
 }

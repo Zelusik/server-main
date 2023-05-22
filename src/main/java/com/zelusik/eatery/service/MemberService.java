@@ -2,16 +2,14 @@ package com.zelusik.eatery.service;
 
 import com.zelusik.eatery.constant.FoodCategory;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
-import com.zelusik.eatery.domain.member.Member;
-import com.zelusik.eatery.domain.member.MemberDeletionSurvey;
-import com.zelusik.eatery.domain.member.ProfileImage;
-import com.zelusik.eatery.domain.member.TermsInfo;
+import com.zelusik.eatery.domain.member.*;
 import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
+import com.zelusik.eatery.repository.member.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.repository.member.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.member.TermsInfoRepository;
@@ -34,6 +32,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TermsInfoRepository termsInfoRepository;
     private final MemberDeletionSurveyRepository memberDeletionSurveyRepository;
+    private final FavoriteFoodCategoryRepository favoriteFoodCategoryRepository;
 
     /**
      * 회원 정보를 전달받아 회원가입을 진행한다.
@@ -173,7 +172,16 @@ public class MemberService {
     @Transactional
     public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategory> favoriteFoodCategories) {
         Member member = findById(memberId);
-        member.setFavoriteFoodCategories(favoriteFoodCategories);
+
+        favoriteFoodCategoryRepository.deleteAll(member.getFavoriteFoodCategories());
+        member.getFavoriteFoodCategories().clear();
+
+        List<FavoriteFoodCategory> newFavoriteCategories = favoriteFoodCategories.stream()
+                .map(foodCategory -> FavoriteFoodCategory.of(member, foodCategory))
+                .toList();
+        member.getFavoriteFoodCategories().addAll(newFavoriteCategories);
+        favoriteFoodCategoryRepository.saveAll(newFavoriteCategories);
+
         return MemberDto.from(member);
     }
 
