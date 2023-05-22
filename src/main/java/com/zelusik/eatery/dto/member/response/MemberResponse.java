@@ -1,6 +1,6 @@
 package com.zelusik.eatery.dto.member.response;
 
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
 import com.zelusik.eatery.dto.member.MemberDto;
@@ -34,10 +34,10 @@ public class MemberResponse {
     @Schema(description = "생년월일", example = "1998-01-05")
     private LocalDate birthDay;
 
-    @Schema(description = "선호 음식 카테고리 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
+    @Schema(description = "선호 음식 카테고리 목록", example = "[\"한식\", \"중식\"]")
     private List<String> favoriteFoodCategories;
 
-    public static MemberResponse of(Long id, ImageResponse image, String email, String nickname, Gender gender, LocalDate birthDay, List<FoodCategory> favoriteFoodCategories) {
+    public static MemberResponse of(Long id, ImageResponse image, String email, String nickname, Gender gender, LocalDate birthDay, List<FoodCategoryValue> favoriteFoodCategories) {
         return new MemberResponse(
                 id,
                 image,
@@ -46,7 +46,7 @@ public class MemberResponse {
                 gender.getDescription(),
                 birthDay,
                 favoriteFoodCategories.stream()
-                        .map(FoodCategory::getDescription)
+                        .map(FoodCategoryValue::getName)
                         .toList()
         );
     }

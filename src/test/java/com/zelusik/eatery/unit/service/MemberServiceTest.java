@@ -1,8 +1,9 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.constant.FoodCategory;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
+import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.domain.member.TermsInfo;
@@ -11,11 +12,12 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
+import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.exception.member.MemberNotFoundException;
+import com.zelusik.eatery.repository.member.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.repository.member.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.member.TermsInfoRepository;
-import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
-import com.zelusik.eatery.exception.member.MemberNotFoundException;
 import com.zelusik.eatery.service.MemberService;
 import com.zelusik.eatery.service.ProfileImageService;
 import com.zelusik.eatery.util.MemberTestUtils;
@@ -23,6 +25,7 @@ import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -31,7 +34,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.zelusik.eatery.constant.FoodCategory.*;
+import static com.zelusik.eatery.constant.FoodCategoryValue.*;
 import static com.zelusik.eatery.util.MemberTestUtils.*;
 import static com.zelusik.eatery.util.TermsInfoTestUtils.createTermsInfo;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,6 +58,8 @@ class MemberServiceTest {
     private TermsInfoRepository termsInfoRepository;
     @Mock
     private MemberDeletionSurveyRepository memberDeletionSurveyRepository;
+    @Mock
+    private FavoriteFoodCategoryRepository favoriteFoodCategoryRepository;
 
     @DisplayName("회원 정보가 주어지면 회원가입을 진행한 후 등록된 회원 정보를 return한다.")
     @Test
@@ -215,15 +220,26 @@ class MemberServiceTest {
     void givenFavoriteFoodCategories_whenUpdatingFavoriteFoodCategories_thenUpdate() {
         // given
         long memberId = 1L;
-        Member findMember = createMember(memberId);
-        List<FoodCategory> favoriteFoodCategories = List.of(KOREAN, WESTERN, DESERT);
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+        Member member = createMember(memberId);
+        List<FoodCategoryValue> foodCategories = List.of(KOREAN, WESTERN, DESERT);
+        List<FavoriteFoodCategory> favoriteFoodCategories = List.of(
+                createFavoriteFoodCategory(100L, member, KOREAN),
+                createFavoriteFoodCategory(101L, member, WESTERN),
+                createFavoriteFoodCategory(102L, member, DESERT)
+        );
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(member));
+        willDoNothing().given(favoriteFoodCategoryRepository).deleteAll(member.getFavoriteFoodCategories());
+        given(favoriteFoodCategoryRepository.saveAll(ArgumentMatchers.<List<FavoriteFoodCategory>>any())).willReturn(favoriteFoodCategories);
 
         // when
-        MemberDto updatedMemberDto = sut.updateFavoriteFoodCategories(memberId, favoriteFoodCategories);
+        MemberDto updatedMemberDto = sut.updateFavoriteFoodCategories(memberId, foodCategories);
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(favoriteFoodCategoryRepository).should().deleteAll(member.getFavoriteFoodCategories());
+        then(favoriteFoodCategoryRepository).should().saveAll(ArgumentMatchers.<List<FavoriteFoodCategory>>any());
+        then(memberRepository).shouldHaveNoMoreInteractions();
+        then(favoriteFoodCategoryRepository).shouldHaveNoMoreInteractions();
         assertThat(updatedMemberDto.getFavoriteFoodCategories()).contains(KOREAN, WESTERN, DESERT);
     }
 
