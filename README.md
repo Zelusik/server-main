@@ -72,8 +72,4 @@
 
 <br>
 <h2>ER Diagram</h2>
-<img src="https://github.com/Zelusik/backend/assets/60748900/3b6e2adb-81ab-4b14-aae4-79a1cebba464" alt="eatery erd">
-
-<br>
-<h2>Architecture Diagram</h2>
-첨부 예정
+<img src="https://github.com/Zelusik/backend/blob/develop/docs/eatery-erd.png?raw=true" alt="eatery erd">
