@@ -12,10 +12,10 @@
 <img width="700px" src="https://github.com/Zelusik/backend/assets/60748900/01358609-ff86-4846-93f8-645feb9906c0" alt="mark eat">
 
 <h3>Write Eat</h3>
-<strong>Story Review, 10초만에 작성하는 간단 리뷰</strong>
+<h4>Story Review, 10초만에 작성하는 간단 리뷰</h4>
 <img width="700px" src="https://github.com/Zelusik/backend/assets/60748900/0d7a5154-1051-4b99-adcf-371b994b5a52" alt="find eat image">
 
-<strong>Tap Tap Review, 키보드 없이도 작성 가능한 AI 리뷰</strong>
+<h4>Tap Tap Review, 키보드 없이도 작성 가능한 AI 리뷰</h4>
 <img width="700px" src="https://github.com/Zelusik/backend/assets/60748900/c78a62f2-e812-409d-b9be-6c98e8d779f9" alt="find eat image">
 
 <br>
@@ -29,16 +29,21 @@
 <table>
     <thead>
         <tr>
-            <td><a href="https://github.com/Wo-ogie"><b>정재욱</b></a></td>
-            <td><a href="https://github.com/Limgabi"><b>임가비</b></a></td>
-            <td><a href="https://github.com/choiyeju"><b>최예주</b></a></td>
+            <td align="center"><b>FrontEnd</b></td>
+            <td align="center"><b>FrontEnd</b></td>
+            <td align="center"><b>BackEnd</b></td>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td><img src="https://avatars.githubusercontent.com/u/60748900?v=4" width="150px" alt="재욱_프로필_이미지"/></td>
             <td><img src="https://avatars.githubusercontent.com/u/70315572?v=4" width="150px" alt="가비_프로필_이미지"/></td>
             <td><img src="https://github.com/Zelusik/backend/assets/60748900/bd5d5d23-df2d-4c85-a93d-205794391a73" width="150px" alt="에즈_프로필_이미지"/></td>
+            <td><img src="https://avatars.githubusercontent.com/u/60748900?v=4" width="150px" alt="재욱_프로필_이미지"/></td>
+        </tr>
+        <tr>
+            <td align="center"><a href="https://github.com/Limgabi">임가비</a></td>
+            <td align="center"><a href="https://github.com/choiyeju">최예주</a></td>
+            <td align="center"><a href="https://github.com/Wo-ogie">정재욱</a></td>
         </tr>
     </tbody>
 </table>
