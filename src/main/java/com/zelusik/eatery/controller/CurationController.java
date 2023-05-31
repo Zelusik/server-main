@@ -6,6 +6,7 @@ import com.zelusik.eatery.dto.curation.request.CurationElemCreateRequest;
 import com.zelusik.eatery.dto.curation.response.CurationElemResponse;
 import com.zelusik.eatery.dto.curation.response.CurationListResponse;
 import com.zelusik.eatery.dto.curation.response.CurationResponse;
+import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.CurationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -53,13 +55,14 @@ public class CurationController {
     )
     @PostMapping(value = "/{curationId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CurationResponse> addCurationElem(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "콘텐츠를 추가하고자 하는 큐레이션의 PK",
                     example = "1"
             ) @PathVariable Long curationId,
             @ParameterObject @Valid @ModelAttribute CurationElemCreateRequest request
     ) {
-        CurationResponse response = CurationResponse.from(curationService.addCurationElem(curationId, request));
+        CurationResponse response = CurationResponse.from(curationService.addCurationElem(userPrincipal.getMemberId(), curationId, request));
         List<CurationElemResponse> curationElems = response.getCurationElems();
         Long newCurationElemId = curationElems.get(curationElems.size() - 1).getId();
 

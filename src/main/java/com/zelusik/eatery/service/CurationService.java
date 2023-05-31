@@ -40,15 +40,18 @@ public class CurationService {
     /**
      * 특정 큐레이션에 콘텐츠(CurationElem)을 추가합니다.
      *
-     * @param curationId curation element를 추가하고자 하는 curation의 PK
+     * @param curationId                curation element를 추가하고자 하는 curation의 PK
      * @param curationElemCreateRequest 추가하고자 하는 curation element 정보
      * @return curation element가 추가된 curation dto
      */
     @Transactional
-    public CurationDto addCurationElem(Long curationId, CurationElemCreateRequest curationElemCreateRequest) {
+    public CurationDto addCurationElem(Long memberId, Long curationId, CurationElemCreateRequest curationElemCreateRequest) {
         PlaceCreateRequest placeCreateRequest = curationElemCreateRequest.getPlace();
         Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
-                .orElseGet(() -> placeService.create(placeCreateRequest));
+                .orElseGet(() -> {
+                    Long createdPlaceId = placeService.create(memberId, placeCreateRequest).getId();
+                    return placeService.findById(createdPlaceId);
+                });
 
         Curation curation = findEntityById(curationId);
 

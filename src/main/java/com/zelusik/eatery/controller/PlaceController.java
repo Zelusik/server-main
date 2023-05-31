@@ -51,7 +51,7 @@ public class PlaceController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody PlaceCreateRequest request
     ) {
-        PlaceResponse response = PlaceResponse.from(placeService.createAndReturnDto(userPrincipal.getMemberId(), request));
+        PlaceResponse response = PlaceResponse.from(placeService.create(userPrincipal.getMemberId(), request));
 
         return ResponseEntity
                 .created(URI.create("/api/places/" + response.getId()))

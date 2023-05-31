@@ -5,6 +5,7 @@ import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
@@ -65,15 +66,18 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
-        Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
+        long placeId = 2L;
+        Place expectedPlace = PlaceTestUtils.createPlace(placeId, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
         given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
         given(memberService.findById(writerId)).willReturn(expectedMember);
+        given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of(placeId));
         given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
                 .willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
         willDoNothing().given(reviewImageService).upload(any(Review.class), any());
+        willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
 
         // when
         ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
@@ -85,9 +89,12 @@ class ReviewServiceTest {
         // then
         then(placeService).should().findOptByKakaoPid(kakaoPid);
         then(memberService).should().findById(writerId);
+        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewImageService).should().upload(any(Review.class), any());
+        then(placeService).should().renewTop3Keywords(expectedPlace);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSavedReview.getPlaceDtoWithMarkedStatus().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
@@ -95,24 +102,23 @@ class ReviewServiceTest {
     @Test
     void givenReviewAndNotExistentPlaceInfo_whenCreateReview_thenSavePlaceAndReview() {
         // given
+        long writerId = 1L;
+        long placeId = 2L;
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
-        long writerId = 1L;
-        Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
+        Place expectedPlace = PlaceTestUtils.createPlace(placeId, kakaoPid);
+        PlaceDtoWithMarkedStatus expectedPlaceDtoWithMarkedStatus = PlaceDtoWithMarkedStatus.from(expectedPlace, true);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
-        given(placeService.findOptByKakaoPid(kakaoPid))
-                .willReturn(Optional.empty());
-        given(placeService.create(reviewCreateRequest.getPlace()))
-                .willReturn(expectedPlace);
-        given(memberService.findById(writerId))
-                .willReturn(expectedMember);
-        given(reviewRepository.save(any(Review.class)))
-                .willReturn(expectedReview);
-        given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
-                .willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
-        willDoNothing().given(reviewImageService).upload(any(Review.class), any());
+        given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.empty());
+        given(placeService.create(writerId, reviewCreateRequest.getPlace())).willReturn(expectedPlaceDtoWithMarkedStatus);
+        given(placeService.findById(placeId)).willReturn(expectedPlace);
+        given(memberService.findById(writerId)).willReturn(expectedMember);
         given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
+        given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
+        given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
+        willDoNothing().given(reviewImageService).upload(any(Review.class), any());
+        willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
 
         // when
         ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
@@ -123,12 +129,15 @@ class ReviewServiceTest {
 
         // then
         then(placeService).should().findOptByKakaoPid(kakaoPid);
-        then(placeService).should().create(reviewCreateRequest.getPlace());
+        then(placeService).should().create(writerId, reviewCreateRequest.getPlace());
+        then(placeService).should().findById(placeId);
         then(memberService).should().findById(writerId);
+        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewImageService).should().upload(any(Review.class), any());
-        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
+        then(placeService).should().renewTop3Keywords(expectedPlace);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSavedReview.getPlaceDtoWithMarkedStatus().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
@@ -147,6 +156,7 @@ class ReviewServiceTest {
 
         // then
         then(reviewRepository).should().findByPlace_IdAndDeletedAtNull(placeId, pageable);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
 
@@ -166,6 +176,7 @@ class ReviewServiceTest {
         // then
         then(reviewRepository).should().findByWriter_IdAndDeletedAtNull(writerId, pageable);
         then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
 
@@ -202,6 +213,7 @@ class ReviewServiceTest {
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
         then(placeService).shouldHaveNoMoreInteractions();
         then(bookmarkRepository).shouldHaveNoInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
     }
 
     @DisplayName("리뷰 삭제 권한이 없는 회원의 PK가 주어지고, 리뷰를 soft delete하면, 예외가 발생한다.")
@@ -231,7 +243,16 @@ class ReviewServiceTest {
         then(reviewKeywordRepository).shouldHaveNoInteractions();
         then(placeService).shouldHaveNoInteractions();
         then(bookmarkRepository).shouldHaveNoInteractions();
-
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(ReviewDeletePermissionDeniedException.class);
+    }
+
+    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
+        then(reviewImageService).shouldHaveNoMoreInteractions();
+        then(memberService).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoMoreInteractions();
+        then(reviewRepository).shouldHaveNoMoreInteractions();
+        then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkRepository).shouldHaveNoMoreInteractions();
     }
 }
