@@ -25,6 +25,7 @@ public class MemberDeletionSurvey extends BaseTimeEntity {
     private Member member;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MemberDeletionSurveyType surveyType;
 
     public static MemberDeletionSurvey of(Member member, MemberDeletionSurveyType surveyType) {
