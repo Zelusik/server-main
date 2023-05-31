@@ -17,12 +17,12 @@ public class ReviewImageRepositoryQCustomImpl implements ReviewImageRepositoryQC
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<ReviewImage> findLatest3ByPlace(Place cond) {
+    public List<ReviewImage> findLatest3ByPlace(Long placeId) {
         return queryFactory.select(reviewImage)
                 .from(review)
                 .join(review.place, place)
                 .join(review.reviewImages, reviewImage)
-                .where(review.place.eq(cond)
+                .where(review.place.id.eq(placeId)
                         .and(review.deletedAt.isNull()))
                 .orderBy(reviewImage.createdAt.desc())
                 .limit(3)

@@ -3,7 +3,6 @@ package com.zelusik.eatery.dto.place;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
-import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
@@ -16,7 +15,7 @@ import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class PlaceDtoWithImages {
+public class PlaceDtoWithMarkedStatusAndImages {
 
     private Long id;
     private List<ReviewKeywordValue> top3Keywords;
@@ -36,17 +35,15 @@ public class PlaceDtoWithImages {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static PlaceDtoWithImages of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
+    public static PlaceDtoWithMarkedStatusAndImages of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
         return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null, null, null);
     }
 
-    public static PlaceDtoWithImages of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, List<ReviewImageDto> images, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new PlaceDtoWithImages(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, images, isMarked, createdAt, updatedAt);
+    public static PlaceDtoWithMarkedStatusAndImages of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, List<ReviewImageDto> images, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new PlaceDtoWithMarkedStatusAndImages(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, images, isMarked, createdAt, updatedAt);
     }
 
-    public static PlaceDtoWithImages from(Place place, List<ReviewImageDto> images, List<Long> markedPlaceIdList) {
-        Boolean isMarked = markedPlaceIdList != null ? isMarked(place, markedPlaceIdList) : null;
-
+    public static PlaceDtoWithMarkedStatusAndImages from(PlaceDtoWithMarkedStatus place, List<ReviewImageDto> images) {
         return of(
                 place.getId(),
                 place.getTop3Keywords(),
@@ -60,24 +57,11 @@ public class PlaceDtoWithImages {
                 place.getHomepageUrl(),
                 place.getPoint(),
                 place.getClosingHours(),
-                place.getOpeningHoursList().stream()
-                        .map(OpeningHoursDto::from)
-                        .toList(),
+                place.getOpeningHoursDtos(),
                 images,
-                isMarked,
+                place.getIsMarked(),
                 place.getCreatedAt(),
                 place.getUpdatedAt()
         );
-    }
-
-    /**
-     * 북마크에 저장한 장소인지 확인하여, 마킹 여부를 반환한다.
-     *
-     * @param place             확인할 장소
-     * @param markedPlaceIdList 북마크에 저장한 장소들의 id 목록
-     * @return 마킹 여부
-     */
-    private static boolean isMarked(Place place, List<Long> markedPlaceIdList) {
-        return markedPlaceIdList.contains(place.getId());
     }
 }

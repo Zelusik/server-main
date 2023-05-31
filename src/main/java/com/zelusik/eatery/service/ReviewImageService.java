@@ -46,8 +46,8 @@ public class ReviewImageService {
         reviewImageRepository.saveAll(review.getReviewImages());
     }
 
-    public List<ReviewImageDto> findLatest3ByPlace(Place place) {
-        return reviewImageRepository.findLatest3ByPlace(place).stream()
+    public List<ReviewImageDto> findLatest3ByPlace(Long placeId) {
+        return reviewImageRepository.findLatest3ByPlace(placeId).stream()
                 .map(ReviewImageDto::from)
                 .toList();
     }

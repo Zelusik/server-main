@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ReviewImageRepositoryQCustom {
 
-    List<ReviewImage> findLatest3ByPlace(Place place);
+    List<ReviewImage> findLatest3ByPlace(Long placeId);
 }

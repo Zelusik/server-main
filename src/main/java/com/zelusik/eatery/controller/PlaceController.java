@@ -72,7 +72,7 @@ public class PlaceController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long placeId
     ) {
-        return PlaceResponseWithImages.from(placeService.findDtoById(userPrincipal.getMemberId(), placeId));
+        return PlaceResponseWithImages.from(placeService.findDtoWithMarkedStatusAndImages(userPrincipal.getMemberId(), placeId));
     }
 
     @Operation(

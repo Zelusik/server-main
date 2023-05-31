@@ -80,8 +80,7 @@ public class PlaceService {
      * @return 조회한 장소 entity
      */
     public Place findById(Long placeId) {
-        return placeRepository.findById(placeId)
-                .orElseThrow(PlaceNotFoundException::new);
+        return placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
     }
 
     /**
@@ -90,12 +89,11 @@ public class PlaceService {
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceDtoWithImages findDtoById(Long memberId, Long placeId) {
-        Place place = findById(placeId);
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-        List<ReviewImageDto> images = reviewImageService.findLatest3ByPlace(place);
+    public PlaceDtoWithMarkedStatusAndImages findDtoWithMarkedStatusAndImages(Long memberId, Long placeId) {
+        PlaceDtoWithMarkedStatus place = placeRepository.findDtoWithMarkedStatus(placeId, memberId).orElseThrow(PlaceNotFoundException::new);
+        List<ReviewImageDto> images = reviewImageService.findLatest3ByPlace(place.getId());
 
-        return PlaceDtoWithImages.from(place, images, markedPlaceIdList);
+        return PlaceDtoWithMarkedStatusAndImages.from(place, images);
     }
 
     /**
@@ -119,7 +117,7 @@ public class PlaceService {
      * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDtoWithImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
+    public Slice<PlaceDtoWithMarkedStatusAndImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
         return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, lat, lng, 50, pageable);
     }
 
@@ -132,7 +130,7 @@ public class PlaceService {
      * @param pageable paging 정보
      * @return 조회한 장소 목록과 사진 데이터
      */
-    public Slice<PlaceDtoWithImages> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+    public Slice<PlaceDtoWithMarkedStatusAndImages> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
         return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
     }
 
