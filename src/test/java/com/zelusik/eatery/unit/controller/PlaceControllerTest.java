@@ -4,7 +4,7 @@ import com.zelusik.eatery.config.SecurityConfig;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.controller.PlaceController;
-import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.security.JwtAuthenticationFilter;
@@ -68,7 +68,7 @@ class PlaceControllerTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         given(placeService.createAndReturnDto(eq(1L), any(PlaceCreateRequest.class)))
-                .willReturn(PlaceTestUtils.createPlaceDtoWithOpeningHours());
+                .willReturn(PlaceTestUtils.createPlaceDto());
 
         // when & then
         mvc.perform(
@@ -88,8 +88,8 @@ class PlaceControllerTest {
         // given
         long placeId = 1L;
         long memberId = 1L;
-        given(placeService.findDtoById(memberId, placeId))
-                .willReturn(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours());
+        given(placeService.findDtoWithMarkedStatusAndImages(memberId, placeId))
+                .willReturn(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages());
 
         // when & then
         mvc.perform(
@@ -108,7 +108,7 @@ class PlaceControllerTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
+        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
         given(placeService.findDtosNearBy(1L, List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
 
         // when & then
@@ -152,7 +152,7 @@ class PlaceControllerTest {
         FilteringType filteringType = FilteringType.TOP_3_KEYWORDS;
         String filteringKeywordDescription = "신선한 재료";
         String filteringKeyword = "FRESH";
-        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours(placeId)));
+        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
         given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class)))
                 .willReturn(expectedResult);
 

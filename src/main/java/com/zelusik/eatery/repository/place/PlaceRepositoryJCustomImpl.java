@@ -8,10 +8,9 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
-import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
-import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.util.domain.ReviewKeywordValueConverter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -34,18 +33,13 @@ import static com.zelusik.eatery.constant.ConstantUtil.MAX_NUM_OF_FILTERING_KEYW
 public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
     private final NamedParameterJdbcTemplate template;
-    private final BookmarkRepository bookmarkRepository;
 
-    public PlaceRepositoryJCustomImpl(
-            DataSource dataSource,
-            BookmarkRepository bookmarkRepository
-    ) {
+    public PlaceRepositoryJCustomImpl(DataSource dataSource) {
         this.template = new NamedParameterJdbcTemplate(dataSource);
-        this.bookmarkRepository = bookmarkRepository;
     }
 
     @Override
-    public Slice<PlaceDtoWithImages> findDtosNearBy(
+    public Slice<PlaceDtoWithMarkedStatusAndImages> findDtosNearBy(
             Long memberId,
             List<DayOfWeek> daysOfWeek,
             PlaceSearchKeyword keyword,
@@ -54,15 +48,18 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             int distanceLimit,
             Pageable pageable
     ) {
-        StringBuilder sql = new StringBuilder("SELECT p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ")
+        StringBuilder sql = new StringBuilder()
+                .append("SELECT p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ")
                 .append("ri1.review_image_id AS ri1_review_image_id, ri1.review_id AS ri1_review_id, ri1.original_name AS ri1_original_name, ri1.stored_name AS ri1_stored_name, ri1.url AS ri1_url, ri1.thumbnail_stored_name AS ri1_thumbnail_stored_name, ri1.thumbnail_url AS ri1_thumbnail_url, ri1.created_at AS ri1_created_at, ri1.updated_at AS ri1_updated_at, ri1.deleted_at AS ri1_deleted_at, ")
                 .append("ri2.review_image_id AS ri2_review_image_id, ri2.review_id AS ri2_review_id, ri2.original_name AS ri2_original_name, ri2.stored_name AS ri2_stored_name, ri2.url AS ri2_url, ri2.thumbnail_stored_name AS ri2_thumbnail_stored_name, ri2.thumbnail_url AS ri2_thumbnail_url, ri2.created_at AS ri2_created_at, ri2.updated_at AS ri2_updated_at, ri2.deleted_at AS ri2_deleted_at, ")
                 .append("ri3.review_image_id AS ri3_review_image_id, ri3.review_id AS ri3_review_id, ri3.original_name AS ri3_original_name, ri3.stored_name AS ri3_stored_name, ri3.url AS ri3_url, ri3.thumbnail_stored_name AS ri3_thumbnail_stored_name, ri3.thumbnail_url AS ri3_thumbnail_url, ri3.created_at AS ri3_created_at, ri3.updated_at AS ri3_updated_at, ri3.deleted_at AS ri3_deleted_at, ")
-                .append("(6371 * ACOS(COS(RADIANS(:lat)) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS(:lng)) + SIN(RADIANS(:lat)) * SIN(RADIANS(lat)))) AS distance ")
+                .append("(6371 * ACOS(COS(RADIANS(:lat)) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS(:lng)) + SIN(RADIANS(:lat)) * SIN(RADIANS(lat)))) AS distance, ")
+                .append("CASE WHEN bm.bookmark_id IS NULL THEN FALSE ELSE TRUE END AS is_marked ")
                 .append("FROM place p ")
                 .append("LEFT JOIN review_image ri1 ON ri1.review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id AND ri.deleted_at IS NULL WHERE r.place_id = p.place_id ORDER BY r.created_at DESC LIMIT 1 OFFSET 0) ")
                 .append("LEFT JOIN review_image ri2 ON ri2.review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id AND ri.deleted_at IS NULL WHERE r.place_id = p.place_id ORDER BY r.created_at DESC LIMIT 1 OFFSET 1) ")
-                .append("LEFT JOIN review_image ri3 ON ri3.review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id AND ri.deleted_at IS NULL WHERE r.place_id = p.place_id ORDER BY r.created_at DESC LIMIT 1 OFFSET 2) ");
+                .append("LEFT JOIN review_image ri3 ON ri3.review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id AND ri.deleted_at IS NULL WHERE r.place_id = p.place_id ORDER BY r.created_at DESC LIMIT 1 OFFSET 2) ")
+                .append("LEFT JOIN bookmark bm ON p.place_id = bm.place_id AND bm.member_id = :member_id ");
 
         if (daysOfWeek != null && !daysOfWeek.isEmpty()) {
             sql.append("JOIN opening_hours oh ")
@@ -82,7 +79,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         sql.append("GROUP BY p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ")
                 .append("ri1.review_image_id, ri1.review_id, ri1.original_name, ri1.stored_name, ri1.url, ri1.thumbnail_stored_name, ri1.thumbnail_url, ri1.created_at, ri1.updated_at, ri1.deleted_at, ")
                 .append("ri2.review_image_id, ri2.review_id, ri2.original_name, ri2.stored_name, ri2.url, ri2.thumbnail_stored_name, ri2.thumbnail_url, ri2.created_at, ri2.updated_at, ri2.deleted_at, ")
-                .append("ri3.review_image_id, ri3.review_id, ri3.original_name, ri3.stored_name, ri3.url, ri3.thumbnail_stored_name, ri3.thumbnail_url, ri3.created_at, ri3.updated_at, ri3.deleted_at ")
+                .append("ri3.review_image_id, ri3.review_id, ri3.original_name, ri3.stored_name, ri3.url, ri3.thumbnail_stored_name, ri3.thumbnail_url, ri3.created_at, ri3.updated_at, ri3.deleted_at, ")
+                .append("bm.bookmark_id, bm.member_id, bm.place_id, bm.created_at, bm.updated_at ")
                 .append("HAVING distance <= :distance_limit ")
                 .append("ORDER BY distance ")
                 .append("LIMIT :size_of_page OFFSET :offset;");
@@ -90,11 +88,12 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("lat", lat)
                 .addValue("lng", lng)
+                .addValue("member_id", memberId)
                 .addValue("distance_limit", distanceLimit)
                 .addValue("size_of_page", pageable.getPageSize() + 1)   // 다음 페이지 존재 여부 확인을 위함.
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDtoWithImages> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper(memberId));
+        List<PlaceDtoWithMarkedStatusAndImages> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper());
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
@@ -106,7 +105,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDtoWithImages> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+    public Slice<PlaceDtoWithMarkedStatusAndImages> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
         String sql = """
                 SELECT p.place_id,
                        p.top3keywords,
@@ -157,7 +156,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                        ri3.thumbnail_url         AS ri3_thumbnail_url,
                        ri3.created_at            AS ri3_created_at,
                        ri3.updated_at            AS ri3_updated_at,
-                       ri3.deleted_at            AS ri3_deleted_at
+                       ri3.deleted_at            AS ri3_deleted_at,
+                       TRUE                      AS is_marked
                 FROM bookmark bm
                          JOIN place p ON bm.place_id = p.place_id
                          LEFT JOIN review_image ri1 ON ri1.review_image_id = (SELECT ri.review_image_id
@@ -200,7 +200,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("size_of_page", pageable.getPageSize() + 1)
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDtoWithImages> content = template.query(sql, params, placeDtoWithImagesRowMapper(memberId));
+        List<PlaceDtoWithMarkedStatusAndImages> content = template.query(sql, params, placeDtoWithImagesRowMapper());
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
@@ -401,16 +401,11 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         );
     }
 
-    private RowMapper<PlaceDtoWithImages> placeDtoWithImagesRowMapper(Long memberId) {
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-
+    private RowMapper<PlaceDtoWithMarkedStatusAndImages> placeDtoWithImagesRowMapper() {
         return (rs, rowNum) -> {
             ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
-
             long placeId = rs.getLong("place_id");
-            boolean isMarked = markedPlaceIdList != null && markedPlaceIdList.contains(placeId);
-
-            return PlaceDtoWithImages.of(
+            return PlaceDtoWithMarkedStatusAndImages.of(
                     placeId,
                     reviewKeywordValueConverter.convertToEntityAttribute(rs.getString("top3keywords")),
                     rs.getString("kakao_pid"),
@@ -437,7 +432,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                     rs.getString("closing_hours"),
                     null,
                     getRecent3ReviewImageDtosOrderByLatest(rs),
-                    isMarked,
+                    rs.getBoolean("is_marked"),
                     rs.getTimestamp("created_at").toLocalDateTime(),
                     rs.getTimestamp("updated_at").toLocalDateTime()
             );

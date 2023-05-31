@@ -5,8 +5,8 @@ import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.OpeningHoursDto;
-import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -31,8 +31,8 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDto createPlaceDtoWithOpeningHours() {
-        return PlaceDto.of(
+    public static PlaceDtoWithMarkedStatus createPlaceDto() {
+        return PlaceDtoWithMarkedStatus.of(
                 1L,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",
@@ -56,12 +56,37 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDtoWithImages createPlaceDtoWithImagesAndOpeningHours() {
-        return createPlaceDtoWithImagesAndOpeningHours(1L);
+    public static PlaceDtoWithMarkedStatus createPlaceDto(Long placeId) {
+        return PlaceDtoWithMarkedStatus.of(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                "308342289",
+                "연남토마 본점",
+                "https://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "https://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                List.of(
+                        createOpeningHoursDto(100L, DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        createOpeningHoursDto(101L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        createOpeningHoursDto(102L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
+                ),
+                false,
+                LocalDateTime.of(2023, 1, 1, 0, 0),
+                LocalDateTime.of(2023, 1, 1, 0, 0)
+        );
     }
 
-    public static PlaceDtoWithImages createPlaceDtoWithImagesAndOpeningHours(Long placeId) {
-        return PlaceDtoWithImages.of(
+    public static PlaceDtoWithMarkedStatusAndImages createPlaceDtoWithMarkedStatusAndImages() {
+        return createPlaceDtoWithMarkedStatusAndImages(1L);
+    }
+
+    public static PlaceDtoWithMarkedStatusAndImages createPlaceDtoWithMarkedStatusAndImages(Long placeId) {
+        return PlaceDtoWithMarkedStatusAndImages.of(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",

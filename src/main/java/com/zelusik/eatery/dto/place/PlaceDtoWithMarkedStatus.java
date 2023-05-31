@@ -15,33 +15,56 @@ import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class PlaceDto {
-        private Long id;
-        private List<ReviewKeywordValue> top3Keywords;
-        private String kakaoPid;
-        private String name;
-        private String pageUrl;
-        private KakaoCategoryGroupCode categoryGroupCode;
-        private PlaceCategory category;
-        private String phone;
-        private Address address;
-        private String homepageUrl;
-        private Point point;
-        private String closingHours;
-        private List<OpeningHoursDto> openingHoursDtos;
-        private Boolean isMarked;
-        private LocalDateTime createdAt;
-        private LocalDateTime updatedAt;
+public class PlaceDtoWithMarkedStatus {
+    private Long id;
+    private List<ReviewKeywordValue> top3Keywords;
+    private String kakaoPid;
+    private String name;
+    private String pageUrl;
+    private KakaoCategoryGroupCode categoryGroupCode;
+    private PlaceCategory category;
+    private String phone;
+    private Address address;
+    private String homepageUrl;
+    private Point point;
+    private String closingHours;
+    private List<OpeningHoursDto> openingHoursDtos;
+    private Boolean isMarked;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public static PlaceDto of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
+    public static PlaceDtoWithMarkedStatus of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
         return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null, null);
     }
 
-    public static PlaceDto of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new PlaceDto(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, isMarked, createdAt, updatedAt);
+    public static PlaceDtoWithMarkedStatus of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new PlaceDtoWithMarkedStatus(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, isMarked, createdAt, updatedAt);
     }
 
-    public static PlaceDto from(Place place, List<Long> markedPlaceIdList) {
+    public static PlaceDtoWithMarkedStatus from(Place place, boolean isMarked) {
+        return of(
+                place.getId(),
+                place.getTop3Keywords(),
+                place.getKakaoPid(),
+                place.getName(),
+                place.getPageUrl(),
+                place.getCategoryGroupCode(),
+                place.getCategory(),
+                place.getPhone(),
+                place.getAddress(),
+                place.getHomepageUrl(),
+                place.getPoint(),
+                place.getClosingHours(),
+                place.getOpeningHoursList().stream()
+                        .map(OpeningHoursDto::from)
+                        .toList(),
+                isMarked,
+                place.getCreatedAt(),
+                place.getUpdatedAt()
+        );
+    }
+
+    public static PlaceDtoWithMarkedStatus from(Place place, List<Long> markedPlaceIdList) {
         Boolean isMarked = markedPlaceIdList != null ? isMarked(place, markedPlaceIdList) : null;
 
         return of(

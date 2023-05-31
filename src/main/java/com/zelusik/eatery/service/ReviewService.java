@@ -5,7 +5,7 @@ import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.ImageDto;
-import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
@@ -49,14 +49,14 @@ public class ReviewService {
     public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
-        Place place = placeService.findOptionalByKakaoPid(placeCreateRequest.getKakaoPid())
+        Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
                 .orElseGet(() -> placeService.create(placeCreateRequest));
 
         Member writer = memberService.findById(writerId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
 
         // 리뷰 저장
-        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place, markedPlaceIdList));
+        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDtoWithMarkedStatus.from(place, markedPlaceIdList));
         Review review = reviewDtoWithMemberAndPlace.toEntity(writer, place);
         reviewRepository.save(review);
         reviewDtoWithMemberAndPlace.getKeywords()

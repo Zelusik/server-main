@@ -30,7 +30,7 @@ public class ReviewTestUtils {
         return ReviewDtoWithMemberAndPlace.of(
                 1L,
                 MemberTestUtils.createMemberDtoWithId(),
-                PlaceTestUtils.createPlaceDtoWithOpeningHours(),
+                PlaceTestUtils.createPlaceDto(),
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",

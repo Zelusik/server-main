@@ -5,10 +5,7 @@ import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.dto.place.OpeningHoursTimeDto;
-import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
-import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
-import com.zelusik.eatery.dto.place.PlaceScrapingInfo;
+import com.zelusik.eatery.dto.place.*;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.exception.scraping.OpeningHoursUnexpectedFormatException;
@@ -238,18 +235,18 @@ class PlaceServiceTest {
         // given
         long placeId = 1L;
         long memberId = 2L;
-        Place expectedPlace = PlaceTestUtils.createPlace(placeId, "1");
-        given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedPlace));
-        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of());
-        given(reviewImageService.findLatest3ByPlace(expectedPlace)).willReturn(List.of());
+        PlaceDtoWithMarkedStatus expectedResult = PlaceTestUtils.createPlaceDto(placeId);
+        given(placeRepository.findDtoWithMarkedStatus(placeId, memberId)).willReturn(Optional.of(expectedResult));
+        given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
-        PlaceDtoWithImages findDto = sut.findDtoById(memberId, placeId);
+        PlaceDtoWithMarkedStatusAndImages findDto = sut.findDtoWithMarkedStatusAndImages(memberId, placeId);
 
         // then
-        then(placeRepository).should().findById(placeId);
-        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
-        then(reviewImageService).should().findLatest3ByPlace(expectedPlace);
+        then(placeRepository).should().findDtoWithMarkedStatus(placeId, memberId);
+        then(reviewImageService).should().findLatest3ByPlace(placeId);
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        then(reviewImageService).shouldHaveNoMoreInteractions();
         assertThat(findDto.getId()).isEqualTo(placeId);
     }
 
@@ -258,13 +255,14 @@ class PlaceServiceTest {
     void givenId_whenFindNotExistentPlace_thenReturnThrowException() {
         // given
         long placeId = 1L;
-        given(placeRepository.findById(placeId)).willReturn(Optional.empty());
+        long memberId = 2L;
+        given(placeRepository.findDtoWithMarkedStatus(placeId, memberId)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findDtoById(1L, placeId));
+        Throwable t = catchThrowable(() -> sut.findDtoWithMarkedStatusAndImages(memberId, placeId));
 
         // then
-        then(placeRepository).should().findById(placeId);
+        then(placeRepository).should().findDtoWithMarkedStatus(placeId, memberId);
         then(placeRepository).shouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(PlaceNotFoundException.class);
     }
@@ -278,7 +276,7 @@ class PlaceServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
-        Optional<Place> actualPlace = sut.findOptionalByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findOptByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -293,7 +291,7 @@ class PlaceServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.empty());
 
         // when
-        Optional<Place> actualPlace = sut.findOptionalByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findOptByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -309,12 +307,12 @@ class PlaceServiceTest {
         FilteringType filteringType = FilteringType.SECOND_CATEGORY;
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours(placeId)));
+        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
         given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable))
                 .willReturn(expectedResult);
 
         // when
-        Slice<PlaceDtoWithImages> actualResult = sut.findMarkedDtos(memberId, filteringType, filteringKeyword, pageable);
+        Slice<PlaceDtoWithMarkedStatusAndImages> actualResult = sut.findMarkedDtos(memberId, filteringType, filteringKeyword, pageable);
 
         // then
         then(placeRepository).should().findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
@@ -331,11 +329,11 @@ class PlaceServiceTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDtoWithImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithImagesAndOpeningHours()), pageable, false);
+        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
         given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 50, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDtoWithImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
+        Slice<PlaceDtoWithMarkedStatusAndImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
         then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 50, pageable);

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface PlaceRepository extends
         JpaRepository<Place, Long>,
+        PlaceRepositoryQCustom,
         PlaceRepositoryJCustom {
 
     Optional<Place> findByKakaoPid(String kakaoPid);

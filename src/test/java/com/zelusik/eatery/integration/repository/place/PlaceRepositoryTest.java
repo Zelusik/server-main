@@ -4,7 +4,7 @@ import com.zelusik.eatery.config.QuerydslConfig;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.Point;
-import com.zelusik.eatery.dto.place.PlaceDtoWithImages;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.util.PlaceTestUtils;
@@ -62,14 +62,14 @@ class PlaceRepositoryTest {
         }
 
         // when
-        Slice<PlaceDtoWithImages> places = placeRepository.findDtosNearBy(memberId, List.of(), null, centerLat, centerLng, 1100, PageRequest.of(0, 30));
+        Slice<PlaceDtoWithMarkedStatusAndImages> places = placeRepository.findDtosNearBy(memberId, List.of(), null, centerLat, centerLng, 1100, PageRequest.of(0, 30));
 
         // then
         assertThat(places.getSize()).isEqualTo(30);
         assertThat(places.hasNext()).isTrue();
         for (int i = 0; i < places.getSize() - 1; i++) {
-            PlaceDtoWithImages curPlace = places.getContent().get(i);
-            PlaceDtoWithImages nextPlace = places.getContent().get(i + 1);
+            PlaceDtoWithMarkedStatusAndImages curPlace = places.getContent().get(i);
+            PlaceDtoWithMarkedStatusAndImages nextPlace = places.getContent().get(i + 1);
             assertThat(calculateDiff(centerLng, curPlace.getPoint().getLng()))
                     .isLessThanOrEqualTo(calculateDiff(centerLng, nextPlace.getPoint().getLng()));
         }
@@ -92,11 +92,11 @@ class PlaceRepositoryTest {
 
         // when
         Pageable pageable = Pageable.ofSize(30);
-        Slice<PlaceDtoWithImages> placesLimit50 = placeRepository.findDtosNearBy(memberId, null, null, pos.getLat(), pos.getLng(), 50, pageable);
-        Slice<PlaceDtoWithImages> placesLimit1100 = placeRepository.findDtosNearBy(memberId, null, null, pos.getLat(), pos.getLng(), 1100, pageable);
-        Slice<PlaceDtoWithImages> placesLimit1100DaysMon = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON), null, pos.getLat(), pos.getLng(), 1100, pageable);
-        Slice<PlaceDtoWithImages> placesLimit1100DaysWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.WED), null, pos.getLat(), pos.getLng(), 1100, pageable);
-        Slice<PlaceDtoWithImages> placesLimit1100DaysMonAndWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON, DayOfWeek.WED), null, pos.getLat(), pos.getLng(), 1100, pageable);
+        Slice<PlaceDtoWithMarkedStatusAndImages> placesLimit50 = placeRepository.findDtosNearBy(memberId, null, null, pos.getLat(), pos.getLng(), 50, pageable);
+        Slice<PlaceDtoWithMarkedStatusAndImages> placesLimit1100 = placeRepository.findDtosNearBy(memberId, null, null, pos.getLat(), pos.getLng(), 1100, pageable);
+        Slice<PlaceDtoWithMarkedStatusAndImages> placesLimit1100DaysMon = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON), null, pos.getLat(), pos.getLng(), 1100, pageable);
+        Slice<PlaceDtoWithMarkedStatusAndImages> placesLimit1100DaysWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.WED), null, pos.getLat(), pos.getLng(), 1100, pageable);
+        Slice<PlaceDtoWithMarkedStatusAndImages> placesLimit1100DaysMonAndWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON, DayOfWeek.WED), null, pos.getLat(), pos.getLng(), 1100, pageable);
 
         // then
         assertThat(placesLimit50.getNumberOfElements()).isEqualTo(2);
