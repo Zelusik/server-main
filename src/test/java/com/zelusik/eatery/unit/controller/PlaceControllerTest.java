@@ -68,7 +68,7 @@ class PlaceControllerTest {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         given(placeService.createAndReturnDto(eq(1L), any(PlaceCreateRequest.class)))
-                .willReturn(PlaceTestUtils.createPlaceDtoWithOpeningHours());
+                .willReturn(PlaceTestUtils.createPlaceDto());
 
         // when & then
         mvc.perform(

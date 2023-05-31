@@ -6,7 +6,6 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.OpeningHoursDto;
 import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
 import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -32,7 +31,7 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDtoWithMarkedStatus createPlaceDtoWithOpeningHours() {
+    public static PlaceDtoWithMarkedStatus createPlaceDto() {
         return PlaceDtoWithMarkedStatus.of(
                 1L,
                 List.of(ReviewKeywordValue.FRESH),
@@ -57,7 +56,7 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDtoWithMarkedStatus createPlaceDtoWithMarkedStatus(Long placeId) {
+    public static PlaceDtoWithMarkedStatus createPlaceDto(Long placeId) {
         return PlaceDtoWithMarkedStatus.of(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),

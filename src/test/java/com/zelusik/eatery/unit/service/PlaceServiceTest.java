@@ -235,7 +235,7 @@ class PlaceServiceTest {
         // given
         long placeId = 1L;
         long memberId = 2L;
-        PlaceDtoWithMarkedStatus expectedResult = PlaceTestUtils.createPlaceDtoWithMarkedStatus(placeId);
+        PlaceDtoWithMarkedStatus expectedResult = PlaceTestUtils.createPlaceDto(placeId);
         given(placeRepository.findDtoWithMarkedStatus(placeId, memberId)).willReturn(Optional.of(expectedResult));
         given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
