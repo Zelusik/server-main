@@ -6,7 +6,7 @@ import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.member.MemberDto;
-import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class ReviewDtoWithMemberAndPlace {
 
     private Long id;
     private MemberDto writerDto;
-    private PlaceDto placeDto;
+    private PlaceDtoWithMarkedStatus placeDtoWithMarkedStatus;
     private List<ReviewKeywordValue> keywords;
     private String autoCreatedContent;
     private String content;
@@ -29,11 +29,11 @@ public class ReviewDtoWithMemberAndPlace {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
-    public static ReviewDtoWithMemberAndPlace of(PlaceDto placeDto, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
-        return of(null, null, placeDto, keywords, autoCreatedContent, content, null, null, null, null);
+    public static ReviewDtoWithMemberAndPlace of(PlaceDtoWithMarkedStatus placeDtoWithMarkedStatus, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
+        return of(null, null, placeDtoWithMarkedStatus, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDtoWithMemberAndPlace of(Long id, MemberDto writerDto, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static ReviewDtoWithMemberAndPlace of(Long id, MemberDto writerDto, PlaceDtoWithMarkedStatus place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return new ReviewDtoWithMemberAndPlace(id, writerDto, place, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
     }
 
@@ -41,7 +41,7 @@ public class ReviewDtoWithMemberAndPlace {
         return of(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
-                PlaceDto.from(entity.getPlace(), markedPlaceIdList),
+                PlaceDtoWithMarkedStatus.from(entity.getPlace(), markedPlaceIdList),
                 entity.getKeywords().stream()
                         .map(ReviewKeyword::getKeyword)
                         .toList(),

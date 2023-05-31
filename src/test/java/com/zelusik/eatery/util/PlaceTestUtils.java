@@ -5,7 +5,7 @@ import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.OpeningHoursDto;
-import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
 import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
 import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
@@ -32,8 +32,8 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDto createPlaceDtoWithOpeningHours() {
-        return PlaceDto.of(
+    public static PlaceDtoWithMarkedStatus createPlaceDtoWithOpeningHours() {
+        return PlaceDtoWithMarkedStatus.of(
                 1L,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",

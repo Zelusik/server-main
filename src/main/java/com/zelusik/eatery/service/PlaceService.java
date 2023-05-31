@@ -67,10 +67,10 @@ public class PlaceService {
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
     @Transactional
-    public PlaceDto createAndReturnDto(Long memberId, PlaceCreateRequest placeCreateRequest) {
+    public PlaceDtoWithMarkedStatus createAndReturnDto(Long memberId, PlaceCreateRequest placeCreateRequest) {
         Place place = create(placeCreateRequest);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-        return PlaceDto.from(place, markedPlaceIdList);
+        return PlaceDtoWithMarkedStatus.from(place, markedPlaceIdList);
     }
 
     /**
