@@ -48,7 +48,7 @@ public class PlaceService {
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
     @Transactional
-    public Place create(PlaceCreateRequest placeCreateRequest) {
+    public PlaceDtoWithMarkedStatus create(Long memberId, PlaceCreateRequest placeCreateRequest) {
         PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
 
         Place place = placeCreateRequest
@@ -56,19 +56,8 @@ public class PlaceService {
                 .toEntity();
         createOpeningHours(place, scrapingInfo.getOpeningHours());
 
-        return placeRepository.save(place);
-    }
+        place = placeRepository.save(place);
 
-    /**
-     * 장소 정보를 받아 장소를 저장한다.
-     *
-     * @param placeCreateRequest 장소 정보가 담긴 dto.
-     * @return 저장된 장소 dto.
-     * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
-     */
-    @Transactional
-    public PlaceDtoWithMarkedStatus createAndReturnDto(Long memberId, PlaceCreateRequest placeCreateRequest) {
-        Place place = create(placeCreateRequest);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
         return PlaceDtoWithMarkedStatus.from(place, markedPlaceIdList);
     }

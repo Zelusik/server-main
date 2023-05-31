@@ -67,7 +67,7 @@ class PlaceControllerTest {
     void givenPlaceInfo_whenSaving_thenSavePlace() throws Exception {
         // given
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
-        given(placeService.createAndReturnDto(eq(1L), any(PlaceCreateRequest.class)))
+        given(placeService.create(eq(1L), any(PlaceCreateRequest.class)))
                 .willReturn(PlaceTestUtils.createPlaceDto());
 
         // when & then

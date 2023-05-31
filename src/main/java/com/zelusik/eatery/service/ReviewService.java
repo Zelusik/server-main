@@ -50,7 +50,10 @@ public class ReviewService {
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
         Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
-                .orElseGet(() -> placeService.create(placeCreateRequest));
+                .orElseGet(() -> {
+                    Long createdPlaceId = placeService.create(writerId, placeCreateRequest).getId();
+                    return placeService.findById(createdPlaceId);
+                });
 
         Member writer = memberService.findById(writerId);
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);

@@ -76,27 +76,34 @@ class PlaceServiceTest {
             Map<DayOfWeek, OpeningHoursTimeDto> expectedOpeningHoursResult
     ) {
         // given
+        long memberId = 1L;
+        long placeId = 2L;
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
+        Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
-        given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
+        given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
+        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of(placeId));
 
         // when
-        Place actualSavedPlace = sut.create(placeCreateRequest);
+        PlaceDtoWithMarkedStatus actualResult = sut.create(memberId, placeCreateRequest);
 
         // then
+        then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
         then(placeRepository).should().save(any(Place.class));
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
-        actualSavedPlace.getOpeningHoursList()
+        then(openingHoursRepository).should().saveAll(any());
+        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
+        actualResult.getOpeningHoursDtos()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
                     assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
                     assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
                 });
-        assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
+        assertThat(actualResult.getClosingHours()).isEqualTo(closingHours);
     }
 
     @DisplayName("'~'이 적힌 영업시간이 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
@@ -108,29 +115,34 @@ class PlaceServiceTest {
             Map<DayOfWeek, OpeningHoursTimeDto> expectedOpeningHoursResult
     ) {
         // given
+        long memberId = 1L;
+        long placeId = 2L;
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
+        Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
-        given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
+        given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
+        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of(placeId));
 
         // when
-        Place actualSavedPlace = sut.create(placeCreateRequest);
+        PlaceDtoWithMarkedStatus actualResult = sut.create(memberId, placeCreateRequest);
 
         // then
         int wantedNumOfInvocationsOfSaveAll = StringUtils.countOccurrencesOf(openingHours, "\n") + 1;
+        then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
         then(placeRepository).should().save(any(Place.class));
         verify(openingHoursRepository, times(wantedNumOfInvocationsOfSaveAll)).saveAll(any());
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
-        actualSavedPlace.getOpeningHoursList()
-                .forEach(oh -> {
-                    OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
-                    assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
-                    assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
-                });
-        assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
+        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
+        actualResult.getOpeningHoursDtos().forEach(oh -> {
+            OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
+            assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
+            assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
+        });
+        assertThat(actualResult.getClosingHours()).isEqualTo(closingHours);
     }
 
     @DisplayName("','로 구분된 영업시간이 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
@@ -142,28 +154,34 @@ class PlaceServiceTest {
             Map<DayOfWeek, OpeningHoursTimeDto> expectedOpeningHoursResult
     ) {
         // given
+        long memberId = 1L;
+        long placeId = 2L;
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         String homepageUrl = "www.instagram.com/toma_wv";
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
+        Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
-        given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
+        given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.saveAll(any())).willReturn(any());
+        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of(placeId));
 
         // when
-        Place actualSavedPlace = sut.create(placeCreateRequest);
+        PlaceDtoWithMarkedStatus actualResult = sut.create(memberId, placeCreateRequest);
 
         // then
+        then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().saveAll(any());
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
-        actualSavedPlace.getOpeningHoursList()
+        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
+        actualResult.getOpeningHoursDtos()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
                     assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
                     assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
                 });
-        assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
+        assertThat(actualResult.getClosingHours()).isEqualTo(closingHours);
     }
 
     @DisplayName("','로 구분된 영업시간과 단일 요일 정보가 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
@@ -182,50 +200,52 @@ class PlaceServiceTest {
                 SAT, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0)),
                 SUN, OpeningHoursTimeDto.of(LocalTime.of(11, 0), LocalTime.of(19, 0))
         );
-        Place expectedSavedPlace = PlaceTestUtils.createPlace(1L, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
-        given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
-                .willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
-        given(placeRepository.save(any(Place.class))).willReturn(expectedSavedPlace);
+        long memberId = 1L;
+        long placeId = 2L;
+        Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
+        given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl())).willReturn(PlaceScrapingInfo.of(openingHours, closingHours, homepageUrl));
+        given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.save(any(OpeningHours.class)))
-                .willReturn(OpeningHours.of(
-                        expectedSavedPlace,
-                        THU,
-                        LocalTime.of(9, 0),
-                        LocalTime.of(18, 0)
-                ));
+                .willReturn(OpeningHours.of(expectedResult, THU, LocalTime.of(9, 0), LocalTime.of(18, 0)));
         given(openingHoursRepository.saveAll(any())).willReturn(any());
+        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of(placeId));
 
         // when
-        Place actualSavedPlace = sut.create(placeCreateRequest);
+        PlaceDtoWithMarkedStatus actualResult = sut.create(memberId, placeCreateRequest);
 
         // then
+        then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().save(any());
         then(openingHoursRepository).should().saveAll(any());
-        assertThat(actualSavedPlace.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
-        actualSavedPlace.getOpeningHoursList()
+        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
+        actualResult.getOpeningHoursDtos()
                 .forEach(oh -> {
                     OpeningHoursTimeDto expectedTime = expectedOpeningHoursResult.get(oh.getDayOfWeek());
                     assertThat(oh.getOpenAt()).isEqualTo(expectedTime.getOpenAt());
                     assertThat(oh.getCloseAt()).isEqualTo(expectedTime.getCloseAt());
                 });
-        assertThat(actualSavedPlace.getClosingHours()).isEqualTo(closingHours);
+        assertThat(actualResult.getClosingHours()).isEqualTo(closingHours);
     }
 
     @DisplayName("처리할 수 없는 형태의 영업시간 정보가 주어지고, 장소를 생성하면, 예외가 발생한다.")
     @Test
     void givenUnexpectedFormatOpeningHoursInfo_whenCreatePlace_thenThrowException() {
         // given
+        long memberId = 1L;
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl()))
                 .willReturn(PlaceScrapingInfo.of("처리할 수 없는 값", null, "www.instagram.com/toma_wv"));
 
         // when
-        Throwable t = catchThrowable(() -> sut.create(placeCreateRequest));
+        Throwable t = catchThrowable(() -> sut.create(memberId, placeCreateRequest));
 
         // then
         then(placeRepository).shouldHaveNoInteractions();
         then(openingHoursRepository).shouldHaveNoInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(OpeningHoursUnexpectedFormatException.class);
     }
 
@@ -245,8 +265,7 @@ class PlaceServiceTest {
         // then
         then(placeRepository).should().findDtoWithMarkedStatus(placeId, memberId);
         then(reviewImageService).should().findLatest3ByPlace(placeId);
-        then(placeRepository).shouldHaveNoMoreInteractions();
-        then(reviewImageService).shouldHaveNoMoreInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(findDto.getId()).isEqualTo(placeId);
     }
 
@@ -263,7 +282,7 @@ class PlaceServiceTest {
 
         // then
         then(placeRepository).should().findDtoWithMarkedStatus(placeId, memberId);
-        then(placeRepository).shouldHaveNoMoreInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(PlaceNotFoundException.class);
     }
 
@@ -316,7 +335,7 @@ class PlaceServiceTest {
 
         // then
         then(placeRepository).should().findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
-        then(placeRepository).shouldHaveNoMoreInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(placeId);
     }
@@ -337,7 +356,7 @@ class PlaceServiceTest {
 
         // then
         then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 50, pageable);
-        then(placeRepository).shouldHaveNoMoreInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
     }
@@ -358,7 +377,7 @@ class PlaceServiceTest {
 
         // then
         then(placeRepository).should().getFilteringKeywords(memberId);
-        then(placeRepository).shouldHaveNoMoreInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(filteringKeywords.size()).isEqualTo(2);
     }
 
@@ -380,7 +399,7 @@ class PlaceServiceTest {
 
         // then
         then(reviewKeywordRepository).should().searchTop3Keywords(placeId);
-        then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(place.getTop3Keywords().size()).isEqualTo(3);
         assertThat(place.getTop3Keywords().get(0)).isEqualTo(ReviewKeywordValue.BEST_FLAVOR);
         assertThat(place.getTop3Keywords().get(1)).isEqualTo(ReviewKeywordValue.GOOD_FOR_BLIND_DATE);
@@ -459,5 +478,14 @@ class PlaceServiceTest {
                         SUN, OpeningHoursTimeDto.of(LocalTime.of(10, 0), LocalTime.of(19, 30))
                 ))
         );
+    }
+
+    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
+        then(reviewImageService).shouldHaveNoMoreInteractions();
+        then(webScrapingService).shouldHaveNoMoreInteractions();
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        then(openingHoursRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkRepository).shouldHaveNoMoreInteractions();
+        then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
     }
 }
