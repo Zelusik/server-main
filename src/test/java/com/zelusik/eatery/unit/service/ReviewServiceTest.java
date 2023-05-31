@@ -68,7 +68,7 @@ class ReviewServiceTest {
         Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
-        given(placeService.findOptionalByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
+        given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
         given(memberService.findById(writerId)).willReturn(expectedMember);
         given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
@@ -83,7 +83,7 @@ class ReviewServiceTest {
         );
 
         // then
-        then(placeService).should().findOptionalByKakaoPid(kakaoPid);
+        then(placeService).should().findOptByKakaoPid(kakaoPid);
         then(memberService).should().findById(writerId);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
@@ -101,7 +101,7 @@ class ReviewServiceTest {
         Place expectedPlace = PlaceTestUtils.createPlace(2L, kakaoPid);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
-        given(placeService.findOptionalByKakaoPid(kakaoPid))
+        given(placeService.findOptByKakaoPid(kakaoPid))
                 .willReturn(Optional.empty());
         given(placeService.create(reviewCreateRequest.getPlace()))
                 .willReturn(expectedPlace);
@@ -122,7 +122,7 @@ class ReviewServiceTest {
         );
 
         // then
-        then(placeService).should().findOptionalByKakaoPid(kakaoPid);
+        then(placeService).should().findOptByKakaoPid(kakaoPid);
         then(placeService).should().create(reviewCreateRequest.getPlace());
         then(memberService).should().findById(writerId);
         then(reviewRepository).should().save(any(Review.class));

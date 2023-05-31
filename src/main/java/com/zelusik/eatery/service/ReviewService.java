@@ -49,7 +49,7 @@ public class ReviewService {
     public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
-        Place place = placeService.findOptionalByKakaoPid(placeCreateRequest.getKakaoPid())
+        Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
                 .orElseGet(() -> placeService.create(placeCreateRequest));
 
         Member writer = memberService.findById(writerId);

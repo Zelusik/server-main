@@ -84,6 +84,16 @@ public class PlaceService {
     }
 
     /**
+     * kakaoPid에 해당하는 장소를 조회한 후 반환한다.
+     *
+     * @param kakaoPid 조회하고자 하는 장소의 kakaoPid
+     * @return 조회한 장소의 optional entity
+     */
+    public Optional<Place> findOptByKakaoPid(String kakaoPid) {
+        return placeRepository.findByKakaoPid(kakaoPid);
+    }
+
+    /**
      * placeId에 해당하는 장소를 조회한 후 반환한다.
      *
      * @param placeId 조회하고자 하는 장소의 PK
@@ -94,16 +104,6 @@ public class PlaceService {
         List<ReviewImageDto> images = reviewImageService.findLatest3ByPlace(place.getId());
 
         return PlaceDtoWithMarkedStatusAndImages.from(place, images);
-    }
-
-    /**
-     * kakaoPid에 해당하는 장소를 조회한 후 반환한다.
-     *
-     * @param kakaoPid 조회하고자 하는 장소의 kakaoPid
-     * @return 조회한 장소의 optional entity
-     */
-    public Optional<Place> findOptionalByKakaoPid(String kakaoPid) {
-        return placeRepository.findByKakaoPid(kakaoPid);
     }
 
     /**

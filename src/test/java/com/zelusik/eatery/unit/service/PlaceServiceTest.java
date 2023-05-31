@@ -276,7 +276,7 @@ class PlaceServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
-        Optional<Place> actualPlace = sut.findOptionalByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findOptByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -291,7 +291,7 @@ class PlaceServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.empty());
 
         // when
-        Optional<Place> actualPlace = sut.findOptionalByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findOptByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
