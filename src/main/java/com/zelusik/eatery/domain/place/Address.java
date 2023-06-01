@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -45,6 +46,21 @@ public class Address {
         this.sgg = address.substring(sidoIdx + 1, sggIdx);
         this.lotNumberAddress = StringUtils.hasText(lotNumberAddress) ? lotNumberAddress.substring(sggIdx + 1) : null;
         this.roadAddress = StringUtils.hasText(roadAddress) ? roadAddress.substring(sggIdx + 1) : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Address that)) return false;
+        return Objects.equals(this.getSido(), that.getSido())
+                && Objects.equals(this.getSgg(), that.getSgg())
+                && Objects.equals(this.getLotNumberAddress(), that.getLotNumberAddress())
+                && Objects.equals(this.getRoadAddress(), that.getRoadAddress());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSido(), getSgg(), getLotNumberAddress(), getRoadAddress());
     }
 }
 
