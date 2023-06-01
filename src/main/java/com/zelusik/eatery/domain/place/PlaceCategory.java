@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.Arrays;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,5 +34,19 @@ public class PlaceCategory {
         this.firstCategory = length > 1 ? categories[1] : null;
         this.secondCategory = length > 2 ? categories[2] : null;
         this.thirdCategory = length > 3 ? categories[3] : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PlaceCategory that)) return false;
+        return Objects.equals(this.getFirstCategory(), that.getFirstCategory())
+                && Objects.equals(this.getSecondCategory(), that.getSecondCategory())
+                && Objects.equals(this.getThirdCategory(), that.getThirdCategory());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFirstCategory(), getSecondCategory(), getThirdCategory());
     }
 }
