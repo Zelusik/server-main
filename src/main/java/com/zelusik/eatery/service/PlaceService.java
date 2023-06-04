@@ -6,11 +6,13 @@ import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.dto.place.*;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
-import com.zelusik.eatery.exception.scraping.OpeningHoursUnexpectedFormatException;
 import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
@@ -22,9 +24,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,14 +48,17 @@ public class PlaceService {
      */
     @Transactional
     public PlaceDtoWithMarkedStatus create(Long memberId, PlaceCreateRequest placeCreateRequest) {
-        PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getPageUrl());
+        PlaceScrapingResponse scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
 
-        Place place = placeCreateRequest
+        Place place = placeRepository.save(placeCreateRequest
                 .toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours())
-                .toEntity();
-        createOpeningHours(place, scrapingInfo.getOpeningHours());
+                .toEntity());
 
-        place = placeRepository.save(place);
+        List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
+                .map(oh -> oh.toOpeningHoursEntity(place))
+                .toList();
+        openingHoursRepository.saveAll(openingHoursList);
+        place.getOpeningHoursList().addAll(openingHoursList);
 
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
         return PlaceDtoWithMarkedStatus.from(place, markedPlaceIdList);
@@ -142,104 +144,5 @@ public class PlaceService {
     public void renewTop3Keywords(Place place) {
         List<ReviewKeywordValue> placeTop3Keywords = reviewKeywordRepository.searchTop3Keywords(place.getId());
         place.setTop3Keywords(placeTop3Keywords);
-    }
-
-    /**
-     * 장소의 영업시간을 저장할 OpeningHours entity들을 생성/저장한다.
-     *
-     * @param place        OpeningHours와 연관된 장소 entity.
-     * @param openingHours 영업시간 정보.
-     */
-    private void createOpeningHours(Place place, String openingHours) {
-        if (openingHours == null) return;
-
-        for (String oh : openingHours.split("\n")) {
-            oh = oh.trim();
-
-            if (oh.contains("라스트오더")) continue;
-            if (oh.contains("휴게시간")) continue;
-
-            if (oh.startsWith("매일")) {
-                // 매일 11:30 ~ 22:00
-                OpeningHoursTimeDto openingHoursTime = extractOpeningHoursTime(oh, 3);
-
-                Arrays.stream(DayOfWeek.values())
-                        .forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
-                                place,
-                                dayOfWeek,
-                                openingHoursTime.getOpenAt(),
-                                openingHoursTime.getCloseAt()
-                        )));
-                openingHoursRepository.saveAll(place.getOpeningHoursList());
-            } else if (oh.charAt(1) == '~') {
-                // 월~토 18:00 ~ 02:00
-                DayOfWeek startDay = DayOfWeek.valueOfDescription(oh.charAt(0));
-                DayOfWeek endDay = DayOfWeek.valueOfDescription(oh.charAt(2));
-                List<DayOfWeek> dayOfWeekList = DayOfWeek.getValuesInRange(startDay, endDay);
-
-                OpeningHoursTimeDto openingHoursTime = extractOpeningHoursTime(oh, 4);
-
-                dayOfWeekList.forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
-                        place,
-                        dayOfWeek,
-                        openingHoursTime.getOpenAt(),
-                        openingHoursTime.getCloseAt()
-                )));
-                openingHoursRepository.saveAll(place.getOpeningHoursList());
-            } else if (oh.charAt(1) == ',') {
-                // 월,화,목,금,토,일 10:00 ~ 19:30
-                int firstSpaceIdx = oh.indexOf(" ");
-
-                List<DayOfWeek> dayOfWeekList = new ArrayList<>();
-                for (int i = 0; i < firstSpaceIdx; i += 2) {
-                    DayOfWeek dayOfWeek = DayOfWeek.valueOfDescription(oh.charAt(i));
-                    dayOfWeekList.add(dayOfWeek);
-                }
-
-                OpeningHoursTimeDto openingHoursTime = extractOpeningHoursTime(oh, firstSpaceIdx + 1);
-
-                dayOfWeekList.forEach(dayOfWeek -> place.getOpeningHoursList().add(OpeningHours.of(
-                        place,
-                        dayOfWeek,
-                        openingHoursTime.getOpenAt(),
-                        openingHoursTime.getCloseAt()
-                )));
-                openingHoursRepository.saveAll(place.getOpeningHoursList());
-            } else if (oh.charAt(1) == ' ') {
-                // 목 11:00 ~ 18:00
-                DayOfWeek dayOfWeek = DayOfWeek.valueOfDescription(oh.charAt(0));
-
-                OpeningHoursTimeDto openingHoursTime = extractOpeningHoursTime(oh, 2);
-
-                OpeningHours openingHoursEntity = OpeningHours.of(
-                        place,
-                        dayOfWeek,
-                        openingHoursTime.getOpenAt(),
-                        openingHoursTime.getCloseAt()
-                );
-                openingHoursRepository.save(openingHoursEntity);
-                place.getOpeningHoursList().add(openingHoursEntity);
-            } else {
-                throw new OpeningHoursUnexpectedFormatException();
-            }
-        }
-    }
-
-    /**
-     * 영업시간 정보(String)를 받아 영업 시작 시간과 영업 종료 시간을 추출한다.
-     *
-     * @param openingHours   영업시간 정보.
-     * @param openAtStartIdx 영업 시작 시간이 시작하는 index.
-     * @return openingHours에서 추출한 영업 시작 시간, 종료 시간 정보가 담긴 객체.Q
-     */
-    private OpeningHoursTimeDto extractOpeningHoursTime(String openingHours, int openAtStartIdx) {
-        int closeAtStartIdx = openAtStartIdx + 5 + 3;
-
-        String subStrOpenAt = openingHours.substring(openAtStartIdx, openAtStartIdx + 5);
-        String subStrCloseAt = openingHours.substring(closeAtStartIdx, closeAtStartIdx + 5);
-        LocalTime openAt = subStrOpenAt.equals("24:00") ? LocalTime.of(23, 59) : LocalTime.parse(subStrOpenAt);
-        LocalTime closeAt = subStrCloseAt.equals("24:00") ? LocalTime.of(23, 59) : LocalTime.parse(subStrCloseAt);
-
-        return OpeningHoursTimeDto.of(openAt, closeAt);
     }
 }
