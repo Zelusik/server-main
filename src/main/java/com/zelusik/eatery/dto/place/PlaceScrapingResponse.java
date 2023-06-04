@@ -1,0 +1,34 @@
+package com.zelusik.eatery.dto.place;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+import java.util.List;
+import java.util.Map;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class PlaceScrapingResponse {
+
+    private List<PlaceScrapingOpeningHourDto> openingHours;
+    private String closingHours;
+    private String homepageUrl;
+
+    public static PlaceScrapingResponse of(List<PlaceScrapingOpeningHourDto> openingHours, String closingHours, String homepageUrl) {
+        return new PlaceScrapingResponse(openingHours, closingHours, homepageUrl);
+    }
+
+    @SuppressWarnings("unchecked")
+    // TODO: Object => List<Map> 변환 로직이 있어서 generic type casting 문제를 무시한다. 더 좋은 방법이 있다면 고려할 수 있음.
+    public static PlaceScrapingResponse from(Map<String, Object> attributes) {
+        List<Map<String, Object>> openingHours = (List<Map<String, Object>>) attributes.get("openingHours");
+        return of(
+                openingHours.stream()
+                        .map(PlaceScrapingOpeningHourDto::from)
+                        .toList(),
+                String.valueOf(attributes.get("closingHours")),
+                String.valueOf(attributes.get("homepageUrl"))
+        );
+    }
+}
