@@ -1,0 +1,19 @@
+version: "3"
+services:
+  redis:
+    image: redis
+    container_name: eatery-redis
+    ports:
+      - "6379:6379"
+
+  backend:
+    platform: linux/amd64
+    build: .
+    image: siwall0105/eatery-server-main
+    container_name: eatery-server-main
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./log:/spring/log
+    depends_on:
+      - redis
