@@ -28,7 +28,7 @@ public class WebScrapingService {
     /**
      * Web scraping server에서 장소의 추가 정보를 scarping한다.
      *
-     * @param placeUrl 장소 정보를 읽어올 장소 상세 페이지 주소
+     * @param kakaoPid 장소 정보를 읽어올 장소의 고유 id 값
      * @return Scraping해서 읽어온 추가 정보
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
