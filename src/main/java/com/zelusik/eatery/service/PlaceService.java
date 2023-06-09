@@ -54,11 +54,13 @@ public class PlaceService {
                 .toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours())
                 .toEntity());
 
-        List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
-                .map(oh -> oh.toOpeningHoursEntity(place))
-                .toList();
-        openingHoursRepository.saveAll(openingHoursList);
-        place.getOpeningHoursList().addAll(openingHoursList);
+        if (scrapingInfo.getOpeningHours() != null) {
+            List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
+                    .map(oh -> oh.toOpeningHoursEntity(place))
+                    .toList();
+            openingHoursRepository.saveAll(openingHoursList);
+            place.getOpeningHoursList().addAll(openingHoursList);
+        }
 
         List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
         return PlaceDtoWithMarkedStatus.from(place, markedPlaceIdList);
