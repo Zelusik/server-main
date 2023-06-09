@@ -9,11 +9,13 @@ import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class MemberDto {
