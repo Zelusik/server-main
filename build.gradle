@@ -64,6 +64,9 @@ dependencies {
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // Spring Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
     // Database - H2, MySQL
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
