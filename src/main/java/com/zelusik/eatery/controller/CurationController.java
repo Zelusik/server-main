@@ -92,10 +92,6 @@ public class CurationController {
     )
     @GetMapping
     public CurationListResponse findAll() {
-        return CurationListResponse.of(
-                curationService.findDtos().stream()
-                        .map(CurationResponse::from)
-                        .toList()
-        );
+        return curationService.getCurationList();
     }
 }
