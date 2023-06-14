@@ -7,9 +7,9 @@ import org.testcontainers.utility.DockerImageName;
 
 @Profile("test")
 @Configuration
-public class TestContainersConfig {
+public class TestRedisConfig {
 
-    private static final String REDIS_DOCKER_IMAGE = "redis:7.0.8-alpine";
+    private static final String REDIS_DOCKER_IMAGE = "redis";
     private static final int REDIS_PORT = 6379;
 
     static {
