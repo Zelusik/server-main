@@ -1,10 +1,10 @@
 package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.dto.auth.response.TokenResponse;
-import com.zelusik.eatery.repository.RedisRefreshTokenRepository;
+import com.zelusik.eatery.dto.redis.RefreshToken;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
+import com.zelusik.eatery.repository.redis.RefreshTokenRepository;
 import com.zelusik.eatery.security.JwtTokenInfoDto;
 import com.zelusik.eatery.security.JwtTokenProvider;
 import com.zelusik.eatery.service.JwtTokenService;
@@ -31,7 +31,7 @@ class JwtTokenServiceTest {
     private JwtTokenService sut;
 
     @Mock
-    private RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
@@ -48,7 +48,7 @@ class JwtTokenServiceTest {
                 .willReturn(expectedJwtToken);
         given(jwtTokenProvider.createRefreshToken(memberId, loginType))
                 .willReturn(expectedJwtToken);
-        given(redisRefreshTokenRepository.save(any(RedisRefreshToken.class)))
+        given(refreshTokenRepository.save(any(RefreshToken.class)))
                 .willReturn(createRedisRefreshToken(memberId));
 
         // when
@@ -58,7 +58,7 @@ class JwtTokenServiceTest {
 
         // then
         then(jwtTokenProvider).should().createRefreshToken(memberId, loginType);
-        then(redisRefreshTokenRepository).should().save(any(RedisRefreshToken.class));
+        then(refreshTokenRepository).should().save(any(RefreshToken.class));
         assertThat(actualAccessToken).isEqualTo(expectedJwtToken.token());
         assertThat(actualRefreshToken).isEqualTo(expectedJwtToken.token());
     }
@@ -72,7 +72,7 @@ class JwtTokenServiceTest {
         LoginType loginType = LoginType.KAKAO;
 
         String oldRefreshToken = createJwtToken("old").token();
-        RedisRefreshToken oldRedisRefreshToken = createRedisRefreshToken(memberId, oldRefreshToken);
+        RefreshToken oldRedisRefreshToken = createRedisRefreshToken(memberId, oldRefreshToken);
 
         JwtTokenInfoDto expectedNewJwtToken = createJwtToken("new");
 
@@ -83,10 +83,10 @@ class JwtTokenServiceTest {
         willDoNothing().given(jwtTokenProvider).validateToken(oldRefreshToken);
         given(jwtTokenProvider.getLoginType(oldRefreshToken)).willReturn(loginType);
 
-        given(redisRefreshTokenRepository.findById(oldRefreshToken))
+        given(refreshTokenRepository.findById(oldRefreshToken))
                 .willReturn(Optional.of(oldRedisRefreshToken));
-        willDoNothing().given(redisRefreshTokenRepository).delete(oldRedisRefreshToken);
-        given(redisRefreshTokenRepository.save(any(RedisRefreshToken.class)))
+        willDoNothing().given(refreshTokenRepository).delete(oldRedisRefreshToken);
+        given(refreshTokenRepository.save(any(RefreshToken.class)))
                 .willReturn(createRedisRefreshToken(memberId));
 
         // when
@@ -98,9 +98,9 @@ class JwtTokenServiceTest {
         then(jwtTokenProvider).should().createRefreshToken(memberId, loginType);
         then(jwtTokenProvider).should().validateToken(oldRefreshToken);
         then(jwtTokenProvider).should().getLoginType(oldRefreshToken);
-        then(redisRefreshTokenRepository).should().findById(oldRefreshToken);
-        then(redisRefreshTokenRepository).should().delete(oldRedisRefreshToken);
-        then(redisRefreshTokenRepository).should().save(any(RedisRefreshToken.class));
+        then(refreshTokenRepository).should().findById(oldRefreshToken);
+        then(refreshTokenRepository).should().delete(oldRedisRefreshToken);
+        then(refreshTokenRepository).should().save(any(RefreshToken.class));
         assertThat(actualNewAccessToken).isEqualTo(expectedNewJwtToken.token());
         assertThat(actualNewRefreshToken).isEqualTo(expectedNewJwtToken.token());
     }
@@ -117,25 +117,25 @@ class JwtTokenServiceTest {
 
         // then
         then(jwtTokenProvider).should().validateToken(refreshToken);
-        then(redisRefreshTokenRepository).shouldHaveNoInteractions();
+        then(refreshTokenRepository).shouldHaveNoInteractions();
         then(jwtTokenProvider).shouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(TokenValidateException.class);
     }
-    
+
     @DisplayName("유효한 refresh token이 주어지고, 유효성을 검사하면, true를 반환한다.")
     @Test
     void givenValidRefreshToken_whenValidate_thenReturnTrue() {
         // given
         String refreshToken = "test";
         willDoNothing().given(jwtTokenProvider).validateToken(refreshToken);
-        given(redisRefreshTokenRepository.existsById(refreshToken)).willReturn(true);
+        given(refreshTokenRepository.existsById(refreshToken)).willReturn(true);
 
         // when
         boolean result = sut.validateOfRefreshToken(refreshToken);
 
         // then
         then(jwtTokenProvider).should().validateToken(refreshToken);
-        then(redisRefreshTokenRepository).should().existsById(refreshToken);
+        then(refreshTokenRepository).should().existsById(refreshToken);
         assertThat(result).isTrue();
     }
 
@@ -151,7 +151,7 @@ class JwtTokenServiceTest {
 
         // then
         then(jwtTokenProvider).should().validateToken(refreshToken);
-        then(redisRefreshTokenRepository).shouldHaveNoInteractions();
+        then(refreshTokenRepository).shouldHaveNoInteractions();
         assertThat(result).isFalse();
     }
 
@@ -160,14 +160,14 @@ class JwtTokenServiceTest {
     void givenValidRefreshTokenButNotExistInRedis_whenValidate_thenReturnFalse() {
         String refreshToken = "test";
         willDoNothing().given(jwtTokenProvider).validateToken(refreshToken);
-        given(redisRefreshTokenRepository.existsById(refreshToken)).willReturn(false);
+        given(refreshTokenRepository.existsById(refreshToken)).willReturn(false);
 
         // when
         boolean result = sut.validateOfRefreshToken(refreshToken);
 
         // then
         then(jwtTokenProvider).should().validateToken(refreshToken);
-        then(redisRefreshTokenRepository).should().existsById(refreshToken);
+        then(refreshTokenRepository).should().existsById(refreshToken);
         assertThat(result).isFalse();
     }
 
@@ -179,11 +179,11 @@ class JwtTokenServiceTest {
         return JwtTokenInfoDto.of(token, LocalDateTime.now());
     }
 
-    private RedisRefreshToken createRedisRefreshToken(Long memberId) {
-        return RedisRefreshToken.of("test", memberId);
+    private RefreshToken createRedisRefreshToken(Long memberId) {
+        return RefreshToken.of("test", memberId);
     }
 
-    private RedisRefreshToken createRedisRefreshToken(Long memberId, String refreshToken) {
-        return RedisRefreshToken.of(refreshToken, memberId);
+    private RefreshToken createRedisRefreshToken(Long memberId, String refreshToken) {
+        return RefreshToken.of(refreshToken, memberId);
     }
 }
