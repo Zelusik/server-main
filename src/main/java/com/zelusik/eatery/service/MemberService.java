@@ -122,19 +122,6 @@ public class MemberService {
     }
 
     /**
-     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
-     * 삭제된 회원도 포함해서 조회한다.
-     *
-     * @param memberId 조회할 회원의 PK
-     * @return 조회한 회원 entity
-     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
-     */
-    private Member findByIdWithDeleted(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
-    }
-
-    /**
      * 회원 정보를 수정한다.
      *
      * @param memberId      정보를 수정할 회원의 PK
@@ -222,6 +209,19 @@ public class MemberService {
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);
         return MemberDeletionSurveyDto.from(deletionSurvey);
+    }
+
+    /**
+     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
+     * 삭제된 회원도 포함해서 조회한다.
+     *
+     * @param memberId 조회할 회원의 PK
+     * @return 조회한 회원 entity
+     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
+     */
+    private Member findByIdWithDeleted(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
 
     /**
