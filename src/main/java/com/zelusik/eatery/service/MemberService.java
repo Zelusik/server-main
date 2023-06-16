@@ -55,6 +55,7 @@ public class MemberService {
      * @param request  약관 동의 정보
      * @return 적용된 약관 동의 결과 정보
      */
+    @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public TermsInfoDto agreeToTerms(Long memberId, TermsAgreeRequest request) {
         LocalDateTime now = LocalDateTime.now();
@@ -113,24 +114,11 @@ public class MemberService {
      *
      * @param memberId 재가입을 할 회원의 PK
      */
-    @CachePut(value = "member", key = "#memberId")
+    @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public void rejoin(Long memberId) {
         Member member = findByIdWithDeleted(memberId);
         member.rejoin();
-    }
-
-    /**
-     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
-     * 삭제된 회원도 포함해서 조회한다.
-     *
-     * @param memberId 조회할 회원의 PK
-     * @return 조회한 회원 entity
-     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
-     */
-    private Member findByIdWithDeleted(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
 
     /**
@@ -221,6 +209,19 @@ public class MemberService {
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);
         return MemberDeletionSurveyDto.from(deletionSurvey);
+    }
+
+    /**
+     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
+     * 삭제된 회원도 포함해서 조회한다.
+     *
+     * @param memberId 조회할 회원의 PK
+     * @return 조회한 회원 entity
+     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
+     */
+    private Member findByIdWithDeleted(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
 
     /**
