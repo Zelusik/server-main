@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -23,15 +24,21 @@ import java.time.Duration;
 @Configuration
 public class RedisCacheConfig {
 
+    private final RedisConnectionFactory connectionFactory;
+
+    public RedisCacheConfig(@Qualifier("redisConnectionFactoryForCaching") RedisConnectionFactory connectionFactory) {
+        this.connectionFactory = connectionFactory;
+    }
+
     @Primary
     @Bean
-    public CacheManager defaultCacheManager(RedisConnectionFactory cf) {
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf).cacheDefaults(createRedisCacheConfig(60)).build();
+    public CacheManager defaultCacheManager() {
+        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory).cacheDefaults(createRedisCacheConfig(60)).build();
     }
 
     @Bean
-    public CacheManager curationCacheManager(RedisConnectionFactory cf) {
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(cf).cacheDefaults(createRedisCacheConfig(12 * 60)).build();
+    public CacheManager curationCacheManager() {
+        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory).cacheDefaults(createRedisCacheConfig(12 * 60)).build();
     }
 
     private static RedisCacheConfiguration createRedisCacheConfig(long cacheTtlMin) {
