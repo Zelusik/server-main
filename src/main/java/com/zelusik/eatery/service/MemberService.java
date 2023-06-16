@@ -55,6 +55,7 @@ public class MemberService {
      * @param request  약관 동의 정보
      * @return 적용된 약관 동의 결과 정보
      */
+    @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public TermsInfoDto agreeToTerms(Long memberId, TermsAgreeRequest request) {
         LocalDateTime now = LocalDateTime.now();
@@ -113,7 +114,7 @@ public class MemberService {
      *
      * @param memberId 재가입을 할 회원의 PK
      */
-    @CachePut(value = "member", key = "#memberId")
+    @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public void rejoin(Long memberId) {
         Member member = findByIdWithDeleted(memberId);
