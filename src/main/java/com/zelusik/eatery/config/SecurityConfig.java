@@ -44,11 +44,9 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests(auth -> {
                             auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                                    .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll();
-                            Arrays.stream(AUTH_WHITE_LIST)
-                                    .forEach(authWhiteListElem ->
-                                            auth.mvcMatchers(BASE_URL + authWhiteListElem).permitAll());
-                            auth.mvcMatchers(HttpMethod.GET, BASE_URL + "/curation").permitAll();
+                                    .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
+                                    .mvcMatchers(HttpMethod.GET, BASE_URL + "/curation").permitAll();
+                            Arrays.stream(AUTH_WHITE_LIST).forEach(authWhiteListElem -> auth.mvcMatchers(BASE_URL + authWhiteListElem).permitAll());
                             auth.anyRequest().authenticated();
                         }
                 )

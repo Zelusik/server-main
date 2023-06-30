@@ -1,12 +1,11 @@
 package com.zelusik.eatery.unit.controller;
 
-import com.zelusik.eatery.config.SecurityConfig;
+import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.controller.MeetingPlaceController;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
 import com.zelusik.eatery.dto.location.LocationDto;
-import com.zelusik.eatery.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.KakaoService;
 import com.zelusik.eatery.service.LocationService;
@@ -16,20 +15,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,13 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("[Unit] Meeting Place Controller")
 @MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest(
-        controllers = MeetingPlaceController.class,
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = {SecurityConfig.class, JwtAuthenticationFilter.class}
-        )
-)
+@Import(TestSecurityConfig.class)
+@WebMvcTest(controllers = MeetingPlaceController.class)
 class MeetingPlaceControllerTest {
 
     @MockBean
@@ -88,8 +81,7 @@ class MeetingPlaceControllerTest {
                         get("/api/meeting-places")
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId))))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(0))
@@ -131,8 +123,7 @@ class MeetingPlaceControllerTest {
                         get("/api/meeting-places")
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId))))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(0))
@@ -183,8 +174,7 @@ class MeetingPlaceControllerTest {
                         get("/api/meeting-places")
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId))))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(0))
@@ -192,5 +182,9 @@ class MeetingPlaceControllerTest {
                 .andExpect(jsonPath("$.numOfElements").value(20))
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.contents").isNotEmpty());
+    }
+
+    private UserDetails createTestUserDetails() {
+        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
     }
 }
