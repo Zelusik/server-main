@@ -1,13 +1,12 @@
 package com.zelusik.eatery.unit.controller;
 
-import com.zelusik.eatery.config.SecurityConfig;
+import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.controller.PlaceController;
 import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
-import com.zelusik.eatery.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceService;
 import com.zelusik.eatery.util.MemberTestUtils;
@@ -17,12 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,7 +32,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -42,13 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("[Unit] Place Controller")
 @MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest(
-        controllers = PlaceController.class,
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = {SecurityConfig.class, JwtAuthenticationFilter.class}
-        )
-)
+@Import(TestSecurityConfig.class)
+@WebMvcTest(controllers = PlaceController.class)
 class PlaceControllerTest {
 
     @MockBean
@@ -75,7 +68,6 @@ class PlaceControllerTest {
                         post("/api/places")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(placeCreateRequest))
-                                .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isCreated())
@@ -94,7 +86,6 @@ class PlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/places/" + placeId)
-                                .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())
@@ -114,7 +105,6 @@ class PlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/places/search?lat=" + lat + "&lng=" + lng + "&daysOfWeek=월,수,금" + "&keyword=혼밥")
-                                .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())
@@ -136,8 +126,7 @@ class PlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/places/bookmarks/filtering-keywords")
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId))))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.keywords").isArray());
@@ -160,13 +149,16 @@ class PlaceControllerTest {
         mvc.perform(get("/api/places/bookmarks")
                         .queryParam("type", filteringType.toString())
                         .queryParam("keyword", filteringKeywordDescription)
-                        .with(csrf())
-                        .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId))))
+                        .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.size").value(1));
         then(placeService).should().findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class));
         then(placeService).shouldHaveNoMoreInteractions();
+    }
+
+    private UserDetails createTestUserDetails() {
+        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
     }
 }

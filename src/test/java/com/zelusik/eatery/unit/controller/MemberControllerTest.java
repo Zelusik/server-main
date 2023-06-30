@@ -1,6 +1,6 @@
 package com.zelusik.eatery.unit.controller;
 
-import com.zelusik.eatery.config.SecurityConfig;
+import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.controller.MemberController;
@@ -9,20 +9,19 @@ import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
-import com.zelusik.eatery.service.MemberService;
-import com.zelusik.eatery.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.security.UserPrincipal;
+import com.zelusik.eatery.service.MemberService;
 import com.zelusik.eatery.util.MemberTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,7 +31,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,13 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("[Unit] Member Controller")
 @MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest(
-        controllers = MemberController.class,
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = {SecurityConfig.class, JwtAuthenticationFilter.class}
-        )
-)
+@Import(TestSecurityConfig.class)
+@WebMvcTest(controllers = MemberController.class)
 class MemberControllerTest {
 
     @MockBean
@@ -81,8 +74,7 @@ class MemberControllerTest {
                         post("/api/members/terms")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(termsAgreeRequest))
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.isNotMinor").value(true))
@@ -113,8 +105,7 @@ class MemberControllerTest {
                         post("/api/members/terms")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(termsAgreeRequest))
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.code").value(1200));
@@ -131,8 +122,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/members")
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(memberId));
@@ -159,8 +149,7 @@ class MemberControllerTest {
                                 .param("nickname", memberUpdateInfo.getNickname())
                                 .param("birthDay", memberUpdateInfo.getBirthDay().toString())
                                 .param("gender", memberUpdateInfo.getGender().toString())
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(memberId));
@@ -179,8 +168,7 @@ class MemberControllerTest {
                         put("/api/members/favorite-food")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -202,12 +190,15 @@ class MemberControllerTest {
                         delete("/api/members")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(MemberDeletionSurveyRequest.of(surveyType)))
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.memberId").value(memberId))
                 .andExpect(jsonPath("$.survey").value(surveyType.getDescription()));
+    }
+
+    private UserDetails createTestUserDetails() {
+        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
     }
 }
