@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -35,6 +36,7 @@ public class WebScrapingService {
     public PlaceScrapingResponse getPlaceScrapingInfo(String kakaoPid) {
         URI requestUri = UriComponentsBuilder.fromUriString("/places/scraping")
                 .queryParam("kakaoPid", kakaoPid)
+                .encode(StandardCharsets.UTF_8)
                 .build().toUri();
 
         HttpHeaders headers = new HttpHeaders();

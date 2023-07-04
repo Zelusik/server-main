@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -77,6 +78,7 @@ public class KakaoService {
                 .queryParam("size", pageable.getPageSize())
                 .queryParam("category_group_code", "SW8,AT4,SC4")
                 .queryParam("query", keyword)
+                .encode(StandardCharsets.UTF_8)
                 .build().toUri();
 
         // Set header

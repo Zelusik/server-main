@@ -19,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -87,6 +88,7 @@ public class AppleOAuthService {
      */
     private PublicKey getAppleOAuthPublicKey(Map<String, Object> headerOfIdentityToken) {
         URI requestUri = UriComponentsBuilder.fromUriString("https://appleid.apple.com/auth/keys")
+                .encode(StandardCharsets.UTF_8)
                 .build().toUri();
 
         ResponseEntity<String> response;
