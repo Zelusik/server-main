@@ -34,7 +34,7 @@ public class WebScrapingService {
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
     public PlaceScrapingResponse getPlaceScrapingInfo(String kakaoPid) {
-        URI requestUri = UriComponentsBuilder.fromUriString("/places/scraping")
+        URI requestUri = UriComponentsBuilder.fromUriString(scrapingServerUrl + "/places/scraping")
                 .queryParam("kakaoPid", kakaoPid)
                 .encode(StandardCharsets.UTF_8)
                 .build().toUri();
