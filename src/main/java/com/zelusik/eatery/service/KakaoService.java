@@ -11,15 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -27,13 +26,15 @@ import java.util.Map;
 @Service
 public class KakaoService {
 
-    private final HttpRequestService httpRequestService;
+    private final RestTemplate restTemplate;
 
     @Value("${kakao.rest-api.key}")
     private String apiKey;
 
     public KakaoOAuthUserResponse getUserInfo(String accessToken) {
-        String requestUrl = "https://kapi.kakao.com/v2/user/me";
+        URI requestUri = UriComponentsBuilder
+                .fromUriString("https://kapi.kakao.com/v2/user/me")
+                .build().toUri();
 
         // HTTP header 생성
         HttpHeaders headers = new HttpHeaders();
@@ -43,7 +44,7 @@ public class KakaoService {
         // HTTP request 보내기
         ResponseEntity<String> response;
         try {
-            response = httpRequestService.sendHttpRequest(requestUrl, HttpMethod.GET, headers);
+            response = restTemplate.exchange(requestUri, HttpMethod.GET, new HttpEntity<>(headers), String.class);
         } catch (HttpClientErrorException | HttpServerErrorException ex) {
             Integer errorCode = getErrorDetails(ex).code();
             String errorMessage = getErrorDetails(ex).message();
@@ -70,13 +71,13 @@ public class KakaoService {
      */
     @SuppressWarnings("unchecked")
     public Slice<KakaoPlaceResponse> searchKakaoPlacesByKeyword(String keyword, Pageable pageable) {
-        String requestUri = UriComponentsBuilder
+        URI requestUri = UriComponentsBuilder
                 .fromUriString("https://dapi.kakao.com/v2/local/search/keyword.json")
                 .queryParam("page", pageable.getPageNumber() + 1)
                 .queryParam("size", pageable.getPageSize())
                 .queryParam("category_group_code", "SW8,AT4,SC4")
                 .queryParam("query", keyword)
-                .build().toUriString();
+                .build().toUri();
 
         // Set header
         HttpHeaders headers = new HttpHeaders();
@@ -85,7 +86,7 @@ public class KakaoService {
         // Send http request
         ResponseEntity<String> response;
         try {
-            response = httpRequestService.sendHttpRequest(requestUri, HttpMethod.GET, headers);
+            response = restTemplate.exchange(requestUri, HttpMethod.GET, new HttpEntity<>(headers), String.class);
         } catch (Exception ex) {
             ErrorResponse errorDetails = getErrorDetails(ex);
             throw new KakaoServerException(HttpStatus.INTERNAL_SERVER_ERROR, errorDetails.code(), errorDetails.message(), ex);

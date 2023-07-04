@@ -9,14 +9,16 @@ import com.zelusik.eatery.exception.auth.AppleOAuthLoginException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -28,11 +30,11 @@ import java.util.Map;
 @Service
 public class AppleOAuthService {
 
-    private final HttpRequestService httpRequestService;
+    private final RestTemplate restTemplate;
     private final ObjectMapper mapper;
 
-    public AppleOAuthService(HttpRequestService httpRequestService) {
-        this.httpRequestService = httpRequestService;
+    public AppleOAuthService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
         this.mapper = new ObjectMapper();
     }
 
@@ -84,11 +86,12 @@ public class AppleOAuthService {
      * @return 유저 정보를 decode하기 위해 새롭게 생성한 public key
      */
     private PublicKey getAppleOAuthPublicKey(Map<String, Object> headerOfIdentityToken) {
-        String requestUrl = "https://appleid.apple.com/auth/keys";
+        URI requestUri = UriComponentsBuilder.fromUriString("https://appleid.apple.com/auth/keys")
+                .build().toUri();
 
         ResponseEntity<String> response;
         try {
-            response = httpRequestService.sendHttpRequest(requestUrl, HttpMethod.GET, null);
+            response = restTemplate.exchange(requestUri, HttpMethod.GET, null, String.class);
         } catch (Exception ex) {
             throw new AppleOAuthLoginException(ex);
         }
