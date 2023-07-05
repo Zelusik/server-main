@@ -5,11 +5,13 @@ import com.zelusik.eatery.service.KakaoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -17,16 +19,21 @@ import java.net.URI;
 
 import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @DisplayName("[Unit] Kakao Service")
+@ActiveProfiles("test")
 @AutoConfigureWebClient(registerRestTemplate = true)
 @RestClientTest(KakaoService.class)
 class KakaoServiceTest {
 
     private final KakaoService sut;
     private final MockRestServiceServer restServer;
+
+    @Value("${kakao.rest-api.key}")
+    private String apiKey;
 
     @Autowired
     public KakaoServiceTest(MockRestServiceServer restServer, KakaoService sut) {
@@ -275,6 +282,7 @@ class KakaoServiceTest {
                 }
                 """;
         restServer.expect(requestTo(requestUri))
+                .andExpect(header("Authorization", "KakaoAK " + apiKey))
                 .andRespond(withSuccess(
                         expectedKakaoResponse,
                         MediaType.APPLICATION_JSON
