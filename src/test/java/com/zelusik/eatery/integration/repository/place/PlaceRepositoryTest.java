@@ -1,5 +1,6 @@
 package com.zelusik.eatery.integration.repository.place;
 
+import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.QuerydslConfig;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.domain.place.Place;
@@ -28,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[Integration] Place Repository")
 @ActiveProfiles("test")
-@Import(QuerydslConfig.class)
+@Import({QuerydslConfig.class, JpaConfig.class})
 @DataJpaTest
 class PlaceRepositoryTest {
 
