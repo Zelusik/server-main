@@ -1,6 +1,8 @@
-name: Eatery Dev Server - Gradle CI
+name: Eatery Dev Server - Gradle CI/CD
 
 on:
+  push:
+    branches: "develop"
   pull_request:
     branches: "develop"
 
