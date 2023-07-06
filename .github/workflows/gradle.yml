@@ -1,17 +1,8 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+name: Eatery Dev Server - Gradle CI
 
-# Repo Action 페이지에 나타날 이름
-name: Eatery Main Server - Gradle CI
-
-# Event Trigger
-# develop branch에 push 또는 pull request가 발생할 경우 동작
-# branch 단위 외에도, tag나 cron식 등을 사용할 수 있음
 on:
-  push:
-    branches: [ "main", "develop" ]
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: "develop"
 
 jobs:
   build:
@@ -27,9 +18,29 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup application properties file
-      run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application-test.properties
+      run: |
+        echo "${{ secrets.APPLICATION_PROPERTIES_TEST }}" > ./src/main/resources/application-test.properties
+        echo "${{ secrets.APPLICATION_PROPERTIES_DEV }}" > ./src/main/resources/application-dev.properties
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: build
+
+    - name: Docker build and push
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker build -t ${{ secrets.DOCKER_REPO_DEV }} -f Dockerfile.dev .
+        docker push ${{ secrets.DOCKER_REPO_DEV }}
+
+    - name: Executing remote ssh commands with docker compose for Continuous Delivery
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AWS_EC2_HOST_DEV }}
+        username: ubuntu
+        key: ${{ secrets.AWS_EC2_KEY_DEV }}
+        script: |
+          cd /home/ubuntu/eatery
+          sudo docker compose down
+          sudo docker pull ${{ secrets.DOCKER_REPO_DEV }}
+          sudo docker compose up -d
