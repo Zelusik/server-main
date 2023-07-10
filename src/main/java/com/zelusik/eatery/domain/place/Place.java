@@ -3,7 +3,7 @@ package com.zelusik.eatery.domain.place;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.BaseTimeEntity;
-import com.zelusik.eatery.util.domain.ReviewKeywordValueConverter;
+import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
 import lombok.*;
 
 import javax.persistence.*;

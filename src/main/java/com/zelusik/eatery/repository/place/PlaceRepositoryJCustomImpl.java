@@ -11,7 +11,7 @@ import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
-import com.zelusik.eatery.util.domain.ReviewKeywordValueConverter;
+import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
