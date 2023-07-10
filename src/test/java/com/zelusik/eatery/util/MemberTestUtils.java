@@ -51,7 +51,7 @@ public class MemberTestUtils {
 
     public static MemberDto createMemberDtoWithId(Long memberId, Set<RoleType> roleTypes) {
         return MemberDto.of(
-                1L,
+                memberId,
                 null,
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
