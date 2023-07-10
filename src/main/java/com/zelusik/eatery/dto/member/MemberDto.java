@@ -3,6 +3,7 @@ package com.zelusik.eatery.dto.member;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -26,6 +28,7 @@ public class MemberDto {
     private String profileThumbnailImageUrl;
     private String socialUid;
     private LoginType loginType;
+    private Set<RoleType> roleTypes;
     private String email;
     private String nickname;
     private LocalDate birthDay;
@@ -36,12 +39,12 @@ public class MemberDto {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
-    public static MemberDto of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
-        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, null, ageRange, gender, null, null, null, null);
+    public static MemberDto of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, Integer ageRange, Gender gender) {
+        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null, null);
     }
 
-    public static MemberDto of(Long id, TermsInfoDto termsInfoDto, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategoryValue> favoriteFoodCategories, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new MemberDto(id, termsInfoDto, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, birthDay, ageRange, gender, favoriteFoodCategories, createdAt, updatedAt, deletedAt);
+    public static MemberDto of(Long id, TermsInfoDto termsInfoDto, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategoryValue> favoriteFoodCategories, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new MemberDto(id, termsInfoDto, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, birthDay, ageRange, gender, favoriteFoodCategories, createdAt, updatedAt, deletedAt);
     }
 
     public static MemberDto from(Member entity) {
@@ -52,6 +55,7 @@ public class MemberDto {
                 entity.getProfileThumbnailImageUrl(),
                 entity.getSocialUid(),
                 entity.getLoginType(),
+                entity.getRoleTypes(),
                 entity.getEmail(),
                 entity.getNickname(),
                 entity.getBirthDay(),
@@ -72,6 +76,7 @@ public class MemberDto {
                 this.getProfileThumbnailImageUrl(),
                 this.getSocialUid(),
                 this.getLoginType(),
+                this.getRoleTypes(),
                 this.getEmail(),
                 this.getNickname(),
                 this.getAgeRange(),

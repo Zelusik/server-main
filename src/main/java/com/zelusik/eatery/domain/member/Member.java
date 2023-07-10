@@ -2,6 +2,8 @@ package com.zelusik.eatery.domain.member;
 
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.converter.RoleTypesConverter;
 import com.zelusik.eatery.domain.BaseTimeEntity;
 import lombok.*;
 
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -44,6 +47,10 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
+    @Column(nullable = false)
+    @Convert(converter = RoleTypesConverter.class)
+    private Set<RoleType> roleTypes;
+
     @Column(unique = true)
     private String email;
 
@@ -66,11 +73,11 @@ public class Member extends BaseTimeEntity {
     @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
-    public static Member of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, Integer ageRange, Gender gender) {
-        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, email, nickname, null, ageRange, gender, null, null, null);
+    public static Member of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, Integer ageRange, Gender gender) {
+        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null);
     }
 
-    public static Member of(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public static Member of(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return Member.builder()
                 .id(id)
                 .termsInfo(termsInfo)
@@ -78,6 +85,7 @@ public class Member extends BaseTimeEntity {
                 .profileThumbnailImageUrl(profileThumbnailImageUrl)
                 .socialUid(socialUid)
                 .loginType(loginType)
+                .roleTypes(roleTypes)
                 .email(email)
                 .nickname(nickname)
                 .ageRange(ageRange)
@@ -120,7 +128,7 @@ public class Member extends BaseTimeEntity {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Member(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, LocalDateTime deletedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Member(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.termsInfo = termsInfo;
@@ -128,6 +136,7 @@ public class Member extends BaseTimeEntity {
         this.profileThumbnailImageUrl = profileThumbnailImageUrl;
         this.socialUid = socialUid;
         this.loginType = loginType;
+        this.roleTypes = roleTypes;
         this.email = email;
         this.nickname = nickname;
         this.birthDay = birthDay;

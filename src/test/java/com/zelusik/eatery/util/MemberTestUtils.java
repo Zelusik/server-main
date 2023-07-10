@@ -4,6 +4,7 @@ import com.zelusik.eatery.constant.ConstantUtil;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.domain.member.*;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
@@ -12,6 +13,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class MemberTestUtils {
 
@@ -22,11 +24,16 @@ public class MemberTestUtils {
     public static final Gender GENDER = Gender.MALE;
 
     public static MemberDto createMemberDto() {
+        return createMemberDto(Set.of(RoleType.USER));
+    }
+
+    public static MemberDto createMemberDto(Set<RoleType> roleTypes) {
         return MemberDto.of(
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
                 LoginType.KAKAO,
+                roleTypes,
                 EMAIL,
                 NICKNAME,
                 AGE_RANGE,
@@ -39,6 +46,10 @@ public class MemberTestUtils {
     }
 
     public static MemberDto createMemberDtoWithId(Long memberId) {
+        return createMemberDtoWithId(memberId, Set.of(RoleType.USER));
+    }
+
+    public static MemberDto createMemberDtoWithId(Long memberId, Set<RoleType> roleTypes) {
         return MemberDto.of(
                 1L,
                 null,
@@ -46,6 +57,7 @@ public class MemberTestUtils {
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
                 LoginType.KAKAO,
+                roleTypes,
                 EMAIL,
                 NICKNAME,
                 LocalDate.of(1998, 1, 5),
@@ -67,6 +79,10 @@ public class MemberTestUtils {
     }
 
     public static Member createMember(Long memberId, TermsInfo termsInfo, LocalDateTime deletedAt) {
+        return createMember(memberId, termsInfo, Set.of(RoleType.USER), deletedAt);
+    }
+
+    public static Member createMember(Long memberId, TermsInfo termsInfo, Set<RoleType> roleTypes, LocalDateTime deletedAt) {
         Member member = Member.of(
                 memberId,
                 termsInfo,
@@ -74,6 +90,7 @@ public class MemberTestUtils {
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
                 LoginType.KAKAO,
+                roleTypes,
                 EMAIL,
                 NICKNAME,
                 LocalDate.of(1998, 1, 5),
@@ -127,7 +144,7 @@ public class MemberTestUtils {
     }
 
     public static ProfileImage createProfileImage(Long profileImageId) {
-        return createProfileImage(createMember(1L),  profileImageId);
+        return createProfileImage(createMember(1L), profileImageId);
     }
 
     public static ProfileImage createProfileImage(Member member, Long profileImageId) {

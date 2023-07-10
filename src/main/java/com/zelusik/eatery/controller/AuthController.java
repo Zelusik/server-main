@@ -1,6 +1,7 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
 import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.auth.request.AppleLoginRequest;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Tag(name = "로그인 등 인증 관련")
 @RequiredArgsConstructor
@@ -57,7 +59,7 @@ public class AuthController {
         KakaoOAuthUserResponse userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
-                .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
+                .orElseGet(() -> memberService.save(userInfo.toMemberDto(Set.of(RoleType.USER))));
 
         if (memberDto.getDeletedAt() != null) {
             memberService.rejoin(memberDto.getId());
@@ -86,7 +88,7 @@ public class AuthController {
         AppleOAuthUserResponse userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
-                .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName())));
+                .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName(), Set.of(RoleType.USER))));
 
         if (memberDto.getDeletedAt() != null) {
             memberService.rejoin(memberDto.getId());

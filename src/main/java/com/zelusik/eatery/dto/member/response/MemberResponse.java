@@ -2,6 +2,7 @@ package com.zelusik.eatery.dto.member.response;
 
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
 import com.zelusik.eatery.dto.member.MemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,6 +12,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -18,6 +20,9 @@ public class MemberResponse {
 
     @Schema(description = "회원 id(PK)", example = "1")
     private Long id;
+
+    @Schema(description = "회원에게 부여된 역할들", example = "사용자, 운영자")
+    private String roleTypes;
 
     @Schema(description = "프로필 이미지")
     private ImageResponse image;
@@ -37,9 +42,10 @@ public class MemberResponse {
     @Schema(description = "선호 음식 카테고리 목록", example = "[\"한식\", \"중식\"]")
     private List<String> favoriteFoodCategories;
 
-    public static MemberResponse of(Long id, ImageResponse image, String email, String nickname, Gender gender, LocalDate birthDay, List<FoodCategoryValue> favoriteFoodCategories) {
+    public static MemberResponse of(Long id, String roleTypes, ImageResponse image, String email, String nickname, Gender gender, LocalDate birthDay, List<FoodCategoryValue> favoriteFoodCategories) {
         return new MemberResponse(
                 id,
+                roleTypes,
                 image,
                 email,
                 nickname,
@@ -54,6 +60,9 @@ public class MemberResponse {
     public static MemberResponse from(MemberDto dto) {
         return of(
                 dto.getId(),
+                dto.getRoleTypes().stream()
+                        .map(RoleType::getDescription)
+                        .collect(Collectors.joining(", ")),
                 ImageResponse.of(dto.getProfileImageUrl(), dto.getProfileThumbnailImageUrl()),
                 dto.getEmail(),
                 dto.getNickname(),

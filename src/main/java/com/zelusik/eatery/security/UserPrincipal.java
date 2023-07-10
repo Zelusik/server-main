@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserPrincipal implements UserDetails {
@@ -22,12 +22,10 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<RoleType> roleTypes = Set.of(RoleType.values());
-
-        return roleTypes.stream()
+        return memberDto.getRoleTypes().stream()
                 .map(RoleType::getName)
                 .map(SimpleGrantedAuthority::new)
-                .toList();
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     public Long getMemberId() {
