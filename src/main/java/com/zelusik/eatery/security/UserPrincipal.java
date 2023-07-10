@@ -23,7 +23,7 @@ public class UserPrincipal implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return memberDto.getRoleTypes().stream()
-                .map(RoleType::getName)
+                .map(RoleType::getRoleName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toUnmodifiableSet());
     }

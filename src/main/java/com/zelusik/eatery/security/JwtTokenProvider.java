@@ -141,7 +141,7 @@ public class JwtTokenProvider {
         String token = Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(String.valueOf(memberId))
-                .claim(ROLE_CLAIM_KEY, roleType.getName())
+                .claim(ROLE_CLAIM_KEY, roleType.getRoleName())
                 .claim(LOGIN_TYPE_CLAIM_KEY, loginType.name())
                 .setIssuedAt(now)
                 .setExpiration(expiresAt)

@@ -12,6 +12,6 @@ public enum RoleType {
     ADMIN("ROLE_ADMIN", "관리자"),
     ;
 
-    private final String name;
+    private final String roleName;
     private final String description;
 }
