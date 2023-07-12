@@ -81,7 +81,7 @@ public class CurationController {
                     example = "1"
             ) @PathVariable Long curationId
     ) {
-        return CurationResponse.from(CurationDto.from(curationService.findEntityById(curationId)));
+        return CurationResponse.from(curationService.findDtoById(curationId));
     }
 
     @Operation(
