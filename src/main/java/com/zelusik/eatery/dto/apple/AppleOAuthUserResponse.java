@@ -3,12 +3,15 @@ package com.zelusik.eatery.dto.apple;
 import com.zelusik.eatery.constant.ConstantUtil;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.util.NicknameGenerator;
 import io.jsonwebtoken.Claims;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.Set;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -28,12 +31,13 @@ public class AppleOAuthUserResponse {
         );
     }
 
-    public MemberDto toMemberDto(String name) {
+    public MemberDto toMemberDto(String name, Set<RoleType> roleTypes) {
         return MemberDto.of(
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 this.getSub(),
                 LoginType.APPLE,
+                roleTypes,
                 this.getEmail(),
                 name != null ? name : NicknameGenerator.generateRandomNickname(),
                 null,

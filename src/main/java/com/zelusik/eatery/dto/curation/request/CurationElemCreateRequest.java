@@ -12,8 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class CurationElemCreateRequest {
 
     @Schema(description = "장소 정보")
-    PlaceCreateRequest place;
+    private PlaceCreateRequest place;
 
     @Schema(description = "장소에 대한 이미지")
     private MultipartFile image;
+
+    public static CurationElemCreateRequest of(PlaceCreateRequest place, MultipartFile image) {
+        return new CurationElemCreateRequest(place, image);
+    }
 }

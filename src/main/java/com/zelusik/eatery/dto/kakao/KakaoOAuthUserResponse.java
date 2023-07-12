@@ -3,6 +3,7 @@ package com.zelusik.eatery.dto.kakao;
 import com.zelusik.eatery.constant.ConstantUtil;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.dto.member.MemberDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("unchecked")  // TODO: Map -> Object 변환 로직이 있어서 generic type casting 문제를 무시한다. 더 좋은 방법이 있다면 고려할 수 있음.
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -99,7 +101,7 @@ public class KakaoOAuthUserResponse {
         );
     }
 
-    public MemberDto toMemberDto() {
+    public MemberDto toMemberDto(Set<RoleType> roleTypes) {
         String profileImageUrl = getProfileImageUrl();
         if (profileImageUrl == null) {
             profileImageUrl = ConstantUtil.defaultProfileImageUrl;
@@ -115,6 +117,7 @@ public class KakaoOAuthUserResponse {
                 thumbnailImageUrl,
                 getSocialUid(),
                 LoginType.KAKAO,
+                roleTypes,
                 getEmail(),
                 getNickname(),
                 getAgeRange(),
