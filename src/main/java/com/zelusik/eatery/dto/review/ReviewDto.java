@@ -16,11 +16,11 @@ import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class ReviewDtoWithMemberAndPlace {
+public class ReviewDto {
 
     private Long id;
-    private MemberDto writerDto;
-    private PlaceDto placeDto;
+    private MemberDto writer;
+    private PlaceDto place;
     private List<ReviewKeywordValue> keywords;
     private String autoCreatedContent;
     private String content;
@@ -29,19 +29,38 @@ public class ReviewDtoWithMemberAndPlace {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
-    public static ReviewDtoWithMemberAndPlace of(PlaceDto placeDto, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
-        return of(null, null, placeDto, keywords, autoCreatedContent, content, null, null, null, null);
+    public static ReviewDto of(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
+        return of(null, null, place, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
-    public static ReviewDtoWithMemberAndPlace of(Long id, MemberDto writerDto, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewDtoWithMemberAndPlace(id, writerDto, place, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
+    public static ReviewDto of(Long id, MemberDto writer, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new ReviewDto(id, writer, place, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
     }
 
-    public static ReviewDtoWithMemberAndPlace from(Review entity, Boolean isMarkedPlace) {
+    public static ReviewDto from(Review entity, Boolean isMarkedPlace) {
         return of(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
                 PlaceDto.from(entity.getPlace(), isMarkedPlace),
+                entity.getKeywords().stream()
+                        .map(ReviewKeyword::getKeyword)
+                        .toList(),
+                entity.getAutoCreatedContent(),
+                entity.getContent(),
+                entity.getReviewImages().stream()
+                        .map(ReviewImageDto::from)
+                        .toList(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
+                entity.getDeletedAt()
+        );
+    }
+
+    public static ReviewDto fromWithoutPlace(Review entity) {
+        return of(
+                entity.getId(),
+                MemberDto.from(entity.getWriter()),
+                null,
                 entity.getKeywords().stream()
                         .map(ReviewKeyword::getKeyword)
                         .toList(),
