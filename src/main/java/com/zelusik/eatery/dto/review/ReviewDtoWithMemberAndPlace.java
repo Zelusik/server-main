@@ -37,11 +37,11 @@ public class ReviewDtoWithMemberAndPlace {
         return new ReviewDtoWithMemberAndPlace(id, writerDto, place, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
     }
 
-    public static ReviewDtoWithMemberAndPlace from(Review entity, List<Long> markedPlaceIdList) {
+    public static ReviewDtoWithMemberAndPlace from(Review entity, Boolean isMarkedPlace) {
         return of(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
-                PlaceDtoWithMarkedStatus.from(entity.getPlace(), markedPlaceIdList),
+                PlaceDtoWithMarkedStatus.from(entity.getPlace(), isMarkedPlace),
                 entity.getKeywords().stream()
                         .map(ReviewKeyword::getKeyword)
                         .toList(),

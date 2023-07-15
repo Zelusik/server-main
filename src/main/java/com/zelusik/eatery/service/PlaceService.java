@@ -36,7 +36,7 @@ public class PlaceService {
     private final ReviewImageService reviewImageService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
-    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkService bookmarkService;
     private final ReviewKeywordRepository reviewKeywordRepository;
 
     /**
@@ -62,8 +62,7 @@ public class PlaceService {
             place.getOpeningHoursList().addAll(openingHoursList);
         }
 
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-        return PlaceDtoWithMarkedStatus.from(place, markedPlaceIdList);
+        return PlaceDtoWithMarkedStatus.from(place, bookmarkService.isMarkedPlace(memberId, place));
     }
 
     /**
