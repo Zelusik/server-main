@@ -35,7 +35,7 @@ public class ReviewService {
     private final PlaceService placeService;
     private final ReviewRepository reviewRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
-    private final BookmarkRepository bookmarkRepository;
+    private final BookmarkService bookmarkService;
 
     /**
      * 리뷰를 생성합니다.
@@ -56,10 +56,11 @@ public class ReviewService {
                 });
 
         Member writer = memberService.findById(writerId);
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
+
+        boolean isMarkedPlace = bookmarkService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
-        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDtoWithMarkedStatus.from(place, markedPlaceIdList));
+        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDtoWithMarkedStatus.from(place, isMarkedPlace));
         Review review = reviewDtoWithMemberAndPlace.toEntity(writer, place);
         reviewRepository.save(review);
         reviewDtoWithMemberAndPlace.getKeywords()
@@ -74,7 +75,7 @@ public class ReviewService {
         // 장소 top 3 keyword 설정
         placeService.renewTop3Keywords(place);
 
-        return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);
+        return ReviewDtoWithMemberAndPlace.from(review, isMarkedPlace);
     }
 
     /**
@@ -89,6 +90,17 @@ public class ReviewService {
     }
 
     /**
+     * 전체 리뷰 조회. 최신순 정렬
+     *
+     * @param pageable paging 정보
+     * @return 조회된 리뷰 목록(slice)
+     */
+    public Slice<ReviewDtoWithMemberAndPlace> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
+        return reviewRepository.findAllByDeletedAtNull(pageable)
+                .map(review -> ReviewDtoWithMemberAndPlace.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace())));
+    }
+
+    /**
      * 특정 가게에 대헌 리뷰 목록(Slice) 조회.
      *
      * @param placeId  리뷰를 조회할 가게의 id(PK)
@@ -100,18 +112,6 @@ public class ReviewService {
     }
 
     /**
-     * 리뷰 조회. 최신순 정렬
-     *
-     * @param pageable paging 정보
-     * @return 조회된 리뷰 목록(slice)
-     */
-    public Slice<ReviewDtoWithMemberAndPlace> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-        return reviewRepository.findAllByDeletedAtNull(pageable)
-                .map(review -> ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList));
-    }
-
-    /**
      * 특정 회원이 작성한 리뷰 조회.
      *
      * @param writerId 작성자의 PK
@@ -119,9 +119,8 @@ public class ReviewService {
      * @return 조회된 리뷰 목록(slice)
      */
     public Slice<ReviewDtoWithMemberAndPlace> findDtosByWriterId(Long writerId, Pageable pageable) {
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(writerId);
         return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)
-                .map(review -> ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList));
+                .map(review -> ReviewDtoWithMemberAndPlace.from(review, bookmarkService.isMarkedPlace(writerId, review.getPlace())));
     }
 
     /**
@@ -138,9 +137,7 @@ public class ReviewService {
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
 
-        List<Long> markedPlaceIdList = bookmarkRepository.findAllMarkedPlaceId(memberId);
-
-        return ReviewDtoWithMemberAndPlace.from(review, markedPlaceIdList);
+        return ReviewDtoWithMemberAndPlace.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace()));
     }
 
     /**

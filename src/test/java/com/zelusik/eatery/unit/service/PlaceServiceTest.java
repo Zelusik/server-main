@@ -12,6 +12,7 @@ import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
+import com.zelusik.eatery.service.BookmarkService;
 import com.zelusik.eatery.service.PlaceService;
 import com.zelusik.eatery.service.ReviewImageService;
 import com.zelusik.eatery.service.WebScrapingService;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -53,7 +55,7 @@ class PlaceServiceTest {
     @Mock
     private OpeningHoursRepository openingHoursRepository;
     @Mock
-    private BookmarkRepository bookmarkRepository;
+    private BookmarkService bookmarkService;
     @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
 
@@ -77,8 +79,8 @@ class PlaceServiceTest {
         Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(placeScrapingResponse);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
-        given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(any());
-        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of(placeId));
+        given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(List.of());
+        given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(false);
 
         // when
         PlaceDtoWithMarkedStatus actualResult = sut.create(memberId, placeCreateRequest);
@@ -87,7 +89,7 @@ class PlaceServiceTest {
         then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().saveAll(ArgumentMatchers.<List<OpeningHours>>any());
-        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
     }
@@ -254,7 +256,7 @@ class PlaceServiceTest {
         then(webScrapingService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(openingHoursRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkService).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
     }
 }
