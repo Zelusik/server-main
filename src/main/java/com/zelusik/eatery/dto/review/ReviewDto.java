@@ -10,6 +10,7 @@ import com.zelusik.eatery.dto.place.PlaceDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,15 +30,18 @@ public class ReviewDto {
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
+    @NonNull
     public static ReviewDto of(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
         return of(null, null, place, keywords, autoCreatedContent, content, null, null, null, null);
     }
 
+    @NonNull
     public static ReviewDto of(Long id, MemberDto writer, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return new ReviewDto(id, writer, place, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
     }
 
-    public static ReviewDto from(Review entity, Boolean isMarkedPlace) {
+    @NonNull
+    public static ReviewDto from(@NonNull Review entity, @NonNull Boolean isMarkedPlace) {
         return of(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
@@ -56,7 +60,8 @@ public class ReviewDto {
         );
     }
 
-    public static ReviewDto fromWithoutPlace(Review entity) {
+    @NonNull
+    public static ReviewDto fromWithoutPlace(@NonNull Review entity) {
         return of(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
@@ -75,6 +80,7 @@ public class ReviewDto {
         );
     }
 
+    @NonNull
     public Review toEntity(Member writer, Place place) {
         return Review.of(
                 writer,
