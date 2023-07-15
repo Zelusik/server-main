@@ -169,7 +169,7 @@ public enum ExceptionType {
 
     public static Optional<ExceptionType> from(Class<? extends Exception> classType) {
         Optional<ExceptionType> exceptionType = Arrays.stream(values())
-                .filter(ex -> ex.getType() != null && ex.getType().equals(classType))
+                .filter(ex -> ex.getType() != null && ex.getType().isAssignableFrom(classType))
                 .findFirst();
 
         if (exceptionType.isEmpty()) {
