@@ -4,7 +4,7 @@ import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -58,8 +58,8 @@ public class PlaceCreateRequest {
         return new PlaceCreateRequest(kakaoPid, name, pageUrl, categoryGroupCode, categoryName, phone, lotNumberAddress, roadAddress, lat, lng);
     }
 
-    public PlaceDtoWithMarkedStatus toDto(String homepageUrl, String closingHours) {
-        return PlaceDtoWithMarkedStatus.of(
+    public PlaceDto toDto(String homepageUrl, String closingHours) {
+        return PlaceDto.of(
                 this.getKakaoPid(),
                 this.getName(),
                 this.getPageUrl(),

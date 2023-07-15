@@ -5,12 +5,11 @@ import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.ImageDto;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
@@ -60,7 +59,7 @@ public class ReviewService {
         boolean isMarkedPlace = bookmarkService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
-        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDtoWithMarkedStatus.from(place, isMarkedPlace));
+        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place, isMarkedPlace));
         Review review = reviewDtoWithMemberAndPlace.toEntity(writer, place);
         reviewRepository.save(review);
         reviewDtoWithMemberAndPlace.getKeywords()

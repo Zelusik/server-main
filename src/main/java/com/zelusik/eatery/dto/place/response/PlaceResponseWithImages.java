@@ -4,13 +4,12 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -59,7 +58,7 @@ public class PlaceResponseWithImages {
         return new PlaceResponseWithImages(id, top3Keywords, name, category, phone, address, snsUrl, point, closingHours, openingHours, images, isMarked);
     }
 
-    public static PlaceResponseWithImages from(PlaceDtoWithMarkedStatusAndImages dto) {
+    public static PlaceResponseWithImages from(PlaceDto dto) {
         String snsUrl = dto.getHomepageUrl();
         if (snsUrl != null && !snsUrl.contains("instagram")) {
             snsUrl = null;
@@ -69,10 +68,6 @@ public class PlaceResponseWithImages {
         if (category == null) {
             category = dto.getCategory().getFirstCategory();
         }
-
-        LinkedList<ImageResponse> images = new LinkedList<>(dto.getImages().stream()
-                .map(reviewImageDto -> ImageResponse.of(reviewImageDto.getUrl(), reviewImageDto.getThumbnailUrl()))
-                .toList());
 
         return PlaceResponseWithImages.of(
                 dto.getId(),
@@ -89,7 +84,9 @@ public class PlaceResponseWithImages {
                 dto.getOpeningHoursDtos().stream()
                         .map(OpeningHoursResponse::from)
                         .toList(),
-                images,
+                dto.getImages().stream()
+                        .map(reviewImageDto -> ImageResponse.of(reviewImageDto.getUrl(), reviewImageDto.getThumbnailUrl()))
+                        .toList(),
                 dto.getIsMarked()
         );
     }

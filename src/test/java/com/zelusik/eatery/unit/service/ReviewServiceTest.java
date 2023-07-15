@@ -5,11 +5,10 @@ import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
@@ -92,7 +91,7 @@ class ReviewServiceTest {
         then(reviewImageService).should().upload(any(Review.class), any());
         then(placeService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualSavedReview.getPlaceDtoWithMarkedStatus().getKakaoPid()).isEqualTo(kakaoPid);
+        assertThat(actualSavedReview.getPlaceDto().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
     @DisplayName("생성할 리뷰와 존재하지 않는 장소 정보가 주어지고, 리뷰를 생성하면, 장소와 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
@@ -104,11 +103,11 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         Place expectedPlace = PlaceTestUtils.createPlace(placeId, kakaoPid);
-        PlaceDtoWithMarkedStatus expectedPlaceDtoWithMarkedStatus = PlaceDtoWithMarkedStatus.from(expectedPlace, true);
+        PlaceDto expectedPlaceDto = PlaceDto.from(expectedPlace, true);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
         given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.empty());
-        given(placeService.create(writerId, reviewCreateRequest.getPlace())).willReturn(expectedPlaceDtoWithMarkedStatus);
+        given(placeService.create(writerId, reviewCreateRequest.getPlace())).willReturn(expectedPlaceDto);
         given(placeService.findById(placeId)).willReturn(expectedPlace);
         given(memberService.findById(writerId)).willReturn(expectedMember);
         given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
@@ -135,7 +134,7 @@ class ReviewServiceTest {
         then(reviewImageService).should().upload(any(Review.class), any());
         then(placeService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualSavedReview.getPlaceDtoWithMarkedStatus().getKakaoPid()).isEqualTo(kakaoPid);
+        assertThat(actualSavedReview.getPlaceDto().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
     @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")

@@ -2,7 +2,7 @@ package com.zelusik.eatery.dto.review.request;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.ImageDto;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -48,9 +48,9 @@ public class ReviewCreateRequest {
         return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, images);
     }
 
-    public ReviewDtoWithMemberAndPlace toDto(PlaceDtoWithMarkedStatus placeDtoWithMarkedStatus) {
+    public ReviewDtoWithMemberAndPlace toDto(PlaceDto placeDto) {
         return ReviewDtoWithMemberAndPlace.of(
-                placeDtoWithMarkedStatus,
+                placeDto,
                 this.getKeywords().stream()
                         .map(ReviewKeywordValue::valueOfDescription)
                         .toList(),

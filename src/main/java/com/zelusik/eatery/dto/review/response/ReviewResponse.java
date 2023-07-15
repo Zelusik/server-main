@@ -42,7 +42,7 @@ public class ReviewResponse {
         return of(
                 reviewDtoWithMemberAndPlace.getId(),
                 MemberResponse.from(reviewDtoWithMemberAndPlace.getWriterDto()),
-                PlaceResponse.from(reviewDtoWithMemberAndPlace.getPlaceDtoWithMarkedStatus()),
+                PlaceResponse.from(reviewDtoWithMemberAndPlace.getPlaceDto()),
                 reviewDtoWithMemberAndPlace.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),

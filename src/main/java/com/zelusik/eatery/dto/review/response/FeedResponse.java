@@ -42,7 +42,7 @@ public class FeedResponse {
         return of(
                 dto.getId(),
                 MemberResponse.from(dto.getWriterDto()),
-                PlaceCompactResponse.from(dto.getPlaceDtoWithMarkedStatus()),
+                PlaceCompactResponse.from(dto.getPlaceDto()),
                 dto.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),

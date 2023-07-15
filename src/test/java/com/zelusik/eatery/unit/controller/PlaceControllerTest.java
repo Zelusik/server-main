@@ -4,7 +4,7 @@ import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.controller.PlaceController;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
@@ -99,7 +99,7 @@ class PlaceControllerTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
         given(placeService.findDtosNearBy(1L, List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
 
         // when & then
@@ -141,9 +141,8 @@ class PlaceControllerTest {
         FilteringType filteringType = FilteringType.TOP_3_KEYWORDS;
         String filteringKeywordDescription = "신선한 재료";
         String filteringKeyword = "FRESH";
-        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
-        given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class)))
-                .willReturn(expectedResult);
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(get("/api/places/bookmarks")
