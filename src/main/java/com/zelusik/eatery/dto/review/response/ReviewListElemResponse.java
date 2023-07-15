@@ -2,7 +2,7 @@ package com.zelusik.eatery.dto.review.response;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,10 +32,10 @@ public class ReviewListElemResponse {
         return new ReviewListElemResponse(id, writerId, keywords, content, images);
     }
 
-    public static ReviewListElemResponse from(ReviewDtoWithMember dto) {
+    public static ReviewListElemResponse from(ReviewDto dto) {
         return of(
                 dto.getId(),
-                dto.getWriterDto().getId(),
+                dto.getWriter().getId(),
                 dto.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),

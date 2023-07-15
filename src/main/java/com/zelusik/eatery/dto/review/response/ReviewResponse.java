@@ -4,7 +4,7 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
 import com.zelusik.eatery.dto.place.response.PlaceResponse;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,16 +38,16 @@ public class ReviewResponse {
         return new ReviewResponse(id, writer, place, keywords, content, images);
     }
 
-    public static ReviewResponse from(ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace) {
+    public static ReviewResponse from(ReviewDto reviewDto) {
         return of(
-                reviewDtoWithMemberAndPlace.getId(),
-                MemberResponse.from(reviewDtoWithMemberAndPlace.getWriterDto()),
-                PlaceResponse.from(reviewDtoWithMemberAndPlace.getPlaceDto()),
-                reviewDtoWithMemberAndPlace.getKeywords().stream()
+                reviewDto.getId(),
+                MemberResponse.from(reviewDto.getWriter()),
+                PlaceResponse.from(reviewDto.getPlace()),
+                reviewDto.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
-                reviewDtoWithMemberAndPlace.getContent(),
-                reviewDtoWithMemberAndPlace.getReviewImageDtos().stream()
+                reviewDto.getContent(),
+                reviewDto.getReviewImageDtos().stream()
                         .map(ImageResponse::from)
                         .toList()
         );

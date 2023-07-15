@@ -7,14 +7,13 @@ import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
-import com.zelusik.eatery.repository.review.ReviewRepository;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.exception.review.ReviewNotFoundException;
 import com.zelusik.eatery.exception.review.ReviewUpdatePermissionDeniedException;
+import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
+import com.zelusik.eatery.repository.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -45,7 +44,7 @@ public class ReviewService {
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
-    public ReviewDtoWithMemberAndPlace create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
+    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
         Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
@@ -59,10 +58,10 @@ public class ReviewService {
         boolean isMarkedPlace = bookmarkService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
-        ReviewDtoWithMemberAndPlace reviewDtoWithMemberAndPlace = reviewRequest.toDto(PlaceDto.from(place, isMarkedPlace));
-        Review review = reviewDtoWithMemberAndPlace.toEntity(writer, place);
+        ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, isMarkedPlace));
+        Review review = reviewDto.toEntity(writer, place);
         reviewRepository.save(review);
-        reviewDtoWithMemberAndPlace.getKeywords()
+        reviewDto.getKeywords()
                 .forEach(keyword -> {
                     ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
                     review.getKeywords().add(reviewKeyword);
@@ -74,7 +73,7 @@ public class ReviewService {
         // 장소 top 3 keyword 설정
         placeService.renewTop3Keywords(place);
 
-        return ReviewDtoWithMemberAndPlace.from(review, isMarkedPlace);
+        return ReviewDto.from(review, isMarkedPlace);
     }
 
     /**
@@ -94,9 +93,9 @@ public class ReviewService {
      * @param pageable paging 정보
      * @return 조회된 리뷰 목록(slice)
      */
-    public Slice<ReviewDtoWithMemberAndPlace> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
+    public Slice<ReviewDto> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
         return reviewRepository.findAllByDeletedAtNull(pageable)
-                .map(review -> ReviewDtoWithMemberAndPlace.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace())));
+                .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace())));
     }
 
     /**
@@ -106,8 +105,8 @@ public class ReviewService {
      * @param pageable paging 정보
      * @return 조회된 리뷰 목록(Slice)
      */
-    public Slice<ReviewDtoWithMember> findDtosByPlaceId(Long placeId, Pageable pageable) {
-        return reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable).map(ReviewDtoWithMember::from);
+    public Slice<ReviewDto> findDtosByPlaceId(Long placeId, Pageable pageable) {
+        return reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable).map(ReviewDto::fromWithoutPlace);
     }
 
     /**
@@ -117,9 +116,9 @@ public class ReviewService {
      * @param pageable paging, sorting 정보
      * @return 조회된 리뷰 목록(slice)
      */
-    public Slice<ReviewDtoWithMemberAndPlace> findDtosByWriterId(Long writerId, Pageable pageable) {
+    public Slice<ReviewDto> findDtosByWriterId(Long writerId, Pageable pageable) {
         return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)
-                .map(review -> ReviewDtoWithMemberAndPlace.from(review, bookmarkService.isMarkedPlace(writerId, review.getPlace())));
+                .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(writerId, review.getPlace())));
     }
 
     /**
@@ -131,12 +130,12 @@ public class ReviewService {
      * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
      */
     @Transactional
-    public ReviewDtoWithMemberAndPlace update(Long memberId, Long reviewId, @Nullable String content) {
+    public ReviewDto update(Long memberId, Long reviewId, @Nullable String content) {
         Review review = findById(reviewId);
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
 
-        return ReviewDtoWithMemberAndPlace.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace()));
+        return ReviewDto.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace()));
     }
 
     /**
