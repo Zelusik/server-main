@@ -8,7 +8,8 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
@@ -39,7 +40,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDtoWithMarkedStatusAndImages> findDtosNearBy(
+    public Slice<PlaceDto> findDtosNearBy(
             Long memberId,
             List<DayOfWeek> daysOfWeek,
             PlaceSearchKeyword keyword,
@@ -93,7 +94,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("size_of_page", pageable.getPageSize() + 1)   // 다음 페이지 존재 여부 확인을 위함.
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDtoWithMarkedStatusAndImages> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper());
+        List<PlaceDto> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper());
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
@@ -105,7 +106,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDtoWithMarkedStatusAndImages> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+    public Slice<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
         String sql = """
                 SELECT p.place_id,
                        p.top3keywords,
@@ -200,7 +201,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("size_of_page", pageable.getPageSize() + 1)
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDtoWithMarkedStatusAndImages> content = template.query(sql, params, placeDtoWithImagesRowMapper());
+        List<PlaceDto> content = template.query(sql, params, placeDtoWithImagesRowMapper());
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
@@ -401,11 +402,11 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         );
     }
 
-    private RowMapper<PlaceDtoWithMarkedStatusAndImages> placeDtoWithImagesRowMapper() {
+    private RowMapper<PlaceDto> placeDtoWithImagesRowMapper() {
         return (rs, rowNum) -> {
             ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
             long placeId = rs.getLong("place_id");
-            return PlaceDtoWithMarkedStatusAndImages.of(
+            return PlaceDto.of(
                     placeId,
                     reviewKeywordValueConverter.convertToEntityAttribute(rs.getString("top3keywords")),
                     rs.getString("kakao_pid"),

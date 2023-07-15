@@ -3,7 +3,7 @@ package com.zelusik.eatery.repository.place;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.QPlace;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -15,7 +15,7 @@ public class PlaceRepositoryQCustomImpl implements PlaceRepositoryQCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public Optional<PlaceDtoWithMarkedStatus> findDtoWithMarkedStatus(Long id, Long memberId) {
+    public Optional<PlaceDto> findDtoWithMarkedStatus(Long id, Long memberId) {
         Place place = queryFactory.selectFrom(QPlace.place)
                 .where(QPlace.place.id.eq(id))
                 .fetchOne();
@@ -31,6 +31,6 @@ public class PlaceRepositoryQCustomImpl implements PlaceRepositoryQCustom {
                 .fetchOne();
         boolean isMarked = count != null && count > 0;
 
-        return Optional.of(PlaceDtoWithMarkedStatus.from(place, isMarked));
+        return Optional.of(PlaceDto.from(place, isMarked));
     }
 }

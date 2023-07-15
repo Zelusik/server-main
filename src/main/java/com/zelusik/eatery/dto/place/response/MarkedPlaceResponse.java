@@ -3,7 +3,7 @@ package com.zelusik.eatery.dto.place.response;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,7 +37,7 @@ public class MarkedPlaceResponse {
         return new MarkedPlaceResponse(id, name, category, address, point, images);
     }
 
-    public static MarkedPlaceResponse from(PlaceDtoWithMarkedStatusAndImages dto) {
+    public static MarkedPlaceResponse from(PlaceDto dto) {
 
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {

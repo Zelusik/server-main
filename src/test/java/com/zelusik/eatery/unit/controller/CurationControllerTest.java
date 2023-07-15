@@ -10,7 +10,7 @@ import com.zelusik.eatery.dto.curation.CurationElemFileDto;
 import com.zelusik.eatery.dto.curation.request.CurationCreateRequest;
 import com.zelusik.eatery.dto.curation.request.CurationElemCreateRequest;
 import com.zelusik.eatery.dto.curation.response.CurationListResponse;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.CurationService;
@@ -225,7 +225,7 @@ class CurationControllerTest {
     }
 
     @NotNull
-    private static CurationElemDto createCurationElemDto(Long newContentId, Long curationId, PlaceDtoWithMarkedStatus placeDto) {
+    private static CurationElemDto createCurationElemDto(Long newContentId, Long curationId, PlaceDto placeDto) {
         return CurationElemDto.of(
                 newContentId,
                 curationId,

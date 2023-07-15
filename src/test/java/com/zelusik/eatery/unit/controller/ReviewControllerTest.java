@@ -51,7 +51,7 @@ class ReviewControllerTest {
     void givenReviewInfo_whenReviewCreate_thenReturnSavedReview() throws Exception {
         // given
         given(reviewService.create(any(), any(ReviewCreateRequest.class), any()))
-                .willReturn(ReviewTestUtils.createReviewDtoWithMemberAndPlace());
+                .willReturn(ReviewTestUtils.createReviewDto());
 
         // when & then
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
@@ -83,7 +83,7 @@ class ReviewControllerTest {
         // given
         long placeId = 1L;
         given(reviewService.findDtosByPlaceId(eq(placeId), any(Pageable.class)))
-                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithMember())));
+                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithoutPlace())));
 
         // when & then
         mvc.perform(
@@ -100,7 +100,7 @@ class ReviewControllerTest {
         // given
         long memberId = 1L;
         given(reviewService.findDtosByWriterId(eq(memberId), any(Pageable.class)))
-                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithMemberAndPlace())));
+                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDto())));
 
         // when & then
         mvc.perform(

@@ -4,7 +4,7 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
 import com.zelusik.eatery.dto.place.response.PlaceCompactResponse;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,11 +38,11 @@ public class FeedResponse {
         return new FeedResponse(id, writer, place, keywords, content, images);
     }
 
-    public static FeedResponse from(ReviewDtoWithMemberAndPlace dto) {
+    public static FeedResponse from(ReviewDto dto) {
         return of(
                 dto.getId(),
-                MemberResponse.from(dto.getWriterDto()),
-                PlaceCompactResponse.from(dto.getPlaceDtoWithMarkedStatus()),
+                MemberResponse.from(dto.getWriter()),
+                PlaceCompactResponse.from(dto.getPlace()),
                 dto.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),

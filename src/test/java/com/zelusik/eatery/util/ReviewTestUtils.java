@@ -6,8 +6,7 @@ import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 
@@ -26,8 +25,8 @@ public class ReviewTestUtils {
         );
     }
 
-    public static ReviewDtoWithMemberAndPlace createReviewDtoWithMemberAndPlace() {
-        return ReviewDtoWithMemberAndPlace.of(
+    public static ReviewDto createReviewDto() {
+        return ReviewDto.of(
                 1L,
                 MemberTestUtils.createMemberDtoWithId(),
                 PlaceTestUtils.createPlaceDto(),
@@ -52,10 +51,11 @@ public class ReviewTestUtils {
         );
     }
 
-    public static ReviewDtoWithMember createReviewDtoWithMember() {
-        return ReviewDtoWithMember.of(
+    public static ReviewDto createReviewDtoWithoutPlace() {
+        return ReviewDto.of(
                 1L,
                 MemberTestUtils.createMemberDtoWithId(),
+                null,
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",

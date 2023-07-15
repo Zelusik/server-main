@@ -6,15 +6,13 @@ import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
-import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
@@ -47,7 +45,7 @@ public class PlaceService {
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
     @Transactional
-    public PlaceDtoWithMarkedStatus create(Long memberId, PlaceCreateRequest placeCreateRequest) {
+    public PlaceDto create(Long memberId, PlaceCreateRequest placeCreateRequest) {
         PlaceScrapingResponse scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
 
         Place place = placeRepository.save(placeCreateRequest
@@ -62,7 +60,7 @@ public class PlaceService {
             place.getOpeningHoursList().addAll(openingHoursList);
         }
 
-        return PlaceDtoWithMarkedStatus.from(place, bookmarkService.isMarkedPlace(memberId, place));
+        return PlaceDto.from(place, bookmarkService.isMarkedPlace(memberId, place));
     }
 
     /**
@@ -91,11 +89,11 @@ public class PlaceService {
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceDtoWithMarkedStatusAndImages findDtoWithMarkedStatusAndImages(Long memberId, Long placeId) {
-        PlaceDtoWithMarkedStatus place = placeRepository.findDtoWithMarkedStatus(placeId, memberId).orElseThrow(PlaceNotFoundException::new);
-        List<ReviewImageDto> images = reviewImageService.findLatest3ByPlace(place.getId());
-
-        return PlaceDtoWithMarkedStatusAndImages.from(place, images);
+    public PlaceDto findDtoWithMarkedStatusAndImages(Long memberId, Long placeId) {
+        Place place = findById(placeId);
+        boolean isMarked = bookmarkService.isMarkedPlace(memberId, place);
+        List<ReviewImageDto> Latest3Images = reviewImageService.findLatest3ByPlace(place.getId());
+        return PlaceDto.fromWithImages(place, isMarked, Latest3Images);
     }
 
     /**
@@ -109,7 +107,7 @@ public class PlaceService {
      * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDtoWithMarkedStatusAndImages> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
+    public Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
         return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, lat, lng, 50, pageable);
     }
 
@@ -122,7 +120,7 @@ public class PlaceService {
      * @param pageable paging 정보
      * @return 조회한 장소 목록과 사진 데이터
      */
-    public Slice<PlaceDtoWithMarkedStatusAndImages> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+    public Slice<PlaceDto> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
         return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
     }
 

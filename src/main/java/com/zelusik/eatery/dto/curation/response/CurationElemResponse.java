@@ -29,7 +29,7 @@ public class CurationElemResponse {
     public static CurationElemResponse from(CurationElemDto dto) {
         return of(
                 dto.getId(),
-                PlaceCompactResponseWithoutIsMarked.from(dto.getPlaceDtoWithMarkedStatus()),
+                PlaceCompactResponseWithoutIsMarked.from(dto.getPlaceDto()),
                 dto.getImageDto().getThumbnailUrl()
         );
     }
