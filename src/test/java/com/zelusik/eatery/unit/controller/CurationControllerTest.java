@@ -1,8 +1,9 @@
-package com.zelusik.eatery.controller;
+package com.zelusik.eatery.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.controller.CurationController;
 import com.zelusik.eatery.dto.curation.CurationDto;
 import com.zelusik.eatery.dto.curation.CurationElemDto;
 import com.zelusik.eatery.dto.curation.CurationElemFileDto;
