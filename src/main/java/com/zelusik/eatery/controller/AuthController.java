@@ -105,7 +105,7 @@ public class AuthController {
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenResponse.class))),
-            @ApiResponse(description = "[1502] 유효하지 않은 token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
+            @ApiResponse(description = "[1504] 유효하지 않은 refresh token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
     })
     @PostMapping("/token")
     public TokenResponse tokenRefresh(@Valid @RequestBody TokenRefreshRequest request) {

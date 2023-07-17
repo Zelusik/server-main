@@ -3,6 +3,7 @@ package com.zelusik.eatery.service;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.dto.redis.RefreshToken;
+import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import com.zelusik.eatery.repository.redis.RefreshTokenRepository;
 import com.zelusik.eatery.security.JwtTokenInfoDto;
@@ -53,8 +54,7 @@ public class JwtTokenService {
     public TokenResponse refresh(String oldRefreshToken) {
         jwtTokenProvider.validateToken(oldRefreshToken);
 
-        RefreshToken oldRedisRefreshToken = refreshTokenRepository.findById(oldRefreshToken)
-                .orElseThrow(TokenValidateException::new);
+        RefreshToken oldRedisRefreshToken = refreshTokenRepository.findById(oldRefreshToken).orElseThrow(RefreshTokenValidateException::new);
         refreshTokenRepository.delete(oldRedisRefreshToken);
 
         return create(

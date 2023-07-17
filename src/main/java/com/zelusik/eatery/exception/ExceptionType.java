@@ -7,6 +7,7 @@ import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.exception.auth.AppleOAuthLoginException;
+import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import com.zelusik.eatery.exception.bookmark.AlreadyMarkedPlaceException;
 import com.zelusik.eatery.exception.bookmark.BookmarkNotFoundException;
@@ -117,6 +118,7 @@ public enum ExceptionType {
     ACCESS_DENIED(1500, "접근이 거부되었습니다.", null),
     UNAUTHORIZED(1501, "유효하지 않은 인증 정보로 인해 인증 과정에서 문제가 발생하였습니다.", null),
     TOKEN_VALIDATE(1502, "유효하지 않은 token입니다. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신이 필요합니다.", TokenValidateException.class),
+    REFRESH_TOKEN_VALIDATE(1504, "유효하지 않은 refresh token입니다. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신이 필요합니다.", RefreshTokenValidateException.class),
 
     /**
      * 회원({@link Member}) 관련 예외
