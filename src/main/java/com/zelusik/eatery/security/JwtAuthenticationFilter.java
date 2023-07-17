@@ -1,5 +1,6 @@
 package com.zelusik.eatery.security;
 
+import com.zelusik.eatery.exception.auth.AccessTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +38,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         // Header에서 JWT 받아옴
-        String token = jwtTokenProvider.getToken(request);
+        String accessToken = jwtTokenProvider.getToken(request);
 
-        if (token != null) {
-            jwtTokenProvider.validateToken(token);
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        if (accessToken != null) {
+            try {
+                jwtTokenProvider.validateToken(accessToken);
+            } catch (TokenValidateException ex) {
+                throw new AccessTokenValidateException(ex);
+            }
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         filterChain.doFilter(request, response);
     }
 }

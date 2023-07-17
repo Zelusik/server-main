@@ -3,6 +3,7 @@ package com.zelusik.eatery.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.dto.exception.ErrorResponse;
 import com.zelusik.eatery.exception.ExceptionType;
+import com.zelusik.eatery.exception.auth.AccessTokenValidateException;
 import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (TokenValidateException
+                 | AccessTokenValidateException
                  | RefreshTokenValidateException ex) {
             setErrorResponse(ex.getClass(), response);
         }
