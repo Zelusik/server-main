@@ -6,23 +6,19 @@
     <property name="LOG_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) [%-15.15thread] %green(%-40.40logger{26}) : %msg%n"/>
 
-    <springProfile name="!prod">
-        <include resource="console-appender.xml"/>
+    <include resource="console-appender.xml"/>
 
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
 
-    <springProfile name="prod">
-        <include resource="console-appender.xml"/>
+    <springProfile name="dev,prod">
         <include resource="file-appender.xml"/>
         <include resource="file-info-appender.xml"/>
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
 
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
             <appender-ref ref="FILE-INFO"/>
             <appender-ref ref="FILE-WARN"/>

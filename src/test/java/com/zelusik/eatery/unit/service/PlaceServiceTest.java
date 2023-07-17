@@ -8,10 +8,10 @@ import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.dto.place.*;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
-import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
+import com.zelusik.eatery.service.BookmarkService;
 import com.zelusik.eatery.service.PlaceService;
 import com.zelusik.eatery.service.ReviewImageService;
 import com.zelusik.eatery.service.WebScrapingService;
@@ -34,6 +34,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -53,7 +54,7 @@ class PlaceServiceTest {
     @Mock
     private OpeningHoursRepository openingHoursRepository;
     @Mock
-    private BookmarkRepository bookmarkRepository;
+    private BookmarkService bookmarkService;
     @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
 
@@ -77,17 +78,17 @@ class PlaceServiceTest {
         Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(placeScrapingResponse);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
-        given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(any());
-        given(bookmarkRepository.findAllMarkedPlaceId(memberId)).willReturn(List.of(placeId));
+        given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(List.of());
+        given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(false);
 
         // when
-        PlaceDtoWithMarkedStatus actualResult = sut.create(memberId, placeCreateRequest);
+        PlaceDto actualResult = sut.create(memberId, placeCreateRequest);
 
         // then
         then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().saveAll(ArgumentMatchers.<List<OpeningHours>>any());
-        then(bookmarkRepository).should().findAllMarkedPlaceId(memberId);
+        then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
     }
@@ -98,18 +99,20 @@ class PlaceServiceTest {
         // given
         long placeId = 1L;
         long memberId = 2L;
-        PlaceDtoWithMarkedStatus expectedResult = PlaceTestUtils.createPlaceDto(placeId);
-        given(placeRepository.findDtoWithMarkedStatus(placeId, memberId)).willReturn(Optional.of(expectedResult));
+        Place expectedResult = PlaceTestUtils.createPlace(placeId, "12345");
+        given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedResult));
+        given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
         given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
-        PlaceDtoWithMarkedStatusAndImages findDto = sut.findDtoWithMarkedStatusAndImages(memberId, placeId);
+        PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImages(memberId, placeId);
 
         // then
-        then(placeRepository).should().findDtoWithMarkedStatus(placeId, memberId);
+        then(placeRepository).should().findById(placeId);
+        then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
         then(reviewImageService).should().findLatest3ByPlace(placeId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(findDto.getId()).isEqualTo(placeId);
+        assertThat(actualResult).hasFieldOrPropertyWithValue("id", placeId);
     }
 
     @DisplayName("Id(PK)가 주어지고, 존재하지 않는 장소를 찾으면, 예외가 발생한다.")
@@ -118,13 +121,13 @@ class PlaceServiceTest {
         // given
         long placeId = 1L;
         long memberId = 2L;
-        given(placeRepository.findDtoWithMarkedStatus(placeId, memberId)).willReturn(Optional.empty());
+        given(placeRepository.findById(placeId)).willReturn(Optional.empty());
 
         // when
         Throwable t = catchThrowable(() -> sut.findDtoWithMarkedStatusAndImages(memberId, placeId));
 
         // then
-        then(placeRepository).should().findDtoWithMarkedStatus(placeId, memberId);
+        then(placeRepository).should().findById(placeId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(PlaceNotFoundException.class);
     }
@@ -169,12 +172,12 @@ class PlaceServiceTest {
         FilteringType filteringType = FilteringType.SECOND_CATEGORY;
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
         given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable))
                 .willReturn(expectedResult);
 
         // when
-        Slice<PlaceDtoWithMarkedStatusAndImages> actualResult = sut.findMarkedDtos(memberId, filteringType, filteringKeyword, pageable);
+        Slice<PlaceDto> actualResult = sut.findMarkedDtos(memberId, filteringType, filteringKeyword, pageable);
 
         // then
         then(placeRepository).should().findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
@@ -191,11 +194,11 @@ class PlaceServiceTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDtoWithMarkedStatusAndImages> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
         given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 50, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDtoWithMarkedStatusAndImages> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
 
         // then
         then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 50, pageable);
@@ -254,7 +257,7 @@ class PlaceServiceTest {
         then(webScrapingService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(openingHoursRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkService).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
     }
 }

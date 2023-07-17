@@ -1,16 +1,17 @@
 package com.zelusik.eatery.constant.member;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Getter
 public enum RoleType {
-    
-    USER("ROLE_USER"),
-    ADMIN("ROLE_ADMIN");
 
-    @Getter
-    private final String name;
+    USER("ROLE_USER", "사용자"),
+    MANAGER("ROLE_MANAGER", "운영자"),
+    ADMIN("ROLE_ADMIN", "관리자"),
+    ;
 
-    RoleType(String name) {
-        this.name = name;
-    }
+    private final String roleName;
+    private final String description;
 }

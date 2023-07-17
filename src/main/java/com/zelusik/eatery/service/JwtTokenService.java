@@ -1,10 +1,11 @@
 package com.zelusik.eatery.service;
 
 import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.dto.auth.RedisRefreshToken;
 import com.zelusik.eatery.dto.auth.response.TokenResponse;
-import com.zelusik.eatery.repository.RedisRefreshTokenRepository;
+import com.zelusik.eatery.dto.redis.RefreshToken;
+import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
+import com.zelusik.eatery.repository.redis.RefreshTokenRepository;
 import com.zelusik.eatery.security.JwtTokenInfoDto;
 import com.zelusik.eatery.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class JwtTokenService {
 
-    private final RedisRefreshTokenRepository redisRefreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     /**
@@ -32,7 +33,7 @@ public class JwtTokenService {
     public TokenResponse create(Long memberId, LoginType loginType) {
         JwtTokenInfoDto accessTokenInfo = jwtTokenProvider.createAccessToken(memberId, loginType);
         JwtTokenInfoDto refreshTokenInfo = jwtTokenProvider.createRefreshToken(memberId, loginType);
-        redisRefreshTokenRepository.save(RedisRefreshToken.of(refreshTokenInfo.token(), memberId));
+        refreshTokenRepository.save(RefreshToken.of(refreshTokenInfo.token(), memberId));
 
         return TokenResponse.of(
                 accessTokenInfo.token(), accessTokenInfo.expiresAt(),
@@ -53,9 +54,8 @@ public class JwtTokenService {
     public TokenResponse refresh(String oldRefreshToken) {
         jwtTokenProvider.validateToken(oldRefreshToken);
 
-        RedisRefreshToken oldRedisRefreshToken = redisRefreshTokenRepository.findById(oldRefreshToken)
-                .orElseThrow(TokenValidateException::new);
-        redisRefreshTokenRepository.delete(oldRedisRefreshToken);
+        RefreshToken oldRedisRefreshToken = refreshTokenRepository.findById(oldRefreshToken).orElseThrow(RefreshTokenValidateException::new);
+        refreshTokenRepository.delete(oldRedisRefreshToken);
 
         return create(
                 oldRedisRefreshToken.getMemberId(),
@@ -78,6 +78,6 @@ public class JwtTokenService {
         } catch (Exception ex) {
             return false;
         }
-        return redisRefreshTokenRepository.existsById(refreshToken);
+        return refreshTokenRepository.existsById(refreshToken);
     }
 }

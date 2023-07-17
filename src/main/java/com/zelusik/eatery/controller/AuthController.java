@@ -1,6 +1,7 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
 import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.auth.request.AppleLoginRequest;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.Set;
 
 @Tag(name = "로그인 등 인증 관련")
 @RequiredArgsConstructor
@@ -57,7 +59,7 @@ public class AuthController {
         KakaoOAuthUserResponse userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
-                .orElseGet(() -> memberService.save(userInfo.toMemberDto()));
+                .orElseGet(() -> memberService.save(userInfo.toMemberDto(Set.of(RoleType.USER))));
 
         if (memberDto.getDeletedAt() != null) {
             memberService.rejoin(memberDto.getId());
@@ -86,7 +88,7 @@ public class AuthController {
         AppleOAuthUserResponse userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
-                .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName())));
+                .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName(), Set.of(RoleType.USER))));
 
         if (memberDto.getDeletedAt() != null) {
             memberService.rejoin(memberDto.getId());
@@ -103,7 +105,7 @@ public class AuthController {
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenResponse.class))),
-            @ApiResponse(description = "[1502] 유효하지 않은 token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
+            @ApiResponse(description = "[1504] 유효하지 않은 refresh token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
     })
     @PostMapping("/token")
     public TokenResponse tokenRefresh(@Valid @RequestBody TokenRefreshRequest request) {

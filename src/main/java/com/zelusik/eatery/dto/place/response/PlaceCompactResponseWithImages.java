@@ -4,7 +4,7 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.file.response.ImageResponse;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -48,7 +48,7 @@ public class PlaceCompactResponseWithImages {
         return new PlaceCompactResponseWithImages(id, top3Keywords, name, category, address, point, images, isMarked);
     }
 
-    public static PlaceCompactResponseWithImages from(PlaceDtoWithMarkedStatusAndImages dto) {
+    public static PlaceCompactResponseWithImages from(PlaceDto dto) {
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {
             category = dto.getCategory().getFirstCategory();

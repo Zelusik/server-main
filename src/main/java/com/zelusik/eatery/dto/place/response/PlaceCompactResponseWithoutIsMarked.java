@@ -1,12 +1,14 @@
 package com.zelusik.eatery.dto.place.response;
 
 import com.zelusik.eatery.domain.place.Address;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class PlaceCompactResponseWithoutIsMarked {
@@ -27,7 +29,7 @@ public class PlaceCompactResponseWithoutIsMarked {
         return new PlaceCompactResponseWithoutIsMarked(id, name, category, address);
     }
 
-    public static PlaceCompactResponseWithoutIsMarked from(PlaceDtoWithMarkedStatus dto) {
+    public static PlaceCompactResponseWithoutIsMarked from(PlaceDto dto) {
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {
             category = dto.getCategory().getFirstCategory();

@@ -6,15 +6,19 @@ import com.zelusik.eatery.domain.curation.CurationElemFile;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.dto.curation.CurationDto;
 import com.zelusik.eatery.dto.curation.request.CurationElemCreateRequest;
+import com.zelusik.eatery.dto.curation.response.CurationListResponse;
+import com.zelusik.eatery.dto.curation.response.CurationResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.exception.curation.CurationNotFoundException;
 import com.zelusik.eatery.repository.curation.CurationElemRepository;
 import com.zelusik.eatery.repository.curation.CurationRepository;
-import com.zelusik.eatery.exception.curation.CurationNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -32,6 +36,7 @@ public class CurationService {
      * @param title curation 제목
      * @return 생성된 curation dto
      */
+    @CacheEvict(value = "curation", key = "'all'", cacheManager = "curationCacheManager")
     @Transactional
     public CurationDto create(String title) {
         return CurationDto.from(curationRepository.save(Curation.of(title)));
@@ -44,6 +49,7 @@ public class CurationService {
      * @param curationElemCreateRequest 추가하고자 하는 curation element 정보
      * @return curation element가 추가된 curation dto
      */
+    @CacheEvict(value = "curation", key = "'all'", cacheManager = "curationCacheManager")
     @Transactional
     public CurationDto addCurationElem(Long memberId, Long curationId, CurationElemCreateRequest curationElemCreateRequest) {
         PlaceCreateRequest placeCreateRequest = curationElemCreateRequest.getPlace();
@@ -69,9 +75,13 @@ public class CurationService {
      * @param curationId 조회하고자 하는 큐레이션의 PK
      * @return 조회한 큐레이션 entity
      */
-    public Curation findEntityById(Long curationId) {
+    private Curation findEntityById(Long curationId) {
         return curationRepository.findById(curationId)
                 .orElseThrow(CurationNotFoundException::new);
+    }
+
+    public CurationDto findDtoById(Long curationId) {
+        return CurationDto.from(findEntityById(curationId));
     }
 
     /**
@@ -80,10 +90,16 @@ public class CurationService {
      *
      * @return 조회된 큐레이션 dto 목록
      */
-    public List<CurationDto> findDtos() {
+    private Stream<CurationDto> findDtoStream() {
         return curationRepository.findAllByOrderByCreatedAtDesc().stream()
                 .filter(curation -> curation.getCurationElems().size() > 0)
-                .map(CurationDto::from)
-                .toList();
+                .map(CurationDto::from);
+    }
+
+    @Cacheable(value = "curation", key = "'all'", cacheManager = "curationCacheManager")
+    public CurationListResponse getCurationList() {
+        return CurationListResponse.of(findDtoStream()
+                .map(CurationResponse::from)
+                .toList());
     }
 }

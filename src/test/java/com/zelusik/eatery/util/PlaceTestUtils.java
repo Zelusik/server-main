@@ -5,8 +5,7 @@ import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.OpeningHoursDto;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatusAndImages;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -31,8 +30,8 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDtoWithMarkedStatus createPlaceDto() {
-        return PlaceDtoWithMarkedStatus.of(
+    public static PlaceDto createPlaceDto() {
+        return PlaceDto.of(
                 1L,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",
@@ -50,14 +49,15 @@ public class PlaceTestUtils {
                         createOpeningHoursDto(1L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
                         createOpeningHoursDto(1L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
                 ),
+                null,
                 false,
                 null,
                 null
         );
     }
 
-    public static PlaceDtoWithMarkedStatus createPlaceDto(Long placeId) {
-        return PlaceDtoWithMarkedStatus.of(
+    public static PlaceDto createPlaceDto(Long placeId) {
+        return PlaceDto.of(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",
@@ -75,18 +75,19 @@ public class PlaceTestUtils {
                         createOpeningHoursDto(101L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
                         createOpeningHoursDto(102L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
                 ),
+                null,
                 false,
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0)
         );
     }
 
-    public static PlaceDtoWithMarkedStatusAndImages createPlaceDtoWithMarkedStatusAndImages() {
+    public static PlaceDto createPlaceDtoWithMarkedStatusAndImages() {
         return createPlaceDtoWithMarkedStatusAndImages(1L);
     }
 
-    public static PlaceDtoWithMarkedStatusAndImages createPlaceDtoWithMarkedStatusAndImages(Long placeId) {
-        return PlaceDtoWithMarkedStatusAndImages.of(
+    public static PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId) {
+        return PlaceDto.of(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",

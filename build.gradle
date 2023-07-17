@@ -64,6 +64,9 @@ dependencies {
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+    // Spring Cache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
     // Database - H2, MySQL
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
@@ -93,6 +96,9 @@ dependencies {
 
     // JSR-305 (https://simple-ing.tistory.com/48)
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+    // Jackson datatype jsr-310 for object mapper serialize
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.15.2'
 }
 
 tasks.named('test') {

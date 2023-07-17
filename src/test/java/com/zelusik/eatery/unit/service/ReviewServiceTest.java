@@ -5,18 +5,13 @@ import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMember;
-import com.zelusik.eatery.dto.review.ReviewDtoWithMemberAndPlace;
+import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
-import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
-import com.zelusik.eatery.service.MemberService;
-import com.zelusik.eatery.service.PlaceService;
-import com.zelusik.eatery.service.ReviewImageService;
-import com.zelusik.eatery.service.ReviewService;
+import com.zelusik.eatery.service.*;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
@@ -57,7 +52,7 @@ class ReviewServiceTest {
     @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
     @Mock
-    private BookmarkRepository bookmarkRepository;
+    private BookmarkService bookmarkService;
 
     @DisplayName("생성할 리뷰와 존재하는 장소 정보가 주어지고, 리뷰를 생성하면, 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
     @Test
@@ -72,7 +67,7 @@ class ReviewServiceTest {
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
         given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
         given(memberService.findById(writerId)).willReturn(expectedMember);
-        given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of(placeId));
+        given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
                 .willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
@@ -80,7 +75,7 @@ class ReviewServiceTest {
         willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
 
         // when
-        ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
+        ReviewDto actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
                 List.of(MultipartFileTestUtils.createMockImageDto())
@@ -89,13 +84,13 @@ class ReviewServiceTest {
         // then
         then(placeService).should().findOptByKakaoPid(kakaoPid);
         then(memberService).should().findById(writerId);
-        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
+        then(bookmarkService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewImageService).should().upload(any(Review.class), any());
         then(placeService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualSavedReview.getPlaceDtoWithMarkedStatus().getKakaoPid()).isEqualTo(kakaoPid);
+        assertThat(actualSavedReview.getPlace().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
     @DisplayName("생성할 리뷰와 존재하지 않는 장소 정보가 주어지고, 리뷰를 생성하면, 장소와 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
@@ -107,21 +102,21 @@ class ReviewServiceTest {
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
         String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         Place expectedPlace = PlaceTestUtils.createPlace(placeId, kakaoPid);
-        PlaceDtoWithMarkedStatus expectedPlaceDtoWithMarkedStatus = PlaceDtoWithMarkedStatus.from(expectedPlace, true);
+        PlaceDto expectedPlaceDto = PlaceDto.from(expectedPlace, true);
         Member expectedMember = MemberTestUtils.createMember(writerId);
         Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
         given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.empty());
-        given(placeService.create(writerId, reviewCreateRequest.getPlace())).willReturn(expectedPlaceDtoWithMarkedStatus);
+        given(placeService.create(writerId, reviewCreateRequest.getPlace())).willReturn(expectedPlaceDto);
         given(placeService.findById(placeId)).willReturn(expectedPlace);
         given(memberService.findById(writerId)).willReturn(expectedMember);
-        given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
+        given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
         willDoNothing().given(reviewImageService).upload(any(Review.class), any());
         willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
 
         // when
-        ReviewDtoWithMemberAndPlace actualSavedReview = sut.create(
+        ReviewDto actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
                 List.of(MultipartFileTestUtils.createMockImageDto())
@@ -132,13 +127,13 @@ class ReviewServiceTest {
         then(placeService).should().create(writerId, reviewCreateRequest.getPlace());
         then(placeService).should().findById(placeId);
         then(memberService).should().findById(writerId);
-        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
+        then(bookmarkService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         then(reviewImageService).should().upload(any(Review.class), any());
         then(placeService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualSavedReview.getPlaceDtoWithMarkedStatus().getKakaoPid()).isEqualTo(kakaoPid);
+        assertThat(actualSavedReview.getPlace().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
     @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
@@ -152,7 +147,7 @@ class ReviewServiceTest {
                 .willReturn(expectedSearchResult);
 
         // when
-        Slice<ReviewDtoWithMember> actualSearchResult = sut.findDtosByPlaceId(placeId, pageable);
+        Slice<ReviewDto> actualSearchResult = sut.findDtosByPlaceId(placeId, pageable);
 
         // then
         then(reviewRepository).should().findByPlace_IdAndDeletedAtNull(placeId, pageable);
@@ -168,14 +163,14 @@ class ReviewServiceTest {
         Pageable pageable = Pageable.ofSize(15);
         SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReview(1L, writerId, 3L, "3", 4L, 5L)));
         given(reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)).willReturn(expectedSearchResult);
-        given(bookmarkRepository.findAllMarkedPlaceId(writerId)).willReturn(List.of());
+        given(bookmarkService.isMarkedPlace(eq(writerId), any(Place.class))).willReturn(false);
 
         // when
-        Slice<ReviewDtoWithMemberAndPlace> actualSearchResult = sut.findDtosByWriterId(writerId, pageable);
+        Slice<ReviewDto> actualSearchResult = sut.findDtosByWriterId(writerId, pageable);
 
         // then
         then(reviewRepository).should().findByWriter_IdAndDeletedAtNull(writerId, pageable);
-        then(bookmarkRepository).should().findAllMarkedPlaceId(writerId);
+        then(bookmarkService).should().isMarkedPlace(eq(writerId), any(Place.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
@@ -206,13 +201,6 @@ class ReviewServiceTest {
         then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
         then(reviewRepository).should().flush();
         then(placeService).should().renewTop3Keywords(findReview.getPlace());
-
-        then(memberService).shouldHaveNoMoreInteractions();
-        then(reviewRepository).shouldHaveNoMoreInteractions();
-        then(reviewImageService).shouldHaveNoMoreInteractions();
-        then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoMoreInteractions();
-        then(bookmarkRepository).shouldHaveNoInteractions();
         verifyEveryMocksShouldHaveNoMoreInteractions();
     }
 
@@ -236,13 +224,6 @@ class ReviewServiceTest {
         // then
         then(memberService).should().findById(loginMemberId);
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
-
-        then(memberService).shouldHaveNoMoreInteractions();
-        then(reviewRepository).shouldHaveNoMoreInteractions();
-        then(reviewImageService).shouldHaveNoInteractions();
-        then(reviewKeywordRepository).shouldHaveNoInteractions();
-        then(placeService).shouldHaveNoInteractions();
-        then(bookmarkRepository).shouldHaveNoInteractions();
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(ReviewDeletePermissionDeniedException.class);
     }
@@ -253,6 +234,6 @@ class ReviewServiceTest {
         then(placeService).shouldHaveNoMoreInteractions();
         then(reviewRepository).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkService).shouldHaveNoMoreInteractions();
     }
 }

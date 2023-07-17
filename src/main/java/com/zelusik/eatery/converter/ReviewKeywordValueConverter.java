@@ -1,4 +1,4 @@
-package com.zelusik.eatery.util.domain;
+package com.zelusik.eatery.converter;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 

@@ -1,11 +1,10 @@
 package com.zelusik.eatery.unit.controller;
 
-import com.zelusik.eatery.config.SecurityConfig;
+import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.controller.ReviewController;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
-import com.zelusik.eatery.service.ReviewService;
-import com.zelusik.eatery.security.JwtAuthenticationFilter;
 import com.zelusik.eatery.security.UserPrincipal;
+import com.zelusik.eatery.service.ReviewService;
 import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
@@ -14,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -35,13 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("[Unit] Review Controller")
 @MockBean(JpaMetamodelMappingContext.class)
-@WebMvcTest(
-        controllers = ReviewController.class,
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = {SecurityConfig.class, JwtAuthenticationFilter.class}
-        )
-)
+@Import(TestSecurityConfig.class)
+@WebMvcTest(controllers = ReviewController.class)
 class ReviewControllerTest {
 
     @MockBean
@@ -58,7 +51,7 @@ class ReviewControllerTest {
     void givenReviewInfo_whenReviewCreate_thenReturnSavedReview() throws Exception {
         // given
         given(reviewService.create(any(), any(ReviewCreateRequest.class), any()))
-                .willReturn(ReviewTestUtils.createReviewDtoWithMemberAndPlace());
+                .willReturn(ReviewTestUtils.createReviewDto());
 
         // when & then
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
@@ -78,8 +71,7 @@ class ReviewControllerTest {
                                 .param("keywords", "신선한 재료", "왁자지껄한")
                                 .param("autoCreatedContent", reviewCreateRequest.getAutoCreatedContent())
                                 .param("content", reviewCreateRequest.getContent())
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L));
@@ -91,12 +83,11 @@ class ReviewControllerTest {
         // given
         long placeId = 1L;
         given(reviewService.findDtosByPlaceId(eq(placeId), any(Pageable.class)))
-                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithMember())));
+                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithoutPlace())));
 
         // when & then
         mvc.perform(
                         get("/api/reviews?placeId=" + placeId)
-                                .with(csrf())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())
@@ -109,15 +100,18 @@ class ReviewControllerTest {
         // given
         long memberId = 1L;
         given(reviewService.findDtosByWriterId(eq(memberId), any(Pageable.class)))
-                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDtoWithMemberAndPlace())));
+                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDto())));
 
         // when & then
         mvc.perform(
                         get("/api/reviews/me")
-                                .with(csrf())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true));
+    }
+
+    private UserDetails createTestUserDetails() {
+        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
     }
 }

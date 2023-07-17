@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class CurationElemResponse {
@@ -27,7 +29,7 @@ public class CurationElemResponse {
     public static CurationElemResponse from(CurationElemDto dto) {
         return of(
                 dto.getId(),
-                PlaceCompactResponseWithoutIsMarked.from(dto.getPlaceDtoWithMarkedStatus()),
+                PlaceCompactResponseWithoutIsMarked.from(dto.getPlaceDto()),
                 dto.getImageDto().getThumbnailUrl()
         );
     }

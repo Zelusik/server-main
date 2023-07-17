@@ -63,11 +63,9 @@ public class CurationController {
             @ParameterObject @Valid @ModelAttribute CurationElemCreateRequest request
     ) {
         CurationResponse response = CurationResponse.from(curationService.addCurationElem(userPrincipal.getMemberId(), curationId, request));
-        List<CurationElemResponse> curationElems = response.getCurationElems();
-        Long newCurationElemId = curationElems.get(curationElems.size() - 1).getId();
 
         return ResponseEntity
-                .created(URI.create("/api/curation/" + newCurationElemId))
+                .created(URI.create("/api/curation/" + curationId)) // TODO: 새로 생성된 큐레이션 콘텐츠에 접근할 수 있는 uri로 변경되어야 함
                 .body(response);
     }
 
@@ -83,7 +81,7 @@ public class CurationController {
                     example = "1"
             ) @PathVariable Long curationId
     ) {
-        return CurationResponse.from(CurationDto.from(curationService.findEntityById(curationId)));
+        return CurationResponse.from(curationService.findDtoById(curationId));
     }
 
     @Operation(
@@ -92,10 +90,6 @@ public class CurationController {
     )
     @GetMapping
     public CurationListResponse findAll() {
-        return CurationListResponse.of(
-                curationService.findDtos().stream()
-                        .map(CurationResponse::from)
-                        .toList()
-        );
+        return curationService.getCurationList();
     }
 }

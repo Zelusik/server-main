@@ -66,6 +66,8 @@
     <li>AWS EC2</li>
     <li>AWS RDS</li>
     <li>AWS S3</li>
+    <li>Docker, Docker Compose</li>
+    <li>GitHub Actions</li>
 </ul>
 
 <h3>Database</h3>

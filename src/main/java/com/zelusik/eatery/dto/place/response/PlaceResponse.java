@@ -3,7 +3,7 @@ package com.zelusik.eatery.dto.place.response;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Point;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -56,33 +56,33 @@ public class PlaceResponse {
         return new PlaceResponse(id, top3Keywords, name, category, phone, address, snsUrl, point, closingHours, openingHours, isMarked);
     }
 
-    public static PlaceResponse from(PlaceDtoWithMarkedStatus placeDtoWithMarkedStatus) {
-        String snsUrl = placeDtoWithMarkedStatus.getHomepageUrl();
+    public static PlaceResponse from(PlaceDto placeDto) {
+        String snsUrl = placeDto.getHomepageUrl();
         if (snsUrl != null && !snsUrl.contains("instagram")) {
             snsUrl = null;
         }
 
-        String category = placeDtoWithMarkedStatus.getCategory().getSecondCategory();
+        String category = placeDto.getCategory().getSecondCategory();
         if (category == null) {
-            category = placeDtoWithMarkedStatus.getCategory().getFirstCategory();
+            category = placeDto.getCategory().getFirstCategory();
         }
 
         return new PlaceResponse(
-                placeDtoWithMarkedStatus.getId(),
-                placeDtoWithMarkedStatus.getTop3Keywords().stream()
+                placeDto.getId(),
+                placeDto.getTop3Keywords().stream()
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
-                placeDtoWithMarkedStatus.getName(),
+                placeDto.getName(),
                 category,
-                placeDtoWithMarkedStatus.getPhone(),
-                placeDtoWithMarkedStatus.getAddress(),
+                placeDto.getPhone(),
+                placeDto.getAddress(),
                 snsUrl,
-                placeDtoWithMarkedStatus.getPoint(),
-                placeDtoWithMarkedStatus.getClosingHours(),
-                placeDtoWithMarkedStatus.getOpeningHoursDtos().stream()
+                placeDto.getPoint(),
+                placeDto.getClosingHours(),
+                placeDto.getOpeningHoursDtos().stream()
                         .map(OpeningHoursResponse::from)
                         .toList(),
-                placeDtoWithMarkedStatus.getIsMarked()
+                placeDto.getIsMarked()
         );
     }
 }

@@ -2,7 +2,7 @@ package com.zelusik.eatery.dto.place.response;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
-import com.zelusik.eatery.dto.place.PlaceDtoWithMarkedStatus;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,7 +40,7 @@ public class PlaceCompactResponse {
         return new PlaceCompactResponse(id, top3Keywords, name, category, address, isMarked);
     }
 
-    public static PlaceCompactResponse from(PlaceDtoWithMarkedStatus dto) {
+    public static PlaceCompactResponse from(PlaceDto dto) {
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {
             category = dto.getCategory().getFirstCategory();

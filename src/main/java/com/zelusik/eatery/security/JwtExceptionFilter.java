@@ -3,6 +3,8 @@ package com.zelusik.eatery.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.dto.exception.ErrorResponse;
 import com.zelusik.eatery.exception.ExceptionType;
+import com.zelusik.eatery.exception.auth.AccessTokenValidateException;
+import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,7 +22,9 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (TokenValidateException ex) {
+        } catch (TokenValidateException
+                 | AccessTokenValidateException
+                 | RefreshTokenValidateException ex) {
             setErrorResponse(ex.getClass(), response);
         }
     }

@@ -9,13 +9,16 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
+import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.exception.member.MemberNotFoundException;
 import com.zelusik.eatery.repository.member.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.repository.member.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.member.TermsInfoRepository;
-import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
-import com.zelusik.eatery.exception.member.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +55,7 @@ public class MemberService {
      * @param request  약관 동의 정보
      * @return 적용된 약관 동의 결과 정보
      */
+    @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public TermsInfoDto agreeToTerms(Long memberId, TermsAgreeRequest request) {
         LocalDateTime now = LocalDateTime.now();
@@ -83,24 +87,12 @@ public class MemberService {
     }
 
     /**
-     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
-     * 삭제된 회원도 포함해서 조회한다.
-     *
-     * @param memberId 조회할 회원의 PK
-     * @return 조회한 회원 entity
-     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
-     */
-    private Member findByIdWithDeleted(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
-    }
-
-    /**
      * 주어진 PK에 해당하는 회원을 조회한다.
      *
      * @param memberId 조회할 회원의 PK
      * @return 조회한 회원 dto
      */
+    @Cacheable(value = "member", key = "#memberId")
     public MemberDto findDtoById(Long memberId) {
         return MemberDto.from(findById(memberId));
     }
@@ -122,6 +114,7 @@ public class MemberService {
      *
      * @param memberId 재가입을 할 회원의 PK
      */
+    @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public void rejoin(Long memberId) {
         Member member = findByIdWithDeleted(memberId);
@@ -135,6 +128,7 @@ public class MemberService {
      * @param updateRequest 수정할 정보
      * @return 수정된 회원 dto
      */
+    @CachePut(value = "member", key = "#memberId")
     @Transactional
     public MemberDto update(Long memberId, MemberUpdateRequest updateRequest) {
         Member member = findById(memberId);
@@ -169,6 +163,7 @@ public class MemberService {
      * @param memberId               회원 id(PK)
      * @param favoriteFoodCategories 변경하고자 하는 음식 취향 목록
      */
+    @CachePut(value = "member", key = "#memberId")
     @Transactional
     public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategoryValue> favoriteFoodCategories) {
         Member member = findById(memberId);
@@ -194,6 +189,7 @@ public class MemberService {
      * @param surveyType 탈퇴 사유
      * @return 탈퇴 사유 정보가 담긴 {@link MemberDeletionSurveyDto} 객체
      */
+    @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
         Member member = findById(memberId);
@@ -213,6 +209,19 @@ public class MemberService {
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);
         return MemberDeletionSurveyDto.from(deletionSurvey);
+    }
+
+    /**
+     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
+     * 삭제된 회원도 포함해서 조회한다.
+     *
+     * @param memberId 조회할 회원의 PK
+     * @return 조회한 회원 entity
+     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
+     */
+    private Member findByIdWithDeleted(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
     }
 
     /**

@@ -1,0 +1,19 @@
+version: "3"
+services:
+  backend:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile.${PROFILE}
+    image: siwall0105/eatery-server-main-${PROFILE}
+    container_name: eatery-server-main
+    ports:
+      - "8080:8080"
+    networks:
+      - eatery-network
+    volumes:
+      - ./log:/spring/log
+
+networks:
+  eatery-network:
+    external: true
