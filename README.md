@@ -58,6 +58,7 @@
     <li>Spring Security, JWT</li>
     <li>JdbcTemplate, Spring Data JPA, Querydsl</li>
     <li>JUnit5, Mockito</li>
+    <li>Jacoco</li>
     <li>Swagger</li>
 </ul>
 
