@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "keyword")
+        @Index(name = "idx__review_keyword__keyword", columnList = "keyword")
 })
 @Entity
 public class ReviewKeyword extends BaseTimeEntity {

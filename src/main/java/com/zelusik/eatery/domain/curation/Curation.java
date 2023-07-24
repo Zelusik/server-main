@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "createdAt")
+        @Index(name = "idx__curation__created_at", columnList = "createdAt")
 })
 @Entity
 public class Curation extends BaseTimeEntity {

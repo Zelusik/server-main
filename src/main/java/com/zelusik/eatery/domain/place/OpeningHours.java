@@ -13,7 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "dayOfWeek")
+        @Index(name = "idx__opening_hours__day_of_week", columnList = "dayOfWeek")
 })
 @Entity
 public class OpeningHours extends BaseTimeEntity {

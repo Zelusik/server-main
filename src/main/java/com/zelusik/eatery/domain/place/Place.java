@@ -2,8 +2,8 @@ package com.zelusik.eatery.domain.place;
 
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.domain.BaseTimeEntity;
 import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
+import com.zelusik.eatery.domain.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,8 +14,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "kakaoPid"),
-        @Index(columnList = "createdAt")
+        @Index(name = "idx__place__kakao_pid", columnList = "kakaoPid"),
+        @Index(name = "idx__place__created_at", columnList = "createdAt")
 })
 @Entity
 public class Place extends BaseTimeEntity {

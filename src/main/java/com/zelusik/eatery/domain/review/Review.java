@@ -12,6 +12,12 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+        @Index(name = "idx__review__writer", columnList = "writer_id"),
+        @Index(name = "idx__review__place", columnList = "place_id"),
+        @Index(name = "idx__review__created_at", columnList = "createdAt"),
+        @Index(name = "idx__review__deleted_at", columnList = "deletedAt")
+})
 @Entity
 public class Review extends BaseTimeEntity {
 

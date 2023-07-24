@@ -11,9 +11,9 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "sido"),
-        @Index(columnList = "sgg"),
-        @Index(columnList = "emdg")
+        @Index(name = "idx__location__sido", columnList = "sido"),
+        @Index(name = "idx__location__sgg", columnList = "sgg"),
+        @Index(name = "idx__location__emdg", columnList = "emdg")
 })
 @Entity
 public class Location {

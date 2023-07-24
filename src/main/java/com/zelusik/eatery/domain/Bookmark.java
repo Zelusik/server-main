@@ -12,6 +12,11 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+        @Index(name = "idx__bookmark__member_id", columnList = "member_id"),
+        @Index(name = "idx__bookmark__place_id", columnList = "place_id"),
+        @Index(name = "idx__bookmark__created_at", columnList = "createdAt")
+})
 @Entity
 public class Bookmark extends BaseTimeEntity {
 
