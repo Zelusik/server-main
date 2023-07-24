@@ -17,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "socialUid")
+        @Index(name = "idx__member__social_uid", columnList = "socialUid"),
         @Index(name = "idx__member__created_at", columnList = "createdAt"),
         @Index(name = "idx__member__deleted_at", columnList = "deletedAt")
 })
