@@ -18,6 +18,8 @@ import java.util.Set;
 @Getter
 @Table(indexes = {
         @Index(columnList = "socialUid")
+        @Index(name = "idx__member__created_at", columnList = "createdAt"),
+        @Index(name = "idx__member__deleted_at", columnList = "deletedAt")
 })
 @Entity
 public class Member extends BaseTimeEntity {
