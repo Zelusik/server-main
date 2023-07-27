@@ -1,6 +1,7 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
@@ -80,12 +81,8 @@ public class MemberController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @ModelAttribute MemberUpdateRequest memberUpdateRequest
     ) {
-        return MemberResponse.from(
-                memberService.update(
-                        userPrincipal.getMemberId(),
-                        memberUpdateRequest
-                )
-        );
+        MemberDto updatedMember = memberService.update(userPrincipal.getMemberId(), memberUpdateRequest);
+        return MemberResponse.from(updatedMember);
     }
 
     @Operation(

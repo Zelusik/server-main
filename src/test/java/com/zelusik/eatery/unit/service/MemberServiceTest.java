@@ -21,7 +21,6 @@ import com.zelusik.eatery.repository.member.TermsInfoRepository;
 import com.zelusik.eatery.service.MemberService;
 import com.zelusik.eatery.service.ProfileImageService;
 import com.zelusik.eatery.util.MemberTestUtils;
-import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +35,7 @@ import java.util.Optional;
 
 import static com.zelusik.eatery.constant.FoodCategoryValue.*;
 import static com.zelusik.eatery.util.MemberTestUtils.*;
+import static com.zelusik.eatery.util.MultipartFileTestUtils.createMockMultipartFile;
 import static com.zelusik.eatery.util.TermsInfoTestUtils.createTermsInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -169,12 +169,7 @@ class MemberServiceTest {
         // given
         long memberId = 1L;
         Member findMember = createMember(memberId);
-        MemberUpdateRequest memberUpdateInfo = MemberUpdateRequest.of(
-                "update",
-                LocalDate.of(2020, 1, 1),
-                Gender.ETC,
-                null
-        );
+        MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, null);
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
 
         // when
@@ -193,16 +188,9 @@ class MemberServiceTest {
         // given
         long memberId = 1L;
         Member findMember = createMember(memberId);
-        MemberUpdateRequest memberUpdateInfo = MemberUpdateRequest.of(
-                "update",
-                LocalDate.of(2020, 1, 1),
-                Gender.ETC,
-                MultipartFileTestUtils.createMockImageDto()
-        );
-        given(memberRepository.findByIdAndDeletedAtNull(memberId))
-                .willReturn(Optional.of(findMember));
-        given(profileImageService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage())))
-                .willReturn(createProfileImage(10L));
+        MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
+        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+        given(profileImageService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(10L));
 
         // when
         MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);

@@ -3,7 +3,6 @@ package com.zelusik.eatery.service;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.domain.member.*;
-import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
@@ -21,6 +20,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -133,8 +133,8 @@ public class MemberService {
     public MemberDto update(Long memberId, MemberUpdateRequest updateRequest) {
         Member member = findById(memberId);
 
-        ImageDto imageDtoForUpdate = updateRequest.getProfileImage();
-        if (imageDtoForUpdate == null) {
+        MultipartFile profileImageForUpdate = updateRequest.getProfileImage();
+        if (profileImageForUpdate == null) {
             member.update(
                     updateRequest.getNickname(),
                     updateRequest.getBirthDay(),
@@ -144,7 +144,7 @@ public class MemberService {
             Optional<ProfileImage> oldProfileImage = profileImageService.findByMember(member);
             oldProfileImage.ifPresent(profileImageService::softDelete);
 
-            ProfileImage profileImage = profileImageService.upload(member, imageDtoForUpdate);
+            ProfileImage profileImage = profileImageService.upload(member, profileImageForUpdate);
             member.update(
                     profileImage.getUrl(),
                     profileImage.getThumbnailUrl(),

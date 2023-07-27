@@ -2,28 +2,26 @@ package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.member.ProfileImage;
-import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.repository.member.ProfileImageRepository;
 import com.zelusik.eatery.service.FileService;
 import com.zelusik.eatery.service.ProfileImageService;
-import com.zelusik.eatery.util.MemberTestUtils;
-import com.zelusik.eatery.util.MultipartFileTestUtils;
-import com.zelusik.eatery.util.S3FileTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.Optional;
 
+import static com.zelusik.eatery.util.MemberTestUtils.createMember;
+import static com.zelusik.eatery.util.MemberTestUtils.createProfileImage;
+import static com.zelusik.eatery.util.MultipartFileTestUtils.createMockMultipartFile;
+import static com.zelusik.eatery.util.S3FileTestUtils.createS3ImageDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @DisplayName("[Unit] ProfileImage Service")
 @ExtendWith(MockitoExtension.class)
@@ -42,18 +40,17 @@ class ProfileImageServiceTest {
     void givenProfileImages_whenUploading_thenUploadImages() {
         // given
         long memberId = 1L;
-        Member member = MemberTestUtils.createMember(memberId);
-        ImageDto imageDto = MultipartFileTestUtils.createMockImageDto();
-        ProfileImage expectedResult = MemberTestUtils.createProfileImage(10L);
-        given(fileService.uploadFile(any(MultipartFile.class), any(String.class)))
-                .willReturn(S3FileTestUtils.createS3FileDto());
+        Member member = createMember(memberId);
+        MockMultipartFile profileImageForUpdate = createMockMultipartFile();
+        ProfileImage expectedResult = createProfileImage(10L);
+        given(fileService.uploadImageWithResizing(eq(profileImageForUpdate), any(String.class))).willReturn(createS3ImageDto());
         given(profileImageRepository.save(any(ProfileImage.class))).willReturn(expectedResult);
 
         // when
-        ProfileImage actualResult = sut.upload(member, imageDto);
+        ProfileImage actualResult = sut.upload(member, profileImageForUpdate);
 
         // then
-        verify(fileService, times(2)).uploadFile(any(MultipartFile.class), any(String.class));
+        then(fileService).should().uploadImageWithResizing(eq(profileImageForUpdate), any(String.class));
         then(profileImageRepository).should().save(any(ProfileImage.class));
         assertThat(actualResult).isNotNull();
         assertThat(actualResult.getId()).isEqualTo(expectedResult.getId());
@@ -64,10 +61,9 @@ class ProfileImageServiceTest {
     void givenMember_whenFindingByMember_thenReturnOptionalProfileImage() {
         // given
         long memberId = 1L;
-        Member member = MemberTestUtils.createMember(memberId);
-        ProfileImage profileImage = MemberTestUtils.createProfileImage(member, 10L);
-        given(profileImageRepository.findByMemberAndDeletedAtIsNull(member))
-                .willReturn(Optional.of(profileImage));
+        Member member = createMember(memberId);
+        ProfileImage profileImage = createProfileImage(member, 10L);
+        given(profileImageRepository.findByMemberAndDeletedAtIsNull(member)).willReturn(Optional.of(profileImage));
 
         // when
         Optional<ProfileImage> findProfileImage = sut.findByMember(member);
@@ -82,7 +78,7 @@ class ProfileImageServiceTest {
     @Test
     void givenProfileImage_whenSoftDeleting_thenUpdateDeletedAt() {
         // given
-        ProfileImage profileImage = MemberTestUtils.createProfileImage(10L);
+        ProfileImage profileImage = createProfileImage(10L);
         willDoNothing().given(profileImageRepository).flush();
 
         // when
