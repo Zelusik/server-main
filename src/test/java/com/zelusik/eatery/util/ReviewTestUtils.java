@@ -9,6 +9,8 @@ import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,8 +23,13 @@ public class ReviewTestUtils {
                 List.of("신선한 재료"),
                 "자동 생성된 내용",
                 "제출한 내용",
-                List.of(MultipartFileTestUtils.createMockImageDto())
+                List.of(createReviewImageCreateRequest())
         );
+    }
+
+    @NotNull
+    public static ReviewImageCreateRequest createReviewImageCreateRequest() {
+        return new ReviewImageCreateRequest(MultipartFileTestUtils.createMockMultipartFile());
     }
 
     public static ReviewDto createReviewDto() {

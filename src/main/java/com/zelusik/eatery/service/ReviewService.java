@@ -9,6 +9,7 @@ import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.exception.review.ReviewNotFoundException;
 import com.zelusik.eatery.exception.review.ReviewUpdatePermissionDeniedException;
@@ -44,7 +45,7 @@ public class ReviewService {
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
-    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
+    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest, List<ReviewImageCreateRequest> images) {
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
         Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
@@ -52,28 +53,24 @@ public class ReviewService {
                     Long createdPlaceId = placeService.create(writerId, placeCreateRequest).getId();
                     return placeService.findById(createdPlaceId);
                 });
-
         Member writer = memberService.findById(writerId);
-
-        boolean isMarkedPlace = bookmarkService.isMarkedPlace(writerId, place);
+        boolean placeMarkedStatus = bookmarkService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
-        ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, isMarkedPlace));
+        ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, placeMarkedStatus));
         Review review = reviewDto.toEntity(writer, place);
         reviewRepository.save(review);
-        reviewDto.getKeywords()
-                .forEach(keyword -> {
-                    ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
-                    review.getKeywords().add(reviewKeyword);
-                    reviewKeywordRepository.save(reviewKeyword);
-                });
-
+        reviewDto.getKeywords().forEach(keyword -> {
+            ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
+            review.getKeywords().add(reviewKeyword);
+            reviewKeywordRepository.save(reviewKeyword);
+        });
         reviewImageService.upload(review, images);
 
-        // 장소 top 3 keyword 설정
+        // 장소 top 3 keyword 갱신
         placeService.renewTop3Keywords(place);
 
-        return ReviewDto.from(review, isMarkedPlace);
+        return ReviewDto.from(review, placeMarkedStatus);
     }
 
     /**
