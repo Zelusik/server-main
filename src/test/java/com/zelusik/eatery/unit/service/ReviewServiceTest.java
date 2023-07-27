@@ -8,6 +8,7 @@ import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
@@ -16,6 +17,7 @@ import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,8 +71,7 @@ class ReviewServiceTest {
         given(memberService.findById(writerId)).willReturn(expectedMember);
         given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
-        given(reviewKeywordRepository.save(any(ReviewKeyword.class)))
-                .willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
+        given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
         willDoNothing().given(reviewImageService).upload(any(Review.class), any());
         willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
 
@@ -78,7 +79,7 @@ class ReviewServiceTest {
         ReviewDto actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
-                List.of(MultipartFileTestUtils.createMockImageDto())
+                List.of(ReviewTestUtils.createReviewImageCreateRequest())
         );
 
         // then
@@ -119,7 +120,7 @@ class ReviewServiceTest {
         ReviewDto actualSavedReview = sut.create(
                 writerId,
                 reviewCreateRequest,
-                List.of(MultipartFileTestUtils.createMockImageDto())
+                List.of(ReviewTestUtils.createReviewImageCreateRequest())
         );
 
         // then
