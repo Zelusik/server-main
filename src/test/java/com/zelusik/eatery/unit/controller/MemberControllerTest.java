@@ -133,12 +133,7 @@ class MemberControllerTest {
     void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMyInfo_thenUpdate() throws Exception {
         // given
         long memberId = 1L;
-        MemberUpdateRequest memberUpdateInfo = MemberUpdateRequest.of(
-                "update",
-                LocalDate.of(2020, 1, 1),
-                Gender.ETC,
-                null
-        );
+        MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, null);
         given(memberService.update(eq(memberId), any(MemberUpdateRequest.class)))
                 .willReturn(MemberTestUtils.createMemberDtoWithId(memberId));
 
