@@ -73,14 +73,14 @@ public class FileService {
 
     /**
      * S3 bucket에 이미지를 업로드한다.
-     * 원본 이미지와 썸네일 이미지 두 개를 업로드한다.
+     * 전달받은 multipartFile을 리사이징한 썸네일 이미지를 생성하고, 원본 이미지와 썸네일 이미지 두 개를 모두 업로드한다.
      *
      * @param multipartFile 업로드할 이미지 파일
      * @param dirPath       업로드할 경로
      * @return 업로드된 파일 정보. 원본 이미지와 썸네일 이미지 두 개에 대한 정보가 모두 담겨있다.
      */
     @Transactional
-    public S3ImageDto uploadImage(MultipartFile multipartFile, String dirPath) {
+    public S3ImageDto uploadImageWithResizing(MultipartFile multipartFile, String dirPath) {
         MultipartFile resizedImage = resizeImage(multipartFile);
 
         S3FileDto originalImageDto = this.uploadFile(multipartFile, dirPath);

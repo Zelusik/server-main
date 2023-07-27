@@ -26,7 +26,7 @@ public class CurationElemFileService {
      */
     @Transactional
     public CurationElemFile upload(MultipartFile multipartFile) {
-        S3ImageDto s3ImageDto = fileService.uploadImage(multipartFile, DIR_PATH);
+        S3ImageDto s3ImageDto = fileService.uploadImageWithResizing(multipartFile, DIR_PATH);
         return curationElemFileRepository.save(CurationElemFile.of(
                 s3ImageDto.getOriginalName(),
                 s3ImageDto.getStoredName(),
