@@ -6,6 +6,7 @@ src/main/resources/application-local.properties
 src/main/resources/application-dev.properties
 src/main/resources/application-prod.properties
 src/main/resources/application-test.properties
+src/main/resources/data.sql
 
 ### Intellij+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
