@@ -22,7 +22,7 @@ public class PlaceMenusDto {
     }
 
     // 장소 entity를 DB에서 조회하지 않고 PlaceMenuDto를 생성하기 위해 placeId를 따로 전달받는다.
-    public static PlaceMenusDto fromWithPlaceId(PlaceMenus entity, Long placeId) {
+    public static PlaceMenusDto from(PlaceMenus entity, Long placeId) {
         return of(entity.getId(), placeId, entity.getMenus());
     }
 }

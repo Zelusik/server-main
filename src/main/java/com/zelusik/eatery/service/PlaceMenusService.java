@@ -33,6 +33,6 @@ public class PlaceMenusService {
         Place place = placeService.findById(placeId);
         List<String> extractedMenus = webScrapingService.scrapMenuList(place.getKakaoPid());
         PlaceMenus placeMenus = placeMenusRepository.save(PlaceMenus.of(place, extractedMenus));
-        return PlaceMenusDto.fromWithPlaceId(placeMenus, placeId);
+        return PlaceMenusDto.from(placeMenus, placeId);
     }
 }
