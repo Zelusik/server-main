@@ -66,7 +66,7 @@ class PlaceMenusControllerTest {
                 .andExpect(jsonPath("$.menus", hasSize(3)));
     }
 
-    @DisplayName("장소의 PK 값이 주어지고, 장소 메뉴 목록을 조회하면, 조회된")
+    @DisplayName("장소의 PK 값이 주어지고, 장소 메뉴 목록을 조회하면, 조회된 메뉴 목록이 반환된다.")
     @Test
     void givenPlaceId_whenFindPlaceMenus_thenReturnPlaceMenus() throws Exception {
         // given
@@ -79,6 +79,28 @@ class PlaceMenusControllerTest {
         // when & then
         mvc.perform(
                         get("/api/places/" + placeId + "/menus")
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andExpect(jsonPath("$.placeId").doesNotExist())
+                .andExpect(jsonPath("$.menus").isArray())
+                .andExpect(jsonPath("$.menus", hasSize(3)));
+    }
+
+    @DisplayName("장소의 고유 id값(kakaoPid)이 주어지고, 장소 메뉴 목록을 조회하면, 조회된 메뉴 목록이 반환된다.")
+    @Test
+    void givenKakaoPid_whenFindPlaceMenus_thenReturnPlaceMenus() throws Exception {
+        // given
+        String kakaoPid = "12345";
+        List<String> menus = List.of("돈까스", "계란찜", "라면");
+        PlaceMenusDto expectedResult = createPlaceMenusDto(2L, 1L, menus);
+        given(placeMenusService.findDtoByKakaoPid(kakaoPid)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/places/menus")
+                                .param("kakaoPid", kakaoPid)
                                 .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())

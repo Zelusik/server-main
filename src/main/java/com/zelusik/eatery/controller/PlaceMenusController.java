@@ -49,8 +49,19 @@ public class PlaceMenusController {
             @ApiResponse(description = "[3004] 일치하는 장소의 메뉴 데이터를 찾을 수 없는 경우.", responseCode = "404", content = @Content)
     })
     @GetMapping("/places/{placeId}/menus")
-    public PlaceMenusResponse findPlaceMenus(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
+    public PlaceMenusResponse findPlaceMenusByPlaceId(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         PlaceMenusDto result = placeMenusService.findDtoByPlaceId(placeId);
+        return PlaceMenusResponse.fromWithoutIds(result);
+    }
+
+    @Operation(
+            summary = "장소 메뉴 목록 조회",
+            description = "<p><code>kakaoPid</code>에 해당하는 장소의 메뉴 목록 데이터를 조회한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/places/menus")
+    public PlaceMenusResponse findPlaceMenusByKakaoPid(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
+        PlaceMenusDto result = placeMenusService.findDtoByKakaoPid(kakaoPid);
         return PlaceMenusResponse.fromWithoutIds(result);
     }
 }

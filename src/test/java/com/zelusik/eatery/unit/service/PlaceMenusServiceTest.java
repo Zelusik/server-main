@@ -3,7 +3,7 @@ package com.zelusik.eatery.unit.service;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceMenus;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
-import com.zelusik.eatery.exception.place.PlaceMenusNotFoundByPlaceIdException;
+import com.zelusik.eatery.exception.place.PlaceMenusNotFoundException;
 import com.zelusik.eatery.repository.place.PlaceMenusRepository;
 import com.zelusik.eatery.service.PlaceMenusService;
 import com.zelusik.eatery.service.PlaceService;
@@ -109,7 +109,51 @@ class PlaceMenusServiceTest {
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
         then(placeService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
-        assertThat(t).isInstanceOf(PlaceMenusNotFoundByPlaceIdException.class);
+        assertThat(t).isInstanceOf(PlaceMenusNotFoundException.class);
+    }
+
+    @DisplayName("장소의 kakaoPid 값이 주어지고, 장소 메뉴 데이터를 조회하면, 조회된 결과를 반환한다.")
+    @Test
+    void givenKakaoPid_whenFindPlaceMenus_thenReturnPlaceMenus() {
+        // given
+        long placeId = 1L;
+        long placeMenusId = 2L;
+        String kakaoPid = "12345";
+        Place place = createPlace(placeId, kakaoPid);
+        List<String> extractedMenus = List.of("돈까스", "파스타", "수제비", "라면");
+        PlaceMenus expectedResult = createPlaceMenus(placeMenusId, place, extractedMenus);
+        given(placeMenusRepository.findByPlace_KakaoPid(kakaoPid)).willReturn(Optional.of(expectedResult));
+
+        // when
+        PlaceMenusDto actualResult = sut.findDtoByKakaoPid(kakaoPid);
+
+        // then
+        then(placeMenusRepository).should().findByPlace_KakaoPid(kakaoPid);
+        then(placeMenusRepository).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoInteractions();
+        then(webScrapingService).shouldHaveNoInteractions();
+        assertThat(actualResult)
+                .hasFieldOrPropertyWithValue("id", placeMenusId)
+                .hasFieldOrPropertyWithValue("placeId", placeId)
+                .hasFieldOrPropertyWithValue("menus", extractedMenus);
+    }
+
+    @DisplayName("장소의 PK 값이 주어지고, 장소 메뉴 데이터를 조회했으나 찾을 수 없는 경우, 예외가 발생한다.")
+    @Test
+    void givenKakaoPid_whenFindNotExistentPlaceMenus_thenThrowPlaceMenusNotFoundByPlaceIdException() {
+        // given
+        String kakaoPid = "12345";
+        given(placeMenusRepository.findByPlace_KakaoPid(kakaoPid)).willReturn(Optional.empty());
+
+        // when
+        Throwable t = catchThrowable(() -> sut.findDtoByKakaoPid(kakaoPid));
+
+        // then
+        then(placeMenusRepository).should().findByPlace_KakaoPid(kakaoPid);
+        then(placeMenusRepository).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoInteractions();
+        then(webScrapingService).shouldHaveNoInteractions();
+        assertThat(t).isInstanceOf(PlaceMenusNotFoundException.class);
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
