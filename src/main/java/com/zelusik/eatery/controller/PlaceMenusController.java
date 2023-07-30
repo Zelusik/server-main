@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.net.URI;
 
 @Tag(name = "장소 메뉴 관련 API")
@@ -77,6 +76,10 @@ public class PlaceMenusController {
                     "<p>전달받은 데이터가 추가되는 것이 아닌, 기존 데이터가 덮어씌워지는 것(overwrite)이므로 주의해야 한다.",
             security = @SecurityRequirement(name = "access-token")
     )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
+            @ApiResponse(description = "[3006] 전달받은 메뉴 목록에 중복된 메뉴가 존재하는 경우", responseCode = "400", content = @Content)
+    })
     @PutMapping("/places/{placeId}/menus")
     public PlaceMenusResponse updatePlaceMenus(
             @Parameter(description = "PK of place", example = "3") @PathVariable Long placeId,
