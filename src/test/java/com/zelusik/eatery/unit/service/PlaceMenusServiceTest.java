@@ -25,8 +25,7 @@ import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceMenus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 
 @DisplayName("[Unit] Place Menus Service")
 @ExtendWith(MockitoExtension.class)
@@ -244,6 +243,23 @@ class PlaceMenusServiceTest {
                 .hasFieldOrPropertyWithValue("placeId", placeId)
                 .hasFieldOrProperty("menus");
         assertThat(result.getMenus()).hasSize(5);
+    }
+
+    @DisplayName("장소의 PK 값이 주어지면, 해당하는 장소의 메뉴 목록 데이터를 삭제한다.")
+    @Test
+    void givenPlaceId_whenDeletePlaceMenus_thenDeleting() {
+        // given
+        long placeId = 1L;
+        willDoNothing().given(placeMenusRepository).deleteByPlace_Id(placeId);
+
+        // when
+        sut.delete(placeId);
+
+        // then
+        then(placeMenusRepository).should().deleteByPlace_Id(placeId);
+        then(placeMenusRepository).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoInteractions();
+        then(webScrapingService).shouldHaveNoInteractions();
     }
 
     private void verifyEveryMocksShouldHaveNoInteractions() {
