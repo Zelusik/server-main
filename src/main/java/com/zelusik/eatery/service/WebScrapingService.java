@@ -2,10 +2,11 @@ package com.zelusik.eatery.service;
 
 import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
 import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -51,5 +53,33 @@ public class WebScrapingService {
 
         Map<String, Object> attributes = new JSONObject(response.getBody()).toMap();
         return PlaceScrapingResponse.from(attributes);
+    }
+
+    /**
+     * 장소 상세 페이지에서 메뉴 목록을 추출한다.
+     *
+     * @param kakaoPid 메뉴 데이터를 추출할 장소의 고유 id
+     * @return 추출된 메뉴 목록
+     */
+    @NonNull
+    public List<String> scrapMenuList(@NonNull String kakaoPid) {
+        URI requestUri = UriComponentsBuilder.fromUriString(scrapingServerUrl + "/places/scraping/menus")
+                .queryParam("kakaoPid", kakaoPid)
+                .encode(StandardCharsets.UTF_8)
+                .build().toUri();
+
+        MenuListResponseFromScrapingServer result = restTemplate.getForObject(requestUri, MenuListResponseFromScrapingServer.class);
+        if (result == null || result.getMenus() == null || result.getMenus().isEmpty()) {
+            return List.of();
+        }
+
+        return result.getMenus();
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    public static class MenuListResponseFromScrapingServer {
+        private List<String> menus;
     }
 }
