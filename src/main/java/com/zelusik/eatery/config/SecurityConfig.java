@@ -39,9 +39,14 @@ public class SecurityConfig {
             "/api/curation/**", HttpMethod.POST
     );
 
+    private static final Map<String, HttpMethod> ADMIN_AUTH_LIST = Map.of(
+            "/api/places/*/menus", HttpMethod.DELETE
+    );
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         String[] rolesAboveManager = {RoleType.MANAGER.name(), RoleType.ADMIN.name()};
+        String[] rolesAboveAdmin = {RoleType.ADMIN.name()};
 
         return http
                 .httpBasic().disable()
@@ -54,6 +59,7 @@ public class SecurityConfig {
                             .mvcMatchers(HttpMethod.GET, "/api/curation").permitAll();
                     Arrays.stream(AUTH_WHITE_PATHS).forEach(authWhiteListElem -> auth.mvcMatchers(authWhiteListElem).permitAll());
                     MANAGER_AUTH_LIST.forEach((path, httpMethod) -> auth.mvcMatchers(httpMethod, path).hasAnyRole(rolesAboveManager));
+                    ADMIN_AUTH_LIST.forEach((path, httpMethod) -> auth.mvcMatchers(httpMethod, path).hasAnyRole(rolesAboveAdmin));
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
