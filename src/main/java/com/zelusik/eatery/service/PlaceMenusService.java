@@ -13,6 +13,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -106,11 +107,30 @@ public class PlaceMenusService {
     @Transactional
     public PlaceMenusDto updateMenus(@NonNull Long placeId, @Nullable List<String> menus) {
         if (menus != null && checkContainsDuplicateNonWhiteSpaceStrings(menus)) {
-            throw new ContainsDuplicateMenusException(menus);
+            throw new ContainsDuplicateMenusException(placeId, menus);
         }
 
         PlaceMenus placeMenus = findByPlaceId(placeId);
         placeMenus.updateMenus(menus);
+        return PlaceMenusDto.from(placeMenus);
+    }
+
+    /**
+     * <code>placeId</code>에 해당하는 장소 메뉴 목록에 전달받은 <code>menu</code>를 추가한다.
+     *
+     * @param placeId 메뉴를 추가하고자 하는 장소의 PK 값
+     * @param menu 추가하려는 메뉴
+     * @return 업데이트된 장소 메뉴 dto 객체
+     * @throws ContainsDuplicateMenusException 전달받은 메뉴가 기존 메뉴 목록 데이터에 존재하는 경우
+     */
+    @NonNull
+    @Transactional
+    public PlaceMenusDto addMenu(@NonNull Long placeId, @NotBlank String menu) {
+        PlaceMenus placeMenus = findByPlaceId(placeId);
+        placeMenus.addMenu(menu);
+        if (checkContainsDuplicateNonWhiteSpaceStrings(placeMenus.getMenus())) {
+            throw new ContainsDuplicateMenusException(placeId, menu);
+        }
         return PlaceMenusDto.from(placeMenus);
     }
 
@@ -121,7 +141,7 @@ public class PlaceMenusService {
      * @return 동일한 문자열이 존재하는지 여부
      */
     private boolean checkContainsDuplicateNonWhiteSpaceStrings(List<String> list) {
-        List<String> trimmedList = list.stream().map(s -> s.replace(" ", "")).toList();
+        List<String> trimmedList = list.stream().map(s -> s.replaceAll("\s+", "")).toList();
         Set<String> set = new HashSet<>(trimmedList);
         return list.size() != set.size();
     }
