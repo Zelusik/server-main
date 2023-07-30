@@ -8,6 +8,7 @@ import com.zelusik.eatery.exception.place.PlaceMenusNotFoundException;
 import com.zelusik.eatery.repository.place.PlaceMenusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,5 +89,20 @@ public class PlaceMenusService {
     @NonNull
     public PlaceMenusDto findDtoByKakaoPid(@NonNull String kakaoPid) {
         return PlaceMenusDto.from(findByKakaoPid(kakaoPid));
+    }
+
+    /**
+     * <code>placeId</code>에 해당하는 장소 메뉴 entity의 메뉴 목록 데이터(<code>menus</code>)를 업데이트(overwrite)한다.
+     *
+     * @param placeId 메뉴 데이터를 업데이트하고자 하는 장소의 PK 값
+     * @param menus 덮어쓰기하려는 메뉴 목록 데이터
+     * @return 업데이트된 장소 메뉴 dto 객체
+     */
+    @NonNull
+    @Transactional
+    public PlaceMenusDto updateMenus(@NonNull Long placeId, @Nullable List<String> menus) {
+        PlaceMenus placeMenus = findByPlaceId(placeId);
+        placeMenus.updateMenus(menus);
+        return PlaceMenusDto.from(placeMenus);
     }
 }

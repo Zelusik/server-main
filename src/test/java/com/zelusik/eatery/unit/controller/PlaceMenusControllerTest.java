@@ -1,9 +1,11 @@
 package com.zelusik.eatery.unit.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.controller.PlaceMenusController;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.dto.place.request.PlaceMenusUpdateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceMenusService;
 import com.zelusik.eatery.util.MemberTestUtils;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,8 +26,7 @@ import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceMenusDto;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("[Unit] Place Menus Controller")
@@ -37,10 +39,12 @@ class PlaceMenusControllerTest {
     private PlaceMenusService placeMenusService;
 
     private final MockMvc mvc;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public PlaceMenusControllerTest(MockMvc mvc) {
+    public PlaceMenusControllerTest(MockMvc mvc, ObjectMapper mapper) {
         this.mvc = mvc;
+        this.mapper = mapper;
     }
 
     @DisplayName("장소 PK가 주어지고, 장소 메뉴 목록을 저장하려고 하면, 해당 장소에 대한 메뉴 목록이 저장된다.")
@@ -108,6 +112,31 @@ class PlaceMenusControllerTest {
                 .andExpect(jsonPath("$.placeId").doesNotExist())
                 .andExpect(jsonPath("$.menus").isArray())
                 .andExpect(jsonPath("$.menus", hasSize(3)));
+    }
+
+    @DisplayName("메뉴 목록이 장소의 PK 값과 함께 주어지고, 메뉴 목록을 업데이트하면, 업데이트된 메뉴 목록 정보가 반환된다.")
+    @Test
+    void givenMenusWithPlaceId_whenUpdateMenus_thenReturnUpdatedPlaceMenus() throws Exception {
+        // given
+        long placeId = 1L;
+        long placeMenusId = 2L;
+        List<String> menusForUpdate = List.of("치킨");
+        PlaceMenusUpdateRequest requestBody = new PlaceMenusUpdateRequest(menusForUpdate);
+        PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, menusForUpdate);
+        given(placeMenusService.updateMenus(placeId, menusForUpdate)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        put("/api/places/" + placeId + "/menus")
+                                .content(mapper.writeValueAsString(requestBody))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(placeMenusId))
+                .andExpect(jsonPath("$.placeId").value(placeId))
+                .andExpect(jsonPath("$.menus").isArray())
+                .andExpect(jsonPath("$.menus", hasSize(1)));
     }
 
     private UserDetails createTestUserDetails() {

@@ -177,6 +177,32 @@ class PlaceMenusServiceTest {
         assertThat(t).isInstanceOf(PlaceMenusNotFoundException.class);
     }
 
+    @DisplayName("메뉴 목록과 장소의 PK 값이 주어지고, 메뉴 목록을 업데이트하면, 업데이트된 메뉴 목록 정보가 반환된다.")
+    @Test
+    void givenMenusWithPlaceId_whenUpdateMenus_thenReturnUpdatedPlaceMenus() {
+        // given
+        long placeId = 1L;
+        long placeMenusId = 2L;
+        String kakaoPid = "12345";
+        Place place = createPlace(placeId, kakaoPid);
+        PlaceMenus placeMenus = createPlaceMenus(placeMenusId, place, List.of("돈까스", "파스타", "수제비", "라면"));
+        List<String> menusForUpdate = List.of("치킨");
+        given(placeMenusRepository.findByPlace_Id(placeId)).willReturn(Optional.of(placeMenus));
+
+        // when
+        PlaceMenusDto updatedPlaceMenusDto = sut.updateMenus(placeId, menusForUpdate);
+
+        // then
+        then(placeMenusRepository).should().findByPlace_Id(placeId);
+        then(placeMenusRepository).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoInteractions();
+        then(webScrapingService).shouldHaveNoInteractions();
+        assertThat(updatedPlaceMenusDto)
+                .hasFieldOrPropertyWithValue("id", placeMenusId)
+                .hasFieldOrPropertyWithValue("placeId", placeId)
+                .hasFieldOrPropertyWithValue("menus", menusForUpdate);
+    }
+
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(placeService).shouldHaveNoMoreInteractions();
         then(webScrapingService).shouldHaveNoMoreInteractions();
