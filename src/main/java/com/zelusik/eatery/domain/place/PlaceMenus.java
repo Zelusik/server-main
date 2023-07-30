@@ -23,7 +23,7 @@ public class PlaceMenus extends BaseEntity {
     @Column(name = "place_menus_id")
     private Long id;
 
-    @JoinColumn(name = "place_id", nullable = false)
+    @JoinColumn(name = "place_id", nullable = false, unique = true)
     @OneToOne(fetch = FetchType.LAZY)
     private Place place;
 

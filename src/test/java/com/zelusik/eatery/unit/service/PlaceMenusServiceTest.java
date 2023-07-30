@@ -3,6 +3,7 @@ package com.zelusik.eatery.unit.service;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceMenus;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.exception.place.PlaceMenusAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceMenusNotFoundException;
 import com.zelusik.eatery.repository.place.PlaceMenusRepository;
 import com.zelusik.eatery.service.PlaceMenusService;
@@ -50,6 +51,7 @@ class PlaceMenusServiceTest {
         Place place = createPlace(placeId, kakaoPid);
         List<String> extractedMenus = List.of("돈까스", "파스타", "수제비", "라면");
         PlaceMenus expectedResult = createPlaceMenus(placeMenusId, place, extractedMenus);
+        given(placeMenusRepository.existsByPlace_Id(placeId)).willReturn(false);
         given(placeService.findById(placeId)).willReturn(place);
         given(webScrapingService.scrapMenuList(kakaoPid)).willReturn(extractedMenus);
         given(placeMenusRepository.save(any(PlaceMenus.class))).willReturn(expectedResult);
@@ -58,6 +60,7 @@ class PlaceMenusServiceTest {
         PlaceMenusDto actualResult = sut.savePlaceMenus(placeId);
 
         // then
+        then(placeMenusRepository).should().existsByPlace_Id(placeId);
         then(placeService).should().findById(placeId);
         then(webScrapingService).should().scrapMenuList(kakaoPid);
         then(placeMenusRepository).should().save(any(PlaceMenus.class));
@@ -66,6 +69,24 @@ class PlaceMenusServiceTest {
                 .hasFieldOrPropertyWithValue("id", placeMenusId)
                 .hasFieldOrPropertyWithValue("placeId", placeId)
                 .hasFieldOrPropertyWithValue("menus", extractedMenus);
+    }
+
+    @DisplayName("장소 메뉴 데이터가 이미 존재하는 상황에서, 장소 메뉴 목록을 scraping 및 저장하려고 하면, 예외가 발생한다.")
+    @Test
+    void givenPlaceMenusAndPlaceId_whenSavePlaceMenus_thenThrowPlaceMenusAlreadyExistsException() {
+        // given
+        long placeId = 1L;
+        given(placeMenusRepository.existsByPlace_Id(placeId)).willReturn(true);
+
+        // when
+        Throwable t = catchThrowable(() -> sut.savePlaceMenus(placeId));
+
+        // then
+        then(placeMenusRepository).should().existsByPlace_Id(placeId);
+        then(placeMenusRepository).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoInteractions();
+        then(webScrapingService).shouldHaveNoInteractions();
+        assertThat(t).isInstanceOf(PlaceMenusAlreadyExistsException.class);
     }
 
     @DisplayName("장소의 PK 값이 주어지고, 장소 메뉴 데이터를 조회하면, 조회된 결과를 반환한다.")
