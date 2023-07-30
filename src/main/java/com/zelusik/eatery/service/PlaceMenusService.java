@@ -119,7 +119,7 @@ public class PlaceMenusService {
      * <code>placeId</code>에 해당하는 장소 메뉴 목록에 전달받은 <code>menu</code>를 추가한다.
      *
      * @param placeId 메뉴를 추가하고자 하는 장소의 PK 값
-     * @param menu 추가하려는 메뉴
+     * @param menu    추가하려는 메뉴
      * @return 업데이트된 장소 메뉴 dto 객체
      * @throws ContainsDuplicateMenusException 전달받은 메뉴가 기존 메뉴 목록 데이터에 존재하는 경우
      */
@@ -144,5 +144,15 @@ public class PlaceMenusService {
         List<String> trimmedList = list.stream().map(s -> s.replaceAll("\s+", "")).toList();
         Set<String> set = new HashSet<>(trimmedList);
         return list.size() != set.size();
+    }
+
+    /**
+     * 장소 메뉴 목록 데이터를 삭제한다.
+     *
+     * @param placeId 삭제하고자 하는 메뉴 목록의 장소
+     */
+    @Transactional
+    public void delete(@NonNull Long placeId) {
+        placeMenusRepository.deleteByPlace_Id(placeId);
     }
 }

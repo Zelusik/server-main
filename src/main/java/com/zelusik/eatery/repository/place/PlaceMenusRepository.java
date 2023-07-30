@@ -14,4 +14,6 @@ public interface PlaceMenusRepository extends JpaRepository<PlaceMenus, Long> {
 
     @EntityGraph(attributePaths = "place")
     Optional<PlaceMenus> findByPlace_KakaoPid(String kakaoPid);
+
+    void deleteByPlace_Id(Long placeId);
 }

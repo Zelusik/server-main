@@ -3,6 +3,7 @@ package com.zelusik.eatery.unit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.controller.PlaceMenusController;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
 import com.zelusik.eatery.dto.place.request.AddMenuToPlaceMenusRequest;
@@ -22,10 +23,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceMenusDto;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -153,11 +156,11 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                patch("/api/places/" + placeId + "/menus")
-                        .content(mapper.writeValueAsString(requestBody))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .with(user(createTestUserDetails()))
-        )
+                        patch("/api/places/" + placeId + "/menus")
+                                .content(mapper.writeValueAsString(requestBody))
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(user(createTestUserDetails()))
+                )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(placeMenusId))
                 .andExpect(jsonPath("$.placeId").value(placeId))
@@ -165,7 +168,41 @@ class PlaceMenusControllerTest {
                 .andExpect(jsonPath("$.menus", hasSize(2)));
     }
 
+    @DisplayName("장소의 PK 값이 주어지고, 해당하는 장소의 메뉴 목록을 삭제한다.")
+    @Test
+    void givenPlaceIdWithAdmin_whenDeletePlaceMenus_thenDeleting() throws Exception {
+        // given
+        long placeId = 1L;
+        willDoNothing().given(placeMenusService).delete(placeId);
+
+        // when & then
+        mvc.perform(
+                        delete("/api/places/" + placeId + "/menus")
+                                .with(user(createTestAdminDetails()))
+                )
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("장소의 PK 값이 주어지고, 일반 사용자가 해당하는 장소의 메뉴 목록을 삭제하면, 접근이 거부된다.")
+    @Test
+    void givenPlaceIdWithUser_whenDeletePlaceMenus_thenAccessDenied() throws Exception {
+        // given
+        long placeId = 1L;
+        willDoNothing().given(placeMenusService).delete(placeId);
+
+        // when & then
+        mvc.perform(
+                        delete("/api/places/" + placeId + "/menus")
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isForbidden());
+    }
+
     private UserDetails createTestUserDetails() {
         return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
+    }
+
+    private UserDetails createTestAdminDetails() {
+        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(1L, Set.of(RoleType.USER, RoleType.MANAGER, RoleType.ADMIN)));
     }
 }

@@ -108,4 +108,15 @@ public class PlaceMenusController {
         PlaceMenusDto updatedPlaceMenus = placeMenusService.addMenu(placeId, request.getMenu());
         return PlaceMenusResponse.from(updatedPlaceMenus);
     }
+
+    @Operation(
+            summary = "메뉴 목록 데이터 삭제하기 (관리자용)",
+            description = "<p>기존에 존재하는 <code>placeId</code>에 해당하는 메뉴 목록 데이터를 전부 삭제한다." +
+                    "<p>관리자 권한을 가진 사용자만 사용 가능하다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @DeleteMapping("/places/{placeId}/menus")
+    public void deletePlaceMenus(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
+        placeMenusService.delete(placeId);
+    }
 }
