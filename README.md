@@ -80,4 +80,4 @@
 
 <br>
 <h2>ER Diagram</h2>
-<img src="https://github.com/Zelusik/backend/blob/develop/docs/eatery-erd.png?raw=true" alt="eatery erd">
+<img src="https://github.com/Zelusik/server-main/assets/60748900/d133ec35-1c18-4ffd-b230-fa563db669a8" alt="eatery erd">
