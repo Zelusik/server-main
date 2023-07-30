@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface PlaceMenusRepository extends JpaRepository<PlaceMenus, Long> {
 
+    boolean existsByPlace_Id(Long placeId);
+
     Optional<PlaceMenus> findByPlace_Id(Long placeId);
 
     @EntityGraph(attributePaths = "place")

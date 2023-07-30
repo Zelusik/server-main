@@ -3,6 +3,7 @@ package com.zelusik.eatery.service;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceMenus;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.exception.place.PlaceMenusAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceMenusNotFoundException;
 import com.zelusik.eatery.repository.place.PlaceMenusRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,10 @@ public class PlaceMenusService {
     @NonNull
     @Transactional
     public PlaceMenusDto savePlaceMenus(@NonNull Long placeId) {
+        if (placeMenusRepository.existsByPlace_Id(placeId)) {
+            throw new PlaceMenusAlreadyExistsException(placeId);
+        }
+
         Place place = placeService.findById(placeId);
         List<String> extractedMenus = webScrapingService.scrapMenuList(place.getKakaoPid());
         PlaceMenus placeMenus = placeMenusRepository.save(PlaceMenus.of(place, extractedMenus));

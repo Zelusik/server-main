@@ -31,6 +31,10 @@ public class PlaceMenusController {
                     "<p>응답으로, DB에 저장된 메뉴들의 목록을 반환한다.",
             security = @SecurityRequirement(name = "access-token")
     )
+    @ApiResponses({
+            @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
+            @ApiResponse(description = "[3005] 메뉴 목록 데이터가 이미 존재하는 경우.", responseCode = "409", content = @Content)
+    })
     @PostMapping("/places/{placeId}/menus")
     public ResponseEntity<PlaceMenusResponse> savePlaceMenus(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         PlaceMenusDto result = placeMenusService.savePlaceMenus(placeId);

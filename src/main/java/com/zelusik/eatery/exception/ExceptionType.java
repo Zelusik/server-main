@@ -134,6 +134,7 @@ public enum ExceptionType {
     NOT_ACCEPTABLE_PLACE_SEARCH_KEYWORD(3002, "유효하지 않은 검색 키워드입니다.", NotAcceptablePlaceSearchKeyword.class),
     NOT_ACCEPTABLE_FOOD_CATEGORY(3003, "유효하지 않은 음식 카테고리입니다.", NotAcceptableFoodCategory.class),
     PLACE_MENUS_NOT_FOUND(3004, "일치하는 장소의 메뉴 데이터를 찾을 수 없습니다.", PlaceMenusNotFoundException.class),
+    PLACE_MENUS_ALREADY_EXISTS(3005, "장소의 메뉴 데이터가 이미 존재합니다. 추가로 데이터를 생성/저장할 수 없습니다.", PlaceMenusAlreadyExistsException.class),
 
     /**
      * 리뷰({@link Review}) 관련 예외
