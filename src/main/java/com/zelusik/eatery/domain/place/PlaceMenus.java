@@ -44,4 +44,8 @@ public class PlaceMenus extends BaseEntity {
         this.place = place;
         this.menus = menus;
     }
+
+    public void updateMenus(List<String> menus) {
+        this.menus = menus;
+    }
 }

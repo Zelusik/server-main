@@ -1,6 +1,7 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.dto.place.request.PlaceMenusUpdateRequest;
 import com.zelusik.eatery.dto.place.response.PlaceMenusResponse;
 import com.zelusik.eatery.service.PlaceMenusService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @Tag(name = "장소 메뉴 관련 API")
@@ -67,5 +69,20 @@ public class PlaceMenusController {
     public PlaceMenusResponse findPlaceMenusByKakaoPid(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
         PlaceMenusDto result = placeMenusService.findDtoByKakaoPid(kakaoPid);
         return PlaceMenusResponse.fromWithoutIds(result);
+    }
+
+    @Operation(
+            summary = "장소 메뉴 목록 업데이트",
+            description = "<p>메뉴 목록 데이터를 전달받아 `placeId`에 대해 기존에 존재하는 장소 메뉴 데이터를 업데이트한다." +
+                    "<p>전달받은 데이터가 추가되는 것이 아닌, 기존 데이터가 덮어씌워지는 것(overwrite)이므로 주의해야 한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @PutMapping("/places/{placeId}/menus")
+    public PlaceMenusResponse updatePlaceMenus(
+            @Parameter(description = "PK of place", example = "3") @PathVariable Long placeId,
+            @RequestBody PlaceMenusUpdateRequest request
+    ) {
+        PlaceMenusDto updatedPlaceMenus = placeMenusService.updateMenus(placeId, request.getMenus());
+        return PlaceMenusResponse.from(updatedPlaceMenus);
     }
 }
