@@ -16,9 +16,7 @@ import com.zelusik.eatery.exception.curation.CurationNotFoundException;
 import com.zelusik.eatery.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.exception.kakao.KakaoTokenValidateException;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
-import com.zelusik.eatery.exception.place.NotAcceptableFoodCategory;
-import com.zelusik.eatery.exception.place.NotAcceptablePlaceSearchKeyword;
-import com.zelusik.eatery.exception.place.PlaceNotFoundException;
+import com.zelusik.eatery.exception.place.*;
 import com.zelusik.eatery.exception.review.NotAcceptableReviewKeyword;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.exception.review.ReviewNotFoundException;
@@ -135,6 +133,7 @@ public enum ExceptionType {
     PLACE_NOT_FOUND(3001, "장소를 찾을 수 없습니다.", PlaceNotFoundException.class),
     NOT_ACCEPTABLE_PLACE_SEARCH_KEYWORD(3002, "유효하지 않은 검색 키워드입니다.", NotAcceptablePlaceSearchKeyword.class),
     NOT_ACCEPTABLE_FOOD_CATEGORY(3003, "유효하지 않은 음식 카테고리입니다.", NotAcceptableFoodCategory.class),
+    PLACE_MENUS_NOT_FOUND(3004, "일치하는 장소의 메뉴 데이터를 찾을 수 없습니다.", PlaceMenusNotFoundException.class),
 
     /**
      * 리뷰({@link Review}) 관련 예외

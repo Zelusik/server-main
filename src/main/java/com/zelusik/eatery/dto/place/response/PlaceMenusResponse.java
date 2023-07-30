@@ -1,5 +1,6 @@
 package com.zelusik.eatery.dto.place.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlaceMenusResponse {
 
     @Schema(description = "PK of place menus", example = "4")
@@ -25,5 +27,9 @@ public class PlaceMenusResponse {
 
     public static PlaceMenusResponse from(PlaceMenusDto dto) {
         return new PlaceMenusResponse(dto.getId(), dto.getPlaceId(), dto.getMenus());
+    }
+
+    public static PlaceMenusResponse fromWithoutIds(PlaceMenusDto dto) {
+        return new PlaceMenusResponse(null, null, dto.getMenus());
     }
 }
