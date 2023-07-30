@@ -31,8 +31,8 @@ public class PlaceMenusController {
             security = @SecurityRequirement(name = "access-token")
     )
     @PostMapping("/places/{placeId}/menus")
-    public ResponseEntity<PlaceMenusResponse> savePlaceMenuList(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
-        PlaceMenusDto result = placeMenusService.savePlaceMenuList(placeId);
+    public ResponseEntity<PlaceMenusResponse> savePlaceMenus(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
+        PlaceMenusDto result = placeMenusService.savePlaceMenus(placeId);
         return ResponseEntity
                 .created(URI.create("/api/places/" + placeId + "/menus"))
                 .body(PlaceMenusResponse.from(result));

@@ -52,7 +52,7 @@ class PlaceMenusServiceTest {
         given(placeMenusRepository.save(any(PlaceMenus.class))).willReturn(expectedResult);
 
         // when
-        PlaceMenusDto actualResult = sut.savePlaceMenuList(placeId);
+        PlaceMenusDto actualResult = sut.savePlaceMenus(placeId);
 
         // then
         then(placeService).should().findById(placeId);

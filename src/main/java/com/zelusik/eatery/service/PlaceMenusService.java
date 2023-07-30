@@ -29,7 +29,7 @@ public class PlaceMenusService {
      */
     @NonNull
     @Transactional
-    public PlaceMenusDto savePlaceMenuList(@NonNull Long placeId) {
+    public PlaceMenusDto savePlaceMenus(@NonNull Long placeId) {
         Place place = placeService.findById(placeId);
         List<String> extractedMenus = webScrapingService.scrapMenuList(place.getKakaoPid());
         PlaceMenus placeMenus = placeMenusRepository.save(PlaceMenus.of(place, extractedMenus));

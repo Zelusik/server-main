@@ -50,7 +50,7 @@ class PlaceMenusControllerTest {
         long placeMenusId = 2L;
         List<String> menus = List.of("돈까스", "계란찜", "라면");
         PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, menus);
-        given(placeMenusService.savePlaceMenuList(placeId)).willReturn(expectedResult);
+        given(placeMenusService.savePlaceMenus(placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
