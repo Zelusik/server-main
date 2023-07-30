@@ -3,6 +3,7 @@ package com.zelusik.eatery.unit.service;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceMenus;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.exception.place.ContainsDuplicateMenusException;
 import com.zelusik.eatery.exception.place.PlaceMenusAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceMenusNotFoundException;
 import com.zelusik.eatery.repository.place.PlaceMenusRepository;
@@ -201,6 +202,27 @@ class PlaceMenusServiceTest {
                 .hasFieldOrPropertyWithValue("id", placeMenusId)
                 .hasFieldOrPropertyWithValue("placeId", placeId)
                 .hasFieldOrPropertyWithValue("menus", menusForUpdate);
+    }
+
+    @DisplayName("중복된 메뉴가 존재하는 메뉴 목록이 주어지고, 메뉴 목록을 업데이트하면, 예외가 발생한다.")
+    @Test
+    void givenMenusWhereDuplicateMenusExist_whenUpdateMenus_thenThrowContainsDuplicateMenusException() {
+        // given
+        long placeId = 1L;
+        List<String> menusForUpdate = List.of("양념치킨", "양념 치킨");
+
+        // when
+        Throwable t = catchThrowable(() -> sut.updateMenus(placeId, menusForUpdate));
+
+        // then
+        verifyEveryMocksShouldHaveNoInteractions();
+        assertThat(t).isInstanceOf(ContainsDuplicateMenusException.class);
+    }
+
+    private void verifyEveryMocksShouldHaveNoInteractions() {
+        then(placeService).shouldHaveNoInteractions();
+        then(webScrapingService).shouldHaveNoInteractions();
+        then(placeMenusRepository).shouldHaveNoInteractions();
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {

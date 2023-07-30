@@ -3,6 +3,7 @@ package com.zelusik.eatery.service;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceMenus;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.exception.place.ContainsDuplicateMenusException;
 import com.zelusik.eatery.exception.place.PlaceMenusAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceMenusNotFoundException;
 import com.zelusik.eatery.repository.place.PlaceMenusRepository;
@@ -12,7 +13,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -95,14 +98,31 @@ public class PlaceMenusService {
      * <code>placeId</code>에 해당하는 장소 메뉴 entity의 메뉴 목록 데이터(<code>menus</code>)를 업데이트(overwrite)한다.
      *
      * @param placeId 메뉴 데이터를 업데이트하고자 하는 장소의 PK 값
-     * @param menus 덮어쓰기하려는 메뉴 목록 데이터
+     * @param menus   덮어쓰기하려는 메뉴 목록 데이터
      * @return 업데이트된 장소 메뉴 dto 객체
+     * @throws ContainsDuplicateMenusException 전달받은 메뉴 목록에 중복된 메뉴가 존재할 경우
      */
     @NonNull
     @Transactional
     public PlaceMenusDto updateMenus(@NonNull Long placeId, @Nullable List<String> menus) {
+        if (menus != null && checkContainsDuplicateNonWhiteSpaceStrings(menus)) {
+            throw new ContainsDuplicateMenusException(menus);
+        }
+
         PlaceMenus placeMenus = findByPlaceId(placeId);
         placeMenus.updateMenus(menus);
         return PlaceMenusDto.from(placeMenus);
+    }
+
+    /**
+     * 공백을 제거했을 때를 기준으로, 전달받은 리스트에 동일한 문자열이 존재하는지 확인한다.
+     *
+     * @param list 동일한 문자열이 존재하는지 확인하고자 하는 리스트
+     * @return 동일한 문자열이 존재하는지 여부
+     */
+    private boolean checkContainsDuplicateNonWhiteSpaceStrings(List<String> list) {
+        List<String> trimmedList = list.stream().map(s -> s.replace(" ", "")).toList();
+        Set<String> set = new HashSet<>(trimmedList);
+        return list.size() != set.size();
     }
 }
