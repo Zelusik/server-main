@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -47,5 +48,11 @@ public class PlaceMenus extends BaseEntity {
 
     public void updateMenus(List<String> menus) {
         this.menus = menus;
+    }
+
+    public void addMenu(String menu) {
+        List<String> newMenus = new ArrayList<>(this.getMenus());
+        newMenus.add(menu);
+        this.menus = newMenus;
     }
 }

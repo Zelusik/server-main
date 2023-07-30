@@ -219,6 +219,33 @@ class PlaceMenusServiceTest {
         assertThat(t).isInstanceOf(ContainsDuplicateMenusException.class);
     }
 
+    @DisplayName("메뉴와 장소의 PK 값이 주어지고, 기존 메뉴 목록에 새로운 메뉴를 추가하면, 업데이트된 메뉴 목록 정보가 반환된다.")
+    @Test
+    void givenMenuWithPlaceId_whenAddMenuToPlaceMenus_thenReturnUpdatedPlaceMenus() {
+        // given
+        long placeId = 1L;
+        long placeMenusId = 2L;
+        String kakaoPid = "12345";
+        Place place = createPlace(placeId, kakaoPid);
+        PlaceMenus placeMenus = createPlaceMenus(placeMenusId, place, List.of("돈까스", "파스타", "수제비", "라면"));
+        String menuForAdd = "양념 치킨";
+        given(placeMenusRepository.findByPlace_Id(placeId)).willReturn(Optional.of(placeMenus));
+
+        // when
+        PlaceMenusDto result = sut.addMenu(placeId, menuForAdd);
+
+        // then
+        then(placeMenusRepository).should().findByPlace_Id(placeId);
+        then(placeMenusRepository).shouldHaveNoMoreInteractions();
+        then(placeService).shouldHaveNoInteractions();
+        then(webScrapingService).shouldHaveNoInteractions();
+        assertThat(result)
+                .hasFieldOrPropertyWithValue("id", placeMenusId)
+                .hasFieldOrPropertyWithValue("placeId", placeId)
+                .hasFieldOrProperty("menus");
+        assertThat(result.getMenus()).hasSize(5);
+    }
+
     private void verifyEveryMocksShouldHaveNoInteractions() {
         then(placeService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();

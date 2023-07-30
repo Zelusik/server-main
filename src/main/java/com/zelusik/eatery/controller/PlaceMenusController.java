@@ -1,6 +1,7 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.dto.place.request.AddMenuToPlaceMenusRequest;
 import com.zelusik.eatery.dto.place.request.PlaceMenusUpdateRequest;
 import com.zelusik.eatery.dto.place.response.PlaceMenusResponse;
 import com.zelusik.eatery.service.PlaceMenusService;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 @Tag(name = "장소 메뉴 관련 API")
@@ -86,6 +88,24 @@ public class PlaceMenusController {
             @RequestBody PlaceMenusUpdateRequest request
     ) {
         PlaceMenusDto updatedPlaceMenus = placeMenusService.updateMenus(placeId, request.getMenus());
+        return PlaceMenusResponse.from(updatedPlaceMenus);
+    }
+
+    @Operation(
+            summary = "메뉴 추가하기(직접 등록하기)",
+            description = "<p>메뉴를 하나 전달받아 기존 메뉴 목록에 새로 추가한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
+            @ApiResponse(description = "[3006] 전달받은 메뉴가 기존 메뉴 목록에 이미 존재하는 경우. 즉, 중복된 경우이므로 다른 값으로 요청해야 한다.", responseCode = "400", content = @Content)
+    })
+    @PatchMapping("/places/{placeId}/menus")
+    public PlaceMenusResponse addMenuToPlaceMenus(
+            @Parameter(description = "PK of place", example = "3") @PathVariable Long placeId,
+            @Valid @RequestBody AddMenuToPlaceMenusRequest request
+    ) {
+        PlaceMenusDto updatedPlaceMenus = placeMenusService.addMenu(placeId, request.getMenu());
         return PlaceMenusResponse.from(updatedPlaceMenus);
     }
 }

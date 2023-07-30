@@ -5,6 +5,7 @@ import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.controller.PlaceMenusController;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
+import com.zelusik.eatery.dto.place.request.AddMenuToPlaceMenusRequest;
 import com.zelusik.eatery.dto.place.request.PlaceMenusUpdateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceMenusService;
@@ -137,6 +138,31 @@ class PlaceMenusControllerTest {
                 .andExpect(jsonPath("$.placeId").value(placeId))
                 .andExpect(jsonPath("$.menus").isArray())
                 .andExpect(jsonPath("$.menus", hasSize(1)));
+    }
+
+    @DisplayName("메뉴와 장소의 PK 값이 주어지고, 기존 메뉴 목록에 전달받은 메뉴를 새로 추가하면, 업데이트된 메뉴 목록이 반환된다.")
+    @Test
+    void givenMenuWithPlaceId_whenAddMenu_thenReturnUpdatedPlaceMenus() throws Exception {
+        // given
+        long placeId = 1L;
+        long placeMenusId = 2L;
+        String menuForAdd = "양념치킨";
+        AddMenuToPlaceMenusRequest requestBody = new AddMenuToPlaceMenusRequest(menuForAdd);
+        PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, List.of("후라이드치킨", menuForAdd));
+        given(placeMenusService.addMenu(placeId, menuForAdd)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                patch("/api/places/" + placeId + "/menus")
+                        .content(mapper.writeValueAsString(requestBody))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(user(createTestUserDetails()))
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(placeMenusId))
+                .andExpect(jsonPath("$.placeId").value(placeId))
+                .andExpect(jsonPath("$.menus").isArray())
+                .andExpect(jsonPath("$.menus", hasSize(2)));
     }
 
     private UserDetails createTestUserDetails() {
