@@ -48,19 +48,19 @@ public class PlaceService {
     public PlaceDto create(Long memberId, PlaceCreateRequest placeCreateRequest) {
         PlaceScrapingResponse scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
 
-        Place place = placeRepository.save(placeCreateRequest
-                .toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours())
-                .toEntity());
+        Place savedPlace = placeRepository.save(placeCreateRequest.toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours()).toEntity());
+        boolean placeMarkedStatus = bookmarkService.isMarkedPlace(memberId, savedPlace);
 
-        if (scrapingInfo.getOpeningHours() != null) {
-            List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
-                    .map(oh -> oh.toOpeningHoursEntity(place))
-                    .toList();
-            openingHoursRepository.saveAll(openingHoursList);
-            place.getOpeningHoursList().addAll(openingHoursList);
+        if (scrapingInfo.getOpeningHours() == null || scrapingInfo.getOpeningHours().isEmpty()) {
+            return PlaceDto.from(savedPlace, placeMarkedStatus);
         }
 
-        return PlaceDto.from(place, bookmarkService.isMarkedPlace(memberId, place));
+        List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
+                .map(oh -> oh.toOpeningHoursEntity(savedPlace))
+                .toList();
+        openingHoursRepository.saveAll(openingHoursList);
+        savedPlace.getOpeningHoursList().addAll(openingHoursList);
+        return PlaceDto.from(savedPlace, placeMarkedStatus);
     }
 
     /**
