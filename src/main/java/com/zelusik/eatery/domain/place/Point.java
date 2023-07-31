@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -17,10 +18,12 @@ import java.util.Objects;
 public class Point {
 
     @Schema(description = "위도", example = "37.5595073462493")
+    @NonNull
     @Column(nullable = false)
     private String lat;
 
     @Schema(description = "경도", example = "126.921462488105")
+    @NonNull
     @Column(nullable = false)
     private String lng;
 
