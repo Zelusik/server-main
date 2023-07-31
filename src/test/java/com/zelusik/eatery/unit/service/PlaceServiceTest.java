@@ -5,7 +5,10 @@ import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.dto.place.*;
+import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.dto.place.PlaceScrapingOpeningHourDto;
+import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.exception.place.PlaceAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
@@ -35,7 +38,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -126,7 +128,7 @@ class PlaceServiceTest {
         given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
-        PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImages(memberId, placeId);
+        PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImagesById(memberId, placeId);
 
         // then
         then(placeRepository).should().findById(placeId);
@@ -138,17 +140,58 @@ class PlaceServiceTest {
 
     @DisplayName("Id(PK)가 주어지고, 존재하지 않는 장소를 찾으면, 예외가 발생한다.")
     @Test
-    void givenId_whenFindNotExistentPlace_thenReturnThrowException() {
+    void givenId_whenFindNotExistentPlace_thenThrowPlaceNotFoundException() {
         // given
         long placeId = 1L;
         long memberId = 2L;
         given(placeRepository.findById(placeId)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findDtoWithMarkedStatusAndImages(memberId, placeId));
+        Throwable t = catchThrowable(() -> sut.findDtoWithMarkedStatusAndImagesById(memberId, placeId));
 
         // then
         then(placeRepository).should().findById(placeId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(t).isInstanceOf(PlaceNotFoundException.class);
+    }
+
+    @DisplayName("kakaoPid가 주어지고, 해당하는 장소를 찾으면, 장소 정보를 반환한다.")
+    @Test
+    void givenKakaoPid_whenFindPlace_thenReturnPlaceDto() {
+        // given
+        long placeId = 1L;
+        long memberId = 2L;
+        String kakaoPid = "12345";
+        Place expectedResult = PlaceTestUtils.createPlace(placeId, "12345");
+        given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedResult));
+        given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
+        given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
+
+        // when
+        PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
+
+        // then
+        then(placeRepository).should().findByKakaoPid(kakaoPid);
+        then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
+        then(reviewImageService).should().findLatest3ByPlace(placeId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult)
+                .hasFieldOrPropertyWithValue("id", placeId)
+                .hasFieldOrPropertyWithValue("kakaoPid", kakaoPid);
+    }
+
+    @DisplayName("kakaoPid가 주어지고, 해당하는 장소를 찾았으나 존재하지 않는다면, 예외가 발생한다.")
+    @Test
+    void givenKakaoPid_whenFindNotExistentPlace_thenThrowPlaceNotFoundException() {
+        // given
+        String kakaoPid = "12345";
+        given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.empty());
+
+        // when
+        Throwable t = catchThrowable(() -> sut.findDtoWithMarkedStatusAndImagesByKakaoPid(1L, kakaoPid));
+
+        // then
+        then(placeRepository).should().findByKakaoPid(kakaoPid);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(PlaceNotFoundException.class);
     }
