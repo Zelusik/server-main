@@ -26,6 +26,7 @@ public class Place extends BaseTimeEntity {
     private Long id;
 
     @Setter
+    @Column(nullable = false)
     @Convert(converter = ReviewKeywordValueConverter.class)
     private List<ReviewKeywordValue> top3Keywords;
 
