@@ -4,7 +4,12 @@ import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
 import com.zelusik.eatery.domain.BaseTimeEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -61,31 +66,41 @@ public class Place extends BaseTimeEntity {
     @OneToMany(mappedBy = "place")
     private List<OpeningHours> openingHoursList = new LinkedList<>();
 
-    public static Place of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
-        return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null);
+    public static Place of(
+            @NonNull String kakaoPid,
+            @NonNull String name,
+            @NonNull String pageUrl,
+            @NonNull KakaoCategoryGroupCode categoryGroupCode,
+            @NonNull PlaceCategory category,
+            @Nullable String phone,
+            @NonNull Address address,
+            @Nullable String homepageUrl,
+            @NonNull Point point,
+            @Nullable String closingHours
+    ) {
+        return of(null, List.of(), kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null);
     }
 
-    public static Place of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return Place.builder()
-                .id(id)
-                .top3Keywords(top3Keywords)
-                .kakaoPid(kakaoPid)
-                .name(name)
-                .pageUrl(pageUrl)
-                .categoryGroupCode(categoryGroupCode)
-                .category(category)
-                .phone(phone)
-                .address(address)
-                .homepageUrl(homepageUrl)
-                .point(point)
-                .closingHours(closingHours)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .build();
+    public static Place of(
+            @Nullable Long id,
+            @NonNull List<ReviewKeywordValue> top3Keywords,
+            @NonNull String kakaoPid,
+            @NonNull String name,
+            @NonNull String pageUrl,
+            @NonNull KakaoCategoryGroupCode categoryGroupCode,
+            @NonNull PlaceCategory category,
+            @Nullable String phone,
+            @NonNull Address address,
+            @Nullable String homepageUrl,
+            @NonNull Point point,
+            @Nullable String closingHours,
+            @Nullable LocalDateTime createdAt,
+            @Nullable LocalDateTime updatedAt
+    ) {
+        return new Place(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, createdAt, updatedAt);
     }
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Place(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private Place(@Nullable Long id, @NonNull List<ReviewKeywordValue> top3Keywords, @NonNull String kakaoPid, @NonNull String name, @NonNull String pageUrl, @NonNull KakaoCategoryGroupCode categoryGroupCode, @NonNull PlaceCategory category, @Nullable String phone, @NonNull Address address, @Nullable String homepageUrl, @NonNull Point point, @Nullable String closingHours, @Nullable LocalDateTime createdAt, @Nullable LocalDateTime updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.top3Keywords = top3Keywords;
