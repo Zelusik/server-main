@@ -1,29 +1,27 @@
 package com.zelusik.eatery.domain.review;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter // for @ModelAttribute
 @Getter
 @Embeddable
 public class MenuTagPoint {
 
     @Schema(description = "메뉴 태그의 x좌표", example = "30.45")
-    @NonNull
+    @NotNull
     @Column(nullable = false)
     private Double x;
 
     @Schema(description = "메뉴 태그의 y좌표", example = "12.7504")
-    @NonNull
+    @NotNull
     @Column(nullable = false)
     private Double y;
 

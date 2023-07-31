@@ -50,8 +50,7 @@ class ReviewControllerTest {
     @Test
     void givenReviewInfo_whenReviewCreate_thenReturnSavedReview() throws Exception {
         // given
-        given(reviewService.create(any(), any(ReviewCreateRequest.class), any()))
-                .willReturn(ReviewTestUtils.createReviewDto());
+        given(reviewService.create(any(), any(ReviewCreateRequest.class))).willReturn(ReviewTestUtils.createReviewDto());
 
         // when & then
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();

@@ -53,8 +53,7 @@ public class ReviewController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ParameterObject @Valid @ModelAttribute ReviewCreateRequest request
     ) {
-        ReviewResponse response = ReviewResponse.from(reviewService.create(userPrincipal.getMemberId(), request, request.getImages()));
-
+        ReviewResponse response = ReviewResponse.from(reviewService.create(userPrincipal.getMemberId(), request));
         return ResponseEntity
                 .created(URI.create("/api/reviews/" + response.getId()))
                 .body(response);
@@ -112,6 +111,7 @@ public class ReviewController {
                         .map(FeedResponse::from));
     }
 
+    // TODO: 메뉴 태그 정보가 담긴 ReviewResponse를 응답 객체로 사용할 것인지 검토 필요
     @Operation(
             summary = "내가 작성한 리뷰 조회",
             description = "<p>내가 작성한 리뷰를 최신순으로 조회합니다.",

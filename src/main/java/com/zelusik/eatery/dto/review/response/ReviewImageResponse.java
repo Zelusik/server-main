@@ -6,8 +6,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,9 +29,11 @@ public class ReviewImageResponse {
         return new ReviewImageResponse(
                 dto.getUrl(),
                 dto.getThumbnailUrl(),
-                dto.getMenuTags().stream()
-                        .map(ReviewImageMenuTagResponse::from)
-                        .toList()
+                Optional.ofNullable(dto.getMenuTags())
+                        .map(menuTags -> menuTags.stream()
+                                .map(ReviewImageMenuTagResponse::from)
+                                .toList())
+                        .orElse(List.of())
         );
     }
 }

@@ -3,6 +3,8 @@ package com.zelusik.eatery.service;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.domain.review.ReviewImage;
+import com.zelusik.eatery.domain.review.ReviewImageMenuTag;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
@@ -12,6 +14,7 @@ import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.exception.review.ReviewNotFoundException;
 import com.zelusik.eatery.exception.review.ReviewUpdatePermissionDeniedException;
+import com.zelusik.eatery.repository.review.ReviewImageMenuTagRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +34,10 @@ public class ReviewService {
     private final ReviewImageService reviewImageService;
     private final MemberService memberService;
     private final PlaceService placeService;
+    private final BookmarkService bookmarkService;
     private final ReviewRepository reviewRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
-    private final BookmarkService bookmarkService;
+    private final ReviewImageMenuTagRepository reviewImageMenuTagRepository;
 
     /**
      * 리뷰를 생성합니다.
@@ -44,7 +48,9 @@ public class ReviewService {
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
-    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest, List<ReviewImageCreateRequest> images) {
+    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest) {
+        List<ReviewImageCreateRequest> images = reviewRequest.getImages();
+
         // 장소 조회 or 저장
         PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
         Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
@@ -52,19 +58,40 @@ public class ReviewService {
                     Long createdPlaceId = placeService.create(writerId, placeCreateRequest).getId();
                     return placeService.findById(createdPlaceId);
                 });
+
         Member writer = memberService.findById(writerId);
         boolean placeMarkedStatus = bookmarkService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
         ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, placeMarkedStatus));
-        Review review = reviewDto.toEntity(writer, place);
-        reviewRepository.save(review);
+        Review review = reviewRepository.save(reviewDto.toEntity(writer, place));
+
+        // 리뷰 키워드 저장
         reviewDto.getKeywords().forEach(keyword -> {
             ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
             review.getKeywords().add(reviewKeyword);
             reviewKeywordRepository.save(reviewKeyword);
         });
-        reviewImageService.upload(review, images);
+
+        // 리뷰 이미지 저장 및 업로드
+        List<ReviewImage> reviewImages = reviewImageService.upload(review, images);
+        review.getReviewImages().addAll(reviewImages);
+
+        // 메뉴 태그 저장
+        for (int i = 0; i < images.size(); i++) {
+            ReviewImageCreateRequest reviewImageReq = images.get(i);
+            ReviewImage reviewImage = review.getReviewImages().get(i);
+
+            if (reviewImageReq.getMenuTags() == null || reviewImageReq.getMenuTags().isEmpty()) {
+                continue;
+            }
+
+            List<ReviewImageMenuTag> menuTags = reviewImageReq.getMenuTags().stream()
+                    .map(reviewMenuTagReq -> reviewMenuTagReq.toDto().toEntity(reviewImage))
+                    .toList();
+            reviewImage.getMenuTags().addAll(menuTags);
+            reviewImageMenuTagRepository.saveAll(reviewImage.getMenuTags());
+        }
 
         // 장소 top 3 keyword 갱신
         placeService.renewTop3Keywords(place);
