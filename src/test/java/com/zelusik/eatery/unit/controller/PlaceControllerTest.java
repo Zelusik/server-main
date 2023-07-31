@@ -28,6 +28,8 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static com.zelusik.eatery.constant.place.DayOfWeek.*;
+import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -74,22 +76,45 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.id").exists());
     }
 
-    @DisplayName("가게의 id(PK)가 주어지고, 존재하는 장소를 찾는다면, 장소 정보를 반환한다.")
+    @DisplayName("가게의 id(PK)가 주어지고, 해당하는 장소를 단건 조회하면, 조회된 장소 정보를 반환한다.")
     @Test
-    void givenPlaceId_whenFindExistentPlace_thenReturnPlace() throws Exception {
+    void givenPlaceId_whenFindPlace_thenReturnFoundPlace() throws Exception {
         // given
-        long placeId = 1L;
         long memberId = 1L;
-        given(placeService.findDtoWithMarkedStatusAndImages(memberId, placeId))
-                .willReturn(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages());
+        long placeId = 2L;
+        PlaceDto expectedResult = createPlaceDtoWithMarkedStatusAndImages(placeId);
+        given(placeService.findDtoWithMarkedStatusAndImagesById(memberId, placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
                         get("/api/places/" + placeId)
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(placeId));
+                .andExpect(jsonPath("$.id").value(placeId))
+                .andExpect(jsonPath("$.isMarked").isNotEmpty())
+                .andExpect(jsonPath("$.images", notNullValue()));
+    }
+
+    @DisplayName("Kakao place unique id가 주어지고, 해당하는 장소를 단건 조회하면, 조회된 장소 정보를 반환한다.")
+    @Test
+    void givenKakaoPid_whenFindPlace_thenReturnFoundPlace() throws Exception {
+        // given
+        long memberId = 1L;
+        String kakaoPid = "12345";
+        PlaceDto expectedResult = createPlaceDtoWithMarkedStatusAndImages(2L, kakaoPid);
+        given(placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/places")
+                                .param("kakaoPid", kakaoPid)
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.isMarked").isNotEmpty())
+                .andExpect(jsonPath("$.images", notNullValue()));
     }
 
     @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")
@@ -99,7 +124,7 @@ class PlaceControllerTest {
         String lat = "37";
         String lng = "127";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
         given(placeService.findDtosNearBy(1L, List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
 
         // when & then
@@ -141,7 +166,7 @@ class PlaceControllerTest {
         FilteringType filteringType = FilteringType.TOP_3_KEYWORDS;
         String filteringKeywordDescription = "신선한 재료";
         String filteringKeyword = "FRESH";
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
         given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then

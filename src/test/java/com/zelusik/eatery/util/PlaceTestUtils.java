@@ -88,10 +88,14 @@ public class PlaceTestUtils {
     }
 
     public static PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId) {
+        return createPlaceDtoWithMarkedStatusAndImages(placeId, "308342289");
+    }
+
+    public static PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId, String kakaoPid) {
         return PlaceDto.of(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
-                "308342289",
+                kakaoPid,
                 "연남토마 본점",
                 "https://place.map.kakao.com/308342289",
                 KakaoCategoryGroupCode.FD6,

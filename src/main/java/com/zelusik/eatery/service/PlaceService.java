@@ -20,6 +20,7 @@ import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,9 +86,22 @@ public class PlaceService {
      *
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 entity
+     * @throws PlaceNotFoundException 조회하고자 하는 장소가 존재하지 않는 경우
      */
     public Place findById(Long placeId) {
         return placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
+    }
+
+    /**
+     * <code>kakaoPid</code>에 해당하는 장소를 조회한다.
+     *
+     * @param kakaoPid 조회하고자 하는 장소의 kakao unique id
+     * @return 조회한 장소 entity
+     * @throws PlaceNotFoundException 조회하고자 하는 장소가 존재하지 않는 경우
+     */
+    @NonNull
+    private Place findByKakaoPid(@NonNull String kakaoPid) {
+        return findOptByKakaoPid(kakaoPid).orElseThrow(() -> PlaceNotFoundException.kakaoPid(kakaoPid));
     }
 
     /**
@@ -96,11 +110,25 @@ public class PlaceService {
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceDto findDtoWithMarkedStatusAndImages(Long memberId, Long placeId) {
-        Place place = findById(placeId);
-        boolean isMarked = bookmarkService.isMarkedPlace(memberId, place);
-        List<ReviewImageDto> Latest3Images = reviewImageService.findLatest3ByPlace(place.getId());
-        return PlaceDto.fromWithImages(place, isMarked, Latest3Images);
+    public PlaceDto findDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
+        Place foundPlace = findById(placeId);
+        boolean isMarked = bookmarkService.isMarkedPlace(memberId, foundPlace);
+        List<ReviewImageDto> latest3Images = reviewImageService.findLatest3ByPlace(foundPlace.getId());
+        return PlaceDto.fromWithImages(foundPlace, isMarked, latest3Images);
+    }
+
+    /**
+     * <code>kakaoPid</code>에 해당하는 장소를 조회한다.
+     *
+     * @param kakaoPid 조회하고자 하는 장소의 kakao unique id
+     * @return 조회한 장소 dto
+     */
+    @NonNull
+    public PlaceDto findDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
+        Place foundPlace = findByKakaoPid(kakaoPid);
+        boolean isMarked = bookmarkService.isMarkedPlace(memberId, foundPlace);
+        List<ReviewImageDto> latest3ByPlace = reviewImageService.findLatest3ByPlace(foundPlace.getId());
+        return PlaceDto.fromWithImages(foundPlace, isMarked, latest3ByPlace);
     }
 
     /**

@@ -22,14 +22,18 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
 @Tag(name = "장소 관련 API")
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/places")
 @RestController
 public class PlaceController {
@@ -59,7 +63,7 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "장소 단건 조회",
+            summary = "장소 단건 조회 - PK",
             description = "장소의 PK를 받아 해당하는 장소 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
@@ -68,11 +72,28 @@ public class PlaceController {
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping("/{placeId}")
-    public PlaceResponseWithImages find(
+    public PlaceResponseWithImages getPlaceById(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable Long placeId
+            @Parameter(description = "PK of place", example = "3") @PathVariable @NotNull Long placeId
     ) {
-        return PlaceResponseWithImages.from(placeService.findDtoWithMarkedStatusAndImages(userPrincipal.getMemberId(), placeId));
+        return PlaceResponseWithImages.from(placeService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId));
+    }
+
+    @Operation(
+            summary = "장소 단건 조회 - kakao place unique id",
+            description = "장소의 고유 id(<code>kakaoPid</code>)를 받아 해당하는 장소 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
+            @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
+    })
+    @GetMapping
+    public PlaceResponseWithImages getPlaceByKakaoPid(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(description = "Kakao place unique id", example = "263830255") @RequestParam @NotBlank String kakaoPid
+    ) {
+        return PlaceResponseWithImages.from(placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid));
     }
 
     @Operation(
