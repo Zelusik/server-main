@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -20,6 +22,9 @@ public class ReviewImage extends S3Image {
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
+    @OneToMany(mappedBy = "reviewImage")
+    private List<ReviewImageMenuTag> menuTags = new LinkedList<>();
+
     @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
@@ -28,29 +33,17 @@ public class ReviewImage extends S3Image {
     }
 
     public static ReviewImage of(Long id, Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return ReviewImage.builder()
-                .id(id)
-                .review(review)
-                .originalName(originalName)
-                .storedName(storedName)
-                .url(url)
-                .thumbnailStoredName(thumbnailStoredName)
-                .thumbnailUrl(thumbnailUrl)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .deletedAt(deletedAt)
-                .build();
+        return new ReviewImage(id, review, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
     }
 
-    public void softDelete() {
-        this.setDeletedAt(LocalDateTime.now());
-    }
-
-    @Builder(access = AccessLevel.PRIVATE)
     private ReviewImage(Long id, Review review, String originalName, String storedName, String thumbnailStoredName, String url, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt);
         this.id = id;
         this.review = review;
         this.deletedAt = deletedAt;
+    }
+
+    public void softDelete() {
+        this.setDeletedAt(LocalDateTime.now());
     }
 }
