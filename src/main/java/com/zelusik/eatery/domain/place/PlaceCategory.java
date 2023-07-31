@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.util.Arrays;
 import java.util.Objects;
 
 @AllArgsConstructor
@@ -27,13 +26,15 @@ public class PlaceCategory {
     @Schema(description = "카테고리 3")
     private String thirdCategory;
 
-    public PlaceCategory(String categoryName) {
+    public static PlaceCategory of(String categoryName) {
         String[] categories = categoryName.split(" > ");
         int length = categories.length;
 
-        this.firstCategory = length > 1 ? categories[1] : null;
-        this.secondCategory = length > 2 ? categories[2] : null;
-        this.thirdCategory = length > 3 ? categories[3] : null;
+        String firstCategory = length > 1 ? categories[1] : null;
+        String secondCategory = length > 2 ? categories[2] : null;
+        String thirdCategory = length > 3 ? categories[3] : null;
+
+        return new PlaceCategory(firstCategory, secondCategory, thirdCategory);
     }
 
     @Override
