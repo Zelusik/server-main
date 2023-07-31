@@ -45,8 +45,16 @@ public class PlaceResponseWithImages {
     @Schema(description = "휴무일", example = "금요일")
     private String closingHours;
 
-    @Schema(description = "영업시간 정보")
-    private List<OpeningHoursResponse> openingHours;
+    @Schema(description = "영업시간 정보", example = """
+            [
+                "월 11:30-22:00",
+                "화 11:30-22:00",
+                "수 11:30-22:00",
+                "목 11:30-22:00",
+                "금 11:30-22:00"
+            ]
+            """)
+    private List<String> openingHours;
 
     @Schema(description = "장소에 대한 이미지")
     private List<ImageResponse> images;
@@ -54,7 +62,7 @@ public class PlaceResponseWithImages {
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static PlaceResponseWithImages of(Long id, List<String> top3Keywords, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, List<ImageResponse> images, Boolean isMarked) {
+    public static PlaceResponseWithImages of(Long id, List<String> top3Keywords, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<String> openingHours, List<ImageResponse> images, Boolean isMarked) {
         return new PlaceResponseWithImages(id, top3Keywords, name, category, phone, address, snsUrl, point, closingHours, openingHours, images, isMarked);
     }
 
@@ -69,6 +77,10 @@ public class PlaceResponseWithImages {
             category = dto.getCategory().getFirstCategory();
         }
 
+        List<String> openingHours = dto.getOpeningHoursDtos().stream()
+                .map(oh -> String.format(oh.getDayOfWeek().getDescription() + " " + oh.getOpenAt() + "-" + oh.getCloseAt()))
+                .toList();
+
         return PlaceResponseWithImages.of(
                 dto.getId(),
                 dto.getTop3Keywords().stream()
@@ -81,9 +93,7 @@ public class PlaceResponseWithImages {
                 snsUrl,
                 dto.getPoint(),
                 dto.getClosingHours(),
-                dto.getOpeningHoursDtos().stream()
-                        .map(OpeningHoursResponse::from)
-                        .toList(),
+                openingHours,
                 dto.getImages().stream()
                         .map(reviewImageDto -> ImageResponse.of(reviewImageDto.getUrl(), reviewImageDto.getThumbnailUrl()))
                         .toList(),
