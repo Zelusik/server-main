@@ -3,6 +3,7 @@ package com.zelusik.eatery.util;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.review.MenuTagPoint;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
@@ -10,6 +11,7 @@ import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
+import com.zelusik.eatery.dto.review.request.ReviewMenuTagCreateRequest;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
@@ -29,7 +31,13 @@ public class ReviewTestUtils {
 
     @NotNull
     public static ReviewImageCreateRequest createReviewImageCreateRequest() {
-        return new ReviewImageCreateRequest(MultipartFileTestUtils.createMockMultipartFile());
+        return new ReviewImageCreateRequest(
+                MultipartFileTestUtils.createMockMultipartFile(),
+                List.of(
+                        createReviewMenuTagCreateRequest("치킨"),
+                        createReviewMenuTagCreateRequest("피자")
+                )
+        );
     }
 
     public static ReviewDto createReviewDto() {
@@ -172,5 +180,9 @@ public class ReviewTestUtils {
                 LocalDateTime.now(),
                 null
         );
+    }
+
+    public static ReviewMenuTagCreateRequest createReviewMenuTagCreateRequest(String content) {
+        return new ReviewMenuTagCreateRequest(content, new MenuTagPoint(10.0, 50.0));
     }
 }

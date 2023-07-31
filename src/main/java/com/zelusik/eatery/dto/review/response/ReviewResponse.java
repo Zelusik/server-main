@@ -1,7 +1,6 @@
 package com.zelusik.eatery.dto.review.response;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.dto.file.response.ImageResponse;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
 import com.zelusik.eatery.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.dto.review.ReviewDto;
@@ -31,10 +30,10 @@ public class ReviewResponse {
     @Schema(description = "내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 고기를 주문하면 ...")
     private String content;
 
-    @Schema(description = "리뷰에 첨부된 이미지 파일 목록", example = "[\"https://eatery-s3-bucket.s3.ap-northeast-2.amazonaws.com/review/0950af0e-3950-4596-bba2-4fee11e4938a.jpg\"]")
-    private List<ImageResponse> images;
+    @Schema(description = "리뷰에 첨부된 이미지 파일 목록")
+    private List<ReviewImageResponse> images;
 
-    public static ReviewResponse of(Long id, MemberResponse writer, PlaceResponse place, List<String> keywords, String content, List<ImageResponse> images) {
+    public static ReviewResponse of(Long id, MemberResponse writer, PlaceResponse place, List<String> keywords, String content, List<ReviewImageResponse> images) {
         return new ReviewResponse(id, writer, place, keywords, content, images);
     }
 
@@ -48,7 +47,7 @@ public class ReviewResponse {
                         .toList(),
                 reviewDto.getContent(),
                 reviewDto.getReviewImageDtos().stream()
-                        .map(ImageResponse::from)
+                        .map(ReviewImageResponse::from)
                         .toList()
         );
     }

@@ -6,6 +6,7 @@ import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Setter
+@Setter // for @ModelAttribute
 @Getter
 public class ReviewCreateRequest {
 
@@ -31,13 +32,50 @@ public class ReviewCreateRequest {
     private String content;
 
     @Schema(description = """
-            <p>업로드할 이미지 파일들
-            <p>요청 데이터 예시는 다음과 같습니다.
+            <p>업로드할 이미지 파일들</p>
+                        
+            <p>이미지 객체는 다음 두 개의 field로 구성됩니다.</p>
             <ul>
-                <li><code>images[0].image = 이미지1</code></li>
-                <li><code>images[1].image = 이미지2</code></li>
+                <li><code>image</code>: 이미지 파일</li>
+                <li><code>menuTags</code>: 메뉴 태그 목록 (array)</li>
             </ul>
+                        
+            <p>메뉴 태그 객체(menuTags)는 다음 두 개의 field로 구성됩니다.</p>
+            <ul>
+                <li><code>content</code>: 메뉴 태그 내용(메뉴 이름)</li>
+                <li><code>point</code>: 메뉴 태그 좌표 정보</li>
+            </ul>
+                        
+            <p>메뉴 태그 객체(point)는 다음 두 개의 field로 구성됩니다.</p>
+            <ul>
+                <li><code>x</code>: 메뉴 태그의 x좌표(double)</li>
+                <li><code>y</code>: 메뉴 태그의 y좌표(double)</li>
+            </ul>
+                        
+            <p>요청 데이터 예시를 JSON 형식으로 표현하면 다음과 같습니다.</p>
+            <pre>
+            {
+                "image": "이미지 파일",
+                "menuTags": [
+                    {
+                        "content": "치킨",
+                        "point": {
+                            "x": 10.25,
+                            "y": 45.05
+                        }
+                    },
+                    {
+                        "content": "피자",
+                        "point": {
+                            "x": 10.25,
+                            "y": 45.05
+                        }
+                    }
+                ]
+            }
+            </pre>
             """)
+    @NonNull
     private List<ReviewImageCreateRequest> images;
 
     public static ReviewCreateRequest of(PlaceCreateRequest place, List<String> keywords, String autoCreatedContent, String content, List<ReviewImageCreateRequest> images) {
