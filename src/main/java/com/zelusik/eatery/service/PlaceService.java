@@ -71,16 +71,6 @@ public class PlaceService {
     }
 
     /**
-     * placeId에 해당하는 장소를 조회한 후 반환한다.
-     *
-     * @param placeId 조회하고자 하는 장소의 PK
-     * @return 조회한 장소 entity
-     */
-    public Place findById(Long placeId) {
-        return placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
-    }
-
-    /**
      * kakaoPid에 해당하는 장소를 조회한 후 반환한다.
      *
      * @param kakaoPid 조회하고자 하는 장소의 kakaoPid
@@ -88,6 +78,16 @@ public class PlaceService {
      */
     public Optional<Place> findOptByKakaoPid(String kakaoPid) {
         return placeRepository.findByKakaoPid(kakaoPid);
+    }
+
+    /**
+     * placeId에 해당하는 장소를 조회한 후 반환한다.
+     *
+     * @param placeId 조회하고자 하는 장소의 PK
+     * @return 조회한 장소 entity
+     */
+    public Place findById(Long placeId) {
+        return placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
     }
 
     /**
