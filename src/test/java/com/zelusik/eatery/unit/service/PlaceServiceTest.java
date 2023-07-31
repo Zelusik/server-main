@@ -7,6 +7,7 @@ import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.dto.place.*;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.exception.place.PlaceAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
@@ -58,9 +59,9 @@ class PlaceServiceTest {
     @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
 
-    @DisplayName("'매일'이 적힌 영업시간이 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
+    @DisplayName("영업시간이 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
     @Test
-    void givenPlaceInfoWithOpeningHoursEveryDays_whenCreatePlace_thenReturnSavedPlace() {
+    void givenPlaceRequestInfoWithOpeningHours_whenCreatePlace_thenReturnSavedPlace() {
         // given
         long memberId = 1L;
         long placeId = 2L;
@@ -76,6 +77,7 @@ class PlaceServiceTest {
         PlaceScrapingResponse placeScrapingResponse = PlaceScrapingResponse.of(openingHourDtos, closingHours, homepageUrl);
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
         Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
+        given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(false);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(placeScrapingResponse);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(List.of());
@@ -85,12 +87,31 @@ class PlaceServiceTest {
         PlaceDto actualResult = sut.create(memberId, placeCreateRequest);
 
         // then
+        then(placeRepository).should().existsByKakaoPid(placeCreateRequest.getKakaoPid());
         then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().saveAll(ArgumentMatchers.<List<OpeningHours>>any());
         then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
+    }
+
+    @DisplayName("이미 존재하는 장소 정보가 주어지고, 장소를 생성 및 저장하려고 하면, 예외가 발생한다.")
+    @Test
+    void givenPlaceRequestInfoWithMemberId_whenCreateAlreadyExistsPlace_thenThrowPlaceAlreadyExistsException() {
+        // given
+        long memberId = 1L;
+        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
+        given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(true);
+
+        // when
+        Throwable t = catchThrowable(() -> sut.create(memberId, placeCreateRequest));
+
+        // then
+        then(placeRepository).should().existsByKakaoPid(placeCreateRequest.getKakaoPid());
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(t).isInstanceOf(PlaceAlreadyExistsException.class);
     }
 
     @DisplayName("Id(PK)가 주어지고, 일치하는 장소를 찾으면, 장소 정보를 반환한다.")

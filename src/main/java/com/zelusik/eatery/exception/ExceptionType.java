@@ -128,6 +128,7 @@ public enum ExceptionType {
     /**
      * 장소({@link Place}) 관련 예외
      */
+    PLACE_ALREADY_EXISTS(3000, "동일한 장소 데이터가 이미 존재합니다.", PlaceAlreadyExistsException.class),
     PLACE_NOT_FOUND(3001, "장소를 찾을 수 없습니다.", PlaceNotFoundException.class),
     NOT_ACCEPTABLE_PLACE_SEARCH_KEYWORD(3002, "유효하지 않은 검색 키워드입니다.", NotAcceptablePlaceSearchKeyword.class),
     NOT_ACCEPTABLE_FOOD_CATEGORY(3003, "유효하지 않은 음식 카테고리입니다.", NotAcceptableFoodCategory.class),

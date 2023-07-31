@@ -11,6 +11,7 @@ import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
+import com.zelusik.eatery.exception.place.PlaceAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
@@ -43,9 +44,15 @@ public class PlaceService {
      * @param placeCreateRequest 장소 정보가 담긴 dto.
      * @return 저장된 장소 entity.
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
+     * @throws PlaceAlreadyExistsException 동일한 장소 데이터가 이미 존재하는 경우
      */
     @Transactional
     public PlaceDto create(Long memberId, PlaceCreateRequest placeCreateRequest) {
+        String kakaoPid = placeCreateRequest.getKakaoPid();
+        if (placeRepository.existsByKakaoPid(kakaoPid)) {
+            throw new PlaceAlreadyExistsException(kakaoPid);
+        }
+
         PlaceScrapingResponse scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
 
         Place savedPlace = placeRepository.save(placeCreateRequest.toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours()).toEntity());
