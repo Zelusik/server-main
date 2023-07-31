@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Column;
@@ -18,17 +20,21 @@ import java.util.Objects;
 public class Address {
 
     @Schema(description = "시/도", example = "서울")
+    @NonNull
     @Column(nullable = false)
     private String sido;
 
     @Schema(description = "시/군/구", example = "마포구")
+    @NonNull
     @Column(nullable = false)
     private String sgg;
 
     @Schema(description = "지번주소", example = "연남동 568-26")
+    @Nullable
     private String lotNumberAddress;
 
     @Schema(description = "도로명주소", example = "월드컵북로6길 61")
+    @Nullable
     private String roadAddress;
 
     public Address(String lotNumberAddress, String roadAddress) {

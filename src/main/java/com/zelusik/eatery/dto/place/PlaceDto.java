@@ -21,22 +21,44 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class PlaceDto {
+
     private Long id;
+
     private List<ReviewKeywordValue> top3Keywords;
+
     private String kakaoPid;
+
     private String name;
+
     private String pageUrl;
+
     private KakaoCategoryGroupCode categoryGroupCode;
+
     private PlaceCategory category;
+
+    @Nullable
     private String phone;
+
     private Address address;
+
+    @Nullable
     private String homepageUrl;
+
     private Point point;
+
+    @Nullable
     private String closingHours;
+
     private List<OpeningHoursDto> openingHoursDtos;
+
+    @Nullable
     private List<ReviewImageDto> images;
+
+    @Nullable
     private Boolean isMarked;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
 
     @NonNull
