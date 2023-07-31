@@ -29,10 +29,10 @@ public class ReviewImageService {
      * @param images 업로드할 이미지들
      */
     @Transactional
-    public void upload(Review review, List<ReviewImageCreateRequest> images) {
-        images.forEach(image -> {
+    public List<ReviewImage> upload(Review review, List<ReviewImageCreateRequest> images) {
+        List<ReviewImage> reviewImages = images.stream().map(image -> {
             S3ImageDto imageDto = fileService.uploadImageWithResizing(image.getImage(), DIR_PATH);
-            ReviewImage reviewImage = ReviewImage.of(
+            return ReviewImage.of(
                     review,
                     imageDto.getOriginalName(),
                     imageDto.getStoredName(),
@@ -40,9 +40,8 @@ public class ReviewImageService {
                     imageDto.getThumbnailStoredName(),
                     imageDto.getThumbnailUrl()
             );
-            review.getReviewImages().add(reviewImage);
-        });
-        reviewImageRepository.saveAll(review.getReviewImages());
+        }).toList();
+        return reviewImageRepository.saveAll(reviewImages);
     }
 
     public List<ReviewImageDto> findLatest3ByPlace(Long placeId) {

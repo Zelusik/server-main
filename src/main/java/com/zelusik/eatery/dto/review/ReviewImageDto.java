@@ -4,6 +4,7 @@ import com.zelusik.eatery.domain.review.ReviewImage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,17 +14,28 @@ import java.util.List;
 public class ReviewImageDto {
 
     private Long id;
-    private Long reviewId;
-    private String originalName;
-    private String storedName;
-    private String url;
-    private String thumbnailStoredName;
-    private String thumbnailUrl;
-    private List<ReviewImageMenuTagDto> menuTags;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
+    private Long reviewId;
+
+    private String originalName;
+
+    private String storedName;
+
+    private String url;
+
+    private String thumbnailStoredName;
+
+    private String thumbnailUrl;
+
+    @Nullable
+    private List<ReviewImageMenuTagDto> menuTags;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    private LocalDateTime deletedAt;
+    
     public static ReviewImageDto of(Long id, Long reviewId, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, List<ReviewImageMenuTagDto> menuTags, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         return new ReviewImageDto(id, reviewId, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, menuTags, createdAt, updatedAt, deletedAt);
     }
