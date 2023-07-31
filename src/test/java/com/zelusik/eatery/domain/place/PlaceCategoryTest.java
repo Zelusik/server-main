@@ -26,7 +26,7 @@ class PlaceCategoryTest {
         // given
 
         // when
-        PlaceCategory placeCategory = new PlaceCategory(categoryName);
+        PlaceCategory placeCategory = PlaceCategory.of(categoryName);
 
         // then
         assertThat(placeCategory.getFirstCategory()).isEqualTo(firstCategory);
