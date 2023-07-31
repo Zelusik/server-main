@@ -5,6 +5,8 @@ import com.zelusik.eatery.domain.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,15 +33,23 @@ public class PlaceMenus extends BaseEntity {
     @Convert(converter = PlaceMenusConverter.class)
     private List<String> menus;
 
-    public static PlaceMenus of(Place place, List<String> menus) {
+    public static PlaceMenus of(@NonNull Place place, @NonNull List<String> menus) {
         return of(null, place, menus, null, null, null, null);
     }
 
-    public static PlaceMenus of(Long id, Place place, List<String> menus, LocalDateTime createdAt, LocalDateTime updatedAt, Long createdBy, Long updatedBy) {
+    public static PlaceMenus of(
+            @Nullable Long id,
+            @NonNull Place place,
+            @NonNull List<String> menus,
+            @Nullable LocalDateTime createdAt,
+            @Nullable LocalDateTime updatedAt,
+            @Nullable Long createdBy,
+            @Nullable Long updatedBy
+    ) {
         return new PlaceMenus(id, place, menus, createdAt, updatedAt, createdBy, updatedBy);
     }
 
-    public PlaceMenus(Long id, Place place, List<String> menus, LocalDateTime createdAt, LocalDateTime updatedAt, Long createdBy, Long updatedBy) {
+    private PlaceMenus(@Nullable Long id, @NonNull Place place, @NonNull List<String> menus, @Nullable LocalDateTime createdAt, @Nullable LocalDateTime updatedAt, @Nullable Long createdBy, @Nullable Long updatedBy) {
         super(createdAt, updatedAt, createdBy, updatedBy);
         this.id = id;
         this.place = place;
