@@ -43,8 +43,7 @@ public class PlaceController {
     )
     @ApiResponses({
             @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
-            @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 스크래핑 할 Flask 서버에서 에러가 발생한 경우.", responseCode = "500", content = @Content),
-            @ApiResponse(description = "[3000] 상세 페이지에서 읽어온 장소 영업시간이 처리할 수 없는 형태일 경우.", responseCode = "500", content = @Content)
+            @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 스크래핑 할 Flask 서버에서 에러가 발생한 경우.", responseCode = "500", content = @Content)
     })
     @PostMapping
     public ResponseEntity<PlaceResponse> save(
