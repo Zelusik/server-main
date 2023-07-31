@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -18,12 +19,17 @@ public class ReviewImageDto {
     private String url;
     private String thumbnailStoredName;
     private String thumbnailUrl;
+    private List<ReviewImageMenuTagDto> menuTags;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
+    public static ReviewImageDto of(Long id, Long reviewId, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, List<ReviewImageMenuTagDto> menuTags, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+        return new ReviewImageDto(id, reviewId, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, menuTags, createdAt, updatedAt, deletedAt);
+    }
+
     public static ReviewImageDto of(Long id, Long reviewId, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewImageDto(id, reviewId, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
+        return of(id, reviewId, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, null, createdAt, updatedAt, deletedAt);
     }
 
     public static ReviewImageDto from(ReviewImage entity) {
@@ -35,6 +41,9 @@ public class ReviewImageDto {
                 entity.getUrl(),
                 entity.getThumbnailStoredName(),
                 entity.getThumbnailUrl(),
+                entity.getMenuTags().stream()
+                        .map(ReviewImageMenuTagDto::from)
+                        .toList(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt(),
                 entity.getDeletedAt()
