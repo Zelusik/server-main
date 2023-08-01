@@ -54,25 +54,13 @@ public class ReviewCreateRequest {
                         
             <p>요청 데이터 예시를 JSON 형식으로 표현하면 다음과 같습니다.</p>
             <pre>
-            {
-                "image": "이미지 파일",
-                "menuTags": [
-                    {
-                        "content": "치킨",
-                        "point": {
-                            "x": 10.25,
-                            "y": 45.05
-                        }
-                    },
-                    {
-                        "content": "피자",
-                        "point": {
-                            "x": 10.25,
-                            "y": 45.05
-                        }
-                    }
-                ]
-            }
+            images[0].image="이미지_파일.jpg"
+            images[0].menuTags[0].content="치킨"
+            images[0].menuTags[0].point.x="10.25"
+            images[0].menuTags[0].point.y="45.05"
+            images[0].menuTags[1].content="피자"
+            images[0].menuTags[1].point.x="10.25"
+            images[0].menuTags[1].point.y="45.05"
             </pre>
             """)
     @NonNull
