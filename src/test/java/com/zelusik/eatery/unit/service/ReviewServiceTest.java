@@ -30,6 +30,9 @@ import org.springframework.data.domain.SliceImpl;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zelusik.eatery.util.MemberTestUtils.createMember;
+import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
+import static com.zelusik.eatery.util.ReviewTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,19 +64,19 @@ class ReviewServiceTest {
     @Test
     void givenReviewAndExistentPlaceInfo_whenCreateReview_thenReturnSavedReviewInfo() {
         // given
-        ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
-        String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
         long writerId = 1L;
         long placeId = 2L;
-        Place expectedPlace = PlaceTestUtils.createPlace(placeId, kakaoPid);
-        Member expectedMember = MemberTestUtils.createMember(writerId);
-        Review createdReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
-        given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
+        ReviewCreateRequest reviewCreateRequest = createReviewCreateRequest(placeId);
+        String kakaoPid = "12345";
+        Place expectedPlace = createPlace(placeId, kakaoPid);
+        Member expectedMember = createMember(writerId);
+        Review createdReview = createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
+        given(placeService.findById(placeId)).willReturn(expectedPlace);
         given(memberService.findById(writerId)).willReturn(expectedMember);
         given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
-        given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(ReviewTestUtils.createReviewKeyword(4L, createdReview, ReviewKeywordValue.FRESH));
-        given(reviewImageService.upload(any(Review.class), any())).willReturn(List.of(ReviewTestUtils.createReviewImage(100L, createdReview)));
+        given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(createReviewKeyword(4L, createdReview, ReviewKeywordValue.FRESH));
+        given(reviewImageService.upload(any(Review.class), any())).willReturn(List.of(createReviewImage(100L, createdReview)));
         given(reviewImageMenuTagRepository.saveAll(anyList())).willReturn(List.of());
         willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
 
@@ -81,53 +84,13 @@ class ReviewServiceTest {
         ReviewDto actualSavedReview = sut.create(writerId, reviewCreateRequest);
 
         // then
-        then(placeService).should().findOptByKakaoPid(kakaoPid);
+        then(placeService).should().findById(placeId);
         then(memberService).should().findById(writerId);
         then(bookmarkService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         verify(reviewImageService, times(reviewCreateRequest.getImages().size())).upload(any(Review.class), any());
         then(reviewImageMenuTagRepository).should().saveAll(anyList());
-        then(placeService).should().renewTop3Keywords(expectedPlace);
-        verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualSavedReview.getPlace().getKakaoPid()).isEqualTo(kakaoPid);
-    }
-
-    @Disabled("조만간 삭제될 business logic에 대한 테스트이므로 비활성화한다.")
-    @DisplayName("생성할 리뷰와 존재하지 않는 장소 정보가 주어지고, 리뷰를 생성하면, 장소와 리뷰 생성 후 저장된 리뷰 정보를 반환한다.")
-    @Test
-    void givenReviewAndNotExistentPlaceInfo_whenCreateReview_thenSavePlaceAndReview() {
-        // given
-        long writerId = 1L;
-        long placeId = 2L;
-        ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
-        String kakaoPid = reviewCreateRequest.getPlace().getKakaoPid();
-        Place expectedPlace = PlaceTestUtils.createPlace(placeId, kakaoPid);
-        PlaceDto expectedPlaceDto = PlaceDto.from(expectedPlace, true);
-        Member expectedMember = MemberTestUtils.createMember(writerId);
-        Review expectedReview = ReviewTestUtils.createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
-        given(placeService.findOptByKakaoPid(kakaoPid)).willReturn(Optional.empty());
-        given(placeService.create(writerId, reviewCreateRequest.getPlace())).willReturn(expectedPlaceDto);
-        given(placeService.findById(placeId)).willReturn(expectedPlace);
-        given(memberService.findById(writerId)).willReturn(expectedMember);
-        given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
-        given(reviewRepository.save(any(Review.class))).willReturn(expectedReview);
-        given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(ReviewTestUtils.createReviewKeyword(4L, expectedReview, ReviewKeywordValue.FRESH));
-        willDoNothing().given(reviewImageService).upload(any(Review.class), any());
-        willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
-
-        // when
-        ReviewDto actualSavedReview = sut.create(writerId, reviewCreateRequest);
-
-        // then
-        then(placeService).should().findOptByKakaoPid(kakaoPid);
-        then(placeService).should().create(writerId, reviewCreateRequest.getPlace());
-        then(placeService).should().findById(placeId);
-        then(memberService).should().findById(writerId);
-        then(bookmarkService).should().isMarkedPlace(writerId, expectedPlace);
-        then(reviewRepository).should().save(any(Review.class));
-        then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
-        then(reviewImageService).should().upload(any(Review.class), any());
         then(placeService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSavedReview.getPlace().getKakaoPid()).isEqualTo(kakaoPid);
@@ -178,9 +141,9 @@ class ReviewServiceTest {
         // given
         long memberId = 1L;
         long reviewId = 3L;
-        Member loginMember = MemberTestUtils.createMember(memberId);
-        Place place = PlaceTestUtils.createPlace(2L, "2");
-        Review findReview = ReviewTestUtils.createReviewWithKeywordsAndImages(reviewId, loginMember, place);
+        Member loginMember = createMember(memberId);
+        Place place = createPlace(2L, "2");
+        Review findReview = createReviewWithKeywordsAndImages(reviewId, loginMember, place);
         given(memberService.findById(memberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
         willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
@@ -208,10 +171,10 @@ class ReviewServiceTest {
         long loginMemberId = 1L;
         long reviewWriterId = 2L;
         long reviewId = 3L;
-        Place place = PlaceTestUtils.createPlace(4L, "2");
-        Member loginMember = MemberTestUtils.createMember(loginMemberId);
-        Member reviewWriter = MemberTestUtils.createMember(reviewWriterId);
-        Review findReview = ReviewTestUtils.createReviewWithKeywordsAndImages(reviewId, reviewWriter, place);
+        Place place = createPlace(4L, "2");
+        Member loginMember = createMember(loginMemberId);
+        Member reviewWriter = createMember(reviewWriterId);
+        Review findReview = createReviewWithKeywordsAndImages(reviewId, reviewWriter, place);
         given(memberService.findById(loginMemberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
 

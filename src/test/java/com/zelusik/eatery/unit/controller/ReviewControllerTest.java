@@ -50,23 +50,15 @@ class ReviewControllerTest {
     @Test
     void givenReviewInfo_whenReviewCreate_thenReturnSavedReview() throws Exception {
         // given
+        long placeId = 3L;
         given(reviewService.create(any(), any(ReviewCreateRequest.class))).willReturn(ReviewTestUtils.createReviewDto());
 
         // when & then
-        ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest();
+        ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest(placeId);
         mvc.perform(
                         multipart("/api/reviews")
                                 .file(MultipartFileTestUtils.createMockMultipartFile())
-                                .param("place.kakaoPid", reviewCreateRequest.getPlace().getKakaoPid())
-                                .param("place.name", reviewCreateRequest.getPlace().getName())
-                                .param("place.pageUrl", reviewCreateRequest.getPlace().getPageUrl())
-                                .param("place.categoryGroupCode", reviewCreateRequest.getPlace().getCategoryGroupCode().toString())
-                                .param("place.categoryName", reviewCreateRequest.getPlace().getCategoryName())
-                                .param("place.phone", reviewCreateRequest.getPlace().getPhone())
-                                .param("place.lotNumberAddress", reviewCreateRequest.getPlace().getLotNumberAddress())
-                                .param("place.roadAddress", reviewCreateRequest.getPlace().getRoadAddress())
-                                .param("place.lat", reviewCreateRequest.getPlace().getLat())
-                                .param("place.lng", reviewCreateRequest.getPlace().getLng())
+                                .param("placeId", String.valueOf(placeId))
                                 .param("keywords", "신선한 재료", "왁자지껄한")
                                 .param("autoCreatedContent", reviewCreateRequest.getAutoCreatedContent())
                                 .param("content", reviewCreateRequest.getContent())

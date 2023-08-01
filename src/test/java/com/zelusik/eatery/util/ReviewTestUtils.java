@@ -20,9 +20,9 @@ import java.util.List;
 
 public class ReviewTestUtils {
 
-    public static ReviewCreateRequest createReviewCreateRequest() {
+    public static ReviewCreateRequest createReviewCreateRequest(long placeId) {
         return ReviewCreateRequest.of(
-                PlaceTestUtils.createPlaceRequest(),
+                placeId,
                 List.of("신선한 재료"),
                 "자동 생성된 내용",
                 "제출한 내용",
