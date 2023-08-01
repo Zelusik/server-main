@@ -10,7 +10,6 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Setter // for @ModelAttribute
 @Getter
 @Embeddable
 public class MenuTagPoint {
