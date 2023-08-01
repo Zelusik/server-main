@@ -8,6 +8,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -17,6 +18,7 @@ import java.util.List;
 public class ReviewCreateRequest {
 
     @Schema(description = "PK of place", example = "3")
+    @NotNull
     private Long placeId;
 
     @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
