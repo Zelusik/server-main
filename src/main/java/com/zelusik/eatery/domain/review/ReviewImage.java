@@ -36,7 +36,7 @@ public class ReviewImage extends S3Image {
         return new ReviewImage(id, review, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
     }
 
-    private ReviewImage(Long id, Review review, String originalName, String storedName, String thumbnailStoredName, String url, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    private ReviewImage(Long id, Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt);
         this.id = id;
         this.review = review;
