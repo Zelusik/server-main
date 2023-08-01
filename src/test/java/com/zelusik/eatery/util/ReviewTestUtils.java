@@ -9,6 +9,7 @@ import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
+import com.zelusik.eatery.dto.review.request.MenuTagPointCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewMenuTagCreateRequest;
@@ -183,6 +184,6 @@ public class ReviewTestUtils {
     }
 
     public static ReviewMenuTagCreateRequest createReviewMenuTagCreateRequest(String content) {
-        return new ReviewMenuTagCreateRequest(content, new MenuTagPoint(10.0, 50.0));
+        return new ReviewMenuTagCreateRequest(content, new MenuTagPointCreateRequest("10.0", "50.0"));
     }
 }

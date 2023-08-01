@@ -19,9 +19,15 @@ public class ReviewMenuTagCreateRequest {
     private String content;
 
     @NotNull
-    private MenuTagPoint point;
+    private MenuTagPointCreateRequest point;
 
     public ReviewImageMenuTagDto toDto() {
-        return ReviewImageMenuTagDto.of(getContent(), getPoint());
+        return ReviewImageMenuTagDto.of(
+                getContent(),
+                new MenuTagPoint(
+                        Double.parseDouble(point.getX()),
+                        Double.parseDouble(point.getY())
+                )
+        );
     }
 }
