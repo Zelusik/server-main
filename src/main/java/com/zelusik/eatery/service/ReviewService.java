@@ -7,7 +7,6 @@ import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewImageMenuTag;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
@@ -44,21 +43,12 @@ public class ReviewService {
      *
      * @param writerId      리뷰를 생성하고자 하는 회원의 PK.
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
-     * @param images        리뷰와 함께 업로드 할 파일 목록
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
     public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest) {
         List<ReviewImageCreateRequest> images = reviewRequest.getImages();
-
-        // 장소 조회 or 저장
-        PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
-        Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
-                .orElseGet(() -> {
-                    Long createdPlaceId = placeService.create(writerId, placeCreateRequest).getId();
-                    return placeService.findById(createdPlaceId);
-                });
-
+        Place place = placeService.findById(reviewRequest.getPlaceId());
         Member writer = memberService.findById(writerId);
         boolean placeMarkedStatus = bookmarkService.isMarkedPlace(writerId, place);
 

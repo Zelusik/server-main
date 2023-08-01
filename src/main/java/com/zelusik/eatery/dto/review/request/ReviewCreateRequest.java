@@ -2,11 +2,9 @@ package com.zelusik.eatery.dto.review.request;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -18,8 +16,8 @@ import java.util.List;
 @Getter
 public class ReviewCreateRequest {
 
-    @Schema(description = "리뷰를 작성하고자 하는 장소 정보")
-    private PlaceCreateRequest place;
+    @Schema(description = "PK of place", example = "3")
+    private Long placeId;
 
     @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
     @NotEmpty
@@ -78,8 +76,8 @@ public class ReviewCreateRequest {
     @NonNull
     private List<ReviewImageCreateRequest> images;
 
-    public static ReviewCreateRequest of(PlaceCreateRequest place, List<String> keywords, String autoCreatedContent, String content, List<ReviewImageCreateRequest> images) {
-        return new ReviewCreateRequest(place, keywords, autoCreatedContent, content, images);
+    public static ReviewCreateRequest of(long placeId, List<String> keywords, String autoCreatedContent, String content, List<ReviewImageCreateRequest> images) {
+        return new ReviewCreateRequest(placeId, keywords, autoCreatedContent, content, images);
     }
 
     public ReviewDto toDto(PlaceDto placeDto) {
