@@ -17,7 +17,7 @@ public class ReviewImageMenuTag extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_iamge_menu_tag_id")
+    @Column(name = "review_image_menu_tag_id")
     private Long id;
 
     @JoinColumn(name = "review_image_id", nullable = false)
