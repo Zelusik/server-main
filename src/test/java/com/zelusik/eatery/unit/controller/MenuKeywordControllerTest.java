@@ -67,8 +67,7 @@ class MenuKeywordControllerTest {
         // when & then
         ResultActions resultActions = mvc.perform(
                         get("/api/menu-keywords")
-                                .param("firstCategory", placeCategory.getFirstCategory())
-                                .param("secondCategory", placeCategory.getSecondCategory())
+                                .param("placeCategory", "음식점 > " + placeCategory.getFirstCategory() + " > " + placeCategory.getSecondCategory())
                                 .param("menus", menus.toArray(new String[0]))
                                 .with(user(createTestUserDetails()))
                 )
