@@ -33,6 +33,10 @@ public class MenuKeyword extends BaseTimeEntity {
     @Convert(converter = MenuKeywordsConverter.class)
     private List<String> keywords;
 
+    public static MenuKeyword of(@NonNull MenuKeywordCategory category, @NonNull String name, @NonNull List<String> keywords) {
+        return new MenuKeyword(null, category, name, keywords, null, null);
+    }
+
     public static MenuKeyword of(@Nullable Long id, @NonNull MenuKeywordCategory category, @NonNull String name, @NonNull List<String> keywords, @Nullable LocalDateTime createdAt, @Nullable LocalDateTime updatedAt) {
         return new MenuKeyword(id, category, name, keywords, createdAt, updatedAt);
     }
