@@ -14,6 +14,10 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+        @Index(name = "idx__menu_keyword__category", columnList = "category"),
+        @Index(name = "idx__menu_keyword__name", columnList = "name")
+})
 @Entity
 public class MenuKeyword extends BaseTimeEntity {
 
