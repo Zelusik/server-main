@@ -12,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,11 +102,11 @@ class MenuKeywordRepositoryTest {
     void givenNames_whenGetMenuKeywordsMatchingNames_thenReturnResult() {
         // given
         List<String> names = List.of("햄버거", "일식", "두부");
-        List<MenuKeyword> expectedResults = List.of(
+        List<MenuKeyword> expectedResults = new ArrayList<>(List.of(
                 MenuKeyword.of(PLACE_CATEGORY, "햄버거", List.of("신선한", "바삭한", "부드러운", "가벼운", "감칠맛 나는", "짭짤한", "건강한")),
                 MenuKeyword.of(PLACE_CATEGORY, "일식", List.of("신선한", "깔끔한", "감칠맛 나는", "독특한", "다양한", "고급진")),
                 MenuKeyword.of(MENU_NAME, "두부", List.of("고소한", "야들야들한"))
-        );
+        ));
 
         // when
         List<MenuKeyword> actualResults = sut.getAllByNames(names);
@@ -112,6 +114,8 @@ class MenuKeywordRepositoryTest {
         // then
         assertThat(actualResults).isNotEmpty();
         assertThat(actualResults.size()).isEqualTo(expectedResults.size());
+        expectedResults.sort(Comparator.comparing(MenuKeyword::getName));
+        actualResults.sort(Comparator.comparing(MenuKeyword::getName));
         for (int i = 0; i < expectedResults.size(); i++) {
             MenuKeyword expectedResult = expectedResults.get(i);
             MenuKeyword actualResult = actualResults.get(i);
