@@ -8,6 +8,7 @@ import com.zelusik.eatery.service.MenuKeywordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import java.util.Map;
 import static com.zelusik.eatery.constant.MenuKeywordCategory.MENU_NAME;
 import static com.zelusik.eatery.constant.MenuKeywordCategory.PLACE_CATEGORY;
 
+@Tag(name = "메뉴 키워드(맛, 평가, 느낌 등) 관련 API")
 @RequestMapping("/api/menu-keywords")
 @Validated
 @RequiredArgsConstructor
@@ -39,22 +41,11 @@ public class MenuKeywordController {
     @GetMapping
     public MenuKeywordListResponseList getMenuKeywords(
             @Parameter(
-                    description = "<p>리뷰를 작성하고자 하는 장소의 카테고리 중 첫 번째 카테고리. " +
-                            "<p>\"한식 > 육류,고기 > 삼겹살\" 중 \"한식\"에 해당한다.",
-                    example = "한식"
-            ) @RequestParam @NotBlank String firstCategory,
+                    description = "<p>리뷰를 작성하고자 하는 장소의 카테고리 정보. Kakao에서 전달받은 정보 그대로 사용한다.",
+                    example = "음식점 > 한식 > 육류,고기 > 삼겹살"
+            ) @RequestParam @NotBlank String placeCategory,
             @Parameter(
-                    description = "<p>리뷰를 작성하고자 하는 장소의 카테고리 중 두 번째 카테고리. " +
-                            "<p>\"한식 > 육류,고기 > 삼겹살\" 중 \"육류,고기\"에 해당한다.",
-                    example = "육류,고기"
-            ) @RequestParam(required = false) String secondCategory,
-            @Parameter(
-                    description = "<p>리뷰를 작성하고자 하는 장소의 카테고리 중 세 번째 카테고리. " +
-                            "<p>\"한식 > 육류,고기 > 삼겹살\" 중 \"삼겹살\"에 해당한다.",
-                    example = "삼겹살"
-            ) @RequestParam(required = false) String thirdCategory,
-            @Parameter(
-                    description = "키워드를 조회하고자 하는 메뉴 목록",
+                    description = "키워드를 조회하고자 하는 메뉴 목록 (메뉴 이름에 쉼표(<code>,</code>가 있으면 안됨)",
                     example = "[\"시금치 카츠 카레\", \"버터치킨카레\"]"
             ) @RequestParam List<@NotBlank String> menus
     ) {
@@ -64,12 +55,7 @@ public class MenuKeywordController {
         ));
         List<String> defaultKeywords = menuKeywordService.getDefaultKeywords().getContent();
 
-        List<MenuKeywordResponse> result = menuKeywordService.getKeywords(
-                new PlaceCategory(firstCategory, secondCategory, thirdCategory),
-                menus,
-                namesMap,
-                defaultKeywords
-        );
+        List<MenuKeywordResponse> result = menuKeywordService.getKeywords(PlaceCategory.of(placeCategory), menus, namesMap, defaultKeywords);
         return new MenuKeywordListResponseList(result);
     }
 }
