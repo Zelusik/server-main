@@ -18,21 +18,23 @@ import java.util.Objects;
 @Embeddable
 public class PlaceCategory {
 
-    @Schema(description = "카테고리 1", example = "퓨전요리")
+    private static final String CATEGORY_DELIMITER = " > ";
+
+    @Schema(description = "카테고리 1", example = "한식")
     @NonNull
     @Column(nullable = false)
     private String firstCategory;
 
-    @Schema(description = "카테고리 2", example = "퓨전일식")
+    @Schema(description = "카테고리 2", example = "육류,고기")
     @Nullable
     private String secondCategory;
 
-    @Schema(description = "카테고리 3")
+    @Schema(description = "카테고리 3", example = "삼겹살")
     @Nullable
     private String thirdCategory;
 
     public static PlaceCategory of(String categoryName) {
-        String[] categories = categoryName.split(" > ");
+        String[] categories = categoryName.split(CATEGORY_DELIMITER);
         int length = categories.length;
 
         String firstCategory = length > 1 ? categories[1] : "";
@@ -54,5 +56,16 @@ public class PlaceCategory {
     @Override
     public int hashCode() {
         return Objects.hash(getFirstCategory(), getSecondCategory(), getThirdCategory());
+    }
+
+    public String concatAllCategories() {
+        String result = getFirstCategory();
+        if (getSecondCategory() != null && !getSecondCategory().isBlank()) {
+            result += CATEGORY_DELIMITER + getSecondCategory();
+        }
+        if (getThirdCategory() != null && !getThirdCategory().isBlank()) {
+            result += CATEGORY_DELIMITER + getThirdCategory();
+        }
+        return result;
     }
 }
