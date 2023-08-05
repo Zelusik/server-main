@@ -21,6 +21,8 @@ import java.util.List;
 @Entity
 public class Review extends BaseTimeEntity {
 
+    public static final int MAX_LEN_OF_REVIEW_CONTENT = 400;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
@@ -34,11 +36,11 @@ public class Review extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
 
-    @Column(length = 400)
+    @Column(length = MAX_LEN_OF_REVIEW_CONTENT)
     private String autoCreatedContent;
 
     @Setter(AccessLevel.PRIVATE)
-    @Column(length = 400)
+    @Column(length = MAX_LEN_OF_REVIEW_CONTENT)
     private String content;
 
     @OneToMany(mappedBy = "review")
