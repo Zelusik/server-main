@@ -4,9 +4,12 @@ import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewUpdateRequest;
 import com.zelusik.eatery.dto.review.response.FeedResponse;
+import com.zelusik.eatery.dto.review.response.GettingAutoCreatedReviewContentResponse;
 import com.zelusik.eatery.dto.review.response.ReviewListElemResponse;
 import com.zelusik.eatery.dto.review.response.ReviewResponse;
+import com.zelusik.eatery.exception.review.MismatchedMenuKeywordCountException;
 import com.zelusik.eatery.security.UserPrincipal;
+import com.zelusik.eatery.service.OpenAIService;
 import com.zelusik.eatery.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,18 +26,27 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @Tag(name = "리뷰 관련 API")
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/reviews")
 @RestController
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final OpenAIService openAIService;
 
     @Operation(
             summary = "리뷰 생성",
@@ -133,6 +145,44 @@ public class ReviewController {
         return new SliceResponse<ReviewResponse>()
                 .from(reviewService.findDtosByWriterId(userPrincipal.getMemberId(), pageRequest)
                         .map(ReviewResponse::from));
+    }
+
+    @Operation(
+            summary = "리뷰 내용 자동 생성",
+            description = "사용자로부터 장소에 대한 키워드, 메뉴에 대한 키워드들을 받아 리뷰 내용을 자동으로 작성합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping(value = "/contents/auto-creations")
+    public GettingAutoCreatedReviewContentResponse getAutoCreatedContentWithGpt(
+            @Parameter(
+                    description = "리뷰를 남기려고 하는 장소에 대해 사용자가 선택한 키워드 목록",
+                    example = "[\"신선한 재료\", \"넉넉한 양\", \"술과 함께\", \"데이트에 최고\", \"웃어른과\"]"
+            ) @RequestParam @NotEmpty List<@NotBlank String> placeKeywords,
+            @Parameter(
+                    description = "리뷰에 태그한 메뉴 목록",
+                    example = "[\"시금치카츠카레\", \"버터치킨카레\"]"
+            ) @RequestParam(required = false) List<@NotBlank String> menus,
+            @Parameter(
+                    description = "<p>메뉴에 해당하는 사용자가 선택한 키워드 목록" +
+                            "<p><code>menus</code>에서 전달한 각 메뉴들과 대응되도록 순서를 일치해야 합니다." +
+                            "<p>또한, 각 키워드는 \"+\"로 구분한다.",
+                    example = "[\"싱그러운+육즙 가득한+살짝 매콤\", \"부드러운+촉촉한\"]"
+            ) @RequestParam(required = false) List<@NotBlank String> menuKeywords
+    ) {
+        if (menus.size() != menuKeywords.size()) {
+            throw new MismatchedMenuKeywordCountException(menus, menuKeywords);
+        }
+
+        Map<String, List<String>> menuKeywordMap = new LinkedHashMap<>();
+        List<List<String>> parsedMenuKeywords = menuKeywords.stream()
+                .map(keywords -> Arrays.asList(keywords.split("/+")))
+                .toList();
+        for (int i = 0; i < menus.size(); i++) {
+            menuKeywordMap.put(menus.get(i), parsedMenuKeywords.get(i));
+        }
+
+        String result = openAIService.getAutoCreatedReviewContent(placeKeywords, menuKeywordMap);
+        return new GettingAutoCreatedReviewContentResponse(result);
     }
 
     @Operation(
