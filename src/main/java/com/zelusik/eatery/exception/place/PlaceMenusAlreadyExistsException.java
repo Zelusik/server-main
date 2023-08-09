@@ -7,4 +7,8 @@ public class PlaceMenusAlreadyExistsException extends ConflictException {
     public PlaceMenusAlreadyExistsException(Long placeId) {
         super("placeId=" + placeId);
     }
+
+    public PlaceMenusAlreadyExistsException(String kakaoPid) {
+        super("kakaoPid=" + kakaoPid);
+    }
 }

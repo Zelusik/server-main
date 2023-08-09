@@ -10,6 +10,8 @@ public interface PlaceMenusRepository extends JpaRepository<PlaceMenus, Long> {
 
     boolean existsByPlace_Id(Long placeId);
 
+    boolean existsByPlace_KakaoPid(String kakaoPid);
+
     Optional<PlaceMenus> findByPlace_Id(Long placeId);
 
     @EntityGraph(attributePaths = "place")

@@ -100,7 +100,7 @@ public class PlaceService {
      * @throws PlaceNotFoundException 조회하고자 하는 장소가 존재하지 않는 경우
      */
     @NonNull
-    private Place findByKakaoPid(@NonNull String kakaoPid) {
+    public Place findByKakaoPid(@NonNull String kakaoPid) {
         return findOptByKakaoPid(kakaoPid).orElseThrow(() -> PlaceNotFoundException.kakaoPid(kakaoPid));
     }
 

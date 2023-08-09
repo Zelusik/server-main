@@ -39,10 +39,28 @@ public class PlaceMenusController {
             @ApiResponse(description = "[3005] 메뉴 목록 데이터가 이미 존재하는 경우.", responseCode = "409", content = @Content)
     })
     @PostMapping("/places/{placeId}/menus")
-    public ResponseEntity<PlaceMenusResponse> savePlaceMenus(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
+    public ResponseEntity<PlaceMenusResponse> savePlaceMenusByPlaceId(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         PlaceMenusDto result = placeMenusService.savePlaceMenus(placeId);
         return ResponseEntity
                 .created(URI.create("/api/places/" + placeId + "/menus"))
+                .body(PlaceMenusResponse.from(result));
+    }
+
+    @Operation(
+            summary = "장소 메뉴 데이터 생성",
+            description = "<p><code>kakaoPid</code>에 해당하는 장소의 메뉴 목록을 스크래핑 한 후, 해당 데이터를 DB에 저장한다." +
+                    "<p>응답으로, DB에 저장된 메뉴들의 목록을 반환한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
+            @ApiResponse(description = "[3005] 메뉴 목록 데이터가 이미 존재하는 경우.", responseCode = "409", content = @Content)
+    })
+    @PostMapping("/places/menus")
+    public ResponseEntity<PlaceMenusResponse> savePlaceMenusByKakaoPid(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
+        PlaceMenusDto result = placeMenusService.savePlaceMenus(kakaoPid);
+        return ResponseEntity
+                .created(URI.create("/api/places/" + result.getPlaceId() + "/menus"))
                 .body(PlaceMenusResponse.from(result));
     }
 
