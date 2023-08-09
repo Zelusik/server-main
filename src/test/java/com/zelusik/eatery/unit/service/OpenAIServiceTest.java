@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,9 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -54,20 +51,22 @@ class OpenAIServiceTest {
     void givenPlaceKeywordsAndMenusAndMenuKeywords_whenGettingAutoCreatedReviewContent_thenReturnRespondedMessageContent() throws Exception {
         // given
         List<String> placeKeywords = List.of("신선한 재료", "넉넉한 양", "술과 함께", "데이트에 최고");
-        Map<String, List<String>> menuKeywordMap = new LinkedHashMap<>();
-        menuKeywordMap.put("시금치카츠카레", List.of("싱그러운", "육즙 가득한", "매콤한"));
-        menuKeywordMap.put("버터치킨카레", List.of("부드러운", "촉촉한"));
+        List<String> menus = List.of("시금치카츠카레", "버터치킨카레");
+        List<List<String>> menuKeywords = List.of(
+                List.of("싱그러운", "육즙 가득한", "매콤한"),
+                List.of("부드러운", "촉촉한")
+        );
         URI requestUri = UriComponentsBuilder
                 .fromUriString("https://api.openai.com/v1/chat/completions")
                 .encode(StandardCharsets.UTF_8)
                 .build().toUri();
-        String requestMessage = "다음 내용을 읽고 음식점에 대한 후기를 존댓말로 작성해줘. 음식점은(는) 신선한 재료, 넉넉한 양, 술과 함께, 데이트에 최고(이)라는 특징이 있었어. 메뉴 시금치카츠카레은(는) 싱그러운, 육즙 가득한, 매콤한(이)라는 특징이 있었어. 메뉴 버터치킨카레은(는) 부드러운, 촉촉한(이)라는 특징이 있었어. ";
+        String requestMessage = "싱그러운, 육즙 가득한, 매콤한 시금치카츠카레와 부드러운, 촉촉한 버터치킨카레가 있고 신선한 재료, 넉넉한 양, 술과 함께, 데이트에 최고라고 느낀 식당에 대한 후기를 공백 포함 400자 이하로 작성해줘.";
         ChatCompletionApiRequest requestBody = new ChatCompletionApiRequest(
                 "gpt-3.5-turbo",
                 List.of(new ChatCompletionApiMessageDto("user", requestMessage)),
                 Review.MAX_LEN_OF_REVIEW_CONTENT
         );
-        String autoCreatedContent = "이 음식점은 신선한 재료와 넉넉한 양, 술과 함께 제공되어 데이트에 최고입니다. 또한 웃어른과 함께하기에도 좋은 곳입니다. 메뉴 시금치 카츠카레는 싱그러운 맛과 육즙 가득한 맛, 살짝 매콤한 맛이 있습니다. 또한 메뉴 버터 치킨 카레는 단짠 맛이 특징입니다.";
+        String autoCreatedContent = "가까운 일요일 저녁, 연인과 함께 식사를 위해 방문한 식당은 정말로 기억에 남는 경험이었습니다. 신선한 재료와 넉넉한 양이라는 특징이 고객들에게 정말로 잘 어울려서, 음식을 먹으며 실로 만족스러웠습니다. 특히 싱그러운, 육즙 가득한 시금치카츠카레와 부드러운, 촉촉한 버터치킨카레는 정말로 맛있었어요. 매콤함이 가미된 카레 소스는 입맛을 돋구어줘서 정말로 멋진 조합이었습니다. 두 음식 모두 훌륭한 퀄리티를 자랑했고, 서빙되는 동안 냉기를 잃지 않으며 뜨끈한 온도로 유지되어서 맛을 한층 더 끌어올렸습니다. 또한, 좋은 분위기와 함께 술을 즐기며 데이트하기에 최적의 장소였습니다. 아무래도 이 식당은 계속해서 방문하게 될 것 같아요.";
         String expectedResponse = "{" +
                 "\"id\": \"chatcmpl-7jfArHKedWzJqsCe7TWaylblfh2zm\"," +
                 "\"object\": \"chat.completion\"," +
@@ -98,7 +97,7 @@ class OpenAIServiceTest {
                 .andRespond(withSuccess(expectedResponse, MediaType.APPLICATION_JSON));
 
         // when
-        String result = sut.getAutoCreatedReviewContent(placeKeywords, menuKeywordMap);
+        String result = sut.getAutoCreatedReviewContent(placeKeywords, menus, menuKeywords);
 
         // then
         restServer.verify();

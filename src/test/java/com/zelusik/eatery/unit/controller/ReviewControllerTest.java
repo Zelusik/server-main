@@ -22,9 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -116,18 +114,15 @@ class ReviewControllerTest {
         List<String> placeKeywords = List.of("신선한 재료", "넉넉한 양", "술과 함께", "데이트에 최고");
         List<String> menus = List.of("시금치카츠카레", "버터치킨카레");
         List<String> menuKeywords = List.of("싱그러운+육즙 가득힌+매콤한", "부드러운+촉촉한");
-        Map<String, List<String>> menuKeywordMap = new HashMap<>();
-        for (int i = 0; i < menus.size(); i++) {
-            menuKeywordMap.put(
-                    menus.get(i),
-                    menuKeywords.stream()
-                            .map(keywords -> Arrays.asList(keywords.split("/+")))
-                            .toList()
-                            .get(i)
-            );
-        }
+
         String expectedResult = "생성된 리뷰 내용";
-        given(openAIService.getAutoCreatedReviewContent(placeKeywords, menuKeywordMap)).willReturn(expectedResult);
+        given(openAIService.getAutoCreatedReviewContent(
+                placeKeywords,
+                menus,
+                menuKeywords.stream()
+                        .map(keywords -> Arrays.asList(keywords.split("/+")))
+                        .toList()
+        )).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
