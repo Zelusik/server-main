@@ -34,9 +34,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = "리뷰 관련 API")
 @RequiredArgsConstructor
@@ -173,15 +171,11 @@ public class ReviewController {
             throw new MismatchedMenuKeywordCountException(menus, menuKeywords);
         }
 
-        Map<String, List<String>> menuKeywordMap = new LinkedHashMap<>();
         List<List<String>> parsedMenuKeywords = menuKeywords.stream()
                 .map(keywords -> Arrays.asList(keywords.split("/+")))
                 .toList();
-        for (int i = 0; i < menus.size(); i++) {
-            menuKeywordMap.put(menus.get(i), parsedMenuKeywords.get(i));
-        }
 
-        String result = openAIService.getAutoCreatedReviewContent(placeKeywords, menuKeywordMap);
+        String result = openAIService.getAutoCreatedReviewContent(placeKeywords, menus, parsedMenuKeywords);
         return new GettingAutoCreatedReviewContentResponse(result);
     }
 

@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -34,7 +33,8 @@ public class OpenAIService {
 
     public String getAutoCreatedReviewContent(
             @NonNull List<String> placeKeywords,
-            @Nullable Map<String, List<String>> menusKeywordMap
+            @Nullable List<String> menus,
+            @Nullable List<List<String>> menuKeywords
     ) {
         URI requestUri = UriComponentsBuilder
                 .fromUriString("https://api.openai.com/v1/chat/completions")
@@ -42,17 +42,27 @@ public class OpenAIService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey);
 
-        StringBuilder messageBuilder = new StringBuilder("다음 내용을 읽고 음식점에 대한 후기를 존댓말로 작성해줘." +
-                " 음식점은(는) " + String.join(", ", placeKeywords) + "(이)라는 특징이 있었어. ");
-        if (!isMenuKeywordsEmpty(menusKeywordMap)) {
-            menusKeywordMap.forEach((menu, keywords) ->
-                    messageBuilder
-                            .append("메뉴 ")
-                            .append(menu)
-                            .append("은(는) ")
-                            .append(String.join(", ", keywords))
-                            .append("(이)라는 특징이 있었어. "));
+        StringBuilder messageBuilder = new StringBuilder();
+        if (isNotEmpty(menus) && isNotEmpty(menuKeywords)) {
+            for (int i = 0; i < menus.size(); i++) {
+                String menu = menus.get(i);
+                List<String> keywords = menuKeywords.get(i);
+                messageBuilder
+                        .append(String.join(", ", keywords))
+                        .append(" ")
+                        .append(menu);
+                if (i != menus.size() - 1) {
+                    messageBuilder.append("와 ");
+                }
+            }
+            messageBuilder.append("가 있고 ");
         }
+        messageBuilder
+                .append(String.join(", ", placeKeywords))
+                .append("라고 느낀 식당에 대한 후기를 공백 포함 ")
+                .append(Review.MAX_LEN_OF_REVIEW_CONTENT)
+                .append("자 이하로 작성해줘.");
+
         ChatCompletionApiRequest requestBody = new ChatCompletionApiRequest(
                 "gpt-3.5-turbo",
                 List.of(new ChatCompletionApiMessageDto("user", messageBuilder.toString())),
@@ -70,8 +80,8 @@ public class OpenAIService {
         return response.getBody().getMessageContent();
     }
 
-    private boolean isMenuKeywordsEmpty(@Nullable Map<String, List<String>> menuKeywordMap) {
-        return menuKeywordMap == null || menuKeywordMap.isEmpty();
+    private boolean isNotEmpty(List<?> list) {
+        return list != null && !list.isEmpty();
     }
 
     private void validateResponseIsNotEmpty(ResponseEntity<?> response) {
