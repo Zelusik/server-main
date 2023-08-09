@@ -40,8 +40,29 @@ public class PlaceMenusService {
         if (placeMenusRepository.existsByPlace_Id(placeId)) {
             throw new PlaceMenusAlreadyExistsException(placeId);
         }
-
         Place place = placeService.findById(placeId);
+        return savePlaceMenus(place);
+    }
+
+    /**
+     * <p><code>kakaoPid</code>에 해당하는 장소에 대해 메뉴 목록 데이터를 생성 및 저장한다.
+     * <p>이 때, 메뉴 목록 데이터는 scraping server에서 받아온다.
+     *
+     * @param kakaoPid 저장할 메뉴 목록의 장소에 대한 고유 id(for kakao)
+     * @return 저장된 메뉴 목록 정보를 담은 dto
+     */
+    @NonNull
+    @Transactional
+    public PlaceMenusDto savePlaceMenus(@NonNull String kakaoPid) {
+        if (placeMenusRepository.existsByPlace_KakaoPid(kakaoPid)) {
+            throw new PlaceMenusAlreadyExistsException(kakaoPid);
+        }
+        Place place = placeService.findByKakaoPid(kakaoPid);
+        return savePlaceMenus(place);
+    }
+
+    @NonNull
+    private PlaceMenusDto savePlaceMenus(Place place) {
         List<String> extractedMenus = webScrapingService.scrapMenuList(place.getKakaoPid());
         PlaceMenus placeMenus = placeMenusRepository.save(PlaceMenus.of(place, extractedMenus));
         return PlaceMenusDto.from(placeMenus);
