@@ -33,6 +33,7 @@ import java.util.Optional;
 @Service
 public class PlaceService {
 
+    public static final int MAX_NUM_OF_PLACE_IMAGES = 4;
     public static final int DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH = 50;
 
     private final WebScrapingService webScrapingService;
@@ -138,6 +139,7 @@ public class PlaceService {
      * <p>중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
      * <p>최대 50km 범위까지 조회한다.
      *
+     * @param memberId   API 요청한 회원의 PK 값
      * @param daysOfWeek 검색할 요일 목록
      * @param keyword    검색 키워드
      * @param center     중심 좌표 정보
@@ -151,7 +153,15 @@ public class PlaceService {
             Point center,
             Pageable pageable
     ) {
-        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, pageable);
+        return placeRepository.findDtosNearBy(
+                memberId,
+                daysOfWeek,
+                keyword,
+                center,
+                DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH,
+                MAX_NUM_OF_PLACE_IMAGES,
+                pageable
+        );
     }
 
     /**

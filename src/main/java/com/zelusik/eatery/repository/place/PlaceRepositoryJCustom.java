@@ -16,13 +16,15 @@ public interface PlaceRepositoryJCustom {
     /**
      * 중심 좌표 기준, 가까운 순으로 장소 목록을 조회한다.
      *
-     * @param daysOfWeek 요일 목록
-     * @param keyword    약속 상황
-     * @param center     중심 좌표 정보
-     * @param pageable   paging 정보
+     * @param memberId         API 요청한 회원의 PK 값
+     * @param daysOfWeek       요일 목록
+     * @param keyword          약속 상황
+     * @param center           중심 좌표 정보
+     * @param numOfPlaceImages 장소 대표 이미지 최대 개수
+     * @param pageable         paging 정보
      * @return 조회한 장소 목록
      */
-    Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, Point center, int distanceLimit, Pageable pageable);
+    Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소 목록(Slice)을 조회합니다.
