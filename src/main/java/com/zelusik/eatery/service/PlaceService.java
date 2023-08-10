@@ -6,6 +6,7 @@ import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
@@ -31,6 +32,8 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @Service
 public class PlaceService {
+
+    public static final int DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH = 50;
 
     private final WebScrapingService webScrapingService;
     private final ReviewImageService reviewImageService;
@@ -137,13 +140,18 @@ public class PlaceService {
      *
      * @param daysOfWeek 검색할 요일 목록
      * @param keyword    검색 키워드
-     * @param lat        중심좌표의 위도
-     * @param lng        중심좌표의 경도
+     * @param center     중심 좌표 정보
      * @param pageable   paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
-        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, lat, lng, 50, pageable);
+    public Slice<PlaceDto> findDtosNearBy(
+            Long memberId,
+            List<DayOfWeek> daysOfWeek,
+            PlaceSearchKeyword keyword,
+            Point center,
+            Pageable pageable
+    ) {
+        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, pageable);
     }
 
     /**

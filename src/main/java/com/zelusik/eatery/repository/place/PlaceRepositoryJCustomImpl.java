@@ -5,14 +5,13 @@ import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
-import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -44,8 +43,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             Long memberId,
             List<DayOfWeek> daysOfWeek,
             PlaceSearchKeyword keyword,
-            String lat,
-            String lng,
+            Point center,
             int distanceLimit,
             Pageable pageable
     ) {
@@ -87,8 +85,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .append("LIMIT :size_of_page OFFSET :offset;");
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("lat", lat)
-                .addValue("lng", lng)
+                .addValue("lat", center.getLat())
+                .addValue("lng", center.getLng())
                 .addValue("member_id", memberId)
                 .addValue("distance_limit", distanceLimit)
                 .addValue("size_of_page", pageable.getPageSize() + 1)   // 다음 페이지 존재 여부 확인을 위함.

@@ -4,6 +4,7 @@ import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.controller.PlaceController;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
@@ -37,6 +38,7 @@ import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -121,20 +123,19 @@ class PlaceControllerTest {
     @Test
     void givenCenterPoint_whenSearchNearByPlaces_thenReturnPlaces() throws Exception {
         // given
-        String lat = "37";
-        String lng = "127";
-        Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
-        given(placeService.findDtosNearBy(1L, List.of(MON, WED, FRI), PlaceSearchKeyword.ALONE, lat, lng, pageable)).willReturn(expectedResult);
+        Point point = new Point("37", "127");
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), false);
+        given(placeService.findDtosNearBy(eq(1L), eq(List.of(MON, WED, FRI)), eq(PlaceSearchKeyword.ALONE), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
-                        get("/api/places/search?lat=" + lat + "&lng=" + lng + "&daysOfWeek=월,수,금" + "&keyword=혼밥")
+                        get("/api/places/search?lat=" + point.getLat() + "&lng=" + point.getLng() + "&daysOfWeek=월,수,금" + "&keyword=혼밥")
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true))
-                .andExpect(jsonPath("$.numOfElements").value(1));
+                .andExpect(jsonPath("$.numOfElements").value(1))
+                .andDo(print());
     }
 
     @DisplayName("내가 저장한 장소들에 대한 filtering keyword를 조회하면, 조회 결과가 응답된다.")

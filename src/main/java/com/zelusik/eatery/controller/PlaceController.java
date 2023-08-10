@@ -4,7 +4,9 @@ import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.SliceResponse;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.place.response.*;
 import com.zelusik.eatery.security.UserPrincipal;
@@ -105,7 +107,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/search")
-    public SliceResponse<PlaceCompactResponseWithImages> searchNearBy(
+    public SliceResponse<SearchPlacesNearByResponse> searchPlacesNearBy(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
@@ -132,15 +134,15 @@ public class PlaceController {
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
-        return new SliceResponse<PlaceCompactResponseWithImages>().from(
-                placeService.findDtosNearBy(
-                        userPrincipal.getMemberId(),
-                        daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
-                        keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
-                        lat, lng,
-                        PageRequest.of(page, size)
-                ).map(PlaceCompactResponseWithImages::from)
+        Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(
+                userPrincipal.getMemberId(),
+                daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
+                keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
+                new Point(lat, lng),
+                PageRequest.of(page, size)
         );
+        return new SliceResponse<SearchPlacesNearByResponse>()
+                .from(searchedPlaceDtos.map(SearchPlacesNearByResponse::from));
     }
 
     @Operation(
