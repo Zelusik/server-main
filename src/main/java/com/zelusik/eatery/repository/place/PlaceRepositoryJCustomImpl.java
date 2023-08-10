@@ -88,7 +88,9 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                     .append(i)
                     .append(" ON ri")
                     .append(i)
-                    .append(".review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id AND ri.deleted_at IS NULL WHERE r.place_id = p.place_id ORDER BY r.created_at DESC LIMIT 1 OFFSET 0) ");
+                    .append(".review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id AND ri.deleted_at IS NULL WHERE r.place_id = p.place_id ORDER BY r.created_at DESC LIMIT 1 OFFSET ")
+                    .append(i - 1)
+                    .append(") ");
         }
         sql.append("LEFT JOIN bookmark bm ON p.place_id = bm.place_id AND bm.member_id = :member_id ");
 
