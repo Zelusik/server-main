@@ -101,7 +101,6 @@ public class PlaceController {
     @Operation(
             summary = "주변 장소 검색 (거리순 정렬)",
             description = "<p>중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다." +
-                    "<p>주변 3km 내에 있는 장소만 우선적으로 검색하며, 3km 이내에 아무런 장소가 없다면 10km로 검색 범위를 확대해 다시 검색합니다." +
                     "<p>요청 데이터 중 <code>daysOfWeek</code>가 없으면 전체 날짜에 대해, <code>keyword</code>가 없으면 전체 약속 상황에 대해 검색합니다." +
                     "<p>현재 \"약속 상황\" 필터링은 미구현 상태입니다. (구현 예정)",
             security = @SecurityRequirement(name = "access-token")

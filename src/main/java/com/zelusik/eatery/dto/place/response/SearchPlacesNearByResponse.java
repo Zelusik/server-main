@@ -38,7 +38,7 @@ public class SearchPlacesNearByResponse {
     @Schema(description = "위치 정보")
     private Point point;
 
-    @Schema(description = "장소에 대한 이미지")
+    @Schema(description = "장소 대표 이미지(최대 4개)")
     private List<PlaceImageResponse> images;
 
     @Schema(description = "북마크 여부", example = "false")
