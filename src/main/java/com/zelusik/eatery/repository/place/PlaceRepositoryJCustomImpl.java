@@ -247,6 +247,78 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
+    private RowMapper<PlaceDto> placeDtoWithImagesRowMapper() {
+        return (rs, rowNum) -> {
+            ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
+            long placeId = rs.getLong("place_id");
+            return PlaceDto.of(
+                    placeId,
+                    reviewKeywordValueConverter.convertToEntityAttribute(rs.getString("top3keywords")),
+                    rs.getString("kakao_pid"),
+                    rs.getString("name"),
+                    rs.getString("page_url"),
+                    KakaoCategoryGroupCode.valueOf(rs.getString("category_group_code")),
+                    new PlaceCategory(
+                            rs.getString("first_category"),
+                            rs.getString("second_category"),
+                            rs.getString("third_category")
+                    ),
+                    rs.getString("phone"),
+                    new Address(
+                            rs.getString("sido"),
+                            rs.getString("sgg"),
+                            rs.getString("lot_number_address"),
+                            rs.getString("road_address")
+                    ),
+                    rs.getString("homepage_url"),
+                    new Point(
+                            rs.getString("lat"),
+                            rs.getString("lng")
+                    ),
+                    rs.getString("closing_hours"),
+                    null,
+                    getRecentFourReviewImageDtosOrderByLatest(rs),
+                    rs.getBoolean("is_marked"),
+                    rs.getTimestamp("created_at").toLocalDateTime(),
+                    rs.getTimestamp("updated_at").toLocalDateTime()
+            );
+        };
+    }
+
+    private List<ReviewImageDto> getRecentFourReviewImageDtosOrderByLatest(ResultSet rs) throws SQLException {
+        List<ReviewImageDto> reviewImageDtos = new ArrayList<>();
+
+        for (int i = 1; i <= 3; i++) {
+            ReviewImageDto ri = getReviewImageDtoByAlias(rs, "ri" + i);
+            if (ri != null) {
+                reviewImageDtos.add(ri);
+            }
+        }
+
+        return reviewImageDtos;
+    }
+
+    private ReviewImageDto getReviewImageDtoByAlias(ResultSet rs, String alias) throws SQLException {
+        long reviewImageId = rs.getLong(alias + "_review_image_id");
+
+        if (reviewImageId == 0) {
+            return null;
+        }
+
+        return ReviewImageDto.of(
+                reviewImageId,
+                rs.getLong(alias + "_review_id"),
+                rs.getString(alias + "_original_name"),
+                rs.getString(alias + "_stored_name"),
+                rs.getString(alias + "_url"),
+                rs.getString(alias + "_thumbnail_stored_name"),
+                rs.getString(alias + "_thumbnail_url"),
+                rs.getTimestamp(alias + "_created_at").toLocalDateTime(),
+                rs.getTimestamp(alias + "_updated_at").toLocalDateTime(),
+                rs.getTimestamp(alias + "_deleted_at") == null ? null : rs.getTimestamp(alias + "_deleted_at").toLocalDateTime()
+        );
+    }
+
     @Override
     public List<PlaceFilteringKeywordDto> getFilteringKeywords(Long memberId) {
         int numOfMarkedPlaces = getNumOfMarkedPlaces(memberId);
@@ -401,78 +473,6 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("min_count", minCount);
 
         return template.query(query, params, placeTop3KeywordFilteringKeywordRowMapper());
-    }
-
-    private List<ReviewImageDto> getRecentFourReviewImageDtosOrderByLatest(ResultSet rs) throws SQLException {
-        List<ReviewImageDto> reviewImageDtos = new ArrayList<>();
-
-        for (int i = 1; i <= 3; i++) {
-            ReviewImageDto ri = getReviewImageDtoByAlias(rs, "ri" + i);
-            if (ri != null) {
-                reviewImageDtos.add(ri);
-            }
-        }
-
-        return reviewImageDtos;
-    }
-
-    private ReviewImageDto getReviewImageDtoByAlias(ResultSet rs, String alias) throws SQLException {
-        long reviewImageId = rs.getLong(alias + "_review_image_id");
-
-        if (reviewImageId == 0) {
-            return null;
-        }
-
-        return ReviewImageDto.of(
-                reviewImageId,
-                rs.getLong(alias + "_review_id"),
-                rs.getString(alias + "_original_name"),
-                rs.getString(alias + "_stored_name"),
-                rs.getString(alias + "_url"),
-                rs.getString(alias + "_thumbnail_stored_name"),
-                rs.getString(alias + "_thumbnail_url"),
-                rs.getTimestamp(alias + "_created_at").toLocalDateTime(),
-                rs.getTimestamp(alias + "_updated_at").toLocalDateTime(),
-                rs.getTimestamp(alias + "_deleted_at") == null ? null : rs.getTimestamp(alias + "_deleted_at").toLocalDateTime()
-        );
-    }
-
-    private RowMapper<PlaceDto> placeDtoWithImagesRowMapper() {
-        return (rs, rowNum) -> {
-            ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
-            long placeId = rs.getLong("place_id");
-            return PlaceDto.of(
-                    placeId,
-                    reviewKeywordValueConverter.convertToEntityAttribute(rs.getString("top3keywords")),
-                    rs.getString("kakao_pid"),
-                    rs.getString("name"),
-                    rs.getString("page_url"),
-                    KakaoCategoryGroupCode.valueOf(rs.getString("category_group_code")),
-                    new PlaceCategory(
-                            rs.getString("first_category"),
-                            rs.getString("second_category"),
-                            rs.getString("third_category")
-                    ),
-                    rs.getString("phone"),
-                    new Address(
-                            rs.getString("sido"),
-                            rs.getString("sgg"),
-                            rs.getString("lot_number_address"),
-                            rs.getString("road_address")
-                    ),
-                    rs.getString("homepage_url"),
-                    new Point(
-                            rs.getString("lat"),
-                            rs.getString("lng")
-                    ),
-                    rs.getString("closing_hours"),
-                    null,
-                    getRecentFourReviewImageDtosOrderByLatest(rs),
-                    rs.getBoolean("is_marked"),
-                    rs.getTimestamp("created_at").toLocalDateTime(),
-                    rs.getTimestamp("updated_at").toLocalDateTime()
-            );
-        };
     }
 
     private RowMapper<PlaceFilteringKeywordDto> placeFilteringKeywordRowMapper(FilteringType filteringType) {
