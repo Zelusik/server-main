@@ -5,6 +5,7 @@ import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingOpeningHourDto;
@@ -35,6 +36,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -255,17 +257,16 @@ class PlaceServiceTest {
     void givenPlaces_whenFindNearBy_thenReturnPlaceSliceSortedByDistance() {
         // given
         long memberId = 1L;
-        String lat = "37";
-        String lng = "127";
+        Point point = new Point("37", "127");
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
-        given(placeRepository.findDtosNearBy(memberId, null, null, lat, lng, 50, pageable)).willReturn(expectedResult);
+        given(placeRepository.findDtosNearBy(memberId, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, lat, lng, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, point, pageable);
 
         // then
-        then(placeRepository).should().findDtosNearBy(memberId, null, null, lat, lng, 50, pageable);
+        then(placeRepository).should().findDtosNearBy(memberId, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());

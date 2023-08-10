@@ -3,6 +3,7 @@ package com.zelusik.eatery.repository.place;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import org.springframework.data.domain.Pageable;
@@ -15,14 +16,15 @@ public interface PlaceRepositoryJCustom {
     /**
      * 중심 좌표 기준, 가까운 순으로 장소 목록을 조회한다.
      *
-     * @param daysOfWeek 요일 목록
-     * @param keyword    약속 상황
-     * @param lat        중심좌표의 위도
-     * @param lng        중심좌표의 경도
-     * @param pageable   paging 정보
+     * @param memberId         API 요청한 회원의 PK 값
+     * @param daysOfWeek       요일 목록
+     * @param keyword          약속 상황
+     * @param center           중심 좌표 정보
+     * @param numOfPlaceImages 장소 대표 이미지 최대 개수
+     * @param pageable         paging 정보
      * @return 조회한 장소 목록
      */
-    Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, int distanceLimit, Pageable pageable);
+    Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소 목록(Slice)을 조회합니다.

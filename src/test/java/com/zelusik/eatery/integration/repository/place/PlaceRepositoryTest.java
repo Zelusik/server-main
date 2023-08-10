@@ -21,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -49,21 +50,20 @@ class PlaceRepositoryTest {
     void givenPlaces_whenFindNearBy_thenReturnPlaceSliceSortedByDistance() {
         // given
         Long memberId = 1L;
-        String centerLat = "37";
-        String centerLng = "127";
+        Point center = new Point("37", "127");
         for (int i = 0; i < 50; i++) {
             placeRepository.save(PlaceTestUtils.createPlace(
                     (long) (i + 1),
                     String.valueOf(i),
                     null,
-                    centerLat,
-                    String.valueOf(Integer.parseInt(centerLng) + Math.random()),
+                    center.getLat(),
+                    String.valueOf(Integer.parseInt(center.getLng()) + Math.random()),
                     null
             ));
         }
 
         // when
-        Slice<PlaceDto> places = placeRepository.findDtosNearBy(memberId, List.of(), null, centerLat, centerLng, 1100, PageRequest.of(0, 30));
+        Slice<PlaceDto> places = placeRepository.findDtosNearBy(memberId, List.of(), null, center, 1100, MAX_NUM_OF_PLACE_IMAGES, PageRequest.of(0, 30));
 
         // then
         assertThat(places.getSize()).isEqualTo(30);
@@ -71,8 +71,8 @@ class PlaceRepositoryTest {
         for (int i = 0; i < places.getSize() - 1; i++) {
             PlaceDto curPlace = places.getContent().get(i);
             PlaceDto nextPlace = places.getContent().get(i + 1);
-            assertThat(calculateDiff(centerLng, curPlace.getPoint().getLng()))
-                    .isLessThanOrEqualTo(calculateDiff(centerLng, nextPlace.getPoint().getLng()));
+            assertThat(calculateDiff(center.getLng(), curPlace.getPoint().getLng()))
+                    .isLessThanOrEqualTo(calculateDiff(center.getLng(), nextPlace.getPoint().getLng()));
         }
     }
 
@@ -93,11 +93,11 @@ class PlaceRepositoryTest {
 
         // when
         Pageable pageable = Pageable.ofSize(30);
-        Slice<PlaceDto> placesLimit50 = placeRepository.findDtosNearBy(memberId, null, null, pos.getLat(), pos.getLng(), 50, pageable);
-        Slice<PlaceDto> placesLimit1100 = placeRepository.findDtosNearBy(memberId, null, null, pos.getLat(), pos.getLng(), 1100, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMon = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON), null, pos.getLat(), pos.getLng(), 1100, pageable);
-        Slice<PlaceDto> placesLimit1100DaysWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.WED), null, pos.getLat(), pos.getLng(), 1100, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMonAndWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON, DayOfWeek.WED), null, pos.getLat(), pos.getLng(), 1100, pageable);
+        Slice<PlaceDto> placesLimit50 = placeRepository.findDtosNearBy(memberId, null, null, pos, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100 = placeRepository.findDtosNearBy(memberId, null, null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysMon = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysMonAndWed = placeRepository.findDtosNearBy(memberId, List.of(DayOfWeek.MON, DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
 
         // then
         assertThat(placesLimit50.getNumberOfElements()).isEqualTo(2);
