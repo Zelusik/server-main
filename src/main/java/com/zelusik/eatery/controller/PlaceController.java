@@ -167,7 +167,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/bookmarks")
-    public SliceResponse<MarkedPlaceResponse> findMarkedPlaces(
+    public SliceResponse<FindMarkedPlacesResponse> findMarkedPlaces(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "<p>Filtering 조건 유형. 값은 다음과 같습니다." +
@@ -195,9 +195,8 @@ public class PlaceController {
         if (type == FilteringType.TOP_3_KEYWORDS) {
             keyword = ReviewKeywordValue.valueOfDescription(keyword).toString();
         }
-        Slice<MarkedPlaceResponse> markedPlaces = placeService.findMarkedDtos(
-                userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size)
-        ).map(MarkedPlaceResponse::from);
-        return new SliceResponse<MarkedPlaceResponse>().from(markedPlaces);
+        Slice<PlaceDto> markedPlaceDtos = placeService.findMarkedDtos(userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size));
+        return new SliceResponse<FindMarkedPlacesResponse>()
+                .from(markedPlaceDtos.map(FindMarkedPlacesResponse::from));
     }
 }
