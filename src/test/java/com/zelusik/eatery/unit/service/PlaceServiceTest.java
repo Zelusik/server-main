@@ -239,14 +239,13 @@ class PlaceServiceTest {
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
-        given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable))
-                .willReturn(expectedResult);
+        given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
         Slice<PlaceDto> actualResult = sut.findMarkedDtos(memberId, filteringType, filteringKeyword, pageable);
 
         // then
-        then(placeRepository).should().findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
+        then(placeRepository).should().findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(placeId);

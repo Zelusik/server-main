@@ -174,7 +174,7 @@ public class PlaceService {
      * @return 조회한 장소 목록과 사진 데이터
      */
     public Slice<PlaceDto> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
-        return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
+        return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**
