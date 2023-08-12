@@ -141,102 +141,51 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
-        String sql = """
-                SELECT p.place_id,
-                       p.top3keywords,
-                       p.kakao_pid,
-                       p.name,
-                       p.page_url,
-                       p.category_group_code,
-                       p.first_category,
-                       p.second_category,
-                       p.third_category,
-                       p.phone,
-                       p.sido,
-                       p.sgg,
-                       p.lot_number_address,
-                       p.road_address,
-                       p.homepage_url,
-                       p.lat,
-                       p.lng,
-                       p.closing_hours,
-                       p.created_at,
-                       p.updated_at,
-                       ri1.review_image_id       AS ri1_review_image_id,
-                       ri1.review_id             AS ri1_review_id,
-                       ri1.original_name         AS ri1_original_name,
-                       ri1.stored_name           AS ri1_stored_name,
-                       ri1.url                   AS ri1_url,
-                       ri1.thumbnail_stored_name AS ri1_thumbnail_stored_name,
-                       ri1.thumbnail_url         AS ri1_thumbnail_url,
-                       ri1.created_at            AS ri1_created_at,
-                       ri1.updated_at            AS ri1_updated_at,
-                       ri1.deleted_at            AS ri1_deleted_at,
-                       ri2.review_image_id       AS ri2_review_image_id,
-                       ri2.review_id             AS ri2_review_id,
-                       ri2.original_name         AS ri2_original_name,
-                       ri2.stored_name           AS ri2_stored_name,
-                       ri2.url                   AS ri2_url,
-                       ri2.thumbnail_stored_name AS ri2_thumbnail_stored_name,
-                       ri2.thumbnail_url         AS ri2_thumbnail_url,
-                       ri2.created_at            AS ri2_created_at,
-                       ri2.updated_at            AS ri2_updated_at,
-                       ri2.deleted_at            AS ri2_deleted_at,
-                       ri3.review_image_id       AS ri3_review_image_id,
-                       ri3.review_id             AS ri3_review_id,
-                       ri3.original_name         AS ri3_original_name,
-                       ri3.stored_name           AS ri3_stored_name,
-                       ri3.url                   AS ri3_url,
-                       ri3.thumbnail_stored_name AS ri3_thumbnail_stored_name,
-                       ri3.thumbnail_url         AS ri3_thumbnail_url,
-                       ri3.created_at            AS ri3_created_at,
-                       ri3.updated_at            AS ri3_updated_at,
-                       ri3.deleted_at            AS ri3_deleted_at,
-                       TRUE                      AS is_marked
-                FROM bookmark bm
-                         JOIN place p ON bm.place_id = p.place_id
-                         LEFT JOIN review_image ri1 ON ri1.review_image_id = (SELECT ri.review_image_id
-                                                                              FROM review_image ri
-                                                                                       JOIN review r ON r.review_id = ri.review_id
-                                                                              WHERE r.place_id = p.place_id
-                                                                                AND ri.deleted_at IS NULL
-                                                                              ORDER BY r.created_at DESC
-                                                                              LIMIT 1 OFFSET 0)
-                         LEFT JOIN review_image ri2 ON ri2.review_image_id = (SELECT ri.review_image_id
-                                                                              FROM review_image ri
-                                                                                       JOIN review r ON r.review_id = ri.review_id
-                                                                              WHERE r.place_id = p.place_id
-                                                                                AND ri.deleted_at IS NULL
-                                                                              ORDER BY r.created_at DESC
-                                                                              LIMIT 1 OFFSET 1)
-                         LEFT JOIN review_image ri3 ON ri3.review_image_id = (SELECT ri.review_image_id
-                                                                              FROM review_image ri
-                                                                                       JOIN review r ON r.review_id = ri.review_id
-                                                                              WHERE r.place_id = p.place_id
-                                                                                AND ri.deleted_at IS NULL
-                                                                              ORDER BY r.created_at DESC
-                                                                              LIMIT 1 OFFSET 2)
-                WHERE bm.member_id = :member_id
-                """;
+    public Slice<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable) {
+        // SELECT
+        StringBuilder sqlBuilder = new StringBuilder("SELECT p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ");
+        for (int i = 0; i <= numOfPlaceImages; i++) {
+            sqlBuilder.append(String.join("ri" + i, POSTFIXES_OF_REVIEW_IMAGE_COLUMN_FOR_SELECT));
+        }
+        sqlBuilder.append("TRUE AS is_marked ");
 
-        sql += switch (filteringType) {
-            case FIRST_CATEGORY -> "AND p.first_category = '" + filteringKeyword + "' ";
-            case SECOND_CATEGORY -> "AND p.second_category = '" + filteringKeyword + "' ";
-            case TOP_3_KEYWORDS -> "AND p.top3keywords LIKE '%" + filteringKeyword + "%' ";
-            case ADDRESS -> "AND p.lot_number_address LIKE '%" + filteringKeyword + "%' ";
-            case NONE -> "";
-        };
+        // FROM, JOIN
+        sqlBuilder.append("FROM bookmark bm ")
+                .append("JOIN place p ON bm.place_id = p.place_id ");
+        for (int i = 1; i <= numOfPlaceImages; i++) {
+            sqlBuilder.append("LEFT JOIN review_image ri")
+                    .append(i)
+                    .append(" ON ri")
+                    .append(i)
+                    .append(".review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id WHERE r.place_id = p.place_id AND ri.deleted_at IS NULL ORDER BY r.created_at DESC LIMIT 1 OFFSET ")
+                    .append(i - 1)
+                    .append(")");
+        }
 
-        sql += "ORDER BY bm.created_at DESC ";
-        sql += "LIMIT :size_of_page OFFSET :offset;";
+        // WHERE
+        sqlBuilder.append("WHERE bm.member_id = :member_id");
+        switch (filteringType) {
+            case FIRST_CATEGORY -> sqlBuilder.append("AND p.first_category = '").append(filteringKeyword).append("' ");
+            case SECOND_CATEGORY ->
+                    sqlBuilder.append("AND p.second_category = '").append(filteringKeyword).append("' ");
+            case TOP_3_KEYWORDS ->
+                    sqlBuilder.append("AND p.top3keywords LIKE '%").append(filteringKeyword).append("%' ");
+            case ADDRESS ->
+                    sqlBuilder.append("AND p.lot_number_address LIKE '%").append(filteringKeyword).append("%' ");
+            default -> {
+            }
+        }
+
+        // ORDER BY, LIMIT, OFFSET
+        sqlBuilder.append("ORDER BY bm.created_at DESC ");
+        sqlBuilder.append("LIMIT :size_of_page OFFSET :offset;");
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("member_id", memberId)
                 .addValue("size_of_page", pageable.getPageSize() + 1)
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDto> content = template.query(sql, params, placeDtoWithImagesRowMapper());
+        List<PlaceDto> content = template.query(sqlBuilder.toString(), params, placeDtoWithImagesRowMapper());
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
@@ -244,7 +193,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             hasNext = true;
         }
 
-        return new SliceImpl<>(content, pageable, hasNext);
+        return new SliceImpl<>(content, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.desc("bookmark.created_at"))), hasNext);
     }
 
     private RowMapper<PlaceDto> placeDtoWithImagesRowMapper() {

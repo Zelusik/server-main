@@ -33,10 +33,11 @@ public interface PlaceRepositoryJCustom {
      * @param memberId         장소를 조회하고자 하는 회원의 PK
      * @param filteringKeyword filtering keyword
      * @param filteringType    filtering type
+     * @param numOfPlaceImages 장소 대표 이미지 최대 개수
      * @param pageable         paging 정보
      * @return 조회된 장소 목록(Slice)
      */
-    Slice<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable);
+    Slice<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소들에 대해 filtering keywords를 조회한다.

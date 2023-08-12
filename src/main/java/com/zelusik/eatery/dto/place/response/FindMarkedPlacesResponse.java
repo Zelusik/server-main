@@ -32,7 +32,7 @@ public class FindMarkedPlacesResponse {
     @Schema(description = "위치 정보")
     private Point point;
 
-    @Schema(description = "장소에 대한 이미지")
+    @Schema(description = "장소에 대표 이미지(최대 4개)")
     private List<PlaceImageResponse> images;
 
     public static FindMarkedPlacesResponse from(PlaceDto dto) {
