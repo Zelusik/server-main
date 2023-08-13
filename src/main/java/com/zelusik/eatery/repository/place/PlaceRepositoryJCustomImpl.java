@@ -36,6 +36,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             ".review_id AS ", "_review_id, ",
             ".original_name AS ", "_original_name, ",
             ".stored_name AS ", "_stored_name, ",
+            ".url AS ", "_url, ",
+            ".thumbnail_stored_name AS ", "_thumbnail_stored_name, ",
             ".thumbnail_url AS ", "_thumbnail_url, ",
             ".created_at AS ", "_created_at, ",
             ".updated_at AS ", "_updated_at, ",
