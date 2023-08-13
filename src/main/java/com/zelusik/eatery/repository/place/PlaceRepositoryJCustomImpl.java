@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.zelusik.eatery.constant.ConstantUtil.MAX_NUM_OF_FILTERING_KEYWORDS;
-import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
 
 public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
@@ -75,7 +74,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     ) {
         // SELECT
         StringBuilder sql = new StringBuilder("SELECT p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ");
-        for (int i = 1; i <= MAX_NUM_OF_PLACE_IMAGES; i++) {
+        for (int i = 1; i <= numOfPlaceImages; i++) {
             sql.append(String.join("ri" + i, POSTFIXES_OF_REVIEW_IMAGE_COLUMN_FOR_SELECT));
         }
         sql.append("(6371 * ACOS(COS(RADIANS(:lat)) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS(:lng)) + SIN(RADIANS(:lat)) * SIN(RADIANS(lat)))) AS distance, ")
@@ -83,7 +82,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
         // FROM, JOIN
         sql.append("FROM place p ");
-        for (int i = 1; i <= MAX_NUM_OF_PLACE_IMAGES; i++) {
+        for (int i = 1; i <= numOfPlaceImages; i++) {
             sql.append("LEFT JOIN review_image ri")
                     .append(i)
                     .append(" ON ri")
@@ -111,7 +110,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
         // GROUP BY
         sql.append("GROUP BY p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ");
-        for (int i = 1; i <= MAX_NUM_OF_PLACE_IMAGES; i++) {
+        for (int i = 1; i <= numOfPlaceImages; i++) {
             sql.append(String.join("ri" + i, POSTFIXES_OF_REVIEW_IMAGE_COLUMN_FOR_GROUP_BY));
         }
         sql.append("bm.bookmark_id, bm.member_id, bm.place_id, bm.created_at, bm.updated_at ");
