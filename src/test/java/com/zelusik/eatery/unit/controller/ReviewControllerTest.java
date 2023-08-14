@@ -2,6 +2,7 @@ package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.controller.ReviewController;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.OpenAIService;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +26,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.zelusik.eatery.util.ReviewTestUtils.createReviewDto;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -56,7 +60,7 @@ class ReviewControllerTest {
     void givenReviewInfo_whenReviewCreate_thenReturnSavedReview() throws Exception {
         // given
         long placeId = 3L;
-        given(reviewService.create(any(), any(ReviewCreateRequest.class))).willReturn(ReviewTestUtils.createReviewDto());
+        given(reviewService.create(any(), any(ReviewCreateRequest.class))).willReturn(createReviewDto());
 
         // when & then
         ReviewCreateRequest reviewCreateRequest = ReviewTestUtils.createReviewCreateRequest(placeId);
@@ -90,13 +94,32 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.hasContent").value(true));
     }
 
+    @DisplayName("피드 목록을 조회한다.")
+    @Test
+    void given_whenSearchFeeds_thenReturnFeedResponses() throws Exception {
+        // given
+        long memberId = 1L;
+        long reviewId = 2L;
+        Slice<ReviewDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(reviewId)));
+        given(reviewService.findDtosOrderByCreatedAt(eq(memberId), any(Pageable.class))).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(get("/api/reviews/feed")
+                        .with(user(createTestUserDetails(memberId))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents", hasSize(expectedResult.getSize())))
+                .andExpect(jsonPath("$.contents[0].id").value(reviewId))
+                .andExpect(jsonPath("$.contents[0].reviewImage").exists())
+                .andDo(print());
+    }
+
     @DisplayName("내가 작성한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
     @Test
     void whenSearchMyReviews_thenReturnReviews() throws Exception {
         // given
         long memberId = 1L;
         given(reviewService.findDtosByWriterId(eq(memberId), any(Pageable.class)))
-                .willReturn(new SliceImpl<>(List.of(ReviewTestUtils.createReviewDto())));
+                .willReturn(new SliceImpl<>(List.of(createReviewDto())));
 
         // when & then
         mvc.perform(
@@ -157,7 +180,11 @@ class ReviewControllerTest {
                 .andDo(print());
     }
 
+    private UserDetails createTestUserDetails(long memberId) {
+        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId));
+    }
+
     private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
+        return createTestUserDetails(1L);
     }
 }
