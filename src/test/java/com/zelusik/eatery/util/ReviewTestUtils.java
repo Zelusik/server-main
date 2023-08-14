@@ -41,9 +41,9 @@ public class ReviewTestUtils {
         );
     }
 
-    public static ReviewDto createReviewDto() {
+    public static ReviewDto createReviewDto(long reviewId) {
         return ReviewDto.of(
-                1L,
+                reviewId,
                 MemberTestUtils.createMemberDtoWithId(),
                 PlaceTestUtils.createPlaceDto(),
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
@@ -59,12 +59,15 @@ public class ReviewTestUtils {
                         "thumbnailUrl",
                         LocalDateTime.now(),
                         LocalDateTime.now(),
-                        LocalDateTime.now()
-                )),
+                        LocalDateTime.now())),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
+    }
+
+    public static ReviewDto createReviewDto() {
+        return createReviewDto(1L);
     }
 
     public static ReviewDto createReviewDtoWithoutPlace() {
@@ -90,15 +93,6 @@ public class ReviewTestUtils {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
-        );
-    }
-
-    public static Review createNotSavedReview(Member writer, Place place) {
-        return Review.of(
-                writer,
-                place,
-                "자동 생성된 내용",
-                "제출한 내용"
         );
     }
 

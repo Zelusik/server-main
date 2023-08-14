@@ -117,8 +117,7 @@ public class ReviewController {
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return new SliceResponse<FeedResponse>()
-                .from(reviewService.findDtosOrderByCreatedAt(userPrincipal.getMemberId(), pageRequest)
-                        .map(FeedResponse::from));
+                .from(reviewService.findDtosOrderByCreatedAt(userPrincipal.getMemberId(), pageRequest).map(FeedResponse::from));
     }
 
     // TODO: 메뉴 태그 정보가 담긴 ReviewResponse를 응답 객체로 사용할 것인지 검토 필요
