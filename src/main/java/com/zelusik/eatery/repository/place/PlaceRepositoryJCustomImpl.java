@@ -132,7 +132,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("size_of_page", pageable.getPageSize() + 1)   // 다음 페이지 존재 여부 확인을 위함.
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDto> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper());
+        List<PlaceDto> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper(numOfPlaceImages));
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
@@ -188,7 +188,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("size_of_page", pageable.getPageSize() + 1)
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDto> content = template.query(sqlBuilder.toString(), params, placeDtoWithImagesRowMapper());
+        List<PlaceDto> content = template.query(sqlBuilder.toString(), params, placeDtoWithImagesRowMapper(numOfPlaceImages));
 
         boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
@@ -199,7 +199,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         return new SliceImpl<>(content, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.desc("bookmark.created_at"))), hasNext);
     }
 
-    private RowMapper<PlaceDto> placeDtoWithImagesRowMapper() {
+    private RowMapper<PlaceDto> placeDtoWithImagesRowMapper(int numOfPlaceImages) {
         return (rs, rowNum) -> {
             ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
             long placeId = rs.getLong("place_id");
@@ -229,7 +229,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                     ),
                     rs.getString("closing_hours"),
                     null,
-                    getRecentFourReviewImageDtosOrderByLatest(rs),
+                    getRecentFourReviewImageDtosOrderByLatest(rs, numOfPlaceImages),
                     rs.getBoolean("is_marked"),
                     rs.getTimestamp("created_at").toLocalDateTime(),
                     rs.getTimestamp("updated_at").toLocalDateTime()
@@ -237,10 +237,10 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         };
     }
 
-    private List<ReviewImageDto> getRecentFourReviewImageDtosOrderByLatest(ResultSet rs) throws SQLException {
+    private List<ReviewImageDto> getRecentFourReviewImageDtosOrderByLatest(ResultSet rs, int numOfPlaceImages) throws SQLException {
         List<ReviewImageDto> reviewImageDtos = new ArrayList<>();
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= numOfPlaceImages; i++) {
             ReviewImageDto ri = getReviewImageDtoByAlias(rs, "ri" + i);
             if (ri != null) {
                 reviewImageDtos.add(ri);
