@@ -147,7 +147,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     public Slice<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable) {
         // SELECT
         StringBuilder sqlBuilder = new StringBuilder("SELECT p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ");
-        for (int i = 0; i <= numOfPlaceImages; i++) {
+        for (int i = 1; i <= numOfPlaceImages; i++) {
             sqlBuilder.append(String.join("ri" + i, POSTFIXES_OF_REVIEW_IMAGE_COLUMN_FOR_SELECT));
         }
         sqlBuilder.append("TRUE AS is_marked ");
@@ -162,11 +162,11 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                     .append(i)
                     .append(".review_image_id = (SELECT ri.review_image_id FROM review_image ri JOIN review r ON r.review_id = ri.review_id WHERE r.place_id = p.place_id AND ri.deleted_at IS NULL ORDER BY r.created_at DESC LIMIT 1 OFFSET ")
                     .append(i - 1)
-                    .append(")");
+                    .append(") ");
         }
 
         // WHERE
-        sqlBuilder.append("WHERE bm.member_id = :member_id");
+        sqlBuilder.append("WHERE bm.member_id = :member_id ");
         switch (filteringType) {
             case FIRST_CATEGORY -> sqlBuilder.append("AND p.first_category = '").append(filteringKeyword).append("' ");
             case SECOND_CATEGORY ->
