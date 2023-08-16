@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
@@ -99,23 +100,67 @@ public class PlaceController {
     }
 
     @Operation(
+            summary = "키워드로 장소 검색하기",
+            description = "키워드로 장소를 검색한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/search")
+    public SliceResponse<SearchPlacesByKeywordResponse> searchPlacesByKeyword(
+            @Parameter(
+                    description = "검색 키워드",
+                    example = "강남"
+            ) @RequestParam @NotEmpty String keyword,
+            @Parameter(
+                    description = "페이지 번호 (0부터 시작)",
+                    example = "0"
+            ) @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈)",
+                    example = "30"
+            ) @RequestParam(required = false, defaultValue = "30") int size
+    ) {
+        Slice<PlaceDto> placeDtos = placeService.searchDtosByKeyword(keyword, PageRequest.of(page, size));
+        return new SliceResponse<SearchPlacesByKeywordResponse>().from(placeDtos.map(SearchPlacesByKeywordResponse::from));
+    }
+
+    @Operation(
             summary = "주변 장소 검색 (거리순 정렬)",
             description = "<p>중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다." +
                     "<p>요청 데이터 중 <code>daysOfWeek</code>가 없으면 전체 날짜에 대해, <code>keyword</code>가 없으면 전체 약속 상황에 대해 검색합니다." +
                     "<p>현재 \"약속 상황\" 필터링은 미구현 상태입니다. (구현 예정)",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/search")
-    public SliceResponse<SearchPlacesNearByResponse> searchPlacesNearBy(
+    @GetMapping("/near")
+    public SliceResponse<FindNearPlacesResponse> findNearPlaces(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
-                    example = "월,화,수"
+                    example = "[\"월\", \"화\", \"수\"]"
             ) @RequestParam(required = false) List<String> daysOfWeek,
             @Parameter(
-                    description = "약속 상황",
-                    example = "신나는"
-            ) @RequestParam(required = false) String keyword,
+                    description = "<p>리뷰 키워드. 목록은 다음과 같다.</p>" +
+                            "<p><strong>음식/가격 관련</strong></p>" +
+                            "<ul>" +
+                            "   <li><code>FRESH</code> - 신선한 재료</li>" +
+                            "   <li><code>BEST_FLAVOR</code> - 최고의 맛</li>" +
+                            "   <li><code>BEST_MENU_COMBINATION</code> - 완벽 메뉴 조합</li>" +
+                            "   <li><code>LOCAL_FLAVOR</code> - 현지 느낌 가득</li>" +
+                            "   <li><code>GOOD_PRICE</code> - 가성비 갑</li>" +
+                            "   <li><code>GENEROUS_PROTIONS</code> - 넉넉한 양</li>" +
+                            "</ul>" +
+                            "<p><strong>분위기 관련</strong></p>" +
+                            "<ul>" +
+                            "   <li><code>WITH_ALCOHOL</code> - 술과 함께</li>" +
+                            "   <li><code>GOOD_FOR_DATE</code> - 데이트에 최고</li>" +
+                            "   <li><code>WITH_ELDERS</code> - 웃어른과</li>" +
+                            "   <li><code>CAN_ALONE</code> - 혼밥 가능</li>" +
+                            "   <li><code>PERFECT_FOR_GROUP_MEETING</code> - 단체 모임에 딱</li>" +
+                            "   <li><code>WAITING</code> - 웨이팅 있음</li>" +
+                            "   <li><code>SILENT</code> - 조용조용한</li>" +
+                            "   <li><code>NOISY</code> - 왁자지껄한</li>" +
+                            "</ul>",
+                    example = "NOISY"
+            ) @RequestParam(required = false) ReviewKeywordValue reviewKeyword,
             @Parameter(
                     description = "중심 위치 - 위도",
                     example = "37.566826004661"
@@ -125,23 +170,23 @@ public class PlaceController {
                     example = "126.978652258309"
             ) @RequestParam String lng,
             @Parameter(
-                    description = "페이지 번호(0부터 시작합니다). 기본값은 0입니다.",
+                    description = "페이지 번호 (0부터 시작)",
                     example = "0"
             ) @RequestParam(required = false, defaultValue = "0") int page,
             @Parameter(
-                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈). 기본값은 30입니다.",
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈)",
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
         Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(
                 userPrincipal.getMemberId(),
                 daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
-                keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
+                reviewKeyword,
                 new Point(lat, lng),
                 PageRequest.of(page, size)
         );
-        return new SliceResponse<SearchPlacesNearByResponse>()
-                .from(searchedPlaceDtos.map(SearchPlacesNearByResponse::from));
+        return new SliceResponse<FindNearPlacesResponse>()
+                .from(searchedPlaceDtos.map(FindNearPlacesResponse::from));
     }
 
     @Operation(

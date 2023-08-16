@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,6 +137,17 @@ public class PlaceService {
     }
 
     /**
+     * 검색 키워드를 받아 장소를 검색한다.
+     *
+     * @param searchKeyword 검색 키워드
+     * @param pageable      paging 정보
+     * @return 조회된 장소 목록
+     */
+    public Slice<PlaceDto> searchDtosByKeyword(String searchKeyword, Pageable pageable) {
+        return placeRepository.searchByKeyword(searchKeyword, pageable).map(PlaceDto::fromWithoutMarkedStatusAndImages);
+    }
+
+    /**
      * <p>중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
      * <p>최대 50km 범위까지 조회한다.
      *
@@ -148,20 +160,12 @@ public class PlaceService {
      */
     public Slice<PlaceDto> findDtosNearBy(
             Long memberId,
-            List<DayOfWeek> daysOfWeek,
-            PlaceSearchKeyword keyword,
+            @Nullable List<DayOfWeek> daysOfWeek,
+            @Nullable ReviewKeywordValue keyword,
             Point center,
             Pageable pageable
     ) {
-        return placeRepository.findDtosNearBy(
-                memberId,
-                daysOfWeek,
-                keyword,
-                center,
-                DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH,
-                MAX_NUM_OF_PLACE_IMAGES,
-                pageable
-        );
+        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**

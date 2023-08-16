@@ -3,6 +3,7 @@ package com.zelusik.eatery.unit.controller;
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.PlaceController;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
@@ -29,7 +31,9 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static com.zelusik.eatery.constant.place.DayOfWeek.*;
+import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDto;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -119,17 +123,42 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.images", notNullValue()));
     }
 
-    @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")
+    @DisplayName("검색 키워드로 장소를 검색하면, 조회된 장소들이 반환된다.")
     @Test
-    void givenCenterPoint_whenSearchNearByPlaces_thenReturnPlaces() throws Exception {
+    void givenSearchKeyword_whenSearching_thenReturnSearchedPlaces() throws Exception {
         // given
-        Point point = new Point("37", "127");
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), false);
-        given(placeService.findDtosNearBy(eq(1L), eq(List.of(MON, WED, FRI)), eq(PlaceSearchKeyword.ALONE), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        String searchKeyword = "강남";
+        long placeId = 2L;
+        Slice<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDto(placeId)));
+        given(placeService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
-                        get("/api/places/search?lat=" + point.getLat() + "&lng=" + point.getLng() + "&daysOfWeek=월,수,금" + "&keyword=혼밥")
+                        get("/api/places/search")
+                                .queryParam("keyword", searchKeyword)
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents", hasSize(expectedResult.getContent().size())))
+                .andExpect(jsonPath("$.contents[0].id").value(placeId));
+    }
+
+    @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")
+    @Test
+    void givenCenterPoint_whenFindNearPlaces_thenReturnPlaces() throws Exception {
+        // given
+        Point point = new Point("37", "127");
+        ReviewKeywordValue reviewKeyword = ReviewKeywordValue.BEST_FLAVOR;
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), false);
+        given(placeService.findDtosNearBy(eq(1L), eq(List.of(MON, WED, FRI)), eq(reviewKeyword), eq(point), any(Pageable.class))).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/places/near")
+                                .queryParam("lat", point.getLat())
+                                .queryParam("lng", point.getLng())
+                                .queryParam("daysOfWeek", "월", "수", "금")
+                                .queryParam("reviewKeyword", reviewKeyword.name())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())

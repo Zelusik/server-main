@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.lang.Nullable;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -67,8 +68,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     @Override
     public Slice<PlaceDto> findDtosNearBy(
             Long memberId,
-            List<DayOfWeek> daysOfWeek,
-            PlaceSearchKeyword keyword,
+            @Nullable List<DayOfWeek> daysOfWeek,
+            @Nullable ReviewKeywordValue keyword,
             Point center,
             int distanceLimit,
             int numOfPlaceImages,

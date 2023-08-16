@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
+import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
+import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -238,7 +240,7 @@ class PlaceServiceTest {
         FilteringType filteringType = FilteringType.SECOND_CATEGORY;
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
         given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
@@ -251,6 +253,29 @@ class PlaceServiceTest {
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(placeId);
     }
 
+    @DisplayName("검색 키워드가 주어지고, 키워드로 장소를 검색하면, 검색된 장소들이 반환된다.")
+    @Test
+    void givenSearchKeyword_whenSearching_thenReturnSearchedPlaces() {
+        // given
+        String searchKeyword = "강남";
+        Pageable pageable = Pageable.ofSize(30);
+        long placeId = 1L;
+        List<Place> expectedResult = List.of(createPlace(placeId, "12345", "강남돈까스", "37", "127", "공휴일"));
+        given(placeRepository.searchByKeyword(searchKeyword, pageable)).willReturn(new SliceImpl<>(expectedResult, pageable, false));
+
+        // when
+        Slice<PlaceDto> actualResult = sut.searchDtosByKeyword(searchKeyword, pageable);
+
+        // then
+        then(placeRepository).should().searchByKeyword(searchKeyword, pageable);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult.getNumberOfElements()).isEqualTo(expectedResult.size());
+        assertThat(actualResult.getContent()).hasSize(expectedResult.size());
+        for (int i = 0; i < expectedResult.size(); i++) {
+            assertThat(actualResult.getContent().get(i).getId()).isEqualTo(expectedResult.get(i).getId());
+        }
+    }
+
     @DisplayName("장소들이 존재하고, 중심 좌표 근처의 장소를 조회하면, 거리순으로 정렬된 장소 목록을 반환한다.")
     @Test
     void givenPlaces_whenFindNearBy_thenReturnPlaceSliceSortedByDistance() {
@@ -258,7 +283,7 @@ class PlaceServiceTest {
         long memberId = 1L;
         Point point = new Point("37", "127");
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
+        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
         given(placeRepository.findDtosNearBy(memberId, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
@@ -299,7 +324,7 @@ class PlaceServiceTest {
         Place place = PlaceTestUtils.createPlace(placeId, "1");
         List<ReviewKeywordValue> top3Keywords = List.of(
                 ReviewKeywordValue.BEST_FLAVOR,
-                ReviewKeywordValue.GOOD_FOR_BLIND_DATE,
+                ReviewKeywordValue.GOOD_FOR_DATE,
                 ReviewKeywordValue.GOOD_PRICE
         );
         given(reviewKeywordRepository.searchTop3Keywords(placeId)).willReturn(top3Keywords);
@@ -312,7 +337,7 @@ class PlaceServiceTest {
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(place.getTop3Keywords().size()).isEqualTo(3);
         assertThat(place.getTop3Keywords().get(0)).isEqualTo(ReviewKeywordValue.BEST_FLAVOR);
-        assertThat(place.getTop3Keywords().get(1)).isEqualTo(ReviewKeywordValue.GOOD_FOR_BLIND_DATE);
+        assertThat(place.getTop3Keywords().get(1)).isEqualTo(ReviewKeywordValue.GOOD_FOR_DATE);
         assertThat(place.getTop3Keywords().get(2)).isEqualTo(ReviewKeywordValue.GOOD_PRICE);
     }
 
