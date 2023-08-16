@@ -3,7 +3,6 @@ package com.zelusik.eatery.service;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
-import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
@@ -20,6 +19,7 @@ import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.lang.NonNull;
@@ -159,7 +159,7 @@ public class PlaceService {
      * @param pageable      paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findDtosNearBy(
+    public Page<PlaceDto> findDtosNearBy(
             Long memberId,
             @Nullable FoodCategoryValue foodCategory,
             @Nullable List<DayOfWeek> daysOfWeek,

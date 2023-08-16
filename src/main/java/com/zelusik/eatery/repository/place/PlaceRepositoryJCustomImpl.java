@@ -22,10 +22,7 @@ import org.springframework.lang.Nullable;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.zelusik.eatery.constant.ConstantUtil.MAX_NUM_OF_FILTERING_KEYWORDS;
 
@@ -66,7 +63,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDto> findDtosNearBy(
+    public Page<PlaceDto> findDtosNearBy(
             Long memberId,
             @Nullable FoodCategoryValue foodCategory,
             @Nullable List<DayOfWeek> daysOfWeek,
@@ -77,6 +74,12 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             Pageable pageable
     ) {
         // SELECT
+        StringBuilder sqlForCountingTotalElements =
+                new StringBuilder()
+                        .append("SELECT COUNT(*) ")
+                        .append("FROM (")
+                        .append("SELECT p.place_id, (6371 * ACOS(COS(RADIANS(:lat)) * COS(RADIANS(lat)) * COS(RADIANS(lng) - RADIANS(:lng)) + SIN(RADIANS(:lat)) * SIN(RADIANS(lat)))) AS distance ")
+                        .append("FROM place p ");
         StringBuilder sql = new StringBuilder("SELECT p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ");
         for (int i = 1; i <= numOfPlaceImages; i++) {
             sql.append(String.join("ri" + i, POSTFIXES_OF_REVIEW_IMAGE_COLUMN_FOR_SELECT));
@@ -98,42 +101,48 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         sql.append("LEFT JOIN bookmark bm ON p.place_id = bm.place_id AND bm.member_id = :member_id ");
 
         if (daysOfWeek != null && !daysOfWeek.isEmpty()) {
-            sql.append("JOIN opening_hours oh ")
-                    .append("ON p.place_id = oh.place_id ")
-                    .append("AND (");
+            StringBuilder joinOpeningHours = new StringBuilder("JOIN opening_hours oh ON p.place_id = oh.place_id AND (");
             for (int i = 0; i < daysOfWeek.size(); i++) {
                 if (i != 0) {
-                    sql.append("OR ");
+                    joinOpeningHours.append("OR ");
                 }
-                sql.append("oh.day_of_week = '")
+                joinOpeningHours.append("oh.day_of_week = '")
                         .append(daysOfWeek.get(i))
                         .append("' ");
             }
-            sql.append(") ");
+            joinOpeningHours.append(") ");
+            sql.append(joinOpeningHours);
+            sqlForCountingTotalElements.append(joinOpeningHours);
         }
 
         // WHERE
         boolean flagForWhere = false;
+        StringBuilder whereClause = new StringBuilder();
         if (foodCategory != null) {
-            flagForWhere = true;
-            sql.append("WHERE p.first_category IN (");
+            whereClause.append("WHERE p.first_category IN (");
             String[] matchingFirstCategories = foodCategory.getMatchingFirstCategories();
             for (int i = 0; i < matchingFirstCategories.length; i++) {
                 String category = matchingFirstCategories[i];
                 if (i != 0) {
-                    sql.append(", ");
+                    whereClause.append(", ");
                 }
-                sql.append("'").append(category).append("'");
+                whereClause.append("'").append(category).append("'");
             }
-            sql.append(") ");
+            whereClause.append(") ");
+            flagForWhere = true;
         }
         if (preferredVibe != null) {
             if (flagForWhere) {
-                sql.append("AND ");
+                whereClause.append("AND ");
             } else {
-                sql.append("WHERE ");
+                whereClause.append("WHERE ");
             }
-            sql.append("p.top3keywords LIKE '%").append(preferredVibe.name()).append("%' ");
+            whereClause.append("p.top3keywords LIKE '%").append(preferredVibe.name()).append("%' ");
+            flagForWhere = true;
+        }
+        if (flagForWhere) {
+            sql.append(whereClause);
+            sqlForCountingTotalElements.append(whereClause);
         }
 
         // GROUP BY
@@ -155,18 +164,18 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("lng", center.getLng())
                 .addValue("member_id", memberId)
                 .addValue("distance_limit", distanceLimit)
-                .addValue("size_of_page", pageable.getPageSize() + 1)   // 다음 페이지 존재 여부 확인을 위함.
+                .addValue("size_of_page", pageable.getPageSize())
                 .addValue("offset", pageable.getOffset());
 
         List<PlaceDto> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper(numOfPlaceImages));
 
-        boolean hasNext = false;
-        if (content.size() > pageable.getPageSize()) {
-            content.remove(pageable.getPageSize());
-            hasNext = true;
-        }
+        // Count total elements
+        sqlForCountingTotalElements.append("GROUP BY p.place_id HAVING distance <= :distance_limit) AS total_elements");
+        long numOfTotalElements = Optional.ofNullable(
+                template.queryForObject(sqlForCountingTotalElements.toString(), params, Long.class)
+        ).orElse(0L);
 
-        return new SliceImpl<>(content, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.asc("distance"))), hasNext);
+        return new PageImpl<>(content, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.asc("distance"))), numOfTotalElements);
     }
 
     @Override
