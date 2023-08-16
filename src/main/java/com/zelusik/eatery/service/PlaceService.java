@@ -1,5 +1,6 @@
 package com.zelusik.eatery.service;
 
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
@@ -160,12 +161,13 @@ public class PlaceService {
      */
     public Slice<PlaceDto> findDtosNearBy(
             Long memberId,
+            @Nullable FoodCategoryValue foodCategory,
             @Nullable List<DayOfWeek> daysOfWeek,
             @Nullable ReviewKeywordValue keyword,
             Point center,
             Pageable pageable
     ) {
-        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        return placeRepository.findDtosNearBy(memberId, foodCategory, daysOfWeek, keyword, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**

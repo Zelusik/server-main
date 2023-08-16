@@ -1,6 +1,7 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
@@ -148,15 +149,17 @@ class PlaceControllerTest {
     void givenCenterPoint_whenFindNearPlaces_thenReturnPlaces() throws Exception {
         // given
         Point point = new Point("37", "127");
+        FoodCategoryValue foodCategory = FoodCategoryValue.KOREAN;
         ReviewKeywordValue reviewKeyword = ReviewKeywordValue.BEST_FLAVOR;
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), false);
-        given(placeService.findDtosNearBy(eq(1L), eq(List.of(MON, WED, FRI)), eq(reviewKeyword), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        given(placeService.findDtosNearBy(eq(1L), eq(foodCategory), eq(List.of(MON, WED, FRI)), eq(reviewKeyword), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
                         get("/api/places/near")
                                 .queryParam("lat", point.getLat())
                                 .queryParam("lng", point.getLng())
+                                .queryParam("foodCategory", foodCategory.name())
                                 .queryParam("daysOfWeek", "월", "수", "금")
                                 .queryParam("reviewKeyword", reviewKeyword.name())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
