@@ -9,6 +9,7 @@ import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.place.response.*;
+import com.zelusik.eatery.exception.review.InvalidTypeOfReviewKeywordValueException;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -125,10 +126,8 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "주변 장소 검색 (거리순 정렬)",
-            description = "<p>중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다." +
-                    "<p>요청 데이터 중 <code>daysOfWeek</code>가 없으면 전체 날짜에 대해, <code>keyword</code>가 없으면 전체 약속 상황에 대해 검색합니다." +
-                    "<p>현재 \"약속 상황\" 필터링은 미구현 상태입니다. (구현 예정)",
+            summary = "근처 장소 검색 (거리순 정렬)",
+            description = "중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/near")
@@ -142,23 +141,16 @@ public class PlaceController {
                     description = "중심 위치 - 경도",
                     example = "126.978652258309"
             ) @RequestParam String lng,
-            @RequestParam(required = false) @Nullable FoodCategoryValue foodCategory,
             @Parameter(
-                    description = "요일 목록",
+                    description = "(필터링 조건) 음식 카테고리",
+                    example = "KOREAN"
+            ) @RequestParam(required = false) @Nullable FoodCategoryValue foodCategory,
+            @Parameter(
+                    description = "(필터링 조건) 요일 목록",
                     example = "[\"월\", \"화\", \"수\"]"
             ) @RequestParam(required = false) @Nullable List<String> daysOfWeek,
             @Parameter(
-                    description = "<p>리뷰 키워드. 목록은 다음과 같다.</p>" +
-                            "<p><strong>음식/가격 관련</strong></p>" +
-                            "<ul>" +
-                            "   <li><code>FRESH</code> - 신선한 재료</li>" +
-                            "   <li><code>BEST_FLAVOR</code> - 최고의 맛</li>" +
-                            "   <li><code>BEST_MENU_COMBINATION</code> - 완벽 메뉴 조합</li>" +
-                            "   <li><code>LOCAL_FLAVOR</code> - 현지 느낌 가득</li>" +
-                            "   <li><code>GOOD_PRICE</code> - 가성비 갑</li>" +
-                            "   <li><code>GENEROUS_PROTIONS</code> - 넉넉한 양</li>" +
-                            "</ul>" +
-                            "<p><strong>분위기 관련</strong></p>" +
+                    description = "<p>(필터링 조건) 선호하는 분위기. 가능한 값은 다음과 같다.</p>" +
                             "<ul>" +
                             "   <li><code>WITH_ALCOHOL</code> - 술과 함께</li>" +
                             "   <li><code>GOOD_FOR_DATE</code> - 데이트에 최고</li>" +
@@ -169,8 +161,8 @@ public class PlaceController {
                             "   <li><code>SILENT</code> - 조용조용한</li>" +
                             "   <li><code>NOISY</code> - 왁자지껄한</li>" +
                             "</ul>",
-                    example = "NOISY"
-            ) @RequestParam(required = false) @Nullable ReviewKeywordValue reviewKeyword,
+                    example = "WITH_ALCOHOL"
+            ) @RequestParam(required = false) @Nullable ReviewKeywordValue preferredVibe,
             @Parameter(
                     description = "페이지 번호 (0부터 시작)",
                     example = "0"
@@ -180,11 +172,15 @@ public class PlaceController {
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
+        if (preferredVibe != null && !preferredVibe.getType().equals(ReviewKeywordValue.ReviewKeywordType.VIBE)) {
+            throw new InvalidTypeOfReviewKeywordValueException("분위기에 대한 값만 사용할 수 있습니다.");
+        }
+
         Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(
                 userPrincipal.getMemberId(),
                 foodCategory,
                 daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
-                reviewKeyword,
+                preferredVibe,
                 new Point(lat, lng),
                 PageRequest.of(page, size)
         );

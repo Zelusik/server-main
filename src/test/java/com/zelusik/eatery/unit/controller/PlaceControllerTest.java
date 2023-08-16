@@ -3,7 +3,6 @@ package com.zelusik.eatery.unit.controller;
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.FilteringType;
-import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.PlaceController;
 import com.zelusik.eatery.domain.place.Point;
@@ -150,9 +149,9 @@ class PlaceControllerTest {
         // given
         Point point = new Point("37", "127");
         FoodCategoryValue foodCategory = FoodCategoryValue.KOREAN;
-        ReviewKeywordValue reviewKeyword = ReviewKeywordValue.BEST_FLAVOR;
+        ReviewKeywordValue preferredVibe = ReviewKeywordValue.WITH_ALCOHOL;
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), false);
-        given(placeService.findDtosNearBy(eq(1L), eq(foodCategory), eq(List.of(MON, WED, FRI)), eq(reviewKeyword), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        given(placeService.findDtosNearBy(eq(1L), eq(foodCategory), eq(List.of(MON, WED, FRI)), eq(preferredVibe), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -161,12 +160,31 @@ class PlaceControllerTest {
                                 .queryParam("lng", point.getLng())
                                 .queryParam("foodCategory", foodCategory.name())
                                 .queryParam("daysOfWeek", "월", "수", "금")
-                                .queryParam("reviewKeyword", reviewKeyword.name())
+                                .queryParam("preferredVibe", preferredVibe.name())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true))
                 .andExpect(jsonPath("$.numOfElements").value(1))
+                .andDo(print());
+    }
+
+    @DisplayName("선호하는 분위기 필드에 분위기 유형이 아닌 값이 주어지고, 근처 장소들을 검색하면, 예외가 발생한다.")
+    @Test
+    void givenPreferredVibeNotVibeType_whenFindNearPlaces_thenThrowInvalidTypeOfReviewKeywordValueException() throws Exception {
+        // given
+        Point point = new Point("37", "127");
+        ReviewKeywordValue preferredVibe = ReviewKeywordValue.FRESH;
+
+        // when & then
+        mvc.perform(
+                        get("/api/places/near")
+                                .queryParam("lat", point.getLat())
+                                .queryParam("lng", point.getLng())
+                                .queryParam("preferredVibe", preferredVibe.name())
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

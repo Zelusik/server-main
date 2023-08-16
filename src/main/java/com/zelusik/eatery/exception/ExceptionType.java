@@ -143,6 +143,7 @@ public enum ExceptionType {
     REVIEW_DELETE_PERMISSION_DENIED(3502, "리뷰를 삭제할 권한이 없습니다.", ReviewDeletePermissionDeniedException.class),
     REVIEW_UPDATE_PERMISSION_DENIED(3503, "리뷰를 수정할 권한이 없습니다.", ReviewUpdatePermissionDeniedException.class),
     MISMATCHED_MENU_KEYWORD_COUNT(3504, "요청 데이터가 잘못되었습니다. 메뉴와 메뉴에 대한 키워드의 개수가 일치하지 않습니다.", MismatchedMenuKeywordCountException.class),
+    INVALID_TYPE_OF_REVIEW_KEYWORD_VALUE(3505, "잘못된 리뷰 키워드 값 유형입니다.", InvalidTypeOfReviewKeywordValueException.class),
 
     /**
      * 큐레이션({@link Curation}) 관련 예외

@@ -152,22 +152,22 @@ public class PlaceService {
      * <p>중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
      * <p>최대 50km 범위까지 조회한다.
      *
-     * @param memberId   API 요청한 회원의 PK 값
-     * @param daysOfWeek 검색할 요일 목록
-     * @param keyword    검색 키워드
-     * @param center     중심 좌표 정보
-     * @param pageable   paging 정보
+     * @param memberId      API 요청한 회원의 PK 값
+     * @param daysOfWeek    검색할 요일 목록
+     * @param preferredVibe 선호하는 분위기
+     * @param center        중심 좌표 정보
+     * @param pageable      paging 정보
      * @return 조회한 장소 목록
      */
     public Slice<PlaceDto> findDtosNearBy(
             Long memberId,
             @Nullable FoodCategoryValue foodCategory,
             @Nullable List<DayOfWeek> daysOfWeek,
-            @Nullable ReviewKeywordValue keyword,
+            @Nullable ReviewKeywordValue preferredVibe,
             Point center,
             Pageable pageable
     ) {
-        return placeRepository.findDtosNearBy(memberId, foodCategory, daysOfWeek, keyword, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        return placeRepository.findDtosNearBy(memberId, foodCategory, daysOfWeek, preferredVibe, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**
