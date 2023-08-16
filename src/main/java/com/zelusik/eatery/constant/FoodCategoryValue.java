@@ -7,23 +7,22 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
-@Schema(description = "<p>음식 카테고리 대분류." +
-        "<p>목록은 다음과 같다." +
+@Schema(description = "<p>음식 종류. 목록은 다음과 같다." +
         "<ul>" +
-        "<li>KOREAN - 한식" +
-        "<li>JAPANESE - 일식" +
-        "<li>CHINESE - 중식" +
-        "<li>WESTERN - 양식" +
-        "<li>MEET - 고기/구이" +
-        "<li>CHICKEN - 치킨" +
-        "<li>STREET - 분식" +
-        "<li>FAST_FOOD - 패스트푸드" +
-        "<li>CAFE_DESERT - 카페/디저트" +
-        "<li>ASIAN - 아시안푸드" +
-        "<li>SANDWICH - 샌드위치" +
-        "<li>FUSION_WORLD - 퓨전/세계" +
-        "<li>BUFFET - 뷔페" +
-        "<li>BAR - 술집" +
+        "   <li><code>KOREAN</code> - 한식</li>" +
+        "   <li><code>JAPANESE</code> - 일식</li>" +
+        "   <li><code>CHINESE</code> - 중식</li>" +
+        "   <li><code>WESTERN</code> - 양식</li>" +
+        "   <li><code>MEET</code> - 고기/구이</li>" +
+        "   <li><code>CHICKEN</code> - 치킨</li>" +
+        "   <li><code>STREET</code> - 분식</li>" +
+        "   <li><code>FAST_FOOD</code> - 패스트푸드</li>" +
+        "   <li><code>CAFE_DESERT</code> - 카페/디저트</li>" +
+        "   <li><code>ASIAN</code> - 아시안푸드</li>" +
+        "   <li><code>SANDWICH</code> - 샌드위치</li>" +
+        "   <li><code>FUSION_WORLD</code> - 퓨전/세계</li>" +
+        "   <li><code>BUFFET</code> - 뷔페</li>" +
+        "   <li><code>BAR</code> - 술집</li>" +
         "</ul>",
         example = "KOREAN")
 @AllArgsConstructor

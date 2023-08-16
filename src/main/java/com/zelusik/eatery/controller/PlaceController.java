@@ -1,8 +1,8 @@
 package com.zelusik.eatery.controller;
 
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
-import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.SliceResponse;
@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -134,9 +135,18 @@ public class PlaceController {
     public SliceResponse<FindNearPlacesResponse> findNearPlaces(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
+                    description = "중심 위치 - 위도",
+                    example = "37.566826004661"
+            ) @RequestParam String lat,
+            @Parameter(
+                    description = "중심 위치 - 경도",
+                    example = "126.978652258309"
+            ) @RequestParam String lng,
+            @RequestParam(required = false) @Nullable FoodCategoryValue foodCategory,
+            @Parameter(
                     description = "요일 목록",
                     example = "[\"월\", \"화\", \"수\"]"
-            ) @RequestParam(required = false) List<String> daysOfWeek,
+            ) @RequestParam(required = false) @Nullable List<String> daysOfWeek,
             @Parameter(
                     description = "<p>리뷰 키워드. 목록은 다음과 같다.</p>" +
                             "<p><strong>음식/가격 관련</strong></p>" +
@@ -160,15 +170,7 @@ public class PlaceController {
                             "   <li><code>NOISY</code> - 왁자지껄한</li>" +
                             "</ul>",
                     example = "NOISY"
-            ) @RequestParam(required = false) ReviewKeywordValue reviewKeyword,
-            @Parameter(
-                    description = "중심 위치 - 위도",
-                    example = "37.566826004661"
-            ) @RequestParam String lat,
-            @Parameter(
-                    description = "중심 위치 - 경도",
-                    example = "126.978652258309"
-            ) @RequestParam String lng,
+            ) @RequestParam(required = false) @Nullable ReviewKeywordValue reviewKeyword,
             @Parameter(
                     description = "페이지 번호 (0부터 시작)",
                     example = "0"
@@ -180,6 +182,7 @@ public class PlaceController {
     ) {
         Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(
                 userPrincipal.getMemberId(),
+                foodCategory,
                 daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
                 reviewKeyword,
                 new Point(lat, lng),

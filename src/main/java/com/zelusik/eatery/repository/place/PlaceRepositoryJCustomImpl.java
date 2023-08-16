@@ -1,9 +1,9 @@
 package com.zelusik.eatery.repository.place;
 
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
-import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.converter.ReviewKeywordValueConverter;
 import com.zelusik.eatery.domain.place.Address;
@@ -68,6 +68,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     @Override
     public Slice<PlaceDto> findDtosNearBy(
             Long memberId,
+            @Nullable FoodCategoryValue foodCategory,
             @Nullable List<DayOfWeek> daysOfWeek,
             @Nullable ReviewKeywordValue keyword,
             Point center,
@@ -107,6 +108,20 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 sql.append("oh.day_of_week = '")
                         .append(daysOfWeek.get(i))
                         .append("' ");
+            }
+            sql.append(") ");
+        }
+
+        // WHERE
+        if (foodCategory != null) {
+            sql.append("WHERE p.first_category IN (");
+            String[] matchingFirstCategories = foodCategory.getMatchingFirstCategories();
+            for (int i = 0; i < matchingFirstCategories.length; i++) {
+                String category = matchingFirstCategories[i];
+                if (i != 0) {
+                    sql.append(", ");
+                }
+                sql.append("'").append(category).append("'");
             }
             sql.append(") ");
         }

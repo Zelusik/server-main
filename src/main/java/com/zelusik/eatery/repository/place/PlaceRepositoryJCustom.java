@@ -1,8 +1,8 @@
 package com.zelusik.eatery.repository.place;
 
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
-import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
@@ -26,7 +26,7 @@ public interface PlaceRepositoryJCustom {
      * @param pageable         paging 정보
      * @return 조회한 장소 목록
      */
-    Slice<PlaceDto> findDtosNearBy(Long memberId, @Nullable List<DayOfWeek> daysOfWeek, @Nullable ReviewKeywordValue keyword, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable);
+    Slice<PlaceDto> findDtosNearBy(Long memberId, @Nullable FoodCategoryValue foodCategory, @Nullable List<DayOfWeek> daysOfWeek, @Nullable ReviewKeywordValue keyword, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소 목록(Slice)을 조회합니다.

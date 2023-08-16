@@ -284,13 +284,13 @@ class PlaceServiceTest {
         Point point = new Point("37", "127");
         Pageable pageable = Pageable.ofSize(30);
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), pageable, false);
-        given(placeRepository.findDtosNearBy(memberId, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
+        given(placeRepository.findDtosNearBy(memberId, null, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, point, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, null, point, pageable);
 
         // then
-        then(placeRepository).should().findDtosNearBy(memberId, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        then(placeRepository).should().findDtosNearBy(memberId, null, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
