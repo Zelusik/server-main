@@ -15,7 +15,7 @@ import java.util.Arrays;
         "   <li><code>BEST_MENU_COMBINATION</code>: 완벽 메뉴 조합</li>" +
         "   <li><code>LOCAL_FLAVOR</code>: 현지 느낌 가득</li>" +
         "   <li><code>GOOD_PRICE</code>: 가성비 갑</li>" +
-        "   <li><code>GENEROUS_PROTIONS</code>: 넉넉한 양</li>" +
+        "   <li><code>GENEROUS_PORTIONS</code>: 넉넉한 양</li>" +
         "</ul>" +
         "<p><strong>분위기 관련</strong></p>" +
         "<ul>" +

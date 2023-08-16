@@ -70,7 +70,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             Long memberId,
             @Nullable FoodCategoryValue foodCategory,
             @Nullable List<DayOfWeek> daysOfWeek,
-            @Nullable ReviewKeywordValue keyword,
+            @Nullable ReviewKeywordValue preferredVibe,
             Point center,
             int distanceLimit,
             int numOfPlaceImages,
@@ -113,7 +113,9 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         }
 
         // WHERE
+        boolean flagForWhere = false;
         if (foodCategory != null) {
+            flagForWhere = true;
             sql.append("WHERE p.first_category IN (");
             String[] matchingFirstCategories = foodCategory.getMatchingFirstCategories();
             for (int i = 0; i < matchingFirstCategories.length; i++) {
@@ -124,6 +126,14 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 sql.append("'").append(category).append("'");
             }
             sql.append(") ");
+        }
+        if (preferredVibe != null) {
+            if (flagForWhere) {
+                sql.append("AND ");
+            } else {
+                sql.append("WHERE ");
+            }
+            sql.append("p.top3keywords LIKE '%").append(preferredVibe.name()).append("%' ");
         }
 
         // GROUP BY
