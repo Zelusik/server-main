@@ -18,7 +18,7 @@ import java.util.Arrays;
         "<li>CHICKEN - 치킨" +
         "<li>STREET - 분식" +
         "<li>FAST_FOOD - 패스트푸드" +
-        "<li>DESERT - 디저트" +
+        "<li>CAFE_DESERT - 카페/디저트" +
         "<li>ASIAN - 아시안푸드" +
         "<li>SANDWICH - 샌드위치" +
         "<li>FUSION_WORLD - 퓨전/세계" +
@@ -38,7 +38,7 @@ public enum FoodCategoryValue {
     STREET("분식", new String[]{"분식"}),
     MEET("고기/구이", new String[]{"육류,고기"}),
     FAST_FOOD("패스트푸드", new String[]{"패스트푸드"}),
-    DESERT("디저트", new String[]{"카페", "간식"}),
+    CAFE_DESERT("카페/디저트", new String[]{"카페", "간식"}),
     ASIAN("아시안푸드", new String[]{"아시아음식"}),
     SANDWICH("샌드위치", new String[]{"샌드위치", "샐러드"}),
     FUSION_WORLD("퓨전/세계", new String[]{"퓨전요리"}),
@@ -46,7 +46,7 @@ public enum FoodCategoryValue {
     BAR("술집", new String[]{"술집"});
 
     private final String name;
-    private final String[] matchingKakaoCategories;
+    private final String[] matchingFirstCategories;
 
     public static FoodCategoryValue valueOfDescription(String description) {
         String trimmedDescription = description.replace(" ", "");
