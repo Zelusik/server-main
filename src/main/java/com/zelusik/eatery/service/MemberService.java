@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,6 +108,17 @@ public class MemberService {
      */
     public Optional<MemberDto> findOptionalDtoBySocialUidWithDeleted(String socialUid) {
         return memberRepository.findBySocialUid(socialUid).map(MemberDto::from);
+    }
+
+    /**
+     * 키워드로 회원을 검색한다.
+     *
+     * @param searchKeyword 검색 키워드
+     * @param pageable      paging 정보
+     * @return 조회된 회원 목록
+     */
+    public Slice<MemberDto> searchDtosByKeyword(String searchKeyword, Pageable pageable) {
+        return memberRepository.searchByKeyword(searchKeyword, pageable).map(MemberDto::from);
     }
 
     /**

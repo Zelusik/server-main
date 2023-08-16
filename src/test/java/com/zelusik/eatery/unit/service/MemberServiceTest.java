@@ -28,6 +28,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -163,6 +166,28 @@ class MemberServiceTest {
         assertThat(optionalMember.isPresent()).isFalse();
     }
 
+    @DisplayName("주어진 검색 키워드로 회원을 검색하면, 검색된 회원 목록이 반환된다.")
+    @Test
+    void givenSearchKeyword_whenSearchMembersByKeyword_thenReturnSearchedMembers() {
+        // given
+        String searchKeyword = "test";
+        Pageable pageable = Pageable.ofSize(30);
+        List<Member> expectedResult = List.of(createMember(1L));
+        given(memberRepository.searchByKeyword(searchKeyword, pageable)).willReturn(new SliceImpl<>(expectedResult, pageable, false));
+
+        // when
+        Slice<MemberDto> actualResult = sut.searchDtosByKeyword(searchKeyword, pageable);
+
+        // then
+        then(memberRepository).should().searchByKeyword(searchKeyword, pageable);
+        verifyEveryMocksShoudHaveNoMoreInteractions();
+        assertThat(actualResult.getNumberOfElements()).isEqualTo(expectedResult.size());
+        assertThat(actualResult.getContent()).hasSize(expectedResult.size());
+        for (int i = 0; i < expectedResult.size(); i++) {
+            assertThat(actualResult.getContent().get(i).getId()).isEqualTo(expectedResult.get(i).getId());
+        }
+    }
+
     @DisplayName("프로필 이미지를 제외하고 수정할 회원 정보가 주어지고, 회원 정보를 수정하면, 주어진 정보로 회원 정보가 수정된다.")
     @Test
     void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMemberInfo_thenUpdate() {
@@ -282,5 +307,13 @@ class MemberServiceTest {
         then(memberDeletionSurveyRepository).shouldHaveNoInteractions();
 
         assertThat(t).isInstanceOf(MemberNotFoundException.class);
+    }
+
+    private void verifyEveryMocksShoudHaveNoMoreInteractions() {
+        then(profileImageService).shouldHaveNoMoreInteractions();
+        then(memberRepository).shouldHaveNoMoreInteractions();
+        then(termsInfoRepository).shouldHaveNoMoreInteractions();
+        then(memberDeletionSurveyRepository).shouldHaveNoMoreInteractions();
+        then(favoriteFoodCategoryRepository).shouldHaveNoMoreInteractions();
     }
 }
