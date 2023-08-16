@@ -70,8 +70,28 @@ public class MemberTestUtils {
         );
     }
 
-    public static Member createNotSavedMember() {
-        return createMemberDto().toEntity();
+    public static Member createNotSavedMember(String socialId, String nickname) {
+        return createNotSavedMember(socialId, Set.of(RoleType.USER), nickname);
+    }
+
+    public static Member createNotSavedMember(String socialId, Set<RoleType> roleTypes, String nickname) {
+        return Member.of(
+                null,
+                null,
+                "https://default-profile-image",
+                "https://defualt-profile-thumbnail-image",
+                socialId,
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com" + socialId,
+                nickname,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     public static Member createMember(Long memberId) {

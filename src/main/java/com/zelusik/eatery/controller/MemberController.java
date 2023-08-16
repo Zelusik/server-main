@@ -1,17 +1,20 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.member.response.MemberDeletionSurveyResponse;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
+import com.zelusik.eatery.dto.member.response.SearchMembersByKeywordResponse;
 import com.zelusik.eatery.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.dto.terms_info.response.TermsInfoResponse;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,12 +22,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.List;
 
@@ -67,6 +73,30 @@ public class MemberController {
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         return MemberResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
+    }
+
+    @Operation(
+            summary = "키워드로 회원 검색하기",
+            description = "검색 키워드를 전달받아 회원을 검색한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/search")
+    public SliceResponse<SearchMembersByKeywordResponse> searchMembersByKeyword(
+            @Parameter(
+                    description = "검색 키워드",
+                    example = "강남"
+            ) @RequestParam @NotEmpty String keyword,
+            @Parameter(
+                    description = "페이지 번호 (0부터 시작)",
+                    example = "0"
+            ) @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈)",
+                    example = "30"
+            ) @RequestParam(required = false, defaultValue = "30") int size
+    ) {
+        Slice<MemberDto> memberDtos = memberService.searchDtosByKeyword(keyword, PageRequest.of(page, size));
+        return new SliceResponse<SearchMembersByKeywordResponse>().from(memberDtos.map(SearchMembersByKeywordResponse::from));
     }
 
     @Operation(

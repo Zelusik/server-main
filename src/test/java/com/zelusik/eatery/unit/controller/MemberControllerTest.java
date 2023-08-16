@@ -4,6 +4,7 @@ import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.controller.MemberController;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -29,6 +32,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.zelusik.eatery.util.MemberTestUtils.createMemberDtoWithId;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -117,7 +122,7 @@ class MemberControllerTest {
         // given
         long memberId = 1L;
         given(memberService.findDtoById(memberId))
-                .willReturn(MemberTestUtils.createMemberDtoWithId(memberId));
+                .willReturn(createMemberDtoWithId(memberId));
 
         // when & then
         mvc.perform(
@@ -128,6 +133,25 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.id").value(memberId));
     }
 
+    @DisplayName("주어진 검색 키워드로 회원을 검색하면, 검색된 회원 목록이 반환된다.")
+    @Test
+    void givenSearchKeyword_whenSearchMembersByKeyword_thenReturnSearchedMembers() throws Exception {
+        // given
+        String searchKeyword = "test";
+        List<MemberDto> expectedResult = List.of(createMemberDtoWithId(2L));
+        given(memberService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(new SliceImpl<>(expectedResult));
+
+        // when & then
+        mvc.perform(
+                        get("/api/members/search")
+                                .queryParam("keyword", searchKeyword)
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.numOfElements").value(expectedResult.size()))
+                .andExpect(jsonPath("$.contents", hasSize(expectedResult.size())));
+    }
+
     @DisplayName("프로필 이미지를 제외한 수정할 회원 정보가 주어지고, 내 정보를 수정한다.")
     @Test
     void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMyInfo_thenUpdate() throws Exception {
@@ -135,7 +159,7 @@ class MemberControllerTest {
         long memberId = 1L;
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, null);
         given(memberService.update(eq(memberId), any(MemberUpdateRequest.class)))
-                .willReturn(MemberTestUtils.createMemberDtoWithId(memberId));
+                .willReturn(createMemberDtoWithId(memberId));
 
         // when & then
         // TODO: 프로필 이미지는 어떻게 넣어야 하는지 확인 후 코드 수정 필요
@@ -156,7 +180,7 @@ class MemberControllerTest {
         // given
         FavoriteFoodCategoriesUpdateRequest request = FavoriteFoodCategoriesUpdateRequest.of(List.of("한식", "양식"));
         given(memberService.updateFavoriteFoodCategories(any(), any()))
-                .willReturn(MemberTestUtils.createMemberDtoWithId());
+                .willReturn(createMemberDtoWithId());
 
         // when & then
         mvc.perform(
@@ -194,6 +218,6 @@ class MemberControllerTest {
     }
 
     private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
+        return UserPrincipal.of(createMemberDtoWithId());
     }
 }
