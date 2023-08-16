@@ -3,6 +3,7 @@ package com.zelusik.eatery.unit.controller;
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.PlaceController;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
@@ -144,15 +145,20 @@ class PlaceControllerTest {
 
     @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")
     @Test
-    void givenCenterPoint_whenSearchNearByPlaces_thenReturnPlaces() throws Exception {
+    void givenCenterPoint_whenFindNearPlaces_thenReturnPlaces() throws Exception {
         // given
         Point point = new Point("37", "127");
+        ReviewKeywordValue reviewKeyword = ReviewKeywordValue.BEST_FLAVOR;
         SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), false);
-        given(placeService.findDtosNearBy(eq(1L), eq(List.of(MON, WED, FRI)), eq(PlaceSearchKeyword.ALONE), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        given(placeService.findDtosNearBy(eq(1L), eq(List.of(MON, WED, FRI)), eq(reviewKeyword), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
-                        get("/api/places/search?lat=" + point.getLat() + "&lng=" + point.getLng() + "&daysOfWeek=월,수,금" + "&keyword=혼밥")
+                        get("/api/places/near")
+                                .queryParam("lat", point.getLat())
+                                .queryParam("lng", point.getLng())
+                                .queryParam("daysOfWeek", "월", "수", "금")
+                                .queryParam("reviewKeyword", reviewKeyword.name())
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())

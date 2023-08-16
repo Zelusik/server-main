@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -159,20 +160,12 @@ public class PlaceService {
      */
     public Slice<PlaceDto> findDtosNearBy(
             Long memberId,
-            List<DayOfWeek> daysOfWeek,
-            PlaceSearchKeyword keyword,
+            @Nullable List<DayOfWeek> daysOfWeek,
+            @Nullable ReviewKeywordValue keyword,
             Point center,
             Pageable pageable
     ) {
-        return placeRepository.findDtosNearBy(
-                memberId,
-                daysOfWeek,
-                keyword,
-                center,
-                DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH,
-                MAX_NUM_OF_PLACE_IMAGES,
-                pageable
-        );
+        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**

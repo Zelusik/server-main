@@ -130,8 +130,8 @@ public class PlaceController {
                     "<p>현재 \"약속 상황\" 필터링은 미구현 상태입니다. (구현 예정)",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/search")
-    public SliceResponse<SearchPlacesNearByResponse> searchPlacesNearBy(
+    @GetMapping("/near")
+    public SliceResponse<FindNearPlacesResponse> findNearPlaces(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
@@ -140,7 +140,7 @@ public class PlaceController {
             @Parameter(
                     description = "약속 상황",
                     example = "신나는"
-            ) @RequestParam(required = false) String keyword,
+            ) @RequestParam(required = false) ReviewKeywordValue reviewKeyword,
             @Parameter(
                     description = "중심 위치 - 위도",
                     example = "37.566826004661"
@@ -161,12 +161,12 @@ public class PlaceController {
         Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(
                 userPrincipal.getMemberId(),
                 daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
-                keyword == null ? null : PlaceSearchKeyword.valueOfDescription(keyword),
+                reviewKeyword,
                 new Point(lat, lng),
                 PageRequest.of(page, size)
         );
-        return new SliceResponse<SearchPlacesNearByResponse>()
-                .from(searchedPlaceDtos.map(SearchPlacesNearByResponse::from));
+        return new SliceResponse<FindNearPlacesResponse>()
+                .from(searchedPlaceDtos.map(FindNearPlacesResponse::from));
     }
 
     @Operation(

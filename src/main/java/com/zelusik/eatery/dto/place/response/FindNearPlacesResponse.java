@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class SearchPlacesNearByResponse {
+public class FindNearPlacesResponse {
 
     @Schema(description = "장소의 id(PK)", example = "1")
     private Long id;
@@ -44,7 +44,7 @@ public class SearchPlacesNearByResponse {
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static SearchPlacesNearByResponse from(PlaceDto dto) {
+    public static FindNearPlacesResponse from(PlaceDto dto) {
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {
             category = dto.getCategory().getFirstCategory();
@@ -57,7 +57,7 @@ public class SearchPlacesNearByResponse {
                     .toList();
         }
 
-        return new SearchPlacesNearByResponse(
+        return new FindNearPlacesResponse(
                 dto.getId(),
                 dto.getTop3Keywords().stream()
                         .map(ReviewKeywordValue::getDescription)
