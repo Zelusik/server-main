@@ -136,6 +136,17 @@ public class PlaceService {
     }
 
     /**
+     * 검색 키워드를 받아 장소를 검색한다.
+     *
+     * @param searchKeyword 검색 키워드
+     * @param pageable      paging 정보
+     * @return 조회된 장소 목록
+     */
+    public Slice<PlaceDto> searchDtosByKeyword(String searchKeyword, Pageable pageable) {
+        return placeRepository.searchByKeyword(searchKeyword, pageable).map(PlaceDto::fromWithoutMarkedStatusAndImages);
+    }
+
+    /**
      * <p>중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
      * <p>최대 50km 범위까지 조회한다.
      *

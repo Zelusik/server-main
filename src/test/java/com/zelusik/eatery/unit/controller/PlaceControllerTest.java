@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
@@ -29,7 +30,9 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 import static com.zelusik.eatery.constant.place.DayOfWeek.*;
+import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDto;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -117,6 +120,26 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
                 .andExpect(jsonPath("$.images", notNullValue()));
+    }
+
+    @DisplayName("검색 키워드로 장소를 검색하면, 조회된 장소들이 반환된다.")
+    @Test
+    void givenSearchKeyword_whenSearching_thenReturnSearchedPlaces() throws Exception {
+        // given
+        String searchKeyword = "강남";
+        long placeId = 2L;
+        Slice<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDto(placeId)));
+        given(placeService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/places/search")
+                                .queryParam("keyword", searchKeyword)
+                                .with(user(createTestUserDetails()))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.contents", hasSize(expectedResult.getContent().size())))
+                .andExpect(jsonPath("$.contents[0].id").value(placeId));
     }
 
     @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")

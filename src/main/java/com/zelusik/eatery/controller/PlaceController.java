@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
@@ -96,6 +97,30 @@ public class PlaceController {
             @Parameter(description = "Kakao place unique id", example = "263830255") @RequestParam @NotBlank String kakaoPid
     ) {
         return PlaceResponseWithImages.from(placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid));
+    }
+
+    @Operation(
+            summary = "키워드로 장소 검색하기",
+            description = "키워드로 장소를 검색한다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/search")
+    public SliceResponse<SearchPlacesByKeywordResponse> searchPlacesByKeyword(
+            @Parameter(
+                    description = "검색 키워드",
+                    example = "강남"
+            ) @RequestParam @NotEmpty String keyword,
+            @Parameter(
+                    description = "페이지 번호 (0부터 시작)",
+                    example = "0"
+            ) @RequestParam(required = false, defaultValue = "0") int page,
+            @Parameter(
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈)",
+                    example = "30"
+            ) @RequestParam(required = false, defaultValue = "30") int size
+    ) {
+        Slice<PlaceDto> placeDtos = placeService.searchDtosByKeyword(keyword, PageRequest.of(page, size));
+        return new SliceResponse<SearchPlacesByKeywordResponse>().from(placeDtos.map(SearchPlacesByKeywordResponse::from));
     }
 
     @Operation(

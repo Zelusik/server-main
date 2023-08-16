@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
+import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceWithoutId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -76,6 +77,10 @@ class PlaceRepositoryTest {
         }
     }
 
+    private double calculateDiff(String centerLng, String placeLng) {
+        return Math.abs(Double.parseDouble(centerLng) - Double.parseDouble(placeLng));
+    }
+
     @DisplayName("주변 장소를 조회하면, 50km와 1100km 내에 있는 가게들을 조회한다.")
     @Test
     void givenPlaces_whenFindNearBy_thenReturnPlacesWith50kmAnd1100km() {
@@ -107,7 +112,26 @@ class PlaceRepositoryTest {
         assertThat(placesLimit1100DaysMonAndWed.getNumberOfElements()).isEqualTo(3);
     }
 
-    private double calculateDiff(String centerLng, String placeLng) {
-        return Math.abs(Double.parseDouble(centerLng) - Double.parseDouble(placeLng));
+    @DisplayName("검색 키워드가 주어지고, 키워드로 장소를 조회한다.")
+    @Test
+    void givenSearchKeyword_whenSearching_thenReturnPlaces() {
+        // given
+        Place place1 = placeRepository.save(createPlaceWithoutId("1", "김치 맛집", "https://homepage-1", "37", "127", "일요일"));
+        Place place2 = placeRepository.save(createPlaceWithoutId("2", "햄버거 맛집", "https://homepage-1", "37", "127", "일요일"));
+        Place place3 = placeRepository.save(createPlaceWithoutId("3", "그냥 식당", "https://homepage-1", "37", "127", "일요일"));
+        Place place4 = placeRepository.save(createPlaceWithoutId("4", "돈까스 맛집", "https://homepage-1", "37", "127", "일요일"));
+        Place place5 = placeRepository.save(createPlaceWithoutId("5", "테스트", "https://homepage-1", "37", "127", "일요일"));
+        Pageable pageable = Pageable.ofSize(30);
+        String keyword = "맛집";
+
+        // when
+        Slice<Place> result = placeRepository.searchByKeyword(keyword, pageable);
+
+        // then
+        assertThat(result.getNumberOfElements()).isEqualTo(3);
+        List<Place> content = result.getContent();
+        assertThat(content.get(0).getId()).isEqualTo(place1.getId());
+        assertThat(content.get(1).getId()).isEqualTo(place2.getId());
+        assertThat(content.get(2).getId()).isEqualTo(place4.getId());
     }
 }
