@@ -5,6 +5,7 @@ import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Point;
+import com.zelusik.eatery.dto.PageResponse;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
@@ -21,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
@@ -126,12 +128,12 @@ public class PlaceController {
     }
 
     @Operation(
-            summary = "근처 장소 검색 (거리순 정렬)",
+            summary = "주변 장소 검색 (거리순 정렬)",
             description = "중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/near")
-    public SliceResponse<FindNearPlacesResponse> findNearPlaces(
+    public PageResponse<FindNearPlacesResponse> findNearPlaces(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "중심 위치 - 위도",
@@ -176,8 +178,8 @@ public class PlaceController {
             throw new InvalidTypeOfReviewKeywordValueException("분위기에 대한 값만 사용할 수 있습니다.");
         }
 
-        Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(userPrincipal.getMemberId(), foodCategory, daysOfWeek, preferredVibe, new Point(lat, lng), PageRequest.of(page, size));
-        return new SliceResponse<FindNearPlacesResponse>()
+        Page<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(userPrincipal.getMemberId(), foodCategory, daysOfWeek, preferredVibe, new Point(lat, lng), PageRequest.of(page, size));
+        return new PageResponse<FindNearPlacesResponse>()
                 .from(searchedPlaceDtos.map(FindNearPlacesResponse::from));
     }
 

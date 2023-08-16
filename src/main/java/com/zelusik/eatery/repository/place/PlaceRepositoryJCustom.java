@@ -7,6 +7,7 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.lang.Nullable;
@@ -26,7 +27,7 @@ public interface PlaceRepositoryJCustom {
      * @param pageable         paging 정보
      * @return 조회한 장소 목록
      */
-    Slice<PlaceDto> findDtosNearBy(Long memberId, @Nullable FoodCategoryValue foodCategory, @Nullable List<DayOfWeek> daysOfWeek, @Nullable ReviewKeywordValue preferredVibe, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable);
+    Page<PlaceDto> findDtosNearBy(Long memberId, @Nullable FoodCategoryValue foodCategory, @Nullable List<DayOfWeek> daysOfWeek, @Nullable ReviewKeywordValue preferredVibe, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable);
 
     /**
      * 북마크에 저장한 장소 목록(Slice)을 조회합니다.

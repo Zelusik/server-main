@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -152,7 +153,7 @@ class PlaceControllerTest {
         FoodCategoryValue foodCategory = FoodCategoryValue.KOREAN;
         List<DayOfWeek> daysOfWeek = List.of(MON, WED, FRI);
         ReviewKeywordValue preferredVibe = ReviewKeywordValue.WITH_ALCOHOL;
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), false);
+        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), 1);
         given(placeService.findDtosNearBy(eq(1L), eq(foodCategory), eq(daysOfWeek), eq(preferredVibe), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
@@ -166,7 +167,7 @@ class PlaceControllerTest {
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.hasContent").value(true))
+                .andExpect(jsonPath("$.isEmpty").value(false))
                 .andExpect(jsonPath("$.numOfElements").value(1))
                 .andDo(print());
     }
