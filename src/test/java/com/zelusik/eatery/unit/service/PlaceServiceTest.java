@@ -324,7 +324,7 @@ class PlaceServiceTest {
         Place place = PlaceTestUtils.createPlace(placeId, "1");
         List<ReviewKeywordValue> top3Keywords = List.of(
                 ReviewKeywordValue.BEST_FLAVOR,
-                ReviewKeywordValue.GOOD_FOR_BLIND_DATE,
+                ReviewKeywordValue.GOOD_FOR_DATE,
                 ReviewKeywordValue.GOOD_PRICE
         );
         given(reviewKeywordRepository.searchTop3Keywords(placeId)).willReturn(top3Keywords);
@@ -337,7 +337,7 @@ class PlaceServiceTest {
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(place.getTop3Keywords().size()).isEqualTo(3);
         assertThat(place.getTop3Keywords().get(0)).isEqualTo(ReviewKeywordValue.BEST_FLAVOR);
-        assertThat(place.getTop3Keywords().get(1)).isEqualTo(ReviewKeywordValue.GOOD_FOR_BLIND_DATE);
+        assertThat(place.getTop3Keywords().get(1)).isEqualTo(ReviewKeywordValue.GOOD_FOR_DATE);
         assertThat(place.getTop3Keywords().get(2)).isEqualTo(ReviewKeywordValue.GOOD_PRICE);
     }
 

@@ -135,11 +135,31 @@ public class PlaceController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "요일 목록",
-                    example = "월,화,수"
+                    example = "[\"월\", \"화\", \"수\"]"
             ) @RequestParam(required = false) List<String> daysOfWeek,
             @Parameter(
-                    description = "약속 상황",
-                    example = "신나는"
+                    description = "<p>리뷰 키워드. 목록은 다음과 같다.</p>" +
+                            "<p><strong>음식/가격 관련</strong></p>" +
+                            "<ul>" +
+                            "   <li><code>FRESH</code> - 신선한 재료</li>" +
+                            "   <li><code>BEST_FLAVOR</code> - 최고의 맛</li>" +
+                            "   <li><code>BEST_MENU_COMBINATION</code> - 완벽 메뉴 조합</li>" +
+                            "   <li><code>LOCAL_FLAVOR</code> - 현지 느낌 가득</li>" +
+                            "   <li><code>GOOD_PRICE</code> - 가성비 갑</li>" +
+                            "   <li><code>GENEROUS_PROTIONS</code> - 넉넉한 양</li>" +
+                            "</ul>" +
+                            "<p><strong>분위기 관련</strong></p>" +
+                            "<ul>" +
+                            "   <li><code>WITH_ALCOHOL</code> - 술과 함께</li>" +
+                            "   <li><code>GOOD_FOR_DATE</code> - 데이트에 최고</li>" +
+                            "   <li><code>WITH_ELDERS</code> - 웃어른과</li>" +
+                            "   <li><code>CAN_ALONE</code> - 혼밥 가능</li>" +
+                            "   <li><code>PERFECT_FOR_GROUP_MEETING</code> - 단체 모임에 딱</li>" +
+                            "   <li><code>WAITING</code> - 웨이팅 있음</li>" +
+                            "   <li><code>SILENT</code> - 조용조용한</li>" +
+                            "   <li><code>NOISY</code> - 왁자지껄한</li>" +
+                            "</ul>",
+                    example = "NOISY"
             ) @RequestParam(required = false) ReviewKeywordValue reviewKeyword,
             @Parameter(
                     description = "중심 위치 - 위도",
@@ -150,11 +170,11 @@ public class PlaceController {
                     example = "126.978652258309"
             ) @RequestParam String lng,
             @Parameter(
-                    description = "페이지 번호(0부터 시작합니다). 기본값은 0입니다.",
+                    description = "페이지 번호 (0부터 시작)",
                     example = "0"
             ) @RequestParam(required = false, defaultValue = "0") int page,
             @Parameter(
-                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈). 기본값은 30입니다.",
+                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈)",
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
