@@ -6,7 +6,6 @@ import com.zelusik.eatery.dto.review.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -21,9 +20,8 @@ public class ReviewCreateRequest {
     @NotNull
     private Long placeId;
 
-    @Schema(description = "키워드 목록", example = "[\"신선한 재료\", \"최고의 맛\"]")
     @NotEmpty
-    private List<@NotBlank String> keywords;
+    private List<ReviewKeywordValue> keywords;
 
     @Schema(description = "자동으로 생성된 내용", example = "미래에 제가 살 곳은 여기로 정했습니다. 씹을 때마다...")
     private String autoCreatedContent;
@@ -66,16 +64,14 @@ public class ReviewCreateRequest {
     @NonNull
     private List<ReviewImageCreateRequest> images;
 
-    public static ReviewCreateRequest of(long placeId, List<String> keywords, String autoCreatedContent, String content, List<ReviewImageCreateRequest> images) {
+    public static ReviewCreateRequest of(long placeId, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageCreateRequest> images) {
         return new ReviewCreateRequest(placeId, keywords, autoCreatedContent, content, images);
     }
 
     public ReviewDto toDto(PlaceDto placeDto) {
         return ReviewDto.of(
                 placeDto,
-                this.getKeywords().stream()
-                        .map(ReviewKeywordValue::valueOfDescription)
-                        .toList(),
+                this.getKeywords(),
                 this.getAutoCreatedContent(),
                 this.getContent()
         );

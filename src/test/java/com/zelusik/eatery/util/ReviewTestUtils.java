@@ -23,7 +23,7 @@ public class ReviewTestUtils {
     public static ReviewCreateRequest createReviewCreateRequest(long placeId) {
         return ReviewCreateRequest.of(
                 placeId,
-                List.of("신선한 재료"),
+                List.of(ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출한 내용",
                 List.of(createReviewImageCreateRequest())

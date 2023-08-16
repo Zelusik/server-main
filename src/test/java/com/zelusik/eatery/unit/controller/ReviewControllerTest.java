@@ -26,6 +26,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.zelusik.eatery.constant.review.ReviewKeywordValue.FRESH;
+import static com.zelusik.eatery.constant.review.ReviewKeywordValue.NOISY;
 import static com.zelusik.eatery.util.ReviewTestUtils.createReviewDto;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,7 +70,7 @@ class ReviewControllerTest {
                         multipart("/api/reviews")
                                 .file(MultipartFileTestUtils.createMockMultipartFile())
                                 .param("placeId", String.valueOf(placeId))
-                                .param("keywords", "신선한 재료", "왁자지껄한")
+                                .param("keywords", FRESH.name(), NOISY.name())
                                 .param("autoCreatedContent", reviewCreateRequest.getAutoCreatedContent())
                                 .param("content", reviewCreateRequest.getContent())
                                 .with(user(createTestUserDetails()))
