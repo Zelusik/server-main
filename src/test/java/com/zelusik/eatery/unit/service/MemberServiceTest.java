@@ -209,11 +209,11 @@ class MemberServiceTest {
         // given
         long memberId = 1L;
         Member member = createMember(memberId);
-        List<FoodCategoryValue> foodCategories = List.of(KOREAN, WESTERN, DESERT);
+        List<FoodCategoryValue> foodCategories = List.of(KOREAN, WESTERN, CAFE_DESERT);
         List<FavoriteFoodCategory> favoriteFoodCategories = List.of(
                 createFavoriteFoodCategory(100L, member, KOREAN),
                 createFavoriteFoodCategory(101L, member, WESTERN),
-                createFavoriteFoodCategory(102L, member, DESERT)
+                createFavoriteFoodCategory(102L, member, CAFE_DESERT)
         );
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(member));
         willDoNothing().given(favoriteFoodCategoryRepository).deleteAll(member.getFavoriteFoodCategories());
@@ -228,7 +228,7 @@ class MemberServiceTest {
         then(favoriteFoodCategoryRepository).should().saveAll(ArgumentMatchers.<List<FavoriteFoodCategory>>any());
         then(memberRepository).shouldHaveNoMoreInteractions();
         then(favoriteFoodCategoryRepository).shouldHaveNoMoreInteractions();
-        assertThat(updatedMemberDto.getFavoriteFoodCategories()).contains(KOREAN, WESTERN, DESERT);
+        assertThat(updatedMemberDto.getFavoriteFoodCategories()).contains(KOREAN, WESTERN, CAFE_DESERT);
     }
 
     @DisplayName("회원 탈퇴를 하면, 회원과 약관 동의 정보를 삭제하고 탈퇴 설문 정보를 반환한다.")
