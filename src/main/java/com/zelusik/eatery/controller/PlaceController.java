@@ -147,8 +147,8 @@ public class PlaceController {
             ) @RequestParam(required = false) @Nullable FoodCategoryValue foodCategory,
             @Parameter(
                     description = "(필터링 조건) 요일 목록",
-                    example = "[\"월\", \"화\", \"수\"]"
-            ) @RequestParam(required = false) @Nullable List<String> daysOfWeek,
+                    example = "[\"MON\", \"TUE\", \"WED\"]"
+            ) @RequestParam(required = false) @Nullable List<DayOfWeek> daysOfWeek,
             @Parameter(
                     description = "<p>(필터링 조건) 선호하는 분위기. 가능한 값은 다음과 같다.</p>" +
                             "<ul>" +
@@ -176,14 +176,7 @@ public class PlaceController {
             throw new InvalidTypeOfReviewKeywordValueException("분위기에 대한 값만 사용할 수 있습니다.");
         }
 
-        Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(
-                userPrincipal.getMemberId(),
-                foodCategory,
-                daysOfWeek == null ? null : daysOfWeek.stream().map(DayOfWeek::valueOfDescription).toList(),
-                preferredVibe,
-                new Point(lat, lng),
-                PageRequest.of(page, size)
-        );
+        Slice<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(userPrincipal.getMemberId(), foodCategory, daysOfWeek, preferredVibe, new Point(lat, lng), PageRequest.of(page, size));
         return new SliceResponse<FindNearPlacesResponse>()
                 .from(searchedPlaceDtos.map(FindNearPlacesResponse::from));
     }
