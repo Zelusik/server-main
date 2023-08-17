@@ -133,6 +133,10 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/near")
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "[3505] <code>preferredVibe</code>에 분위기에 대한 내용이 아닌 값이 주어진 경우", responseCode = "400", content = @Content)
+    })
     public PageResponse<FindNearPlacesResponse> findNearPlaces(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
