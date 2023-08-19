@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
@@ -79,11 +78,15 @@ public class PlaceController {
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping("/{placeId}")
-    public PlaceResponseWithImages getPlaceById(
+    public FindPlaceResponse findPlaceById(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Parameter(description = "PK of place", example = "3") @PathVariable @NotNull Long placeId
+            @Parameter(
+                    description = "PK of place",
+                    example = "3"
+            ) @PathVariable Long placeId
     ) {
-        return PlaceResponseWithImages.from(placeService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId));
+        PlaceDto placeDtos = placeService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
+        return FindPlaceResponse.from(placeDtos);
     }
 
     @Operation(
@@ -96,11 +99,15 @@ public class PlaceController {
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping
-    public PlaceResponseWithImages getPlaceByKakaoPid(
+    public FindPlaceResponse findPlaceByKakaoPid(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Parameter(description = "Kakao place unique id", example = "263830255") @RequestParam @NotBlank String kakaoPid
+            @Parameter(
+                    description = "Kakao place unique id",
+                    example = "263830255"
+            ) @RequestParam @NotBlank String kakaoPid
     ) {
-        return PlaceResponseWithImages.from(placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid));
+        PlaceDto placeDtos = placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
+        return FindPlaceResponse.from(placeDtos);
     }
 
     @Operation(
@@ -157,18 +164,18 @@ public class PlaceController {
             ) @RequestParam(required = false) @Nullable List<DayOfWeek> daysOfWeek,
             @Parameter(
                     description = """
-                           <p>(필터링 조건) 선호하는 분위기. 가능한 값은 다음과 같다.</p>
-                           <ul>
-                               <li><code>WITH_ALCOHOL</code>: 술과 함께하기 좋은</li>
-                               <li><code>GOOD_FOR_DATE</code>: 데이트 하기에 좋은</li>
-                               <li><code>WITH_ELDERS</code>: 웃어른과 함께하기 좋은</li>
-                               <li><code>CAN_ALONE</code>: 혼밥 가능한</li>
-                               <li><code>PERFECT_FOR_GROUP_MEETING</code>: 단체 모임에 좋은</li>
-                               <li><code>WAITING</code>: 웨이팅 있는</li>
-                               <li><code>SILENT</code>: 조용조용한</li>
-                               <li><code>NOISY</code>: 왁자지껄한</li>
-                            </ul>
-                            """,
+                            <p>(필터링 조건) 선호하는 분위기. 가능한 값은 다음과 같다.</p>
+                            <ul>
+                                <li><code>WITH_ALCOHOL</code>: 술과 함께하기 좋은</li>
+                                <li><code>GOOD_FOR_DATE</code>: 데이트 하기에 좋은</li>
+                                <li><code>WITH_ELDERS</code>: 웃어른과 함께하기 좋은</li>
+                                <li><code>CAN_ALONE</code>: 혼밥 가능한</li>
+                                <li><code>PERFECT_FOR_GROUP_MEETING</code>: 단체 모임에 좋은</li>
+                                <li><code>WAITING</code>: 웨이팅 있는</li>
+                                <li><code>SILENT</code>: 조용조용한</li>
+                                <li><code>NOISY</code>: 왁자지껄한</li>
+                             </ul>
+                             """,
                     example = "WITH_ALCOHOL"
             ) @RequestParam(required = false) @Nullable ReviewKeywordValue preferredVibe,
             @Parameter(
@@ -192,7 +199,7 @@ public class PlaceController {
     @Operation(
             summary = "저장한 장소들에 대한 필터링 키워드 조회",
             description = "<p>저장한 장소들에 대한 필터링 키워드를 조회합니다." +
-                    "<p>필터링 키워드에 대한 설명은 <strong><a href=\"https://www.notion.so/asdfqweasd/f6f39969ea1e48f8afee61e696e4d038?pvs=4\">[노션]데이터</a> - MY 저장 페이지: 상단버튼</strong>을 참고해주세요.",
+                          "<p>필터링 키워드에 대한 설명은 <strong><a href=\"https://www.notion.so/asdfqweasd/f6f39969ea1e48f8afee61e696e4d038?pvs=4\">[노션]데이터</a> - MY 저장 페이지: 상단버튼</strong>을 참고해주세요.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/bookmarks/filtering-keywords")
@@ -208,7 +215,7 @@ public class PlaceController {
     @Operation(
             summary = "북마크에 저장한 장소 조회",
             description = "<p>북마크에 저장한 장소들을 조회합니다." +
-                    "<p>정렬 기준은 최근에 북마크에 저장한 순서입니다.",
+                          "<p>정렬 기준은 최근에 북마크에 저장한 순서입니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/bookmarks")
@@ -216,12 +223,12 @@ public class PlaceController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "<p>Filtering 조건 유형. 값은 다음과 같습니다." +
-                            "<ul>" +
-                            "<li><code>FIRST_CATEGORY</code>: 음식 카테고리(first category). 한식, 일식 등)</li>" +
-                            "<li><code>SECOND_CATEGORY</code>: 음식 카테고리(second category) 햄버거, 피자, 국밥 등</li>" +
-                            "<li><code>TOP_3_KEYWORDS</code>: 장소의 top 3 keyword</li>" +
-                            "<li><code>ADDRESS</code>: 장소의 주소 (ex. 영통구, 연남동 등)</li>" +
-                            "</ul>",
+                                  "<ul>" +
+                                  "<li><code>FIRST_CATEGORY</code>: 음식 카테고리(first category). 한식, 일식 등)</li>" +
+                                  "<li><code>SECOND_CATEGORY</code>: 음식 카테고리(second category) 햄버거, 피자, 국밥 등</li>" +
+                                  "<li><code>TOP_3_KEYWORDS</code>: 장소의 top 3 keyword</li>" +
+                                  "<li><code>ADDRESS</code>: 장소의 주소 (ex. 영통구, 연남동 등)</li>" +
+                                  "</ul>",
                     example = "CATEGORY"
             ) @RequestParam(required = false, defaultValue = "NONE") FilteringType type,
             @Parameter(
