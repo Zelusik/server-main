@@ -1,5 +1,6 @@
 package com.zelusik.eatery.controller;
 
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
@@ -170,9 +171,31 @@ public class ReviewController {
     @GetMapping(value = "/contents/auto-creations")
     public GettingAutoCreatedReviewContentResponse getAutoCreatedContentWithGpt(
             @Parameter(
-                    description = "리뷰를 남기려고 하는 장소에 대해 사용자가 선택한 키워드 목록",
-                    example = "[\"신선한 재료\", \"넉넉한 양\", \"술과 함께\", \"데이트에 최고\", \"웃어른과\"]"
-            ) @RequestParam @NotEmpty List<@NotBlank String> placeKeywords,
+                    description = """
+                            <p>리뷰 키워드. 목록은 다음과 같다.</p>
+                            <p><strong>음식/가격 관련</strong></p>
+                            <ul>
+                               <li><code>FRESH</code>: 신선한 재료</li>
+                               <li><code>BEST_FLAVOR</code>: 최고의 맛</li>
+                               <li><code>BEST_MENU_COMBINATION</code>: 완벽 메뉴 조합</li>
+                               <li><code>LOCAL_FLAVOR</code>: 현지 느낌 가득</li>
+                               <li><code>GOOD_PRICE</code>: 가성비 갑</li>
+                               <li><code>GENEROUS_PORTIONS</code>: 넉넉한 양</li>
+                            </ul>
+                            <p><strong>분위기 관련</strong></p>
+                            <ul>
+                               <li><code>WITH_ALCOHOL</code>: 술과 함께</li>
+                               <li><code>GOOD_FOR_DATE</code>: 데이트에 최고</li>
+                               <li><code>WITH_ELDERS</code>: 웃어른과</li>
+                               <li><code>CAN_ALONE</code>: 혼밥 가능</li>
+                               <li><code>PERFECT_FOR_GROUP_MEETING</code>: 단체 모임에 딱</li>
+                               <li><code>WAITING</code>: 웨이팅 있음</li>
+                               <li><code>SILENT</code>: 조용조용한</li>
+                               <li><code>NOISY</code>: 왁자지껄한</li>
+                            </ul>
+                            """,
+                    example = "NOISY"
+            ) @RequestParam @NotEmpty List<ReviewKeywordValue> placeKeywords,
             @Parameter(
                     description = "리뷰에 태그한 메뉴 목록",
                     example = "[\"시금치카츠카레\", \"버터치킨카레\"]"
@@ -192,7 +215,11 @@ public class ReviewController {
                 .map(keywords -> Arrays.asList(keywords.split("/+")))
                 .toList();
 
-        String result = openAIService.getAutoCreatedReviewContent(placeKeywords, menus, parsedMenuKeywords);
+        String result = openAIService.getAutoCreatedReviewContent(
+                placeKeywords.stream().map(ReviewKeywordValue::getDescription).toList(),
+                menus,
+                parsedMenuKeywords
+        );
         return new GettingAutoCreatedReviewContentResponse(result);
     }
 
