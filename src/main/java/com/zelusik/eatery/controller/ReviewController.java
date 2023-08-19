@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -95,7 +96,7 @@ public class ReviewController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping
-    public SliceResponse<ReviewListElemResponse> searchOfPlace(
+    public SliceResponse<FindReviewsForSpecificPlaceResponse> findReviewsForSpecificPlace(
             @Parameter(
                     description = "리뷰를 조회하고자 하는 가게의 id(PK)",
                     example = "1"
@@ -110,9 +111,8 @@ public class ReviewController {
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return new SliceResponse<ReviewListElemResponse>()
-                .from(reviewService.findDtosByPlaceId(placeId, pageRequest)
-                        .map(ReviewListElemResponse::from));
+        Slice<ReviewDto> reviewDtos = reviewService.findDtosByPlaceId(placeId, pageRequest);
+        return new SliceResponse<FindReviewsForSpecificPlaceResponse>().from(reviewDtos.map(FindReviewsForSpecificPlaceResponse::from));
     }
 
     @Operation(
