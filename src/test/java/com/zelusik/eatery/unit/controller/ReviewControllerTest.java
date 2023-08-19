@@ -114,7 +114,8 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/reviews?placeId=" + placeId)
+                        get("/api/reviews")
+                                .queryParam("placeId", String.valueOf(placeId))
                                 .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
                 )
                 .andExpect(status().isOk())

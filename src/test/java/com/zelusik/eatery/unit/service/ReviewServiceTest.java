@@ -5,7 +5,6 @@ import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
-import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
@@ -13,10 +12,7 @@ import com.zelusik.eatery.repository.review.ReviewImageMenuTagRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
 import com.zelusik.eatery.service.*;
-import com.zelusik.eatery.util.MemberTestUtils;
-import com.zelusik.eatery.util.PlaceTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -125,8 +121,7 @@ class ReviewServiceTest {
         long placeId = 3L;
         Pageable pageable = Pageable.ofSize(15);
         SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReview(1L, 2L, placeId, "3", 4L, 5L)));
-        given(reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable))
-                .willReturn(expectedSearchResult);
+        given(reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable)).willReturn(expectedSearchResult);
 
         // when
         Slice<ReviewDto> actualSearchResult = sut.findDtosByPlaceId(placeId, pageable);
