@@ -179,8 +179,14 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Slice<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable) {
+    public Page<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable) {
         // SELECT
+        StringBuilder sqlBuilderForCountingTotalElements = new StringBuilder()
+                .append("SELECT COUNT(*) ")
+                .append("FROM (")
+                .append("SELECT p.place_id ")
+                .append("FROM bookmark bm ")
+                .append("JOIN place p ON bm.place_id = p.place_id ");
         StringBuilder sqlBuilder = new StringBuilder("SELECT p.place_id, p.top3keywords, p.kakao_pid, p.name, p.page_url, p.category_group_code, p.first_category, p.second_category, p.third_category, p.phone, p.sido, p.sgg, p.lot_number_address, p.road_address, p.homepage_url, p.lat, p.lng, p.closing_hours, p.created_at, p.updated_at, ");
         for (int i = 1; i <= numOfPlaceImages; i++) {
             sqlBuilder.append(String.join("ri" + i, POSTFIXES_OF_REVIEW_IMAGE_COLUMN_FOR_SELECT));
@@ -201,18 +207,16 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         }
 
         // WHERE
-        sqlBuilder.append("WHERE bm.member_id = :member_id ");
-        switch (filteringType) {
-            case FIRST_CATEGORY -> sqlBuilder.append("AND p.first_category = '").append(filteringKeyword).append("' ");
-            case SECOND_CATEGORY ->
-                    sqlBuilder.append("AND p.second_category = '").append(filteringKeyword).append("' ");
-            case TOP_3_KEYWORDS ->
-                    sqlBuilder.append("AND p.top3keywords LIKE '%").append(filteringKeyword).append("%' ");
-            case ADDRESS ->
-                    sqlBuilder.append("AND p.lot_number_address LIKE '%").append(filteringKeyword).append("%' ");
-            default -> {
-            }
-        }
+        String whereClause = "WHERE bm.member_id = :member_id ";
+        whereClause += switch (filteringType) {
+            case FIRST_CATEGORY -> "AND p.first_category = '" + filteringKeyword + "' ";
+            case SECOND_CATEGORY -> "AND p.second_category = '" + filteringKeyword + "' ";
+            case TOP_3_KEYWORDS -> "AND p.top3keywords LIKE '%" + filteringKeyword + "%' ";
+            case ADDRESS -> "AND p.lot_number_address LIKE '%" + filteringKeyword + "%' ";
+            default -> "";
+        };
+        sqlBuilder.append(whereClause);
+        sqlBuilderForCountingTotalElements.append(whereClause);
 
         // ORDER BY, LIMIT, OFFSET
         sqlBuilder.append("ORDER BY bm.created_at DESC ");
@@ -220,18 +224,25 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("member_id", memberId)
-                .addValue("size_of_page", pageable.getPageSize() + 1)
+                .addValue("size_of_page", pageable.getPageSize())
                 .addValue("offset", pageable.getOffset());
 
         List<PlaceDto> content = template.query(sqlBuilder.toString(), params, placeDtoWithImagesRowMapper(numOfPlaceImages));
 
-        boolean hasNext = false;
-        if (content.size() > pageable.getPageSize()) {
-            content.remove(pageable.getPageSize());
-            hasNext = true;
-        }
+        sqlBuilderForCountingTotalElements.append(") AS num_of_total_elements");
+        Long numOfTotalElements = Optional.ofNullable(
+                template.queryForObject(sqlBuilderForCountingTotalElements.toString(), params, Long.class)
+        ).orElse(0L);
 
-        return new SliceImpl<>(content, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.desc("bookmark.created_at"))), hasNext);
+        return new PageImpl<>(
+                content,
+                PageRequest.of(
+                        pageable.getPageNumber(),
+                        pageable.getPageSize(),
+                        Sort.by(Sort.Order.desc("bookmark.created_at"))
+                ),
+                numOfTotalElements
+        );
     }
 
     private RowMapper<PlaceDto> placeDtoWithImagesRowMapper(int numOfPlaceImages) {
