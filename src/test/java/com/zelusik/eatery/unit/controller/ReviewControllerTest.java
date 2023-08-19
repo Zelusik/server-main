@@ -1,6 +1,7 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.ReviewController;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
@@ -26,8 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.zelusik.eatery.constant.review.ReviewKeywordValue.FRESH;
-import static com.zelusik.eatery.constant.review.ReviewKeywordValue.NOISY;
+import static com.zelusik.eatery.constant.review.ReviewKeywordValue.*;
 import static com.zelusik.eatery.util.ReviewTestUtils.createReviewDto;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -161,13 +161,13 @@ class ReviewControllerTest {
     @Test
     void givenPlaceKeywordsAndMenusAndMenuKeywords_whenGettingAutoCreatedReviewContent_thenReturnRespondedMessageContent() throws Exception {
         // given
-        List<String> placeKeywords = List.of("신선한 재료", "넉넉한 양", "술과 함께", "데이트에 최고");
+        List<ReviewKeywordValue> placeKeywords = List.of(FRESH, GENEROUS_PORTIONS, WITH_ALCOHOL, GOOD_FOR_DATE);
         List<String> menus = List.of("시금치카츠카레", "버터치킨카레");
         List<String> menuKeywords = List.of("싱그러운+육즙 가득힌+매콤한", "부드러운+촉촉한");
 
         String expectedResult = "생성된 리뷰 내용";
         given(openAIService.getAutoCreatedReviewContent(
-                placeKeywords,
+                placeKeywords.stream().map(ReviewKeywordValue::getDescription).toList(),
                 menus,
                 menuKeywords.stream()
                         .map(keywords -> Arrays.asList(keywords.split("/+")))
@@ -177,7 +177,7 @@ class ReviewControllerTest {
         // when & then
         mvc.perform(
                         get("/api/reviews/contents/auto-creations")
-                                .param("placeKeywords", placeKeywords.toArray(new String[0]))
+                                .param("placeKeywords", placeKeywords.stream().map(ReviewKeywordValue::name).toList().toArray(new String[0]))
                                 .param("menus", menus.toArray(new String[0]))
                                 .param("menuKeywords", menuKeywords.toArray(new String[0]))
                                 .with(user(createTestUserDetails()))
