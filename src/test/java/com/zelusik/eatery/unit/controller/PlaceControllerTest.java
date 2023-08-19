@@ -101,7 +101,7 @@ class PlaceControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(placeId))
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
-                .andExpect(jsonPath("$.images", notNullValue()));
+                .andExpect(jsonPath("$.placeImages").isArray());
     }
 
     @DisplayName("Kakao place unique id가 주어지고, 해당하는 장소를 단건 조회하면, 조회된 장소 정보를 반환한다.")
@@ -122,7 +122,7 @@ class PlaceControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
-                .andExpect(jsonPath("$.images", notNullValue()));
+                .andExpect(jsonPath("$.placeImages").isArray());
     }
 
     @DisplayName("검색 키워드로 장소를 검색하면, 조회된 장소들이 반환된다.")
