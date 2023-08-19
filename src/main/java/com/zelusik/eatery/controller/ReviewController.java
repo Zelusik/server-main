@@ -171,25 +171,25 @@ public class ReviewController {
     @GetMapping(value = "/contents/auto-creations")
     public GettingAutoCreatedReviewContentResponse getAutoCreatedContentWithGpt(
             @Parameter(
-                    description = """
+                    description = """ 
                             <p>리뷰 키워드. 목록은 다음과 같다.</p>
                             <p><strong>음식/가격 관련</strong></p>
                             <ul>
                                <li><code>FRESH</code>: 신선한 재료</li>
                                <li><code>BEST_FLAVOR</code>: 최고의 맛</li>
-                               <li><code>BEST_MENU_COMBINATION</code>: 완벽 메뉴 조합</li>
-                               <li><code>LOCAL_FLAVOR</code>: 현지 느낌 가득</li>
-                               <li><code>GOOD_PRICE</code>: 가성비 갑</li>
+                               <li><code>BEST_MENU_COMBINATION</code>: 완벽한 메뉴 조합</li>
+                               <li><code>LOCAL_FLAVOR</code>: 현지 느낌이 가득한</li>
+                               <li><code>GOOD_PRICE</code>: 가성비가 좋은</li>
                                <li><code>GENEROUS_PORTIONS</code>: 넉넉한 양</li>
                             </ul>
                             <p><strong>분위기 관련</strong></p>
                             <ul>
-                               <li><code>WITH_ALCOHOL</code>: 술과 함께</li>
-                               <li><code>GOOD_FOR_DATE</code>: 데이트에 최고</li>
-                               <li><code>WITH_ELDERS</code>: 웃어른과</li>
-                               <li><code>CAN_ALONE</code>: 혼밥 가능</li>
-                               <li><code>PERFECT_FOR_GROUP_MEETING</code>: 단체 모임에 딱</li>
-                               <li><code>WAITING</code>: 웨이팅 있음</li>
+                               <li><code>WITH_ALCOHOL</code>: 술과 함께하기 좋은</li>
+                               <li><code>GOOD_FOR_DATE</code>: 데이트 하기에 좋은</li>
+                               <li><code>WITH_ELDERS</code>: 웃어른과 함께하기 좋은</li>
+                               <li><code>CAN_ALONE</code>: 혼밥 가능한</li>
+                               <li><code>PERFECT_FOR_GROUP_MEETING</code>: 단체 모임에 좋은</li>
+                               <li><code>WAITING</code>: 웨이팅 있는</li>
                                <li><code>SILENT</code>: 조용조용한</li>
                                <li><code>NOISY</code>: 왁자지껄한</li>
                             </ul>

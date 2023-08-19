@@ -59,7 +59,7 @@ public class OpenAIService {
         }
         messageBuilder
                 .append(String.join(", ", placeKeywords))
-                .append("라고 느낀 식당에 대한 후기를 공백 포함 ")
+                .append("이라는 특징이 있는 식당에 대한 후기를 공백 포함 ")
                 .append(Review.MAX_LEN_OF_REVIEW_CONTENT)
                 .append("자 이하로 작성해줘.");
 

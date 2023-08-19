@@ -156,17 +156,19 @@ public class PlaceController {
                     example = "[\"MON\", \"TUE\", \"WED\"]"
             ) @RequestParam(required = false) @Nullable List<DayOfWeek> daysOfWeek,
             @Parameter(
-                    description = "<p>(필터링 조건) 선호하는 분위기. 가능한 값은 다음과 같다.</p>" +
-                            "<ul>" +
-                            "   <li><code>WITH_ALCOHOL</code> - 술과 함께</li>" +
-                            "   <li><code>GOOD_FOR_DATE</code> - 데이트에 최고</li>" +
-                            "   <li><code>WITH_ELDERS</code> - 웃어른과</li>" +
-                            "   <li><code>CAN_ALONE</code> - 혼밥 가능</li>" +
-                            "   <li><code>PERFECT_FOR_GROUP_MEETING</code> - 단체 모임에 딱</li>" +
-                            "   <li><code>WAITING</code> - 웨이팅 있음</li>" +
-                            "   <li><code>SILENT</code> - 조용조용한</li>" +
-                            "   <li><code>NOISY</code> - 왁자지껄한</li>" +
-                            "</ul>",
+                    description = """
+                           <p>(필터링 조건) 선호하는 분위기. 가능한 값은 다음과 같다.</p>
+                           <ul>
+                               <li><code>WITH_ALCOHOL</code>: 술과 함께하기 좋은</li>
+                               <li><code>GOOD_FOR_DATE</code>: 데이트 하기에 좋은</li>
+                               <li><code>WITH_ELDERS</code>: 웃어른과 함께하기 좋은</li>
+                               <li><code>CAN_ALONE</code>: 혼밥 가능한</li>
+                               <li><code>PERFECT_FOR_GROUP_MEETING</code>: 단체 모임에 좋은</li>
+                               <li><code>WAITING</code>: 웨이팅 있는</li>
+                               <li><code>SILENT</code>: 조용조용한</li>
+                               <li><code>NOISY</code>: 왁자지껄한</li>
+                            </ul>
+                            """,
                     example = "WITH_ALCOHOL"
             ) @RequestParam(required = false) @Nullable ReviewKeywordValue preferredVibe,
             @Parameter(
