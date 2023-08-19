@@ -79,6 +79,31 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.id").value(1L));
     }
 
+    @DisplayName("리뷰의 id(PK)가 주어지고, 리뷰 상세 정보를 단건 조회하면, 조회된 리뷰 정보가 반환된다.")
+    @Test
+    void givenReviewId_whenFindReviewById_thenReturnReview() throws Exception {
+        // given
+        long memberId = 1L;
+        long reviewId = 2L;
+        ReviewDto expectedResult = createReviewDto(reviewId);
+        given(reviewService.findDtoById(memberId, reviewId)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/reviews/" + reviewId)
+                                .with(user(createTestUserDetails(memberId)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(reviewId))
+                .andExpect(jsonPath("$.writer").exists())
+                .andExpect(jsonPath("$.place").exists())
+                .andExpect(jsonPath("$.keywords").isArray())
+                .andExpect(jsonPath("$.keywords[0]").value(expectedResult.getKeywords().get(0).getDescription()))
+                .andExpect(jsonPath("$.content").value(expectedResult.getContent()))
+                .andExpect(jsonPath("$.reviewImages").exists())
+                .andDo(print());
+    }
+
     @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
     @Test
     void givenPlaceId_whenSearchReviewsOfCertainPlace_thenReturnReviews() throws Exception {

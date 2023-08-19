@@ -96,6 +96,28 @@ class ReviewServiceTest {
         assertThat(actualSavedReview.getPlace().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
+    @DisplayName("리뷰의 id(PK)가 주어지고, id로 리뷰를 단건 조회하면, 조회된 리뷰의 dto가 반환된다.")
+    @Test
+    void givenReviewId_whenFindReviewDtoById_thenReturnReviewDto() {
+        // given
+        long memberId = 1L;
+        long reviewId = 2L;
+        Review expectedResult = createReview(reviewId, memberId, 3L, "12345", 4L, 5L);
+        given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(expectedResult));
+        given(bookmarkService.isMarkedPlace(eq(memberId), any(Place.class))).willReturn(false);
+
+        // when
+        ReviewDto actualResult = sut.findDtoById(memberId, reviewId);
+
+        // then
+        then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
+        then(bookmarkService).should().isMarkedPlace(eq(memberId), any(Place.class));
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult)
+                .hasFieldOrPropertyWithValue("id", reviewId)
+                .hasFieldOrPropertyWithValue("writer.id", memberId);
+    }
+
     @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
     @Test
     void givenPlaceId_whenSearchReviewListOfCertainPlace_thenReturnReviewList() {

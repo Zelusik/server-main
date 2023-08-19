@@ -96,8 +96,20 @@ public class ReviewService {
      * @return 조회된 리뷰
      */
     private Review findById(Long reviewId) {
-        return reviewRepository.findByIdAndDeletedAtNull(reviewId)
-                .orElseThrow(ReviewNotFoundException::new);
+        return reviewRepository.findByIdAndDeletedAtNull(reviewId).orElseThrow(ReviewNotFoundException::new);
+    }
+
+    /**
+     * 주어진 PK에 해당하는 리뷰를 단건 조회한다.
+     *
+     * @param memberId PK of member. 리뷰 내 장소의 북마크 여부 확인을 위해 필요하다.
+     * @param reviewId 조회하고자 하는 리뷰의 PK
+     * @return 조회된 리뷰 dto
+     */
+    public ReviewDto findDtoById(Long memberId, Long reviewId) {
+        Review review = findById(reviewId);
+        boolean isMarkedPlace = bookmarkService.isMarkedPlace(memberId, review.getPlace());
+        return ReviewDto.from(review, isMarkedPlace);
     }
 
     /**

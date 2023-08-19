@@ -1,12 +1,10 @@
 package com.zelusik.eatery.controller;
 
 import com.zelusik.eatery.dto.SliceResponse;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewUpdateRequest;
-import com.zelusik.eatery.dto.review.response.FeedResponse;
-import com.zelusik.eatery.dto.review.response.GettingAutoCreatedReviewContentResponse;
-import com.zelusik.eatery.dto.review.response.ReviewListElemResponse;
-import com.zelusik.eatery.dto.review.response.ReviewResponse;
+import com.zelusik.eatery.dto.review.response.*;
 import com.zelusik.eatery.exception.review.MismatchedMenuKeywordCountException;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.OpenAIService;
@@ -70,9 +68,29 @@ public class ReviewController {
     }
 
     @Operation(
-            summary = "특정 가게의 리뷰 목록 조회.",
-            description = "<p>특정 가게의 리뷰 목록을 조회합니다.</p>" +
-                    "<p>가장 많이 태그된 세 개의 키워드 응답 미구현(추후 구현 예정)</p>",
+            summary = "리뷰 상세 조회",
+            description = "리뷰 상세 정보를 단건 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = FindReviewResponse.class))),
+            @ApiResponse(description = "[3501] <code>reviewId</code>에 해당하는 리뷰를 찾을 수 없는 경우", responseCode = "404", content = @Content)
+    })
+    @GetMapping("/{reviewId}")
+    public FindReviewResponse findReview(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @Parameter(
+                    description = "PK of review",
+                    example = "2"
+            ) @PathVariable Long reviewId
+    ) {
+        ReviewDto reviewDto = reviewService.findDtoById(userPrincipal.getMemberId(), reviewId);
+        return FindReviewResponse.from(reviewDto);
+    }
+
+    @Operation(
+            summary = "특정 가게의 리뷰 목록 조회",
+            description = "특정 가게의 리뷰 목록을 조회합니다",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping
