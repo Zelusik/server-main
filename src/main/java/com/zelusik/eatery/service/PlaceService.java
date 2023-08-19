@@ -177,9 +177,9 @@ public class PlaceService {
      *
      * @param memberId 로그인 회원의 PK.
      * @param pageable paging 정보
-     * @return 조회한 장소 목록과 사진 데이터
+     * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+    public Page<PlaceDto> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
         return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 

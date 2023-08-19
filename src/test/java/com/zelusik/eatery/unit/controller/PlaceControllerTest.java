@@ -220,7 +220,7 @@ class PlaceControllerTest {
         FilteringType filteringType = FilteringType.TOP_3_KEYWORDS;
         String filteringKeywordDescription = "신선한 재료";
         String filteringKeyword = "FRESH";
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
         given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then

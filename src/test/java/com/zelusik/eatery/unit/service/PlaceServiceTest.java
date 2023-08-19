@@ -238,7 +238,7 @@ class PlaceServiceTest {
         FilteringType filteringType = FilteringType.SECOND_CATEGORY;
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
-        SliceImpl<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
         given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
