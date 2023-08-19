@@ -50,7 +50,7 @@ class OpenAIServiceTest {
     @Test
     void givenPlaceKeywordsAndMenusAndMenuKeywords_whenGettingAutoCreatedReviewContent_thenReturnRespondedMessageContent() throws Exception {
         // given
-        List<String> placeKeywords = List.of("신선한 재료", "넉넉한 양", "술과 함께", "데이트에 최고");
+        List<String> placeKeywords = List.of("신선한 재료", "넉넉한 양", "술과 함께하기 좋은", "데이트 하기에 좋은");
         List<String> menus = List.of("시금치카츠카레", "버터치킨카레");
         List<List<String>> menuKeywords = List.of(
                 List.of("싱그러운", "육즙 가득한", "매콤한"),
@@ -60,7 +60,7 @@ class OpenAIServiceTest {
                 .fromUriString("https://api.openai.com/v1/chat/completions")
                 .encode(StandardCharsets.UTF_8)
                 .build().toUri();
-        String requestMessage = "싱그러운, 육즙 가득한, 매콤한 시금치카츠카레와 부드러운, 촉촉한 버터치킨카레가 있고 신선한 재료, 넉넉한 양, 술과 함께, 데이트에 최고라고 느낀 식당에 대한 후기를 공백 포함 400자 이하로 작성해줘.";
+        String requestMessage = "싱그러운, 육즙 가득한, 매콤한 시금치카츠카레와 부드러운, 촉촉한 버터치킨카레가 있고 신선한 재료, 넉넉한 양, 술과 함께하기 좋은, 데이트 하기에 좋은이라는 특징이 있는 식당에 대한 후기를 공백 포함 400자 이하로 작성해줘.";
         ChatCompletionApiRequest requestBody = new ChatCompletionApiRequest(
                 "gpt-3.5-turbo",
                 List.of(new ChatCompletionApiMessageDto("user", requestMessage)),
