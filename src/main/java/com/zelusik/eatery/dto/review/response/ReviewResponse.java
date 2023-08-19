@@ -1,17 +1,23 @@
 package com.zelusik.eatery.dto.review.response;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review.MenuTagPoint;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
 import com.zelusik.eatery.dto.place.response.PlaceResponse;
 import com.zelusik.eatery.dto.review.ReviewDto;
+import com.zelusik.eatery.dto.review.ReviewImageDto;
+import com.zelusik.eatery.dto.review.ReviewImageMenuTagDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ReviewResponse {
 
@@ -33,12 +39,8 @@ public class ReviewResponse {
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록")
     private List<ReviewImageResponse> images;
 
-    public static ReviewResponse of(Long id, MemberResponse writer, PlaceResponse place, List<String> keywords, String content, List<ReviewImageResponse> images) {
-        return new ReviewResponse(id, writer, place, keywords, content, images);
-    }
-
     public static ReviewResponse from(ReviewDto reviewDto) {
-        return of(
+        return new ReviewResponse(
                 reviewDto.getId(),
                 MemberResponse.from(reviewDto.getWriter()),
                 PlaceResponse.from(reviewDto.getPlace()),
@@ -50,5 +52,47 @@ public class ReviewResponse {
                         .map(ReviewImageResponse::from)
                         .toList()
         );
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    private static class ReviewImageResponse {
+
+        @Schema(description = "이미지 url", example = "https://review-image-url")
+        private String url;
+
+        @Schema(description = "썸네일 이미지 url", example = "https//review-thumbnail-image-url")
+        private String thumbnailUrl;
+
+        @Schema(description = "이미지에 생성된 메뉴 태그 목록")
+        private List<ReviewImageMenuTagResponse> menuTags;
+
+        private static ReviewImageResponse from(ReviewImageDto dto) {
+            return new ReviewImageResponse(
+                    dto.getUrl(),
+                    dto.getThumbnailUrl(),
+                    Optional.ofNullable(dto.getMenuTags())
+                            .map(menuTags -> menuTags.stream()
+                                    .map(ReviewImageMenuTagResponse::from)
+                                    .toList())
+                            .orElse(List.of())
+            );
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    private static class ReviewImageMenuTagResponse {
+
+        @Schema(description = "메뉴 이름", example = "떡볶이")
+        private String content;
+
+        private MenuTagPoint point;
+
+        private static ReviewImageMenuTagResponse from(ReviewImageMenuTagDto dto) {
+            return new ReviewImageMenuTagResponse(dto.getContent(), dto.getPoint());
+        }
     }
 }
