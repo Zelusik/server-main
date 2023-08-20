@@ -89,6 +89,9 @@ public class FindReviewResponse {
         @Schema(description = "이름", example = "연남토마 본점")
         private String name;
 
+        @Schema(description = "장소 카테고리", example = "퓨전일식")
+        private String category;
+
         @Schema(description = "전화번호 (nullable)", example = "02-123-4567")
         private String phone;
 
@@ -128,6 +131,9 @@ public class FindReviewResponse {
             return new PlaceResponse(
                     dto.getId(),
                     dto.getName(),
+                    dto.getCategory().getSecondCategory() != null
+                            ? dto.getCategory().getSecondCategory()
+                            : dto.getCategory().getFirstCategory(),
                     dto.getPhone(),
                     dto.getAddress(),
                     snsUrl,
