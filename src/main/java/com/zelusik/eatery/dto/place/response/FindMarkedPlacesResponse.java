@@ -1,7 +1,7 @@
 package com.zelusik.eatery.dto.place.response;
 
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
-import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -29,8 +29,12 @@ public class FindMarkedPlacesResponse {
     @Schema(description = "주소")
     private Address address;
 
-    @Schema(description = "위치 정보")
-    private Point point;
+    @Schema(
+            description = "<p>가장 많이 태그된 top 3 keywords." +
+                          "<p>이 장소에 대한 리뷰가 없다면, empty array로 응답한다.",
+            example = "[\"신선한 재료\", \"최고의 맛\"]"
+    )
+    List<String> top3Keywords;
 
     @Schema(description = "장소에 대표 이미지(최대 4개)")
     private List<PlaceImageResponse> images;
@@ -53,7 +57,9 @@ public class FindMarkedPlacesResponse {
                 dto.getName(),
                 category,
                 dto.getAddress(),
-                dto.getPoint(),
+                dto.getTop3Keywords().stream()
+                        .map(ReviewKeywordValue::getDescription)
+                        .toList(),
                 placeImages
         );
     }

@@ -36,7 +36,6 @@ import static com.zelusik.eatery.constant.place.DayOfWeek.*;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDto;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -69,19 +68,22 @@ class PlaceControllerTest {
     @Test
     void givenPlaceInfo_whenSaving_thenSavePlace() throws Exception {
         // given
+        long memberId = 1L;
         PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
-        given(placeService.create(eq(1L), any(PlaceCreateRequest.class)))
-                .willReturn(PlaceTestUtils.createPlaceDto());
+        given(placeService.create(eq(memberId), any(PlaceCreateRequest.class))).willReturn(PlaceTestUtils.createPlaceDto());
 
         // when & then
         mvc.perform(
                         post("/api/places")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(placeCreateRequest))
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists());
+                .andExpect(jsonPath("$.id").exists())
+                .andDo(print());
+        then(placeService).should().create(eq(memberId), any(PlaceCreateRequest.class));
+        then(placeService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("가게의 id(PK)가 주어지고, 해당하는 장소를 단건 조회하면, 조회된 장소 정보를 반환한다.")
@@ -96,12 +98,15 @@ class PlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/places/" + placeId)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(placeId))
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
-                .andExpect(jsonPath("$.placeImages").isArray());
+                .andExpect(jsonPath("$.placeImages").isArray())
+                .andDo(print());
+        then(placeService).should().findDtoWithMarkedStatusAndImagesById(memberId, placeId);
+        then(placeService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("Kakao place unique id가 주어지고, 해당하는 장소를 단건 조회하면, 조회된 장소 정보를 반환한다.")
@@ -117,12 +122,15 @@ class PlaceControllerTest {
         mvc.perform(
                         get("/api/places")
                                 .param("kakaoPid", kakaoPid)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
-                .andExpect(jsonPath("$.placeImages").isArray());
+                .andExpect(jsonPath("$.placeImages").isArray())
+                .andDo(print());
+        then(placeService).should().findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
+        then(placeService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("검색 키워드로 장소를 검색하면, 조회된 장소들이 반환된다.")
@@ -138,23 +146,27 @@ class PlaceControllerTest {
         mvc.perform(
                         get("/api/places/search")
                                 .queryParam("keyword", searchKeyword)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(1L)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents", hasSize(expectedResult.getContent().size())))
-                .andExpect(jsonPath("$.contents[0].id").value(placeId));
+                .andExpect(jsonPath("$.contents[0].id").value(placeId))
+                .andDo(print());
+        then(placeService).should().searchDtosByKeyword(eq(searchKeyword), any(Pageable.class));
+        then(placeService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")
     @Test
     void givenCenterPoint_whenFindNearPlaces_thenReturnPlaces() throws Exception {
         // given
+        long memberId = 1L;
         Point point = new Point("37", "127");
         FoodCategoryValue foodCategory = FoodCategoryValue.KOREAN;
         List<DayOfWeek> daysOfWeek = List.of(MON, WED, FRI);
         ReviewKeywordValue preferredVibe = ReviewKeywordValue.WITH_ALCOHOL;
         PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), 1);
-        given(placeService.findDtosNearBy(eq(1L), eq(foodCategory), eq(daysOfWeek), eq(preferredVibe), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        given(placeService.findDtosNearBy(eq(memberId), eq(foodCategory), eq(daysOfWeek), eq(preferredVibe), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -164,12 +176,14 @@ class PlaceControllerTest {
                                 .queryParam("foodCategory", foodCategory.name())
                                 .queryParam("daysOfWeek", MON.name(), WED.name(), FRI.name())
                                 .queryParam("preferredVibe", preferredVibe.name())
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId())))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isEmpty").value(false))
                 .andExpect(jsonPath("$.numOfElements").value(1))
                 .andDo(print());
+        then(placeService).should().findDtosNearBy(eq(memberId), eq(foodCategory), eq(daysOfWeek), eq(preferredVibe), eq(point), any(Pageable.class));
+        then(placeService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("선호하는 분위기 필드에 분위기 유형이 아닌 값이 주어지고, 근처 장소들을 검색하면, 예외가 발생한다.")
@@ -185,10 +199,11 @@ class PlaceControllerTest {
                                 .queryParam("lat", point.getLat())
                                 .queryParam("lng", point.getLng())
                                 .queryParam("preferredVibe", preferredVibe.name())
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(1L)))
                 )
                 .andExpect(status().isBadRequest())
                 .andDo(print());
+        then(placeService).shouldHaveNoInteractions();
     }
 
     @DisplayName("내가 저장한 장소들에 대한 filtering keyword를 조회하면, 조회 결과가 응답된다.")
@@ -205,10 +220,13 @@ class PlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/places/bookmarks/filtering-keywords")
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.keywords").isArray());
+                .andExpect(jsonPath("$.keywords").isArray())
+                .andDo(print());
+        then(placeService).should().getFilteringKeywords(memberId);
+        then(placeService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("필터링 조건이 주어지고, 북마크에 저장한 장소들을 조회하면, 저장된 장소들이 반환된다.")
@@ -227,16 +245,17 @@ class PlaceControllerTest {
         mvc.perform(get("/api/places/bookmarks")
                         .queryParam("type", filteringType.toString())
                         .queryParam("keyword", filteringKeywordDescription)
-                        .with(user(createTestUserDetails()))
+                        .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents").isArray())
-                .andExpect(jsonPath("$.size").value(1));
+                .andExpect(jsonPath("$.size").value(1))
+                .andDo(print());
         then(placeService).should().findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class));
         then(placeService).shouldHaveNoMoreInteractions();
     }
 
-    private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
+    private UserDetails createTestUserDetails(long memberId) {
+        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId));
     }
 }
