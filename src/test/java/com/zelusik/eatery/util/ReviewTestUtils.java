@@ -3,10 +3,10 @@ package com.zelusik.eatery.util;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.domain.review.MenuTagPoint;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.dto.review.request.MenuTagPointCreateRequest;
@@ -17,6 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.zelusik.eatery.util.MemberTestUtils.createMemberDtoWithId;
 
 public class ReviewTestUtils {
 
@@ -41,10 +43,10 @@ public class ReviewTestUtils {
         );
     }
 
-    public static ReviewDto createReviewDto(long reviewId) {
+    public static ReviewDto createReviewDto(long reviewId, MemberDto writer) {
         return ReviewDto.of(
                 reviewId,
-                MemberTestUtils.createMemberDtoWithId(),
+                writer,
                 PlaceTestUtils.createPlaceDto(),
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
@@ -66,6 +68,10 @@ public class ReviewTestUtils {
         );
     }
 
+    public static ReviewDto createReviewDto(long reviewId) {
+        return createReviewDto(reviewId, createMemberDtoWithId());
+    }
+
     public static ReviewDto createReviewDto() {
         return createReviewDto(1L);
     }
@@ -73,7 +79,7 @@ public class ReviewTestUtils {
     public static ReviewDto createReviewDtoWithoutPlace() {
         return ReviewDto.of(
                 1L,
-                MemberTestUtils.createMemberDtoWithId(),
+                createMemberDtoWithId(),
                 null,
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
