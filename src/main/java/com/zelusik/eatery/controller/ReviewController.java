@@ -86,8 +86,9 @@ public class ReviewController {
                     example = "2"
             ) @PathVariable Long reviewId
     ) {
-        ReviewDto reviewDto = reviewService.findDtoById(userPrincipal.getMemberId(), reviewId);
-        return FindReviewResponse.from(reviewDto);
+        Long loginMemberId = userPrincipal.getMemberId();
+        ReviewDto reviewDto = reviewService.findDtoById(loginMemberId, reviewId);
+        return FindReviewResponse.from(reviewDto, loginMemberId);
     }
 
     @Operation(

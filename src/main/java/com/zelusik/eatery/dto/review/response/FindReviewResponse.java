@@ -40,10 +40,10 @@ public class FindReviewResponse {
     @Schema(description = "리뷰 이미지")
     private List<ReviewImageResponse> reviewImages;
 
-    public static FindReviewResponse from(ReviewDto dto) {
+    public static FindReviewResponse from(ReviewDto dto, long loginMemberId) {
         return new FindReviewResponse(
                 dto.getId(),
-                WriterResponse.from(dto.getWriter()),
+                WriterResponse.from(dto.getWriter(), loginMemberId),
                 PlaceResponse.from(dto.getPlace()),
                 dto.getKeywords().stream()
                         .map(ReviewKeywordValue::getDescription)
@@ -63,15 +63,19 @@ public class FindReviewResponse {
         @Schema(description = "PK of member", example = "1")
         private Long id;
 
+        @Schema(description = "로그인한 사용자가 리뷰 작성자와 동일한지", example = "false")
+        private Boolean isEqualLoginMember;
+
         @Schema(description = "회원 프로필 썸네일 이미지 url", example = "https://member-profile-thumbnail-image-url")
         private String profileThumbnailImageUrl;
 
         @Schema(description = "닉네임", example = "우기")
         private String nickname;
 
-        private static WriterResponse from(MemberDto dto) {
+        private static WriterResponse from(MemberDto dto, long loginMemberId) {
             return new WriterResponse(
                     dto.getId(),
+                    loginMemberId == dto.getId(),
                     dto.getProfileThumbnailImageUrl(),
                     dto.getNickname()
             );
