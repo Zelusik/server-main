@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()   // JWT 기반 인증이기 때문에 session 사용 x
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                             .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
                             .mvcMatchers(HttpMethod.GET, "/api/curation").permitAll();
                     Arrays.stream(AUTH_WHITE_PATHS).forEach(authWhiteListElem -> auth.mvcMatchers(authWhiteListElem).permitAll());
