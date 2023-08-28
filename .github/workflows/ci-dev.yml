@@ -2,7 +2,7 @@ name: Eatery Dev Server - CI
 
 on:
   pull_request:
-    branches: ["develop"]
+    branches: [ "develop" ]
 
 jobs:
   build:
@@ -17,10 +17,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup application properties file
-        run: |
-          echo "${{ secrets.APPLICATION_PROPERTIES_TEST }}" > ./src/main/resources/application-test.properties
-          echo "${{ secrets.APPLICATION_PROPERTIES_DEV }}" > ./src/main/resources/application-dev.properties
+      - name: Setup application properties file for test
+        run: echo "${{ secrets.APPLICATION_PROPERTIES_TEST }}" > ./src/main/resources/application-test.properties
+
+      - name: Setup environment variables
+        run: echo "${{ secrets.ENV_PROPERTIES_DEV }}" > ./src/main/resources/env.properties
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
