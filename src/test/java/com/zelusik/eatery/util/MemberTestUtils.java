@@ -64,8 +64,6 @@ public class MemberTestUtils {
                 AGE_RANGE,
                 GENDER,
                 List.of(FoodCategoryValue.KOREAN),
-                null,
-                null,
                 null
         );
     }
