@@ -69,7 +69,7 @@ public class MemberController {
             description = "내 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping
+    @GetMapping("/me")
     public GetMyInfoResponse getMyInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return GetMyInfoResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
     }

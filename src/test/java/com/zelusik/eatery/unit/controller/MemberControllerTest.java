@@ -116,21 +116,26 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value(1200));
     }
 
-    @DisplayName("내 정보를 조회하면, 회원 정보를 응답한다.")
+    @DisplayName("내 정보를 조회하면, 조회된 내 정보가 응답된다.")
     @Test
     void given_whenGetMyInfo_thenReturnMemberInfo() throws Exception {
         // given
         long memberId = 1L;
-        given(memberService.findDtoById(memberId))
-                .willReturn(createMemberDtoWithId(memberId));
+        MemberDto expectedResult = createMemberDtoWithId(memberId);
+        given(memberService.findDtoById(memberId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
-                        get("/api/members")
+                        get("/api/members/me")
                                 .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(memberId));
+                .andExpect(jsonPath("$.id").value(expectedResult.getId()))
+                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
+                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
+                .andExpect(jsonPath("nickname").value(expectedResult.getNickname()))
+                .andExpect(jsonPath("gender").value(expectedResult.getGender().getDescription()))
+                .andExpect(jsonPath("birthDay").value(expectedResult.getBirthDay().toString()));
     }
 
     @DisplayName("주어진 검색 키워드로 회원을 검색하면, 검색된 회원 목록이 반환된다.")
