@@ -6,6 +6,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
+import com.zelusik.eatery.dto.member.response.GetMyInfoResponse;
 import com.zelusik.eatery.dto.member.response.MemberDeletionSurveyResponse;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
 import com.zelusik.eatery.dto.member.response.SearchMembersByKeywordResponse;
@@ -65,14 +66,12 @@ public class MemberController {
 
     @Operation(
             summary = "내 정보 조회",
-            description = "<p>내 정보를 조회합니다.",
+            description = "내 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping
-    public MemberResponse getMyInfo(
-            @AuthenticationPrincipal UserPrincipal userPrincipal
-    ) {
-        return MemberResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
+    public GetMyInfoResponse getMyInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return GetMyInfoResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
     }
 
     @Operation(
@@ -102,8 +101,8 @@ public class MemberController {
     @Operation(
             summary = "내 정보 수정",
             description = "<p>내 정보를 수정한다." +
-                    "<p>프로필 이미지는 수정하고자 하는 경우에만 요청해야 하고, " +
-                    "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
+                          "<p>프로필 이미지는 수정하고자 하는 경우에만 요청해야 하고, " +
+                          "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
