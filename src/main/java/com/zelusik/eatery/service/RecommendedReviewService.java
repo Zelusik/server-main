@@ -4,10 +4,13 @@ import com.zelusik.eatery.domain.RecommendedReview;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.dto.recommended_review.RecommendedReviewDto;
+import com.zelusik.eatery.dto.recommended_review.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.repository.recommended_review.RecommendedReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -35,5 +38,32 @@ public class RecommendedReviewService {
         recommendedReviewRepository.save(recommendedReview);
 
         return RecommendedReviewDto.from(recommendedReview);
+    }
+
+    /**
+     * <p>추천 리뷰를 갱신한다.
+     * <p>기존 등록된 추천 리뷰 내역을 전부 삭제한 후, 새로 전달받은 추천 리뷰 목록으로 대체한다.
+     *
+     * @param memberId                             PK of login member
+     * @param batchUpdateRecommendedReviewsRequest 갱신할 추천 리뷰 목록이 담긴 request dto
+     * @return 갱신된 추천 리뷰 목록
+     */
+    @Transactional
+    public List<RecommendedReviewDto> batchUpdateRecommendedReviews(long memberId, BatchUpdateRecommendedReviewsRequest batchUpdateRecommendedReviewsRequest) {
+        Member member = memberService.findById(memberId);
+        recommendedReviewRepository.deleteAllByMember(member);
+
+        List<RecommendedReview> recommendedReviewsForBatchUpdate = batchUpdateRecommendedReviewsRequest.getRecommendedReviews().stream()
+                .map(request -> {
+                    Review review = reviewService.findById(request.getReviewId());
+                    return RecommendedReview.of(member, review, request.getRanking());
+                })
+                .toList();
+
+        recommendedReviewRepository.saveAll(recommendedReviewsForBatchUpdate);
+
+        return recommendedReviewsForBatchUpdate.stream()
+                .map(RecommendedReviewDto::from)
+                .toList();
     }
 }
