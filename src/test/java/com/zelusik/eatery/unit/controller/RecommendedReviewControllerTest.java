@@ -46,9 +46,9 @@ class RecommendedReviewControllerTest {
         this.mapper = mapper;
     }
 
-    @DisplayName("리뷰 id와 순위가 주어지고, 추천 리뷰를 등록하면, 422 에러가 발생한다.")
+    @DisplayName("리뷰 id와 순위가 주어지고, 추천 리뷰를 등록한다.")
     @Test
-    void givenReviewIdAndRanking_whenSavingRecommendedReview_thenResponse422Error() throws Exception {
+    void givenReviewIdAndRanking_whenSavingRecommendedReview_thenSavesRecommendedReview() throws Exception {
         // given
         long memberId = 1L;
         long reviewId = 2L;
@@ -59,7 +59,7 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/members/recommended-reviews")
+                        post("/api/recommended-reviews")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(user(createTestUser(memberId)))
@@ -71,9 +71,9 @@ class RecommendedReviewControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("허용된 범위에서 벗어난 순위가 주어지고, 주어진 리뷰를 추천 리뷰로 등록한다.")
+    @DisplayName("허용된 범위에서 벗어난 순위가 주어지고, 주어진 리뷰를 추천 리뷰로 등록하면, validation 에러가 발생한다.")
     @Test
-    void givenRankingOutOfBounds_whenSavingRecommendedReview_thenSavesRecommendedReview() throws Exception {
+    void givenRankingOutOfBounds_whenSavingRecommendedReview_thenResponseValidationError() throws Exception {
         // given
         long memberId = 1L;
         long reviewId = 2L;
@@ -82,7 +82,7 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/members/recommended-reviews")
+                        post("/api/recommended-reviews")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(user(createTestUser(memberId)))

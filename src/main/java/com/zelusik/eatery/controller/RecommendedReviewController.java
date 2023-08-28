@@ -21,7 +21,7 @@ import java.net.URI;
 
 @Tag(name = "추천 리뷰 관련 API")
 @RequiredArgsConstructor
-@RequestMapping("/api/members/recommended-reviews")
+@RequestMapping("/api/recommended-reviews")
 @RestController
 public class RecommendedReviewController {
 
