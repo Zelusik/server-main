@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(uniqueConstraints = @UniqueConstraint(
+        name = "unique__recommended_review__member_id__review_id__ranking",
+        columnNames = {"member_id", "review_id", "ranking"}
+))
 @Entity
 public class RecommendedReview extends BaseTimeEntity {
 
