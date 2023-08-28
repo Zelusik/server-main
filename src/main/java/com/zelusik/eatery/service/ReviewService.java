@@ -95,7 +95,7 @@ public class ReviewService {
      * @param reviewId 조회하고자 하는 리뷰의 PK
      * @return 조회된 리뷰
      */
-    private Review findById(Long reviewId) {
+    public Review findById(Long reviewId) {
         return reviewRepository.findByIdAndDeletedAtNull(reviewId).orElseThrow(ReviewNotFoundException::new);
     }
 
