@@ -25,4 +25,7 @@ public class RecommendedReview extends BaseTimeEntity {
     @JoinColumn(name = "review_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
+
+    @Column(nullable = false)
+    private Short ranking;
 }
