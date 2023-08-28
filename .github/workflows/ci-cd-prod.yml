@@ -2,45 +2,46 @@ name: Eatery Prod Server - CI/CD
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
-    - name: Setup application properties file
-      run: |
-        echo "${{ secrets.APPLICATION_PROPERTIES_TEST }}" > ./src/main/resources/application-test.properties
-        echo "${{ secrets.APPLICATION_PROPERTIES_PROD }}" > ./src/main/resources/application-prod.properties
+      - name: Setup application properties file for test
+        run: echo "${{ secrets.APPLICATION_PROPERTIES_TEST }}" > ./src/main/resources/application-test.properties
 
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-      with:
-        arguments: build
+      - name: Setup environment variables
+        run: echo "${{ secrets.ENV_PROPERTIES_PROD }}" > ./src/main/resources/env.properties
 
-    - name: Docker build and push
-      run: |
-        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker build -t ${{ secrets.DOCKER_REPO_PROD }} -f Dockerfile.prod .
-        docker push ${{ secrets.DOCKER_REPO_PROD }}
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
 
-    - name: Executing remote ssh commands with docker compose for Continuous Delivery
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.AWS_EC2_HOST_PROD }}
-        username: ubuntu
-        key: ${{ secrets.AWS_EC2_KEY_PROD }}
-        script: |
-          cd /home/ubuntu/eatery
-          sudo docker compose down
-          sudo docker pull ${{ secrets.DOCKER_REPO_PROD }}
-          sudo docker compose up -d
+      - name: Docker build and push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -t ${{ secrets.DOCKER_REPO_PROD }} -f Dockerfile.prod .
+          docker push ${{ secrets.DOCKER_REPO_PROD }}
+
+      - name: Executing remote ssh commands with docker compose for Continuous Delivery
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_EC2_HOST_PROD }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_KEY_PROD }}
+          script: |
+            cd /home/ubuntu/eatery
+            sudo docker compose down
+            sudo docker pull ${{ secrets.DOCKER_REPO_PROD }}
+            sudo docker compose up -d
