@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,intellij+all,macos,windows,gradle
 
 ### Custom ###
+.env
 src/main/resources/application-local.properties
 src/main/resources/application-dev.properties
 src/main/resources/application-prod.properties
