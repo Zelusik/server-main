@@ -2,7 +2,7 @@ name: Eatery Dev Server - CI
 
 on:
   pull_request:
-    branches: [ "develop" ]
+    branches: ["develop"]
 
 jobs:
   build:
@@ -21,9 +21,6 @@ jobs:
         run: |
           echo "${{ secrets.APPLICATION_PROPERTIES_TEST }}" > ./src/main/resources/application-test.properties
           echo "${{ secrets.APPLICATION_PROPERTIES_DEV }}" > ./src/main/resources/application-dev.properties
-
-      - name: Setup environment variables
-        run: echo "${{ secrets.ENV_DEV }}" > ./.env
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
