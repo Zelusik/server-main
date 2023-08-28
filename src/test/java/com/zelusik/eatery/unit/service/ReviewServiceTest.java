@@ -8,6 +8,7 @@ import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
+import com.zelusik.eatery.exception.review.ReviewNotFoundException;
 import com.zelusik.eatery.repository.review.ReviewImageMenuTagRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
@@ -92,7 +93,43 @@ class ReviewServiceTest {
         assertThat(actualSavedReview.getPlace().getKakaoPid()).isEqualTo(kakaoPid);
     }
 
-    @DisplayName("리뷰의 id(PK)가 주어지고, id로 리뷰를 단건 조회하면, 조회된 리뷰의 dto가 반환된다.")
+    @DisplayName("리뷰의 id(PK)가 주어지고, id로 리뷰를 단건 조회하면, 조회된 리뷰가 반환된다.")
+    @Test
+    void givenReviewId_whenFindReviewById_thenReturnReview() {
+        // given
+        long memberId = 1L;
+        long reviewId = 2L;
+        Review expectedResult = createReview(reviewId, memberId, 3L, "12345", 4L, 5L);
+        given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(expectedResult));
+
+        // when
+        Review actualResult = sut.findById(reviewId);
+
+        // then
+        then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult)
+                .hasFieldOrPropertyWithValue("id", reviewId)
+                .hasFieldOrPropertyWithValue("writer.id", memberId);
+    }
+
+    @DisplayName("존재하지 않는 리뷰 id(PK)가 주어지고, 주어진 id로 리뷰를 단건 조회하면, 예외가 발생한다..")
+    @Test
+    void givenNotExistentReviewId_whenFindReviewById_thenThrowReviewNotFoundException() {
+        // given
+        long reviewId = 2L;
+        given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.empty());
+
+        // when
+        Throwable t = catchThrowable(() -> sut.findById(reviewId));
+
+        // then
+        then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(t).isInstanceOf(ReviewNotFoundException.class);
+    }
+
+    @DisplayName("리뷰의 id(PK)가 주어지고, id로 리뷰 dto를 단건 조회하면, 조회된 리뷰의 dto가 반환된다.")
     @Test
     void givenReviewId_whenFindReviewDtoById_thenReturnReviewDto() {
         // given

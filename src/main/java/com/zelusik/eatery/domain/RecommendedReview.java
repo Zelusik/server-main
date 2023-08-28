@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -28,4 +29,20 @@ public class RecommendedReview extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Short ranking;
+
+    public static RecommendedReview of(Member member, Review review, Short ranking) {
+        return of(null, member, review, ranking, null, null);
+    }
+
+    public static RecommendedReview of(Long id, Member member, Review review, Short ranking, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new RecommendedReview(id, member, review, ranking, createdAt, updatedAt);
+    }
+
+    public RecommendedReview(Long id, Member member, Review review, Short ranking, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
+        this.member = member;
+        this.review = review;
+        this.ranking = ranking;
+    }
 }
