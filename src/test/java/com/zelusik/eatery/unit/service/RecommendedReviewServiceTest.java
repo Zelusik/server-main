@@ -130,6 +130,7 @@ class RecommendedReviewServiceTest {
         );
         given(memberService.findById(memberId)).willReturn(member);
         willDoNothing().given(recommendedReviewRepository).deleteAllByMember(member);
+        willDoNothing().given(recommendedReviewRepository).flush();
         given(reviewService.findById(any(Long.class))).willReturn(review1, review2, review3);
         given(recommendedReviewRepository.saveAll(anyList())).willReturn(expectedResults);
 
@@ -139,6 +140,7 @@ class RecommendedReviewServiceTest {
         // then
         then(memberService).should().findById(memberId);
         then(recommendedReviewRepository).should().deleteAllByMember(member);
+        then(recommendedReviewRepository).should().flush();
         verify(reviewService, times(3)).findById(any(Long.class));
         then(recommendedReviewRepository).should().saveAll(anyList());
         verifyEveryMocksShouldHaveNoMoreInteractions();
