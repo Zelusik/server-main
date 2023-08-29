@@ -178,6 +178,7 @@ class MemberControllerTest {
     @Test
     void given_whenGettingMemberProfileInfoWithMemberId_thenReturnMemberProfileInfo() throws Exception {
         // given
+        long loginMemberId = 1L;
         long memberId = 2L;
         int numOfReviews = 62;
         String mostVisitedLocation = "연남동";
@@ -189,10 +190,11 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/members/" + memberId + "/profile")
-                                .with(user(createTestUserDetails(1L)))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(expectedResult.getId()))
+                .andExpect(jsonPath("$.isEqualLoginMember").value(loginMemberId == memberId))
                 .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
                 .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
                 .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
