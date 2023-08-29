@@ -3,6 +3,7 @@ package com.zelusik.eatery.controller;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
@@ -117,8 +118,12 @@ public class MemberController {
             @ApiResponse(description = "[2000] 전달받은 <code>memberId</code>에 해당하는 회원을 찾을 수 없는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping("/{memberId}/profile")
-    public GetMemberProfileInfoResponse getMemberProfileInfo(@PathVariable Long memberId) {
-        return GetMemberProfileInfoResponse.from(memberService.getMemberProfileInfoById(memberId));
+    public GetMemberProfileInfoResponse getMemberProfileInfo(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable Long memberId
+    ) {
+        MemberProfileInfoDto memberProfileInfoDto = memberService.getMemberProfileInfoById(memberId);
+        return GetMemberProfileInfoResponse.from(userPrincipal.getMemberId(), memberProfileInfoDto);
     }
 
     @Operation(

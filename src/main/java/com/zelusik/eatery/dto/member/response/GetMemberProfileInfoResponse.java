@@ -15,6 +15,9 @@ public class GetMemberProfileInfoResponse {
     @Schema(description = "회원 id(PK)", example = "1")
     private Long id;
 
+    @Schema(description = "로그인한 사용자와 조회된 회원이 동일한 회원인지 여부", example = "false")
+    private Boolean isEqualLoginMember;
+
     @Schema(description = "프로필 이미지")
     private MemberProfileImageResponse profileImage;
 
@@ -36,9 +39,10 @@ public class GetMemberProfileInfoResponse {
     @Schema(description = "취향 통계 정보")
     private MemberTasteStatisticsResponse tasteStatistics;
 
-    public static GetMemberProfileInfoResponse from(MemberProfileInfoDto memberProfileInfoDto) {
+    public static GetMemberProfileInfoResponse from(long loginMemberId, MemberProfileInfoDto memberProfileInfoDto) {
         return new GetMemberProfileInfoResponse(
                 memberProfileInfoDto.getId(),
+                loginMemberId == memberProfileInfoDto.getId(),
                 new MemberProfileImageResponse(
                         memberProfileInfoDto.getProfileImageUrl(),
                         memberProfileInfoDto.getProfileThumbnailImageUrl()
