@@ -83,7 +83,7 @@ class MemberControllerTest {
                         post("/api/members/terms")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(termsAgreeRequest))
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(1L)))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.isNotMinor").value(true))
@@ -114,7 +114,7 @@ class MemberControllerTest {
                         post("/api/members/terms")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(termsAgreeRequest))
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(1L)))
                 )
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.code").value(1200));
@@ -135,15 +135,46 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/members/me/profile")
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(expectedResult.getId()))
                 .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
                 .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
-                .andExpect(jsonPath("nickname").value(expectedResult.getNickname()))
-                .andExpect(jsonPath("gender").value(expectedResult.getGender().getDescription()))
-                .andExpect(jsonPath("birthDay").value(expectedResult.getBirthDay().toString()))
+                .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
+                .andExpect(jsonPath("$.gender").value(expectedResult.getGender().getDescription()))
+                .andExpect(jsonPath("$.birthDay").value(expectedResult.getBirthDay().toString()))
+                .andExpect(jsonPath("$.numOfReviews").value(numOfReviews))
+                .andExpect(jsonPath("$.influence").value(0))
+                .andExpect(jsonPath("$.numOfFollowers").value(0))
+                .andExpect(jsonPath("$.numOfFollowings").value(0))
+                .andExpect(jsonPath("$.tasteStatistics.mostVisitedLocation").value(mostVisitedLocation))
+                .andExpect(jsonPath("$.tasteStatistics.mostTaggedReviewKeyword").value(mostTaggedReviewKeyword.getDescription()))
+                .andExpect(jsonPath("$.tasteStatistics.mostEatenFoodCategory").value(mostEatenFoodCategory.getName()));
+    }
+
+    @DisplayName("id로 회원 프로필 정보를 조회하면, 조회된 회원 프로필 정보가 응답된다.")
+    @Test
+    void given_whenGettingMemberInfoWithMemberId_thenReturnMemberInfo() throws Exception {
+        // given
+        long memberId = 2L;
+        int numOfReviews = 62;
+        String mostVisitedLocation = "연남동";
+        ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
+        FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
+        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        given(memberService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/members/" + memberId + "/profile")
+                                .with(user(createTestUserDetails(1L)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(expectedResult.getId()))
+                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
+                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
+                .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
                 .andExpect(jsonPath("$.numOfReviews").value(numOfReviews))
                 .andExpect(jsonPath("$.influence").value(0))
                 .andExpect(jsonPath("$.numOfFollowers").value(0))
@@ -165,7 +196,7 @@ class MemberControllerTest {
         mvc.perform(
                         get("/api/members/search")
                                 .queryParam("keyword", searchKeyword)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(1L)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.numOfElements").value(expectedResult.size()))
@@ -182,13 +213,12 @@ class MemberControllerTest {
                 .willReturn(createMemberDtoWithId(memberId));
 
         // when & then
-        // TODO: 프로필 이미지는 어떻게 넣어야 하는지 확인 후 코드 수정 필요
         mvc.perform(
                         multipart(HttpMethod.PUT, "/api/members")
                                 .param("nickname", memberUpdateInfo.getNickname())
                                 .param("birthDay", memberUpdateInfo.getBirthDay().toString())
                                 .param("gender", memberUpdateInfo.getGender().toString())
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(memberId));
@@ -207,7 +237,7 @@ class MemberControllerTest {
                         put("/api/members/favorite-food")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(1L)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -229,7 +259,7 @@ class MemberControllerTest {
                         delete("/api/members")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(MemberDeletionSurveyRequest.of(surveyType)))
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -237,7 +267,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.survey").value(surveyType.getDescription()));
     }
 
-    private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(createMemberDtoWithId());
+    private UserDetails createTestUserDetails(long memberId) {
+        return UserPrincipal.of(createMemberDtoWithId(memberId));
     }
 }

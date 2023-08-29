@@ -6,10 +6,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
-import com.zelusik.eatery.dto.member.response.GetMyProfileInfoResponse;
-import com.zelusik.eatery.dto.member.response.MemberDeletionSurveyResponse;
-import com.zelusik.eatery.dto.member.response.MemberResponse;
-import com.zelusik.eatery.dto.member.response.SearchMembersByKeywordResponse;
+import com.zelusik.eatery.dto.member.response.*;
 import com.zelusik.eatery.dto.review.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.dto.terms_info.response.TermsInfoResponse;
 import com.zelusik.eatery.security.UserPrincipal;
@@ -85,6 +82,33 @@ public class MemberController {
     @GetMapping("/me/profile")
     public GetMyProfileInfoResponse getMyProfileInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return GetMyProfileInfoResponse.from(memberService.getMemberProfileInfoById(userPrincipal.getMemberId()));
+    }
+
+    @Operation(
+            summary = "회원 프로필 정보 조회",
+            description = """
+                    <p>회원 id를 전달받아 일치하는 회원의 프로필 정보를 조회합니다.
+                    <p>회원 프로필 정보란 다음 항목들을 의미합니다.
+                    <ul>
+                        <li>회원 정보</li>
+                        <li>작성한 리뷰 수</li>
+                        <li>영향력</li>
+                        <li>팔로워 수</li>
+                        <li>팔로잉 수</li>
+                        <li>가장 많이 방문한 장소(읍면동)</li>
+                        <li>가장 많이 태그된 리뷰 키워드</li>
+                        <li>가장 많이 먹은 음식 카테고리</li>
+                    </ul>
+                    """,
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @ApiResponses({
+            @ApiResponse(description = "OK", responseCode = "200"),
+            @ApiResponse(description = "[2000] 전달받은 <code>memberId</code>에 해당하는 회원을 찾을 수 없는 경우", responseCode = "404", content = @Content)
+    })
+    @GetMapping("/{memberId}/profile")
+    public GetMemberProfileInfoResponse getMemberProfileInfo(@PathVariable Long memberId) {
+        return GetMemberProfileInfoResponse.from(memberService.getMemberProfileInfoById(memberId));
     }
 
     @Operation(
