@@ -55,7 +55,7 @@ public class GetMemberProfileInfoResponse {
                 new MemberTasteStatisticsResponse(
                         memberProfileInfoDto.getMostVisitedLocation(),
                         memberProfileInfoDto.getMostTaggedReviewKeyword() != null ? memberProfileInfoDto.getMostTaggedReviewKeyword().getDescription() : "",
-                        memberProfileInfoDto.getMostEatenFoodCategory() != null ? memberProfileInfoDto.getMostEatenFoodCategory().getName() : ""
+                        memberProfileInfoDto.getMostEatenFoodCategory() != null ? memberProfileInfoDto.getMostEatenFoodCategory().getCategoryName() : ""
                 )
         );
     }
