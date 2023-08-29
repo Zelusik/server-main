@@ -5,6 +5,7 @@ import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.domain.member.*;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
@@ -119,6 +120,27 @@ public class MemberService {
      */
     public Slice<MemberDto> searchDtosByKeyword(String searchKeyword, Pageable pageable) {
         return memberRepository.searchByKeyword(searchKeyword, pageable).map(MemberDto::from);
+    }
+
+    /**
+     * <p>회원 프로필 정보를 조회한다.
+     * <p>회원 프로필 정보란 다음 항목들을 의미합니다.
+     * <ul>
+     *     <li>회원 정보</li>
+     *     <li>작성한 리뷰 수</li>
+     *     <li>영향력</li>
+     *     <li>팔로워 수</li>
+     *     <li>팔로잉 수</li>
+     *     <li>가장 많이 방문한 장소(읍면동)</li>
+     *     <li>가장 많이 태그된 리뷰 키워드</li>
+     *     <li>가장 많이 먹은 음식 카테고리</li>
+     * </ul>
+     *
+     * @param memberId 프로필 정보를 조회할 회원의 PK
+     * @return 조회된 프로필 정보
+     */
+    public MemberProfileInfoDto getMemberProfileInfoById(long memberId) {
+        return memberRepository.getMemberProfileInfoById(memberId);
     }
 
     /**

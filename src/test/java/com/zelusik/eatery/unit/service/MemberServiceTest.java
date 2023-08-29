@@ -3,12 +3,14 @@ package com.zelusik.eatery.unit.service;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.member.MemberDeletionSurvey;
 import com.zelusik.eatery.domain.member.TermsInfo;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
@@ -31,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -188,6 +191,35 @@ class MemberServiceTest {
         }
     }
 
+    @DisplayName("회원 id로 회원 프로필 정보를 조회하면, 조회된 프로필 정보가 반환된다.")
+    @Test
+    void given_whenGettingMemberProfileInfoWithMemberId_thenReturnMemberProfileInfo() {
+        // given
+        long memberId = 1L;
+        int numOfReviews = 62;
+        String mostVisitedLocation = "연남동";
+        ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
+        FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
+        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        given(memberRepository.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
+
+        // when
+        MemberProfileInfoDto actualResult = sut.getMemberProfileInfoById(memberId);
+
+        // then
+        then(memberRepository).should().getMemberProfileInfoById(memberId);
+        verifyEveryMocksShoudHaveNoMoreInteractions();
+        assertThat(actualResult)
+                .hasFieldOrPropertyWithValue("id", memberId)
+                .hasFieldOrPropertyWithValue("numOfReviews", numOfReviews)
+                .hasFieldOrPropertyWithValue("influence", 0)
+                .hasFieldOrPropertyWithValue("numOfFollowers", 0)
+                .hasFieldOrPropertyWithValue("numOfFollowings", 0)
+                .hasFieldOrPropertyWithValue("mostVisitedLocation", mostVisitedLocation)
+                .hasFieldOrPropertyWithValue("mostTaggedReviewKeyword", mostTaggedReviewKeyword)
+                .hasFieldOrPropertyWithValue("mostEatenFoodCategory", mostEatenFoodCategory);
+    }
+
     @DisplayName("프로필 이미지를 제외하고 수정할 회원 정보가 주어지고, 회원 정보를 수정하면, 주어진 정보로 회원 정보가 수정된다.")
     @Test
     void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMemberInfo_thenUpdate() {
@@ -316,4 +348,6 @@ class MemberServiceTest {
         then(memberDeletionSurveyRepository).shouldHaveNoMoreInteractions();
         then(favoriteFoodCategoryRepository).shouldHaveNoMoreInteractions();
     }
+
+
 }

@@ -204,4 +204,15 @@ public class MemberTestUtils {
     public static FavoriteFoodCategory createFavoriteFoodCategory(Long id, Member member, FoodCategoryValue foodCategoryValue) {
         return FavoriteFoodCategory.of(id, member, foodCategoryValue);
     }
+
+    @NonNull
+    public static MemberProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
+        return MemberProfileInfoDto.of(
+                createMember(memberId),
+                numOfReviews,
+                mostVisitedLocation,
+                mostTaggedReviewKeyword,
+                mostEatenFoodCategory
+        );
+    }
 }
