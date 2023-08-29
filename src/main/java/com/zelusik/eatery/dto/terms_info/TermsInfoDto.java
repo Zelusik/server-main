@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
 public class TermsInfoDto {
 
@@ -23,19 +23,13 @@ public class TermsInfoDto {
     private LocalDateTime locationInfoUpdatedAt;
     private Boolean marketingReception;
     private LocalDateTime marketingReceptionUpdatedAt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    public static TermsInfoDto of(Long id, Boolean isNotMinor, Boolean service, LocalDateTime serviceUpdatedAt, Boolean userInfo, LocalDateTime userInfoUpdatedAt, Boolean locationInfo, LocalDateTime locationInfoUpdatedAt, Boolean marketingReception, LocalDateTime marketingReceptionUpdatedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new TermsInfoDto(id, isNotMinor, service, serviceUpdatedAt, userInfo, userInfoUpdatedAt, locationInfo, locationInfoUpdatedAt, marketingReception, marketingReceptionUpdatedAt, createdAt, updatedAt);
-    }
 
     public static TermsInfoDto from(TermsInfo entity) {
         if (entity == null) {
             return null;
         }
 
-        return of(
+        return new TermsInfoDto(
                 entity.getId(),
                 entity.getIsNotMinor(),
                 entity.getService(),
@@ -45,9 +39,7 @@ public class TermsInfoDto {
                 entity.getLocationInfo(),
                 entity.getLocationInfoUpdatedAt(),
                 entity.getMarketingReception(),
-                entity.getMarketingReceptionUpdatedAt(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getMarketingReceptionUpdatedAt()
         );
     }
 }
