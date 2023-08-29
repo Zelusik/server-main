@@ -102,7 +102,7 @@ public class FindRecommendedReviewsResponse {
                     return new PlaceResponse(
                             dto.getId(),
                             dto.getName(),
-                            FoodCategoryValue.valueOfFirstCategory(dto.getCategory().getFirstCategory()).getName(),
+                            FoodCategoryValue.valueOfFirstCategory(dto.getCategory().getFirstCategory()).getCategoryName(),
                             dto.getAddress(),
                             dto.getIsMarked()
                     );

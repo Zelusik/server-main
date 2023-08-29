@@ -1,5 +1,6 @@
 package com.zelusik.eatery.dto.member.response;
 
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.dto.member.MemberDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -29,13 +31,19 @@ public class GetMyInfoResponse {
     @Schema(description = "생년월일", example = "1998-01-05")
     private LocalDate birthDay;
 
+    @Schema(description = "선호 음식 카테고리 목록")
+    private List<FoodCategoryResponse> favoriteFoodCategories;
+
     public static GetMyInfoResponse from(MemberDto memberDto) {
         return new GetMyInfoResponse(
                 memberDto.getId(),
                 new MemberProfileImageResponse(memberDto.getProfileImageUrl(), memberDto.getProfileThumbnailImageUrl()),
                 memberDto.getNickname(),
                 memberDto.getGender().getDescription(),
-                memberDto.getBirthDay()
+                memberDto.getBirthDay(),
+                memberDto.getFavoriteFoodCategories().stream()
+                        .map(FoodCategoryResponse::from)
+                        .toList()
         );
     }
 
@@ -49,5 +57,21 @@ public class GetMyInfoResponse {
 
         @Schema(description = "썸네일 이미지 url", example = "https://member-profile-thumbnail-image-url")
         private String thumbnailImageUrl;
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    private static class FoodCategoryResponse {
+
+        @Schema(description = "value of food category", example = "KOREAN")
+        private String value;
+
+        @Schema(description = "카테고리 이름", example = "한식")
+        private String categoryName;
+
+        private static FoodCategoryResponse from(FoodCategoryValue foodCategoryValue) {
+            return new FoodCategoryResponse(foodCategoryValue.name(), foodCategoryValue.getCategoryName());
+        }
     }
 }

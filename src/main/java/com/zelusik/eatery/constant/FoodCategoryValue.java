@@ -45,7 +45,7 @@ public enum FoodCategoryValue {
     BUFFET("뷔페", List.of("패밀리레스토랑", "뷔페")),
     BAR("술집", List.of("술집"));
 
-    private final String name;
+    private final String categoryName;
     private final List<String> matchingFirstCategories;
 
     public static FoodCategoryValue valueOfFirstCategory(String firstCategory) {
@@ -60,7 +60,7 @@ public enum FoodCategoryValue {
 
         return Arrays.stream(values())
                 .filter(value -> trimmedDescription.equals(
-                        value.getName().replace(" ", "")
+                        value.getCategoryName().replace(" ", "")
                 )).findFirst()
                 .orElseThrow(NotAcceptableFoodCategory::new);
     }
