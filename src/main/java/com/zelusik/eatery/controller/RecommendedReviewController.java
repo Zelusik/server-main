@@ -4,6 +4,7 @@ import com.zelusik.eatery.dto.recommended_review.RecommendedReviewDto;
 import com.zelusik.eatery.dto.recommended_review.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.dto.recommended_review.request.SaveRecommendedReviewsRequest;
 import com.zelusik.eatery.dto.recommended_review.response.BatchUpdateRecommendedReviewsResponse;
+import com.zelusik.eatery.dto.recommended_review.response.FindRecommendedReviewsResponse;
 import com.zelusik.eatery.dto.recommended_review.response.SaveRecommendedReviewsResponse;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.RecommendedReviewService;
@@ -41,6 +42,17 @@ public class RecommendedReviewController {
         return ResponseEntity
                 .created(URI.create("/api/members/recommended-reviews/" + recommendedReviewDto.getId()))
                 .body(SaveRecommendedReviewsResponse.from(recommendedReviewDto));
+    }
+
+    @Operation(
+            summary = "추천 리뷰 조회",
+            description = "전달받은 <code>memberId</code>에 해당하는 회원의 추천 리뷰 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/members/{memberId}/recommended-reviews")
+    public FindRecommendedReviewsResponse findRecommendedReviews(@PathVariable Long memberId) {
+        List<RecommendedReviewDto> recommendedReviews = recommendedReviewService.findAllDtosWithPlaceMarkedStatus(memberId);
+        return FindRecommendedReviewsResponse.from(recommendedReviews);
     }
 
     @Operation(

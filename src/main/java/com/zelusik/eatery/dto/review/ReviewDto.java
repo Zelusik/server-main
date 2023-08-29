@@ -15,7 +15,7 @@ import org.springframework.lang.NonNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
 public class ReviewDto {
 
@@ -26,23 +26,14 @@ public class ReviewDto {
     private String autoCreatedContent;
     private String content;
     private List<ReviewImageDto> reviewImageDtos;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 
-    @NonNull
-    public static ReviewDto of(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
-        return of(null, null, place, keywords, autoCreatedContent, content, null, null, null, null);
+    public ReviewDto(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
+        this(null, null, place, keywords, autoCreatedContent, content, null);
     }
 
     @NonNull
-    public static ReviewDto of(Long id, MemberDto writer, PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageDto> reviewImageDtos, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewDto(id, writer, place, keywords, autoCreatedContent, content, reviewImageDtos, createdAt, updatedAt, deletedAt);
-    }
-
-    @NonNull
-    public static ReviewDto from(@NonNull Review entity, @NonNull Boolean isMarkedPlace) {
-        return of(
+    public static ReviewDto from(@NonNull Review entity, Boolean isMarkedPlace) {
+        return new ReviewDto(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
                 PlaceDto.from(entity.getPlace(), isMarkedPlace),
@@ -53,16 +44,13 @@ public class ReviewDto {
                 entity.getContent(),
                 entity.getReviewImages().stream()
                         .map(ReviewImageDto::from)
-                        .toList(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt()
+                        .toList()
         );
     }
 
     @NonNull
     public static ReviewDto fromWithoutPlace(@NonNull Review entity) {
-        return of(
+        return new ReviewDto(
                 entity.getId(),
                 MemberDto.from(entity.getWriter()),
                 null,
@@ -73,10 +61,7 @@ public class ReviewDto {
                 entity.getContent(),
                 entity.getReviewImages().stream()
                         .map(ReviewImageDto::from)
-                        .toList(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt()
+                        .toList()
         );
     }
 

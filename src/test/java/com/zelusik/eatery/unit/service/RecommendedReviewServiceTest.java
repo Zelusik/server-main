@@ -1,15 +1,29 @@
 package com.zelusik.eatery.unit.service;
 
+import com.zelusik.eatery.constant.ConstantUtil;
+import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.RecommendedReview;
 import com.zelusik.eatery.domain.member.Member;
+import com.zelusik.eatery.domain.place.Address;
+import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.place.PlaceCategory;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.recommended_review.RecommendedReviewDto;
 import com.zelusik.eatery.dto.recommended_review.request.BatchUpdateRecommendedReviewsRequest;
+import com.zelusik.eatery.dto.review.ReviewDto;
+import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.repository.recommended_review.RecommendedReviewRepository;
 import com.zelusik.eatery.service.MemberService;
 import com.zelusik.eatery.service.RecommendedReviewService;
 import com.zelusik.eatery.service.ReviewService;
-import com.zelusik.eatery.util.ReviewTestUtils;
+import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,11 +31,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
-import static com.zelusik.eatery.util.MemberTestUtils.createMember;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
-import static com.zelusik.eatery.util.RecommendedReviewTestUtils.createRecommendedReview;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -51,7 +65,7 @@ class RecommendedReviewServiceTest {
         long reviewId = 2L;
         short ranking = 1;
         Member member = createMember(memberId);
-        Review review = ReviewTestUtils.createReview(reviewId, member, createPlace(3L, "12345"));
+        Review review = createReview(reviewId, member, createPlace(3L, "12345"));
         RecommendedReview expectedResult = createRecommendedReview(4L, member, review, ranking);
         given(memberService.findById(memberId)).willReturn(member);
         given(reviewService.findById(reviewId)).willReturn(review);
@@ -67,7 +81,32 @@ class RecommendedReviewServiceTest {
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult)
                 .hasFieldOrPropertyWithValue("memberId", member.getId())
-                .hasFieldOrPropertyWithValue("reviewId", review.getId());
+                .hasFieldOrPropertyWithValue("review.id", review.getId());
+    }
+
+    @DisplayName("회원 id가 주어지고, id에 해당하는 회원이 설정한 추천 리뷰들을 함께 조회한다.")
+    @Test
+    void given_whenFindingRecommendedReviewsWithMemberId_thenReturnRecommendedReviews() {
+        // given
+        long memberId = 1L;
+        long recommendedReviewId = 2L;
+        long reviewId = 3L;
+        short ranking = 4;
+        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, reviewId, ranking));
+        given(recommendedReviewRepository.findAllDtosWithPlaceMarkedStatusByMemberId(memberId)).willReturn(expectedResults);
+
+        // when
+        List<RecommendedReviewDto> actualResults = sut.findAllDtosWithPlaceMarkedStatus(memberId);
+
+        // then
+        then(recommendedReviewRepository).should().findAllDtosWithPlaceMarkedStatusByMemberId(memberId);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResults).hasSize(expectedResults.size());
+        assertThat(actualResults.get(0))
+                .hasFieldOrPropertyWithValue("id", expectedResults.get(0).getId())
+                .hasFieldOrPropertyWithValue("memberId", expectedResults.get(0).getMemberId())
+                .hasFieldOrPropertyWithValue("review.id", expectedResults.get(0).getReview().getId())
+                .hasFieldOrPropertyWithValue("ranking", expectedResults.get(0).getRanking());
     }
 
     @DisplayName("새로 갱신하고자 하는 추천 리뷰 세 개의 정보가 주어지고, 추천 리뷰를 batch update하면, 추천 리뷰가 전달받은 리뷰로 갱신된다.")
@@ -81,9 +120,9 @@ class RecommendedReviewServiceTest {
                 new BatchUpdateRecommendedReviewsRequest.RecommendedReviewRequest(5L, (short) 3)
         ));
         Member member = createMember(memberId);
-        Review review1 = ReviewTestUtils.createReview(3L, member, createPlace(10L, "123"));
-        Review review2 = ReviewTestUtils.createReview(4L, member, createPlace(11L, "234"));
-        Review review3 = ReviewTestUtils.createReview(5L, member, createPlace(12L, "345"));
+        Review review1 = createReview(3L, member, createPlace(10L, "123"));
+        Review review2 = createReview(4L, member, createPlace(11L, "234"));
+        Review review3 = createReview(5L, member, createPlace(12L, "345"));
         List<RecommendedReview> expectedResults = List.of(
                 createRecommendedReview(6L, member, review1, (short) 1),
                 createRecommendedReview(7L, member, review2, (short) 2),
@@ -110,7 +149,7 @@ class RecommendedReviewServiceTest {
             RecommendedReviewDto actualResult = actualResults.get(i);
             assertThat(actualResult)
                     .hasFieldOrPropertyWithValue("memberId", expectedResult.getMember().getId())
-                    .hasFieldOrPropertyWithValue("reviewId", expectedResult.getReview().getId())
+                    .hasFieldOrPropertyWithValue("review.id", expectedResult.getReview().getId())
                     .hasFieldOrPropertyWithValue("ranking", expectedResult.getRanking());
         }
     }
@@ -119,5 +158,123 @@ class RecommendedReviewServiceTest {
         then(memberService).shouldHaveNoMoreInteractions();
         then(reviewService).shouldHaveNoMoreInteractions();
         then(recommendedReviewRepository).shouldHaveNoMoreInteractions();
+    }
+
+    private Member createMember(Long memberId) {
+        return createMember(memberId, Set.of(RoleType.USER));
+    }
+
+    private Member createMember(Long memberId, Set<RoleType> roleTypes) {
+        return Member.of(
+                memberId,
+                null,
+                "profile image url",
+                "profile thunmbnail image url",
+                "social user id",
+                LoginType.KAKAO,
+                roleTypes,
+                "email",
+                "nickname",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    private MemberDto createMemberDto(Long memberId) {
+        return createMemberDto(memberId, Set.of(RoleType.USER));
+    }
+
+    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
+        return new MemberDto(
+                memberId,
+                null,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com",
+                "test",
+                LocalDate.of(1998, 1, 5),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null
+        );
+    }
+
+    private Place createPlace(long id, String kakaoPid) {
+        return Place.of(
+                id,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "place name",
+                "page url",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("한식", "냉면", null),
+                null,
+                new Address("sido", "sgg", "lot number address", "road address"),
+                null,
+                new Point("37.5595073462493", "126.921462488105"),
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private Review createReview(Long reviewId, Member member, Place place) {
+        return Review.of(
+                reviewId,
+                member,
+                place,
+                "자동 생성된 내용",
+                "제출한 내용",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    private ReviewDto createReviewDto(long reviewId, MemberDto writer) {
+        return new ReviewDto(
+                reviewId,
+                writer,
+                PlaceTestUtils.createPlaceDto(),
+                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
+                "자동 생성된 내용",
+                "제출된 내용",
+                List.of(new ReviewImageDto(
+                        1L,
+                        1L,
+                        "test.txt",
+                        "storedName",
+                        "url",
+                        "thumbnailStoredName",
+                        "thumbnailUrl"))
+        );
+    }
+
+    private RecommendedReview createRecommendedReview(Long id, Member member, Review review, short ranking) {
+        return RecommendedReview.of(
+                id,
+                member,
+                review,
+                ranking,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, long reviewId, short ranking) {
+        return new RecommendedReviewDto(
+                id,
+                memberId,
+                createReviewDto(reviewId, createMemberDto(memberId)),
+                ranking
+        );
     }
 }

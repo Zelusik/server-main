@@ -24,7 +24,7 @@ public class SaveRecommendedReviewsResponse {
     public static SaveRecommendedReviewsResponse from(RecommendedReviewDto recommendedReviewDto) {
         return new SaveRecommendedReviewsResponse(
                 recommendedReviewDto.getId(),
-                recommendedReviewDto.getReviewId(),
+                recommendedReviewDto.getReview().getId(),
                 recommendedReviewDto.getRanking()
         );
     }

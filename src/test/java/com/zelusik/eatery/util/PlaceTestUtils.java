@@ -32,7 +32,7 @@ public class PlaceTestUtils {
     }
 
     public static PlaceDto createPlaceDto() {
-        return PlaceDto.of(
+        return new PlaceDto(
                 1L,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",
@@ -51,14 +51,12 @@ public class PlaceTestUtils {
                         createOpeningHoursDto(1L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
                 ),
                 null,
-                false,
-                null,
-                null
+                false
         );
     }
 
     public static PlaceDto createPlaceDto(Long placeId) {
-        return PlaceDto.of(
+        return new PlaceDto(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",
@@ -77,9 +75,7 @@ public class PlaceTestUtils {
                         createOpeningHoursDto(102L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
                 ),
                 null,
-                false,
-                LocalDateTime.of(2023, 1, 1, 0, 0),
-                LocalDateTime.of(2023, 1, 1, 0, 0)
+                false
         );
     }
 
@@ -92,7 +88,7 @@ public class PlaceTestUtils {
     }
 
     public static PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId, String kakaoPid) {
-        return PlaceDto.of(
+        return new PlaceDto(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 kakaoPid,
@@ -111,10 +107,12 @@ public class PlaceTestUtils {
                         createOpeningHoursDto(102L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
                 ),
                 List.of(),
-                false,
-                LocalDateTime.of(2023, 1, 1, 0, 0),
-                LocalDateTime.of(2023, 1, 1, 0, 0)
+                false
         );
+    }
+
+    public static Place createNewPlace(String kakaoPid, String name) {
+        return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), "homepage-url", "12.34", "23.45", null);
     }
 
     public static Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address) {

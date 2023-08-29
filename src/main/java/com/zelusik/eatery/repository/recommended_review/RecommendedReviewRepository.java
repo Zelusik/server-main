@@ -5,7 +5,7 @@ import com.zelusik.eatery.domain.RecommendedReview;
 import com.zelusik.eatery.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RecommendedReviewRepository extends JpaRepository<RecommendedReview, Location> {
+public interface RecommendedReviewRepository extends JpaRepository<RecommendedReview, Location>, RecommendedReviewRepositoryQCustom {
 
     void deleteAllByMember(Member member);
 }

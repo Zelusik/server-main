@@ -4,12 +4,14 @@ import com.zelusik.eatery.domain.review.ReviewImage;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ReviewImageDto {
 
@@ -30,22 +32,12 @@ public class ReviewImageDto {
     @Nullable
     private List<ReviewImageMenuTagDto> menuTags;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
-    
-    public static ReviewImageDto of(Long id, Long reviewId, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, List<ReviewImageMenuTagDto> menuTags, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewImageDto(id, reviewId, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, menuTags, createdAt, updatedAt, deletedAt);
-    }
-
-    public static ReviewImageDto of(Long id, Long reviewId, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return of(id, reviewId, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, null, createdAt, updatedAt, deletedAt);
+    public ReviewImageDto(Long id, Long reviewId, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
+        this(id, reviewId, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, null);
     }
 
     public static ReviewImageDto from(ReviewImage entity) {
-        return of(
+        return new ReviewImageDto(
                 entity.getId(),
                 entity.getReview().getId(),
                 entity.getOriginalName(),
@@ -55,10 +47,7 @@ public class ReviewImageDto {
                 entity.getThumbnailUrl(),
                 entity.getMenuTags().stream()
                         .map(ReviewImageMenuTagDto::from)
-                        .toList(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt()
+                        .toList()
         );
     }
 }

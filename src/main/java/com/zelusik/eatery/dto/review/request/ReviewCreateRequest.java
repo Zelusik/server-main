@@ -69,7 +69,7 @@ public class ReviewCreateRequest {
     }
 
     public ReviewDto toDto(PlaceDto placeDto) {
-        return ReviewDto.of(
+        return new ReviewDto(
                 placeDto,
                 this.getKeywords(),
                 this.getAutoCreatedContent(),

@@ -41,7 +41,7 @@ public class BatchUpdateRecommendedReviewsResponse {
         public static RecommendedReviewResponse from(RecommendedReviewDto recommendedReviewDto) {
             return new RecommendedReviewResponse(
                     recommendedReviewDto.getId(),
-                    recommendedReviewDto.getReviewId(),
+                    recommendedReviewDto.getReview().getId(),
                     recommendedReviewDto.getRanking()
             );
         }

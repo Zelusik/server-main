@@ -27,7 +27,7 @@ public class MemberTestUtils {
     public static final Gender GENDER = Gender.MALE;
 
     public static MemberDto createNotSavedMemberDto(Set<RoleType> roleTypes) {
-        return MemberDto.of(
+        return new MemberDto(
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 SOCIAL_UID,
@@ -49,7 +49,7 @@ public class MemberTestUtils {
     }
 
     public static MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
-        return MemberDto.of(
+        return new MemberDto(
                 memberId,
                 null,
                 ConstantUtil.defaultProfileImageUrl,
@@ -146,17 +146,6 @@ public class MemberTestUtils {
                         LocalDateTime.of(2023, 1, 1, 0, 0)
                 ),
                 null
-        );
-    }
-
-    public static ProfileImage createNotSavedProfileImage(Member member) {
-        return ProfileImage.of(
-                member,
-                "originalFilename",
-                "storedFilename",
-                "url",
-                "thumbnailStoredFilename",
-                "thumbnailUrl"
         );
     }
 
