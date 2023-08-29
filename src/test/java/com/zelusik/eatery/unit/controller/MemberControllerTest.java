@@ -1,10 +1,13 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.MemberController;
 import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
@@ -24,6 +27,7 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.zelusik.eatery.util.MemberTestUtils.createMemberDtoWithId;
+import static com.zelusik.eatery.util.MemberTestUtils.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -116,17 +120,21 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value(1200));
     }
 
-    @DisplayName("내 정보를 조회하면, 조회된 내 정보가 응답된다.")
+    @DisplayName("내 프로필 정보를 조회하면, 조회된 내 프로필 정보가 응답된다.")
     @Test
     void given_whenGetMyInfo_thenReturnMemberInfo() throws Exception {
         // given
         long memberId = 1L;
-        MemberDto expectedResult = createMemberDtoWithId(memberId);
-        given(memberService.findDtoById(memberId)).willReturn(expectedResult);
+        int numOfReviews = 62;
+        String mostVisitedLocation = "연남동";
+        ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
+        FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
+        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        given(memberService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
-                        get("/api/members/me")
+                        get("/api/members/me/profile")
                                 .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
@@ -135,7 +143,14 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
                 .andExpect(jsonPath("nickname").value(expectedResult.getNickname()))
                 .andExpect(jsonPath("gender").value(expectedResult.getGender().getDescription()))
-                .andExpect(jsonPath("birthDay").value(expectedResult.getBirthDay().toString()));
+                .andExpect(jsonPath("birthDay").value(expectedResult.getBirthDay().toString()))
+                .andExpect(jsonPath("$.numOfReviews").value(numOfReviews))
+                .andExpect(jsonPath("$.influence").value(0))
+                .andExpect(jsonPath("$.numOfFollowers").value(0))
+                .andExpect(jsonPath("$.numOfFollowings").value(0))
+                .andExpect(jsonPath("$.tasteStatistics.mostVisitedLocation").value(mostVisitedLocation))
+                .andExpect(jsonPath("$.tasteStatistics.mostTaggedReviewKeyword").value(mostTaggedReviewKeyword.getDescription()))
+                .andExpect(jsonPath("$.tasteStatistics.mostEatenFoodCategory").value(mostEatenFoodCategory.getName()));
     }
 
     @DisplayName("주어진 검색 키워드로 회원을 검색하면, 검색된 회원 목록이 반환된다.")
