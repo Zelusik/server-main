@@ -17,7 +17,7 @@ import org.springframework.lang.Nullable;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class PlaceDto {
@@ -49,6 +49,7 @@ public class PlaceDto {
     @Nullable
     private String closingHours;
 
+    @Nullable
     private List<OpeningHoursDto> openingHoursDtos;
 
     @Nullable
@@ -57,18 +58,8 @@ public class PlaceDto {
     @Nullable
     private Boolean isMarked;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    @NonNull
-    public static PlaceDto of(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
-        return of(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null, null, null);
-    }
-
-    @NonNull
-    public static PlaceDto of(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHoursDtos, List<ReviewImageDto> reviewImageDtos, Boolean isMarked, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new PlaceDto(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHoursDtos, reviewImageDtos, isMarked, createdAt, updatedAt);
+    public PlaceDto(String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours) {
+        this(null, null, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, null, null, null);
     }
 
     @NonNull
@@ -78,7 +69,7 @@ public class PlaceDto {
 
     @NonNull
     public static PlaceDto fromWithImages(@NonNull Place place, @Nullable Boolean isMarked, @Nullable List<ReviewImageDto> images) {
-        return of(
+        return new PlaceDto(
                 place.getId(),
                 place.getTop3Keywords(),
                 place.getKakaoPid(),
@@ -95,9 +86,7 @@ public class PlaceDto {
                         .map(OpeningHoursDto::from)
                         .toList(),
                 images,
-                isMarked,
-                place.getCreatedAt(),
-                place.getUpdatedAt()
+                isMarked
         );
     }
 

@@ -112,7 +112,7 @@ public class KakaoOAuthUserResponse {
             thumbnailImageUrl = ConstantUtil.defaultProfileThumbnailImageUrl;
         }
 
-        return MemberDto.of(
+        return new MemberDto(
                 profileImageUrl,
                 thumbnailImageUrl,
                 getSocialUid(),

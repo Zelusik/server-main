@@ -45,27 +45,21 @@ public class ReviewTestUtils {
     }
 
     public static ReviewDto createReviewDto(long reviewId, MemberDto writer) {
-        return ReviewDto.of(
+        return new ReviewDto(
                 reviewId,
                 writer,
                 PlaceTestUtils.createPlaceDto(),
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
-                List.of(ReviewImageDto.of(
+                List.of(new ReviewImageDto(
                         1L,
                         1L,
                         "test.txt",
                         "storedName",
                         "url",
                         "thumbnailStoredName",
-                        "thumbnailUrl",
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now())),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                        "thumbnailUrl"))
         );
     }
 
@@ -78,28 +72,22 @@ public class ReviewTestUtils {
     }
 
     public static ReviewDto createReviewDtoWithoutPlace() {
-        return ReviewDto.of(
+        return new ReviewDto(
                 1L,
                 MemberTestUtils.createMemberDto(),
                 null,
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
-                List.of(ReviewImageDto.of(
+                List.of(new ReviewImageDto(
                         1L,
                         1L,
                         "test.txt",
                         "storedName",
                         "url",
                         "thumbnailStoredName",
-                        "thumbnailUrl",
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
-                )),
-                LocalDateTime.now(),
-                LocalDateTime.now(),
-                LocalDateTime.now()
+                        "thumbnailUrl"
+                ))
         );
     }
 

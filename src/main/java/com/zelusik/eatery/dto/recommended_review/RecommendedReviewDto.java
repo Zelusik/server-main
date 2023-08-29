@@ -1,6 +1,7 @@
 package com.zelusik.eatery.dto.recommended_review;
 
 import com.zelusik.eatery.domain.RecommendedReview;
+import com.zelusik.eatery.dto.review.ReviewDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,14 +14,23 @@ public class RecommendedReviewDto {
 
     private Long id;
     private Long memberId;
-    private Long reviewId;
+    private ReviewDto review;
     private Short ranking;
 
-    public static RecommendedReviewDto from(RecommendedReview entity) {
+    public static RecommendedReviewDto fromWithoutPlaceMarkedStatus(RecommendedReview entity) {
         return new RecommendedReviewDto(
                 entity.getId(),
                 entity.getMember().getId(),
-                entity.getReview().getId(),
+                ReviewDto.from(entity.getReview(), null),
+                entity.getRanking()
+        );
+    }
+
+    public static RecommendedReviewDto fromWithPlaceMarkedStatus(RecommendedReview entity, boolean placeMarkingStatus) {
+        return new RecommendedReviewDto(
+                entity.getId(),
+                entity.getMember().getId(),
+                ReviewDto.from(entity.getReview(), placeMarkingStatus),
                 entity.getRanking()
         );
     }

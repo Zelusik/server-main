@@ -4,6 +4,8 @@ import com.zelusik.eatery.dto.recommended_review.RecommendedReviewDto;
 import com.zelusik.eatery.dto.recommended_review.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.dto.recommended_review.request.SaveRecommendedReviewsRequest;
 import com.zelusik.eatery.dto.recommended_review.response.BatchUpdateRecommendedReviewsResponse;
+import com.zelusik.eatery.dto.recommended_review.response.FindMyRecommendedReviewsResponse;
+import com.zelusik.eatery.dto.recommended_review.response.FindRecommendedReviewsResponse;
 import com.zelusik.eatery.dto.recommended_review.response.SaveRecommendedReviewsResponse;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.RecommendedReviewService;
@@ -21,7 +23,7 @@ import java.util.List;
 
 @Tag(name = "추천 리뷰 관련 API")
 @RequiredArgsConstructor
-@RequestMapping("/api/recommended-reviews")
+@RequestMapping("/api")
 @RestController
 public class RecommendedReviewController {
 
@@ -29,10 +31,10 @@ public class RecommendedReviewController {
 
     @Operation(
             summary = "추천 리뷰 설정",
-            description = "추천 리뷰를 지정하여 저장합니다.",
+            description = "내 추천 리뷰를 지정하여 저장합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PostMapping
+    @PostMapping("/members/recommended-reviews")
     public ResponseEntity<SaveRecommendedReviewsResponse> saveRecommendedReviews(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid SaveRecommendedReviewsRequest saveRecommendedReviewsRequest
@@ -44,12 +46,34 @@ public class RecommendedReviewController {
     }
 
     @Operation(
+            summary = "추천 리뷰 조회",
+            description = "전달받은 <code>memberId</code>에 해당하는 회원의 추천 리뷰 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/members/{memberId}/recommended-reviews")
+    public FindRecommendedReviewsResponse findRecommendedReviews(@PathVariable Long memberId) {
+        List<RecommendedReviewDto> recommendedReviews = recommendedReviewService.findAllDtosWithPlaceMarkedStatus(memberId);
+        return FindRecommendedReviewsResponse.from(recommendedReviews);
+    }
+
+    @Operation(
+            summary = "내 추천 리뷰 조회",
+            description = "로그인 회원의 추천 리뷰 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/members/me/recommended-reviews")
+    public FindMyRecommendedReviewsResponse findMyRecommendedReviews(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        List<RecommendedReviewDto> recommendedReviews = recommendedReviewService.findAllDtosWithPlaceMarkedStatus(userPrincipal.getMemberId());
+        return FindMyRecommendedReviewsResponse.from(recommendedReviews);
+    }
+
+    @Operation(
             summary = "추천 리뷰 목록 갱신",
-            description = "<p>추천 리뷰를 갱신한다.\n" +
+            description = "<p>내 추천 리뷰를 갱신한다.\n" +
                           "<p>기존 등록된 추천 리뷰 내역을 전부 삭제한 후, 새로 전달받은 추천 리뷰 목록으로 대체한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PutMapping("/batch-update")
+    @PutMapping("/members/recommended-reviews/batch-update")
     public BatchUpdateRecommendedReviewsResponse batchUpdateRecommendedReviews(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid BatchUpdateRecommendedReviewsRequest saveRecommendedReviewsRequest

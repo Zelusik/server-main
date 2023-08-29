@@ -32,7 +32,7 @@ public class AppleOAuthUserResponse {
     }
 
     public MemberDto toMemberDto(String name, Set<RoleType> roleTypes) {
-        return MemberDto.of(
+        return new MemberDto(
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 this.getSub(),

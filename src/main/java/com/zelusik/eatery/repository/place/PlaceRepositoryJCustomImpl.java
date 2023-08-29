@@ -249,7 +249,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         return (rs, rowNum) -> {
             ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
             long placeId = rs.getLong("place_id");
-            return PlaceDto.of(
+            return new PlaceDto(
                     placeId,
                     reviewKeywordValueConverter.convertToEntityAttribute(rs.getString("top3keywords")),
                     rs.getString("kakao_pid"),
@@ -276,9 +276,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                     rs.getString("closing_hours"),
                     null,
                     getRecentFourReviewImageDtosOrderByLatest(rs, numOfPlaceImages),
-                    rs.getBoolean("is_marked"),
-                    rs.getTimestamp("created_at").toLocalDateTime(),
-                    rs.getTimestamp("updated_at").toLocalDateTime()
+                    rs.getBoolean("is_marked")
             );
         };
     }
@@ -303,17 +301,14 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             return null;
         }
 
-        return ReviewImageDto.of(
+        return new ReviewImageDto(
                 reviewImageId,
                 rs.getLong(alias + "_review_id"),
                 rs.getString(alias + "_original_name"),
                 rs.getString(alias + "_stored_name"),
                 rs.getString(alias + "_url"),
                 rs.getString(alias + "_thumbnail_stored_name"),
-                rs.getString(alias + "_thumbnail_url"),
-                rs.getTimestamp(alias + "_created_at").toLocalDateTime(),
-                rs.getTimestamp(alias + "_updated_at").toLocalDateTime(),
-                rs.getTimestamp(alias + "_deleted_at") == null ? null : rs.getTimestamp(alias + "_deleted_at").toLocalDateTime()
+                rs.getString(alias + "_thumbnail_url")
         );
     }
 

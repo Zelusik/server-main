@@ -59,7 +59,7 @@ public class PlaceCreateRequest {
     }
 
     public PlaceDto toDto(String homepageUrl, String closingHours) {
-        return PlaceDto.of(
+        return new PlaceDto(
                 this.getKakaoPid(),
                 this.getName(),
                 this.getPageUrl(),

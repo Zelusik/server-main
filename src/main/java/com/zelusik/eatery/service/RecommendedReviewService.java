@@ -37,7 +37,17 @@ public class RecommendedReviewService {
         RecommendedReview recommendedReview = RecommendedReview.of(member, review, ranking);
         recommendedReviewRepository.save(recommendedReview);
 
-        return RecommendedReviewDto.from(recommendedReview);
+        return RecommendedReviewDto.fromWithoutPlaceMarkedStatus(recommendedReview);
+    }
+
+    /**
+     * 특정 회원이 설정한 추천 리뷰들을 장소 저장 여부와 함께 조회한다.
+     *
+     * @param memberId 추천 리뷰를 조회하고자 하는 대상 회원의 PK
+     * @return 조회된 추천 리뷰들의 dto
+     */
+    public List<RecommendedReviewDto> findAllDtosWithPlaceMarkedStatus(long memberId) {
+        return recommendedReviewRepository.findAllDtosWithPlaceMarkedStatusByMemberId(memberId);
     }
 
     /**
@@ -63,7 +73,7 @@ public class RecommendedReviewService {
         recommendedReviewRepository.saveAll(recommendedReviewsForBatchUpdate);
 
         return recommendedReviewsForBatchUpdate.stream()
-                .map(RecommendedReviewDto::from)
+                .map(RecommendedReviewDto::fromWithoutPlaceMarkedStatus)
                 .toList();
     }
 }
