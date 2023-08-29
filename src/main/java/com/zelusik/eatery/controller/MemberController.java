@@ -172,14 +172,12 @@ public class MemberController {
             security = @SecurityRequirement(name = "access-token")
     )
     @PutMapping("/favorite-food")
-    public MemberResponse updateFavoriteFoodCategories(
+    public UpdateFavoriteFoodCategoriesResponse updateFavoriteFoodCategories(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
     ) {
-        List<FoodCategoryValue> favoriteFoodCategories = request.getFavoriteFoodCategories().stream()
-                .map(FoodCategoryValue::valueOfDescription)
-                .toList();
-        return MemberResponse.from(memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), favoriteFoodCategories));
+        MemberDto updatedMemberDto = memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), request.getFavoriteFoodCategories());
+        return UpdateFavoriteFoodCategoriesResponse.from(updatedMemberDto);
     }
 
     @Operation(
