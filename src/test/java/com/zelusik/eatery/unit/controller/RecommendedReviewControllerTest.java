@@ -67,7 +67,7 @@ class RecommendedReviewControllerTest {
         long reviewId = 2L;
         short ranking = 3;
         SaveRecommendedReviewsRequest request = new SaveRecommendedReviewsRequest(reviewId, ranking);
-        RecommendedReviewDto expectedResult = createRecommendedReviewDto(3L, memberId, reviewId, ranking);
+        RecommendedReviewDto expectedResult = createRecommendedReviewDto(3L, memberId, createReviewDto(reviewId, createMemberDto(memberId)), ranking);
         given(recommendedReviewService.saveRecommendedReview(memberId, reviewId, ranking)).willReturn(expectedResult);
 
         // when & then
@@ -110,8 +110,9 @@ class RecommendedReviewControllerTest {
         // given
         long memberId = 2L;
         long recommendedReviewId = 3L;
+        long reviewId = 4L;
         short ranking = 5;
-        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, 4L, ranking));
+        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId)), ranking));
         given(recommendedReviewService.findAllDtosWithPlaceMarkedStatus(memberId)).willReturn(expectedResults);
 
         // when & then
@@ -122,6 +123,7 @@ class RecommendedReviewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.recommendedReviews", hasSize(expectedResults.size())))
                 .andExpect(jsonPath("$.recommendedReviews[0].id").value(recommendedReviewId))
+                .andExpect(jsonPath("$.recommendedReviews[0].review.images", hasSize(expectedResults.get(0).getReview().getReviewImageDtos().size())))
                 .andExpect(jsonPath("$.recommendedReviews[0].ranking").value(String.valueOf(ranking)));
     }
 
@@ -136,9 +138,9 @@ class RecommendedReviewControllerTest {
                 new BatchUpdateRecommendedReviewsRequest.RecommendedReviewRequest(4L, (short) 3)
         ));
         List<RecommendedReviewDto> expectedResults = List.of(
-                createRecommendedReviewDto(5L, memberId, 2L, (short) 1),
-                createRecommendedReviewDto(6L, memberId, 3L, (short) 2),
-                createRecommendedReviewDto(7L, memberId, 4L, (short) 3)
+                createRecommendedReviewDto(5L, memberId, createReviewDto(2L, createMemberDto(memberId)), (short) 1),
+                createRecommendedReviewDto(6L, memberId, createReviewDto(3L, createMemberDto(memberId)), (short) 2),
+                createRecommendedReviewDto(7L, memberId, createReviewDto(4L, createMemberDto(memberId)), (short) 3)
         );
         given(recommendedReviewService.batchUpdateRecommendedReviews(eq(memberId), any(BatchUpdateRecommendedReviewsRequest.class))).willReturn(expectedResults);
 
@@ -201,12 +203,8 @@ class RecommendedReviewControllerTest {
         );
     }
 
-    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, long reviewId, short ranking) {
-        return new RecommendedReviewDto(
-                id,
-                memberId,
-                createReviewDto(reviewId, createMemberDto(memberId)),
-                ranking
+    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewDto review, short ranking) {
+        return new RecommendedReviewDto(id, memberId, review, ranking
         );
     }
 
@@ -218,14 +216,19 @@ class RecommendedReviewControllerTest {
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
-                List.of(new ReviewImageDto(
-                        1L,
-                        1L,
-                        "test.txt",
-                        "storedName",
-                        "url",
-                        "thumbnailStoredName",
-                        "thumbnailUrl"))
+                List.of(createReviewImageDto(100L, reviewId))
+        );
+    }
+
+    private ReviewImageDto createReviewImageDto(long reviewImageId, long reviewId) {
+        return new ReviewImageDto(
+                reviewImageId,
+                reviewId,
+                "test.txt",
+                "storedName",
+                "url",
+                "thumbnailStoredName",
+                "thumbnailUrl"
         );
     }
 }
