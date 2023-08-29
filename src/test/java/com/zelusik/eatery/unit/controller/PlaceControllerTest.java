@@ -256,6 +256,6 @@ class PlaceControllerTest {
     }
 
     private UserDetails createTestUserDetails(long memberId) {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId));
+        return UserPrincipal.of(MemberTestUtils.createMemberDto(memberId));
     }
 }

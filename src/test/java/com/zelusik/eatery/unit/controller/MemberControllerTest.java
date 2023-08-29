@@ -27,7 +27,6 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -120,9 +119,31 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.code").value(1200));
     }
 
+    @DisplayName("내 정보를 조회하면, 조회된 내 회원 정보가 응답된다.")
+    @Test
+    void given_whenGettingMyInfo_thenReturnMyInfo() throws Exception {
+        // given
+        long memberId = 1L;
+        MemberDto expectedResult = createMemberDto(memberId);
+        given(memberService.findDtoById(memberId)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/members/me")
+                                .with(user(createTestUserDetails(memberId)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(expectedResult.getId()))
+                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
+                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
+                .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
+                .andExpect(jsonPath("$.gender").value(expectedResult.getGender().getDescription()))
+                .andExpect(jsonPath("$.birthDay").value(expectedResult.getBirthDay().toString()));
+    }
+
     @DisplayName("내 프로필 정보를 조회하면, 조회된 내 프로필 정보가 응답된다.")
     @Test
-    void given_whenGetMyInfo_thenReturnMemberInfo() throws Exception {
+    void given_whenGettingMyProfileInfo_thenReturnMemberProfileInfo() throws Exception {
         // given
         long memberId = 1L;
         int numOfReviews = 62;
@@ -155,7 +176,7 @@ class MemberControllerTest {
 
     @DisplayName("id로 회원 프로필 정보를 조회하면, 조회된 회원 프로필 정보가 응답된다.")
     @Test
-    void given_whenGettingMemberInfoWithMemberId_thenReturnMemberInfo() throws Exception {
+    void given_whenGettingMemberProfileInfoWithMemberId_thenReturnMemberProfileInfo() throws Exception {
         // given
         long memberId = 2L;
         int numOfReviews = 62;
@@ -189,7 +210,7 @@ class MemberControllerTest {
     void givenSearchKeyword_whenSearchMembersByKeyword_thenReturnSearchedMembers() throws Exception {
         // given
         String searchKeyword = "test";
-        List<MemberDto> expectedResult = List.of(createMemberDtoWithId(2L));
+        List<MemberDto> expectedResult = List.of(createMemberDto(2L));
         given(memberService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(new SliceImpl<>(expectedResult));
 
         // when & then
@@ -210,7 +231,7 @@ class MemberControllerTest {
         long memberId = 1L;
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, null);
         given(memberService.update(eq(memberId), any(MemberUpdateRequest.class)))
-                .willReturn(createMemberDtoWithId(memberId));
+                .willReturn(createMemberDto(memberId));
 
         // when & then
         mvc.perform(
@@ -230,7 +251,7 @@ class MemberControllerTest {
         // given
         FavoriteFoodCategoriesUpdateRequest request = FavoriteFoodCategoriesUpdateRequest.of(List.of("한식", "양식"));
         given(memberService.updateFavoriteFoodCategories(any(), any()))
-                .willReturn(createMemberDtoWithId());
+                .willReturn(createMemberDto());
 
         // when & then
         mvc.perform(
@@ -268,6 +289,6 @@ class MemberControllerTest {
     }
 
     private UserDetails createTestUserDetails(long memberId) {
-        return UserPrincipal.of(createMemberDtoWithId(memberId));
+        return UserPrincipal.of(createMemberDto(memberId));
     }
 }

@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.zelusik.eatery.util.MemberTestUtils.createMemberDtoWithId;
+import static com.zelusik.eatery.util.MemberTestUtils.createMemberDto;
 import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createReviewKeyword;
 
 public class ReviewTestUtils {
@@ -70,7 +70,7 @@ public class ReviewTestUtils {
     }
 
     public static ReviewDto createReviewDto(long reviewId) {
-        return createReviewDto(reviewId, createMemberDtoWithId());
+        return createReviewDto(reviewId, MemberTestUtils.createMemberDto());
     }
 
     public static ReviewDto createReviewDto() {
@@ -80,7 +80,7 @@ public class ReviewTestUtils {
     public static ReviewDto createReviewDtoWithoutPlace() {
         return ReviewDto.of(
                 1L,
-                createMemberDtoWithId(),
+                MemberTestUtils.createMemberDto(),
                 null,
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",

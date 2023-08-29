@@ -199,10 +199,10 @@ class PlaceMenusControllerTest {
     }
 
     private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
+        return UserPrincipal.of(MemberTestUtils.createMemberDto());
     }
 
     private UserDetails createTestAdminDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(1L, Set.of(RoleType.USER, RoleType.MANAGER, RoleType.ADMIN)));
+        return UserPrincipal.of(MemberTestUtils.createMemberDto(1L, Set.of(RoleType.USER, RoleType.MANAGER, RoleType.ADMIN)));
     }
 }

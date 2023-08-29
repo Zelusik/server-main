@@ -2,6 +2,7 @@ package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
@@ -33,11 +34,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.zelusik.eatery.constant.FoodCategoryValue.*;
 import static com.zelusik.eatery.util.MemberTestUtils.*;
@@ -71,7 +72,7 @@ class MemberServiceTest {
     @Test
     void givenMemberInfo_whenSignUp_thenSaveAndReturnMember() {
         // given
-        MemberDto memberInfo = createMemberDto();
+        MemberDto memberInfo = createNotSavedMemberDto(Set.of(RoleType.USER));
         Member expectedSavedMember = createMember(1L);
         given(memberRepository.save(any(Member.class))).willReturn(expectedSavedMember);
 
