@@ -177,9 +177,7 @@ public class PlaceTestUtils {
                 1L,
                 dayOfWeek,
                 openAt,
-                closeAt,
-                null,
-                null
+                closeAt
         );
     }
 

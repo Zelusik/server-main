@@ -9,6 +9,7 @@ import java.time.LocalTime;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class OpeningHoursTimeDto {
+
     private LocalTime openAt;
     private LocalTime closeAt;
 

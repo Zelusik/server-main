@@ -18,11 +18,9 @@ public class OpeningHoursDto {
     private DayOfWeek dayOfWeek;
     private LocalTime openAt;
     private LocalTime closeAt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
-    public static OpeningHoursDto of(Long id, Long placeId, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closedAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return new OpeningHoursDto(id, placeId, dayOfWeek, openAt, closedAt, createdAt, updatedAt);
+    public static OpeningHoursDto of(Long id, Long placeId, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closedAt) {
+        return new OpeningHoursDto(id, placeId, dayOfWeek, openAt, closedAt);
     }
 
     public static OpeningHoursDto from(OpeningHours entity) {
@@ -31,9 +29,7 @@ public class OpeningHoursDto {
                 entity.getPlace().getId(),
                 entity.getDayOfWeek(),
                 entity.getOpenAt(),
-                entity.getCloseAt(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getCloseAt()
         );
     }
 }

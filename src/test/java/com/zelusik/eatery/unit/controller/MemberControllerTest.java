@@ -72,14 +72,12 @@ class MemberControllerTest {
         TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, true, true, true, false);
         LocalDateTime now = LocalDateTime.now();
         given(memberService.agreeToTerms(anyLong(), any(TermsAgreeRequest.class)))
-                .willReturn(TermsInfoDto.of(1L,
+                .willReturn(new TermsInfoDto(1L,
                         true,
                         true, now,
                         true, now,
                         true, now,
-                        false, now,
-                        now,
-                        now));
+                        false, now));
 
         // when & then
         mvc.perform(
@@ -103,14 +101,12 @@ class MemberControllerTest {
         TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, false, true, true, false);
         LocalDateTime now = LocalDateTime.now();
         given(memberService.agreeToTerms(anyLong(), any(TermsAgreeRequest.class)))
-                .willReturn(TermsInfoDto.of(1L,
+                .willReturn(new TermsInfoDto(1L,
                         true,
                         false, now,
                         true, now,
                         true, now,
-                        false, now,
-                        now,
-                        now));
+                        false, now));
 
         // when & then
         mvc.perform(

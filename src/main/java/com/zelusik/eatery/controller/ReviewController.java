@@ -92,8 +92,8 @@ public class ReviewController {
     }
 
     @Operation(
-            summary = "특정 가게의 리뷰 목록 조회",
-            description = "특정 가게의 리뷰 목록을 조회합니다",
+            summary = "리뷰 목록 조회",
+            description = "리뷰 목록을 조회합니다",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping
@@ -101,7 +101,7 @@ public class ReviewController {
             @Parameter(
                     description = "리뷰를 조회하고자 하는 가게의 id(PK)",
                     example = "1"
-            ) @RequestParam Long placeId,
+            ) @RequestParam(required = false) Long placeId,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
                     example = "0"
