@@ -65,7 +65,7 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/recommended-reviews")
+                        post("/api/members/recommended-reviews")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(user(createTestUser(memberId)))
@@ -88,7 +88,7 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/recommended-reviews")
+                        post("/api/members/recommended-reviews")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(user(createTestUser(memberId)))
@@ -116,7 +116,7 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        put("/api/recommended-reviews/batch-update")
+                        put("/api/members/recommended-reviews/batch-update")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(batchUpdateRecommendedReviewsRequest))
                                 .with(user(createTestUser(memberId)))
@@ -137,7 +137,7 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        put("/api/recommended-reviews/batch-update")
+                        put("/api/members/recommended-reviews/batch-update")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(batchUpdateRecommendedReviewsRequest))
                                 .with(user(createTestUser(memberId)))

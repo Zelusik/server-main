@@ -21,7 +21,7 @@ import java.util.List;
 
 @Tag(name = "추천 리뷰 관련 API")
 @RequiredArgsConstructor
-@RequestMapping("/api/recommended-reviews")
+@RequestMapping("/api")
 @RestController
 public class RecommendedReviewController {
 
@@ -29,10 +29,10 @@ public class RecommendedReviewController {
 
     @Operation(
             summary = "추천 리뷰 설정",
-            description = "추천 리뷰를 지정하여 저장합니다.",
+            description = "내 추천 리뷰를 지정하여 저장합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PostMapping
+    @PostMapping("/members/recommended-reviews")
     public ResponseEntity<SaveRecommendedReviewsResponse> saveRecommendedReviews(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid SaveRecommendedReviewsRequest saveRecommendedReviewsRequest
@@ -45,11 +45,11 @@ public class RecommendedReviewController {
 
     @Operation(
             summary = "추천 리뷰 목록 갱신",
-            description = "<p>추천 리뷰를 갱신한다.\n" +
+            description = "<p>내 추천 리뷰를 갱신한다.\n" +
                           "<p>기존 등록된 추천 리뷰 내역을 전부 삭제한 후, 새로 전달받은 추천 리뷰 목록으로 대체한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PutMapping("/batch-update")
+    @PutMapping("/members/recommended-reviews/batch-update")
     public BatchUpdateRecommendedReviewsResponse batchUpdateRecommendedReviews(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid BatchUpdateRecommendedReviewsRequest saveRecommendedReviewsRequest
