@@ -256,7 +256,7 @@ class MemberControllerTest {
     void givenFavoriteFoodCategories_whenUpdatingFavoriteFoodCategories_thenReturnUpdatedMember() throws Exception {
         // given
         long memberId = 1L;
-        FavoriteFoodCategoriesUpdateRequest request = FavoriteFoodCategoriesUpdateRequest.of(List.of("한식", "양식"));
+        FavoriteFoodCategoriesUpdateRequest request = new FavoriteFoodCategoriesUpdateRequest(List.of(FoodCategoryValue.KOREAN, FoodCategoryValue.WESTERN));
         given(memberService.updateFavoriteFoodCategories(any(), any())).willReturn(createMemberDto(memberId));
 
         // when & then
