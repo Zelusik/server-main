@@ -84,6 +84,6 @@ class MenuKeywordControllerTest {
     }
 
     private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId());
+        return UserPrincipal.of(MemberTestUtils.createMemberDto());
     }
 }

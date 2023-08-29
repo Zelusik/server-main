@@ -147,6 +147,6 @@ class RecommendedReviewControllerTest {
     }
 
     private UserDetails createTestUser(long memberId) {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId, Set.of(RoleType.USER)));
+        return UserPrincipal.of(MemberTestUtils.createMemberDto(memberId, Set.of(RoleType.USER)));
     }
 }

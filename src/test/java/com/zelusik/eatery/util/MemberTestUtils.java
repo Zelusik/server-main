@@ -26,11 +26,7 @@ public class MemberTestUtils {
     public static final Integer AGE_RANGE = 20;
     public static final Gender GENDER = Gender.MALE;
 
-    public static MemberDto createMemberDto() {
-        return createMemberDto(Set.of(RoleType.USER));
-    }
-
-    public static MemberDto createMemberDto(Set<RoleType> roleTypes) {
+    public static MemberDto createNotSavedMemberDto(Set<RoleType> roleTypes) {
         return MemberDto.of(
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
@@ -44,15 +40,15 @@ public class MemberTestUtils {
         );
     }
 
-    public static MemberDto createMemberDtoWithId() {
-        return createMemberDtoWithId(1L);
+    public static MemberDto createMemberDto() {
+        return createMemberDto(1L);
     }
 
-    public static MemberDto createMemberDtoWithId(Long memberId) {
-        return createMemberDtoWithId(memberId, Set.of(RoleType.USER));
+    public static MemberDto createMemberDto(Long memberId) {
+        return createMemberDto(memberId, Set.of(RoleType.USER));
     }
 
-    public static MemberDto createMemberDtoWithId(Long memberId, Set<RoleType> roleTypes) {
+    public static MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
         return MemberDto.of(
                 memberId,
                 null,

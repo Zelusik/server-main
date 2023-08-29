@@ -62,6 +62,16 @@ public class MemberController {
     }
 
     @Operation(
+            summary = "내 정보 조회",
+            description = "내 정보를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping("/me")
+    public GetMyInfoResponse getMyInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return GetMyInfoResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
+    }
+
+    @Operation(
             summary = "내 프로필 정보 조회",
             description = """
                     <p>내 프로필 정보를 조회합니다.

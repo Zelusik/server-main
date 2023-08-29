@@ -8,6 +8,7 @@ import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.OpenAIService;
 import com.zelusik.eatery.service.ReviewService;
+import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.MultipartFileTestUtils;
 import com.zelusik.eatery.util.ReviewTestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.zelusik.eatery.constant.review.ReviewKeywordValue.*;
-import static com.zelusik.eatery.util.MemberTestUtils.createMemberDtoWithId;
+import static com.zelusik.eatery.util.MemberTestUtils.createMemberDto;
 import static com.zelusik.eatery.util.ReviewTestUtils.createReviewDto;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,7 +91,7 @@ class ReviewControllerTest {
         // given
         long memberId = 1L;
         long reviewId = 2L;
-        ReviewDto expectedResult = createReviewDto(reviewId, createMemberDtoWithId(memberId));
+        ReviewDto expectedResult = createReviewDto(reviewId, MemberTestUtils.createMemberDto(memberId));
         given(reviewService.findDtoById(memberId, reviewId)).willReturn(expectedResult);
 
         // when & then
@@ -234,6 +235,6 @@ class ReviewControllerTest {
     }
 
     private UserDetails createTestUserDetails(long memberId) {
-        return UserPrincipal.of(createMemberDtoWithId(memberId));
+        return UserPrincipal.of(MemberTestUtils.createMemberDto(memberId));
     }
 }

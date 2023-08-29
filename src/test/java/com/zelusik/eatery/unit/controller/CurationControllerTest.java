@@ -92,7 +92,7 @@ class CurationControllerTest {
                         post("/api/curation")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
-                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(1L, Set.of(RoleType.USER)))))
+                                .with(user(UserPrincipal.of(MemberTestUtils.createMemberDto(1L, Set.of(RoleType.USER)))))
                 )
                 .andExpect(status().isForbidden());
     }
@@ -199,7 +199,7 @@ class CurationControllerTest {
 
     @NotNull
     private static UserPrincipal createTestUserDetails(long memberId, Set<RoleType> roleTypes) {
-        return UserPrincipal.of(MemberTestUtils.createMemberDtoWithId(memberId, roleTypes));
+        return UserPrincipal.of(MemberTestUtils.createMemberDto(memberId, roleTypes));
     }
 
     @NotNull
