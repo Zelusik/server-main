@@ -22,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceWithoutId;
+import static com.zelusik.eatery.util.PlaceTestUtils.createNewPlace;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -116,11 +116,11 @@ class PlaceRepositoryTest {
     @Test
     void givenSearchKeyword_whenSearching_thenReturnPlaces() {
         // given
-        Place place1 = placeRepository.save(createPlaceWithoutId("1", "김치 맛집", "https://homepage-1", "37", "127", "일요일"));
-        Place place2 = placeRepository.save(createPlaceWithoutId("2", "햄버거 맛집", "https://homepage-1", "37", "127", "일요일"));
-        Place place3 = placeRepository.save(createPlaceWithoutId("3", "그냥 식당", "https://homepage-1", "37", "127", "일요일"));
-        Place place4 = placeRepository.save(createPlaceWithoutId("4", "돈까스 맛집", "https://homepage-1", "37", "127", "일요일"));
-        Place place5 = placeRepository.save(createPlaceWithoutId("5", "테스트", "https://homepage-1", "37", "127", "일요일"));
+        Place place1 = placeRepository.save(createNewPlace("1", "김치 맛집", "https://homepage-1", "37", "127", "일요일"));
+        Place place2 = placeRepository.save(createNewPlace("2", "햄버거 맛집", "https://homepage-1", "37", "127", "일요일"));
+        Place place3 = placeRepository.save(createNewPlace("3", "그냥 식당", "https://homepage-1", "37", "127", "일요일"));
+        Place place4 = placeRepository.save(createNewPlace("4", "돈까스 맛집", "https://homepage-1", "37", "127", "일요일"));
+        Place place5 = placeRepository.save(createNewPlace("5", "테스트", "https://homepage-1", "37", "127", "일요일"));
         Pageable pageable = Pageable.ofSize(30);
         String keyword = "맛집";
 

@@ -120,9 +120,9 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         StringBuilder whereClause = new StringBuilder();
         if (foodCategory != null) {
             whereClause.append("WHERE p.first_category IN (");
-            String[] matchingFirstCategories = foodCategory.getMatchingFirstCategories();
-            for (int i = 0; i < matchingFirstCategories.length; i++) {
-                String category = matchingFirstCategories[i];
+            List<String> matchingFirstCategories = foodCategory.getMatchingFirstCategories();
+            for (int i = 0; i < matchingFirstCategories.size(); i++) {
+                String category = matchingFirstCategories.get(i);
                 if (i != 0) {
                     whereClause.append(", ");
                 }

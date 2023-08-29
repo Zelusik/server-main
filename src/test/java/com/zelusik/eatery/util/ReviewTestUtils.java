@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.zelusik.eatery.util.MemberTestUtils.createMemberDtoWithId;
+import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createReviewKeyword;
 
 public class ReviewTestUtils {
 
@@ -102,6 +103,14 @@ public class ReviewTestUtils {
         );
     }
 
+    public static Review createNewReview(Member writer, Place place, List<ReviewKeyword> reviewKeywords) {
+        return createReview(null, writer, place, reviewKeywords, List.of());
+    }
+
+    public static Review createNewReview(Member writer, Place place, List<ReviewKeyword> reviewKeywords, List<ReviewImage> reviewImages) {
+        return createReview(null, writer, place, reviewKeywords, reviewImages);
+    }
+
     public static Review createReviewWithKeywordsAndImages(Long reviewId, Member member, Place place) {
         Review review = createReview(reviewId, member, place);
         review.getKeywords().add(createReviewKeyword(10L, review, ReviewKeywordValue.BEST_FLAVOR));
@@ -137,31 +146,6 @@ public class ReviewTestUtils {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 null
-        );
-    }
-
-    public static ReviewKeyword createReviewKeyword(
-            Long reviewKeywordId,
-            Review review,
-            ReviewKeywordValue reviewKeywordValue
-    ) {
-        return ReviewKeyword.of(
-                reviewKeywordId,
-                review,
-                reviewKeywordValue,
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
-    }
-
-    public static ReviewImage createNotSavedReviewImage(Review review) {
-        return ReviewImage.of(
-                review,
-                "original file name",
-                "stored file name",
-                "url",
-                "thumbnail stored file name",
-                "thumbnail url"
         );
     }
 

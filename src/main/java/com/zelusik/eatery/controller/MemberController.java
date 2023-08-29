@@ -6,6 +6,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
 import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
+import com.zelusik.eatery.dto.member.response.GetMyProfileInfoResponse;
 import com.zelusik.eatery.dto.member.response.MemberDeletionSurveyResponse;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
 import com.zelusik.eatery.dto.member.response.SearchMembersByKeywordResponse;
@@ -64,15 +65,26 @@ public class MemberController {
     }
 
     @Operation(
-            summary = "내 정보 조회",
-            description = "<p>내 정보를 조회합니다.",
+            summary = "내 프로필 정보 조회",
+            description = """
+                    <p>내 프로필 정보를 조회합니다.
+                    <p>회원 프로필 정보란 다음 항목들을 의미합니다.
+                    <ul>
+                        <li>회원 정보</li>
+                        <li>작성한 리뷰 수</li>
+                        <li>영향력</li>
+                        <li>팔로워 수</li>
+                        <li>팔로잉 수</li>
+                        <li>가장 많이 방문한 장소(읍면동)</li>
+                        <li>가장 많이 태그된 리뷰 키워드</li>
+                        <li>가장 많이 먹은 음식 카테고리</li>
+                    </ul>
+                    """,
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping
-    public MemberResponse getMyInfo(
-            @AuthenticationPrincipal UserPrincipal userPrincipal
-    ) {
-        return MemberResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
+    @GetMapping("/me/profile")
+    public GetMyProfileInfoResponse getMyProfileInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return GetMyProfileInfoResponse.from(memberService.getMemberProfileInfoById(userPrincipal.getMemberId()));
     }
 
     @Operation(
@@ -102,8 +114,8 @@ public class MemberController {
     @Operation(
             summary = "내 정보 수정",
             description = "<p>내 정보를 수정한다." +
-                    "<p>프로필 이미지는 수정하고자 하는 경우에만 요청해야 하고, " +
-                    "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
+                          "<p>프로필 이미지는 수정하고자 하는 경우에만 요청해야 하고, " +
+                          "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

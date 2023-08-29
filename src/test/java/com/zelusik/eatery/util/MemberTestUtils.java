@@ -6,9 +6,12 @@ import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.*;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -64,8 +67,6 @@ public class MemberTestUtils {
                 AGE_RANGE,
                 GENDER,
                 List.of(FoodCategoryValue.KOREAN),
-                null,
-                null,
                 null
         );
     }
@@ -202,5 +203,16 @@ public class MemberTestUtils {
 
     public static FavoriteFoodCategory createFavoriteFoodCategory(Long id, Member member, FoodCategoryValue foodCategoryValue) {
         return FavoriteFoodCategory.of(id, member, foodCategoryValue);
+    }
+
+    @NonNull
+    public static MemberProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
+        return MemberProfileInfoDto.of(
+                createMember(memberId),
+                numOfReviews,
+                mostVisitedLocation,
+                mostTaggedReviewKeyword,
+                mostEatenFoodCategory
+        );
     }
 }

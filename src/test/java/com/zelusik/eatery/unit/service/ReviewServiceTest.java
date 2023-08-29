@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static com.zelusik.eatery.util.MemberTestUtils.createMember;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
+import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createReviewKeyword;
 import static com.zelusik.eatery.util.ReviewTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;

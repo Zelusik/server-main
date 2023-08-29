@@ -117,9 +117,16 @@ public class PlaceTestUtils {
         );
     }
 
-    public static Place createPlaceWithoutId(String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
-        return createPlace(null, kakaoPid, name, homepageUrl, lat, lng, closingHours);
+    public static Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address) {
+        return createNewPlace(kakaoPid, name, placeCategory, address, "homepage-url", "12.34", "23.45", null);
+    }
 
+    public static Place createNewPlace(String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
+        return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
+    }
+
+    public static Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
+        return createPlace(null, kakaoPid, name, placeCategory, address, homepageUrl, lat, lng, closingHours);
     }
 
     public static Place createPlace(Long id, String kakaoPid) {
@@ -135,16 +142,24 @@ public class PlaceTestUtils {
     }
 
     public static Place createPlace(Long id, String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
+        return createPlace(id, kakaoPid, name, new PlaceCategory("한식", "냉면", null), homepageUrl, lat, lng, closingHours);
+    }
+
+    public static Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, String homepageUrl, String lat, String lng, String closingHours) {
+        return createPlace(id, kakaoPid, name, placeCategory, new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
+    }
+
+    public static Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
         return Place.of(
                 id,
                 List.of(ReviewKeywordValue.FRESH),
                 kakaoPid,
                 name,
-                "http://place.map.kakao.com/308342289",
+                "https://place.map.kakao.com/308342289",
                 KakaoCategoryGroupCode.FD6,
-                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                placeCategory,
                 "02-332-8064",
-                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                address,
                 homepageUrl,
                 new Point(lat, lng),
                 closingHours,
