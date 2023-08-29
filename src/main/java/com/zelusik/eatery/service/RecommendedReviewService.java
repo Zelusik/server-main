@@ -62,6 +62,7 @@ public class RecommendedReviewService {
     public List<RecommendedReviewDto> batchUpdateRecommendedReviews(long memberId, BatchUpdateRecommendedReviewsRequest batchUpdateRecommendedReviewsRequest) {
         Member member = memberService.findById(memberId);
         recommendedReviewRepository.deleteAllByMember(member);
+        recommendedReviewRepository.flush();
 
         List<RecommendedReview> recommendedReviewsForBatchUpdate = batchUpdateRecommendedReviewsRequest.getRecommendedReviews().stream()
                 .map(request -> {
