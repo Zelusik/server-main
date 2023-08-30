@@ -1,5 +1,6 @@
 package com.zelusik.eatery.service;
 
+import com.zelusik.eatery.constant.review.ReviewEmbedOption;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
@@ -113,6 +114,21 @@ public class ReviewService {
     }
 
     /**
+     * <p>리뷰 목록 조회.
+     * <p>장소에 대한 정보는 <code>null</code>로 처리하여 반환합니다. (query 최적화)
+     *
+     * @param loginMemberId PK of login member
+     * @param writerId      filter - 특정 회원이 작성한 리뷰만 조회
+     * @param placeId       filter - 특정 가게에 대한 리뷰만 조회
+     * @param embed         연관된 entity를 포함할지에 대한 여부
+     * @param pageable      paging 정보
+     * @return 조회된 리뷰 목록(Slice)
+     */
+    public Slice<ReviewDto> findDtos(long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable) {
+        return reviewRepository.findDtos(loginMemberId, writerId, placeId, embed, pageable);
+    }
+
+    /**
      * 전체 리뷰 조회. 최신순 정렬
      *
      * @param pageable paging 정보
@@ -121,17 +137,6 @@ public class ReviewService {
     public Slice<ReviewDto> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
         return reviewRepository.findAllByDeletedAtNull(pageable)
                 .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace())));
-    }
-
-    /**
-     * 특정 가게에 대헌 리뷰 목록(Slice) 조회.
-     *
-     * @param placeId  리뷰를 조회할 가게의 id(PK)
-     * @param pageable paging 정보
-     * @return 조회된 리뷰 목록(Slice)
-     */
-    public Slice<ReviewDto> findDtosByPlaceId(Long placeId, Pageable pageable) {
-        return reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable).map(ReviewDto::fromWithoutPlace);
     }
 
     /**

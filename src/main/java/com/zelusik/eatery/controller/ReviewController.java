@@ -1,5 +1,6 @@
 package com.zelusik.eatery.controller;
 
+import com.zelusik.eatery.constant.review.ReviewEmbedOption;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.review.ReviewDto;
@@ -49,8 +50,8 @@ public class ReviewController {
     @Operation(
             summary = "리뷰 생성",
             description = "<p>리뷰 내용과 장소 정보를 받아 리뷰를 생성합니다.</p>" +
-                    "<p>영업시간, SNS 주소 등 추가로 필요한 정보는 상세 페이지(<code>place.pageUrl</code>)에서 받아옵니다.</p>" +
-                    "<p>요청 시 <strong>multipart/form-data</strong> content-type으로 요쳥해야 합니다.",
+                          "<p>영업시간, SNS 주소 등 추가로 필요한 정보는 상세 페이지(<code>place.pageUrl</code>)에서 받아옵니다.</p>" +
+                          "<p>요청 시 <strong>multipart/form-data</strong> content-type으로 요쳥해야 합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -97,30 +98,44 @@ public class ReviewController {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping
-    public SliceResponse<FindReviewsForSpecificPlaceResponse> findReviewsForSpecificPlace(
+    public SliceResponse<FindReviewsResponse> findReviews(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
-                    description = "리뷰를 조회하고자 하는 가게의 id(PK)",
+                    description = "필터 - 특정 회원이 작성한 리뷰만 조회",
                     example = "1"
+            ) @RequestParam(required = false) Long writerId,
+            @Parameter(
+                    description = "필터 - 특정 가게에 대한 리뷰만 조회",
+                    example = "3"
             ) @RequestParam(required = false) Long placeId,
             @Parameter(
-                    description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
+                    description = """
+                            <p>연관된 resource를 포함할지에 대한 여부
+                            <p>연관된 resource(장소, 작성자)가 필요하다면 필요한 resource를 설정하여 요청해야 합니다.
+                            <p>성능 최적화와 관련된 부분이니, 반드시 필요한 경우에만 관련 resource를 포함하여 응답하도록 설정해주세요.
+                            <p>ex. 리뷰와 작성자 정보도 함께 필요한 경우: <code>/api/reviews?embed=WRITER</code>
+                            <p>ex. 리뷰와 작성자, 장소 정보도 함께 필요한 경우: <code>/api/reviews?embed=WRITER,PLACE</code>
+                            """,
+                    example = "[\"WRITER\", \"PLACE\"]"
+            ) @RequestParam(required = false, defaultValue = "") List<ReviewEmbedOption> embed,
+            @Parameter(
+                    description = "페이지 번호(0부터 시작)",
                     example = "0"
             ) @RequestParam(required = false, defaultValue = "0") int page,
             @Parameter(
-                    description = "한 페이지에 담긴 데이터의 최대 개수(사이즈). 기본값은 15입니다.",
+                    description = "한 페이지에 담길 데이터의 최대 개수",
                     example = "15"
-            ) @RequestParam(required = false, defaultValue = "15") int size
+            ) @RequestParam(required = false, defaultValue = "10") int size
     ) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Slice<ReviewDto> reviewDtos = reviewService.findDtosByPlaceId(placeId, pageRequest);
-        return new SliceResponse<FindReviewsForSpecificPlaceResponse>().from(reviewDtos.map(FindReviewsForSpecificPlaceResponse::from));
+        Slice<ReviewDto> reviewDtos = reviewService.findDtos(userPrincipal.getMemberId(), writerId, placeId, embed, PageRequest.of(page, size));
+        return new SliceResponse<FindReviewsResponse>().from(reviewDtos.map(FindReviewsResponse::from));
     }
 
     @Operation(
             summary = "피드 조회",
             description = "<p>피드에 보여줄 리뷰 목록을 조회합니다." +
-                    "<p>모든 리뷰를 최신순으로 보여줍니다." +
-                    "<p>추후 기획 단계에서 고안된 알고리즘에 의해 정렬하여 제공할 예정입니다. (현재는 미구현) 다만, 요청/응답 데이터의 변경은 없을 예정",
+                          "<p>모든 리뷰를 최신순으로 보여줍니다." +
+                          "<p>추후 기획 단계에서 고안된 알고리즘에 의해 정렬하여 제공할 예정입니다. (현재는 미구현) 다만, 요청/응답 데이터의 변경은 없을 예정",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/feed")
@@ -203,8 +218,8 @@ public class ReviewController {
             ) @RequestParam(required = false) List<@NotBlank String> menus,
             @Parameter(
                     description = "<p>메뉴에 해당하는 사용자가 선택한 키워드 목록" +
-                            "<p><code>menus</code>에서 전달한 각 메뉴들과 대응되도록 순서를 일치해야 합니다." +
-                            "<p>또한, 각 키워드는 \"+\"로 구분한다.",
+                                  "<p><code>menus</code>에서 전달한 각 메뉴들과 대응되도록 순서를 일치해야 합니다." +
+                                  "<p>또한, 각 키워드는 \"+\"로 구분한다.",
                     example = "[\"싱그러운+육즙 가득한+살짝 매콤\", \"부드러운+촉촉한\"]"
             ) @RequestParam(required = false) List<@NotBlank String> menuKeywords
     ) {

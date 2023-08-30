@@ -37,7 +37,7 @@ public class RecommendedReviewService {
         RecommendedReview recommendedReview = RecommendedReview.of(member, review, ranking);
         recommendedReviewRepository.save(recommendedReview);
 
-        return RecommendedReviewDto.fromWithoutPlaceMarkedStatus(recommendedReview);
+        return RecommendedReviewDto.fromWithoutReviewWriterAndPlace(recommendedReview);
     }
 
     /**
@@ -74,7 +74,7 @@ public class RecommendedReviewService {
         recommendedReviewRepository.saveAll(recommendedReviewsForBatchUpdate);
 
         return recommendedReviewsForBatchUpdate.stream()
-                .map(RecommendedReviewDto::fromWithoutPlaceMarkedStatus)
+                .map(RecommendedReviewDto::fromWithoutReviewWriterAndPlace)
                 .toList();
     }
 }

@@ -38,7 +38,7 @@ public class RecommendedReviewRepositoryQCustomImpl implements RecommendedReview
         }
 
         return tuples.stream()
-                .map(tuple -> RecommendedReviewDto.fromWithPlaceMarkedStatus(
+                .map(tuple -> RecommendedReviewDto.from(
                         Objects.requireNonNull(tuple.get(recommendedReview)),
                         Boolean.TRUE.equals(tuple.get(subQueryForGetPlaceMarkedStatus()))
                 ))

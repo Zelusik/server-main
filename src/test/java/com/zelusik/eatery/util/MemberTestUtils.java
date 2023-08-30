@@ -68,10 +68,6 @@ public class MemberTestUtils {
     }
 
     public static Member createNotSavedMember(String socialId, String nickname) {
-        return createNotSavedMember(socialId, Set.of(RoleType.USER), nickname);
-    }
-
-    public static Member createNotSavedMember(String socialId, Set<RoleType> roleTypes, String nickname) {
         return Member.of(
                 null,
                 null,
@@ -79,7 +75,7 @@ public class MemberTestUtils {
                 "https://defualt-profile-thumbnail-image",
                 socialId,
                 LoginType.KAKAO,
-                roleTypes,
+                Set.of(RoleType.USER),
                 "test@test.com" + socialId,
                 nickname,
                 null,
@@ -165,14 +161,6 @@ public class MemberTestUtils {
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 null
-        );
-    }
-
-    public static MemberDeletionSurveyDto createMemberDeletionSurveyDto(Long memberId, MemberDeletionSurveyType surveyType) {
-        return MemberDeletionSurveyDto.of(
-                10L,
-                memberId,
-                surveyType
         );
     }
 
