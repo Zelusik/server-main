@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -17,16 +19,16 @@ public class RecommendedReviewDto {
     private ReviewDto review;
     private Short ranking;
 
-    public static RecommendedReviewDto fromWithoutPlaceMarkedStatus(RecommendedReview entity) {
+    public static RecommendedReviewDto fromWithoutReviewWriterAndPlace(RecommendedReview entity) {
         return new RecommendedReviewDto(
                 entity.getId(),
                 entity.getMember().getId(),
-                ReviewDto.from(entity.getReview(), null),
+                ReviewDto.from(entity.getReview(), List.of()),
                 entity.getRanking()
         );
     }
 
-    public static RecommendedReviewDto fromWithPlaceMarkedStatus(RecommendedReview entity, boolean placeMarkingStatus) {
+    public static RecommendedReviewDto from(RecommendedReview entity, boolean placeMarkingStatus) {
         return new RecommendedReviewDto(
                 entity.getId(),
                 entity.getMember().getId(),

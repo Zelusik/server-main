@@ -91,11 +91,6 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
         return review.place.address.lotNumberAddress.substring(0, review.place.address.lotNumberAddress.indexOf(" "));
     }
 
-    /**
-     *
-     * @param memberId
-     * @return
-     */
     @Nullable
     private ReviewKeywordValue getMostTaggedReviewKeyword(long memberId) {
         return queryFactory

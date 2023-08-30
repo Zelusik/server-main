@@ -27,7 +27,10 @@ import org.springframework.data.domain.SliceImpl;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zelusik.eatery.constant.review.ReviewEmbedOption.PLACE;
+import static com.zelusik.eatery.constant.review.ReviewEmbedOption.WRITER;
 import static com.zelusik.eatery.util.MemberTestUtils.createMember;
+import static com.zelusik.eatery.util.MemberTestUtils.createMemberDto;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
 import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createReviewKeyword;
 import static com.zelusik.eatery.util.ReviewTestUtils.*;
@@ -152,22 +155,22 @@ class ReviewServiceTest {
                 .hasFieldOrPropertyWithValue("writer.id", memberId);
     }
 
-    @DisplayName("가게의 id(PK)가 주어지고, 특정 가게에 대한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
+    @DisplayName("리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
     @Test
-    void givenPlaceId_whenSearchReviewListOfCertainPlace_thenReturnReviewList() {
+    void given_whenFindDtos_thenReturnReviews() {
         // given
-        long placeId = 3L;
+        long loginMemberId = 1L;
         Pageable pageable = Pageable.ofSize(15);
-        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReview(1L, 2L, placeId, "3", 4L, 5L)));
-        given(reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable)).willReturn(expectedSearchResult);
+        Slice<ReviewDto> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewDto(2L, createMemberDto(3L))));
+        given(reviewRepository.findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable)).willReturn(expectedSearchResult);
 
         // when
-        Slice<ReviewDto> actualSearchResult = sut.findDtosByPlaceId(placeId, pageable);
+        Slice<ReviewDto> actualSearchResult = sut.findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable);
 
         // then
-        then(reviewRepository).should().findByPlace_IdAndDeletedAtNull(placeId, pageable);
+        then(reviewRepository).should().findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualSearchResult.hasContent()).isTrue();
+        assertThat(actualSearchResult).hasSize(expectedSearchResult.getSize());
     }
 
     @DisplayName("회원의 PK가 주어지고, 해당 회원이 작성한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
