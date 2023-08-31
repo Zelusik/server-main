@@ -130,18 +130,6 @@ public class ReviewService {
     }
 
     /**
-     * 특정 회원이 작성한 리뷰 조회.
-     *
-     * @param writerId 작성자의 PK
-     * @param pageable paging, sorting 정보
-     * @return 조회된 리뷰 목록(slice)
-     */
-    public Slice<ReviewDto> findDtosByWriterId(Long writerId, Pageable pageable) {
-        return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)
-                .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(writerId, review.getPlace())));
-    }
-
-    /**
      * <p>리뷰 피드를 조회한다.
      * <p>내가 작성한 리뷰는 노출되지 않는다.
      * <p>정렬 기준은 다음과 같다.
