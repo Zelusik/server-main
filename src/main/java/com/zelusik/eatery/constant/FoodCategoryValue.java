@@ -54,14 +54,4 @@ public enum FoodCategoryValue {
                 .findFirst()
                 .orElseThrow();
     }
-
-    public static FoodCategoryValue valueOfDescription(String description) {
-        String trimmedDescription = description.replace(" ", "");
-
-        return Arrays.stream(values())
-                .filter(value -> trimmedDescription.equals(
-                        value.getCategoryName().replace(" ", "")
-                )).findFirst()
-                .orElseThrow(NotAcceptableFoodCategory::new);
-    }
 }
