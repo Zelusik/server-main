@@ -1,18 +1,21 @@
 package com.zelusik.eatery.dto.review.response;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.dto.file.response.ImageResponse;
 import com.zelusik.eatery.dto.member.response.MemberResponse;
 import com.zelusik.eatery.dto.place.response.PlaceCompactResponse;
 import com.zelusik.eatery.dto.review.ReviewDto;
+import com.zelusik.eatery.dto.review.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class FindReviewFeedResponse {
 
@@ -32,14 +35,13 @@ public class FindReviewFeedResponse {
     private String content;
 
     @Schema(description = "리뷰 대표 이미지")
-    private ImageResponse reviewImage;
+    private ReviewImageResponse reviewImage;
 
-    public static FindReviewFeedResponse of(Long id, MemberResponse writer, PlaceCompactResponse place, List<String> keywords, String content, ImageResponse reviewImage) {
-        return new FindReviewFeedResponse(id, writer, place, keywords, content, reviewImage);
-    }
+    @Schema(description = "리뷰 작성 시간", example = "2023-09-01T08:01:58.253461")
+    private LocalDateTime createdAt;
 
     public static FindReviewFeedResponse from(ReviewDto dto) {
-        return of(
+        return new FindReviewFeedResponse(
                 dto.getId(),
                 MemberResponse.from(dto.getWriter()),
                 PlaceCompactResponse.from(dto.getPlace()),
@@ -47,7 +49,27 @@ public class FindReviewFeedResponse {
                         .map(ReviewKeywordValue::getDescription)
                         .toList(),
                 dto.getContent(),
-                ImageResponse.of(dto.getReviewImageDtos().get(0).getUrl(), dto.getReviewImageDtos().get(0).getThumbnailUrl())
+                new ReviewImageResponse(dto.getReviewImageDtos().get(0).getUrl(), dto.getReviewImageDtos().get(0).getThumbnailUrl()),
+                dto.getCreatedAt()
         );
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    private static class ReviewImageResponse {
+
+        @Schema(description = "이미지 url", example = "https://review-image-url")
+        private String url;
+
+        @Schema(description = "썸네일 이미지 url", example = "https//review-thumbnail-image-url")
+        private String thumbnailUrl;
+
+        private static ReviewImageResponse from(ReviewImageDto dto) {
+            return new ReviewImageResponse(
+                    dto.getUrl(),
+                    dto.getThumbnailUrl()
+            );
+        }
     }
 }

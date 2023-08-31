@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.PLACE;
@@ -30,9 +31,10 @@ public class ReviewDto {
     private String autoCreatedContent;
     private String content;
     private List<ReviewImageDto> reviewImageDtos;
+    private LocalDateTime createdAt;
 
     public ReviewDto(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
-        this(null, null, place, keywords, autoCreatedContent, content, null);
+        this(null, null, place, keywords, autoCreatedContent, content, null, null);
     }
 
     public static ReviewDto from(Review entity, Boolean isMarkedPlace) {
@@ -53,7 +55,8 @@ public class ReviewDto {
                 entity.getKeywords().stream().map(ReviewKeyword::getKeyword).toList(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
-                entity.getReviewImages().stream().map(ReviewImageDto::from).toList()
+                entity.getReviewImages().stream().map(ReviewImageDto::from).toList(),
+                entity.getCreatedAt()
         );
     }
 

@@ -418,7 +418,8 @@ class ReviewServiceTest {
                         "storedName",
                         "url",
                         "thumbnailStoredName",
-                        "thumbnailUrl"))
+                        "thumbnailUrl")),
+                LocalDateTime.now()
         );
     }
 

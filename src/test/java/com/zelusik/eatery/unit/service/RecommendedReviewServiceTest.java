@@ -256,7 +256,8 @@ class RecommendedReviewServiceTest {
                         "storedName",
                         "url",
                         "thumbnailStoredName",
-                        "thumbnailUrl"))
+                        "thumbnailUrl")),
+                LocalDateTime.now()
         );
     }
 
