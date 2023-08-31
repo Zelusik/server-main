@@ -164,6 +164,19 @@ public class ReviewService {
     }
 
     /**
+     * 리뷰 슈정 권한이 있는지 검증한다.
+     *
+     * @param memberId 리뷰를 수정하고자 하는 회원(로그인 회원)
+     * @param review   수정할 리뷰
+     * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
+     */
+    private void validateReviewUpdatePermission(Long memberId, Review review) {
+        if (!review.getWriter().getId().equals(memberId)) {
+            throw new ReviewUpdatePermissionDeniedException();
+        }
+    }
+
+    /**
      * 리뷰를 삭제합니다.
      *
      * @param memberId 리뷰룰 삭제하려는 회원(로그인 회원)의 PK.
@@ -187,19 +200,6 @@ public class ReviewService {
     private void softDelete(Review review) {
         review.softDelete();
         reviewRepository.flush();
-    }
-
-    /**
-     * 리뷰 슈정 권한이 있는지 검증한다.
-     *
-     * @param memberId 리뷰를 수정하고자 하는 회원(로그인 회원)
-     * @param review   수정할 리뷰
-     * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
-     */
-    private void validateReviewUpdatePermission(Long memberId, Review review) {
-        if (!review.getWriter().getId().equals(memberId)) {
-            throw new ReviewUpdatePermissionDeniedException();
-        }
     }
 
     /**
