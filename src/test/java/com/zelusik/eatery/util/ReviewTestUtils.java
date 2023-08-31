@@ -6,90 +6,16 @@ import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
-import com.zelusik.eatery.dto.member.MemberDto;
-import com.zelusik.eatery.dto.review.ReviewDto;
-import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.dto.review.request.MenuTagPointCreateRequest;
-import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewMenuTagCreateRequest;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.zelusik.eatery.util.MemberTestUtils.createMemberDto;
 import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createReviewKeyword;
 
 public class ReviewTestUtils {
-
-    public static ReviewCreateRequest createReviewCreateRequest(long placeId) {
-        return ReviewCreateRequest.of(
-                placeId,
-                List.of(ReviewKeywordValue.FRESH),
-                "자동 생성된 내용",
-                "제출한 내용",
-                List.of(createReviewImageCreateRequest())
-        );
-    }
-
-    @NotNull
-    public static ReviewImageCreateRequest createReviewImageCreateRequest() {
-        return new ReviewImageCreateRequest(
-                MultipartFileTestUtils.createMockMultipartFile(),
-                List.of(
-                        createReviewMenuTagCreateRequest("치킨"),
-                        createReviewMenuTagCreateRequest("피자")
-                )
-        );
-    }
-
-    public static ReviewDto createReviewDto(long reviewId, MemberDto writer) {
-        return new ReviewDto(
-                reviewId,
-                writer,
-                PlaceTestUtils.createPlaceDto(),
-                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
-                "자동 생성된 내용",
-                "제출된 내용",
-                List.of(new ReviewImageDto(
-                        1L,
-                        1L,
-                        "test.txt",
-                        "storedName",
-                        "url",
-                        "thumbnailStoredName",
-                        "thumbnailUrl"))
-        );
-    }
-
-    public static ReviewDto createReviewDto(long reviewId) {
-        return createReviewDto(reviewId, MemberTestUtils.createMemberDto());
-    }
-
-    public static ReviewDto createReviewDto() {
-        return createReviewDto(1L);
-    }
-
-    public static ReviewDto createReviewDtoWithoutPlace() {
-        return new ReviewDto(
-                1L,
-                MemberTestUtils.createMemberDto(),
-                null,
-                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
-                "자동 생성된 내용",
-                "제출된 내용",
-                List.of(new ReviewImageDto(
-                        1L,
-                        1L,
-                        "test.txt",
-                        "storedName",
-                        "url",
-                        "thumbnailStoredName",
-                        "thumbnailUrl"
-                ))
-        );
-    }
 
     public static Review createNewReview(Member writer, Place place, List<ReviewKeyword> reviewKeywords) {
         return createReview(null, writer, place, reviewKeywords, List.of());
@@ -97,13 +23,6 @@ public class ReviewTestUtils {
 
     public static Review createNewReview(Member writer, Place place, List<ReviewKeyword> reviewKeywords, List<ReviewImage> reviewImages) {
         return createReview(null, writer, place, reviewKeywords, reviewImages);
-    }
-
-    public static Review createReviewWithKeywordsAndImages(Long reviewId, Member member, Place place) {
-        Review review = createReview(reviewId, member, place);
-        review.getKeywords().add(createReviewKeyword(10L, review, ReviewKeywordValue.BEST_FLAVOR));
-        review.getReviewImages().add(createReviewImage(11L, review));
-        return review;
     }
 
     public static Review createReview(Long reviewId, Long memberId, Long placeId, String kakaoPid, Long reviewKeywordId, Long reviewImageId) {
@@ -152,6 +71,16 @@ public class ReviewTestUtils {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 null
+        );
+    }
+
+    public static ReviewImageCreateRequest createReviewImageCreateRequest() {
+        return new ReviewImageCreateRequest(
+                MultipartFileTestUtils.createMockMultipartFile(),
+                List.of(
+                        createReviewMenuTagCreateRequest("치킨"),
+                        createReviewMenuTagCreateRequest("피자")
+                )
         );
     }
 

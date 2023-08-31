@@ -29,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -216,7 +217,8 @@ class RecommendedReviewControllerTest {
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
-                List.of(createReviewImageDto(100L, reviewId))
+                List.of(createReviewImageDto(100L, reviewId)),
+                LocalDateTime.now()
         );
     }
 

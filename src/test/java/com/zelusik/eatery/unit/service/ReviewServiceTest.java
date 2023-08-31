@@ -1,19 +1,35 @@
 package com.zelusik.eatery.unit.service;
 
+import com.zelusik.eatery.constant.ConstantUtil;
+import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.Member;
+import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.place.PlaceCategory;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
+import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.review.ReviewDto;
+import com.zelusik.eatery.dto.review.ReviewImageDto;
+import com.zelusik.eatery.dto.review.request.MenuTagPointCreateRequest;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
+import com.zelusik.eatery.dto.review.request.ReviewMenuTagCreateRequest;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.exception.review.ReviewNotFoundException;
 import com.zelusik.eatery.repository.review.ReviewImageMenuTagRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
 import com.zelusik.eatery.service.*;
-import com.zelusik.eatery.util.ReviewTestUtils;
+import com.zelusik.eatery.util.MultipartFileTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,16 +40,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.PLACE;
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.WRITER;
-import static com.zelusik.eatery.util.MemberTestUtils.createMember;
-import static com.zelusik.eatery.util.MemberTestUtils.createMemberDto;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
-import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createReviewKeyword;
-import static com.zelusik.eatery.util.ReviewTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,13 +85,17 @@ class ReviewServiceTest {
         String kakaoPid = "12345";
         Place expectedPlace = createPlace(placeId, kakaoPid);
         Member expectedMember = createMember(writerId);
-        Review createdReview = createReviewWithKeywordsAndImages(3L, expectedMember, expectedPlace);
+        Review createdReview = createReview(3L, expectedMember, expectedPlace);
+        ReviewKeyword reviewKeyword = createReviewKeyword(4L, createdReview, ReviewKeywordValue.FRESH);
+        createdReview.getKeywords().add(reviewKeyword);
+        ReviewImage reviewImage = createReviewImage(100L, createdReview);
+        createdReview.getReviewImages().add(reviewImage);
         given(placeService.findById(placeId)).willReturn(expectedPlace);
         given(memberService.findById(writerId)).willReturn(expectedMember);
         given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
-        given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(createReviewKeyword(4L, createdReview, ReviewKeywordValue.FRESH));
-        given(reviewImageService.upload(any(Review.class), any())).willReturn(List.of(createReviewImage(100L, createdReview)));
+        given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(reviewKeyword);
+        given(reviewImageService.upload(any(Review.class), any())).willReturn(List.of(reviewImage));
         given(reviewImageMenuTagRepository.saveAll(anyList())).willReturn(List.of());
         willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
 
@@ -103,7 +121,7 @@ class ReviewServiceTest {
         // given
         long memberId = 1L;
         long reviewId = 2L;
-        Review expectedResult = createReview(reviewId, memberId, 3L, "12345", 4L, 5L);
+        Review expectedResult = createReview(reviewId, createMember(memberId), createPlace(3L, "12345"));
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(expectedResult));
 
         // when
@@ -139,7 +157,7 @@ class ReviewServiceTest {
         // given
         long memberId = 1L;
         long reviewId = 2L;
-        Review expectedResult = createReview(reviewId, memberId, 3L, "12345", 4L, 5L);
+        Review expectedResult = createReview(reviewId, createMember(memberId), createPlace(3L, "12345"));
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(expectedResult));
         given(bookmarkService.isMarkedPlace(eq(memberId), any(Place.class))).willReturn(false);
 
@@ -161,7 +179,9 @@ class ReviewServiceTest {
         // given
         long loginMemberId = 1L;
         Pageable pageable = Pageable.ofSize(15);
-        Slice<ReviewDto> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReviewDto(2L, createMemberDto(3L))));
+        MemberDto member = createMemberDto(3L);
+        PlaceDto place = createPlaceDto(4L, "12345");
+        Slice<ReviewDto> expectedSearchResult = new SliceImpl<>(List.of(createReviewDto(2L, member, place)));
         given(reviewRepository.findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable)).willReturn(expectedSearchResult);
 
         // when
@@ -179,7 +199,7 @@ class ReviewServiceTest {
         // given
         long writerId = 2L;
         Pageable pageable = Pageable.ofSize(15);
-        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(ReviewTestUtils.createReview(1L, writerId, 3L, "3", 4L, 5L)));
+        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(createReview(1L, createMember(writerId), createPlace(3L, "12345"))));
         given(reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)).willReturn(expectedSearchResult);
         given(bookmarkService.isMarkedPlace(eq(writerId), any(Place.class))).willReturn(false);
 
@@ -193,6 +213,27 @@ class ReviewServiceTest {
         assertThat(actualSearchResult.hasContent()).isTrue();
     }
 
+    @DisplayName("리뷰 피드를 조회한다.")
+    @Test
+    void given_whenFindReviewFeed_thenReturnResults() {
+        // given
+        long loginMemberId = 1L;
+        long reviewId = 2L;
+        Pageable pageable = Pageable.ofSize(10);
+        MemberDto writer = createMemberDto(3L);
+        PlaceDto place = createPlaceDto(4L, "123");
+        Slice<ReviewDto> expectedResults = new SliceImpl<>(List.of(createReviewDto(reviewId, writer, place)), pageable, false);
+        given(reviewRepository.findReviewFeed(loginMemberId, pageable)).willReturn(expectedResults);
+
+        // when
+        Slice<ReviewDto> actualResults = sut.findReviewReed(loginMemberId, Pageable.ofSize(10));
+
+        // then
+        then(reviewRepository).should().findReviewFeed(loginMemberId, pageable);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResults).hasSize(expectedResults.getNumberOfElements());
+    }
+
     @DisplayName("리뷰를 삭제하면, 리뷰와 모든 리뷰 이미지들을 soft delete하고 모든 리뷰 키워드들을 삭제한다.")
     @Test
     void given_whenSoftDeleteReview_thenSoftDeleteReviewAndAllReviewImagesAndDeleteAllReviewKeywords() {
@@ -201,7 +242,11 @@ class ReviewServiceTest {
         long reviewId = 3L;
         Member loginMember = createMember(memberId);
         Place place = createPlace(2L, "2");
-        Review findReview = createReviewWithKeywordsAndImages(reviewId, loginMember, place);
+        Review findReview = createReview(reviewId, loginMember, place);
+        ReviewKeyword reviewKeyword = createReviewKeyword(5L, findReview, ReviewKeywordValue.FRESH);
+        findReview.getKeywords().add(reviewKeyword);
+        ReviewImage reviewImage = createReviewImage(6L, findReview);
+        findReview.getReviewImages().add(reviewImage);
         given(memberService.findById(memberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
         willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
@@ -232,7 +277,11 @@ class ReviewServiceTest {
         Place place = createPlace(4L, "2");
         Member loginMember = createMember(loginMemberId);
         Member reviewWriter = createMember(reviewWriterId);
-        Review findReview = createReviewWithKeywordsAndImages(reviewId, reviewWriter, place);
+        Review findReview = createReview(reviewId, reviewWriter, place);
+        ReviewKeyword reviewKeyword = createReviewKeyword(5L, findReview, ReviewKeywordValue.FRESH);
+        findReview.getKeywords().add(reviewKeyword);
+        ReviewImage reviewImage = createReviewImage(6L, findReview);
+        findReview.getReviewImages().add(reviewImage);
         given(memberService.findById(loginMemberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
 
@@ -253,5 +302,173 @@ class ReviewServiceTest {
         then(reviewRepository).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
         then(bookmarkService).shouldHaveNoMoreInteractions();
+    }
+
+    private Member createMember(Long memberId) {
+        return createMember(memberId, Set.of(RoleType.USER));
+    }
+
+    private Member createMember(Long memberId, Set<RoleType> roleTypes) {
+        return Member.of(
+                memberId,
+                null,
+                "profile image url",
+                "profile thunmbnail image url",
+                "social user id",
+                LoginType.KAKAO,
+                roleTypes,
+                "email",
+                "nickname",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    private MemberDto createMemberDto(Long memberId) {
+        return createMemberDto(memberId, Set.of(RoleType.USER));
+    }
+
+    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
+        return new MemberDto(
+                memberId,
+                null,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com",
+                "test",
+                LocalDate.of(1998, 1, 5),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null
+        );
+    }
+
+    private Place createPlace(long id, String kakaoPid) {
+        return Place.of(
+                id,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "place name",
+                "page url",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("한식", "냉면", null),
+                null,
+                new Address("sido", "sgg", "lot number address", "road address"),
+                null,
+                new Point("37.5595073462493", "126.921462488105"),
+                "",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    public static PlaceDto createPlaceDto(long placeId, String kakaoPid) {
+        return new PlaceDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "http://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                List.of(),
+                null,
+                false
+        );
+    }
+
+    private Review createReview(Long reviewId, Member member, Place place) {
+        return Review.of(
+                reviewId,
+                member,
+                place,
+                "자동 생성된 내용",
+                "제출한 내용",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    public static ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceDto place) {
+        return new ReviewDto(
+                reviewId,
+                writer,
+                place,
+                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
+                "자동 생성된 내용",
+                "제출된 내용",
+                List.of(new ReviewImageDto(
+                        1L,
+                        1L,
+                        "test.txt",
+                        "storedName",
+                        "url",
+                        "thumbnailStoredName",
+                        "thumbnailUrl")),
+                LocalDateTime.now()
+        );
+    }
+
+    private ReviewKeyword createReviewKeyword(Long reviewKeywordId, Review review, ReviewKeywordValue reviewKeywordValue) {
+        return ReviewKeyword.of(
+                reviewKeywordId,
+                review,
+                reviewKeywordValue,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    public static ReviewImage createReviewImage(Long reviewImageId, Review review) {
+        return ReviewImage.of(
+                reviewImageId,
+                review,
+                "original file name",
+                "stored file name",
+                "url",
+                "thumbnail stored file name",
+                "thumbnail url",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    private ReviewCreateRequest createReviewCreateRequest(long placeId) {
+        return ReviewCreateRequest.of(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                "자동 생성된 내용",
+                "제출한 내용",
+                List.of(createReviewImageCreateRequest())
+        );
+    }
+
+    private ReviewImageCreateRequest createReviewImageCreateRequest() {
+        return new ReviewImageCreateRequest(
+                MultipartFileTestUtils.createMockMultipartFile(),
+                List.of(
+                        createReviewMenuTagCreateRequest("치킨"),
+                        createReviewMenuTagCreateRequest("피자")
+                )
+        );
+    }
+
+    private ReviewMenuTagCreateRequest createReviewMenuTagCreateRequest(String content) {
+        return new ReviewMenuTagCreateRequest(content, new MenuTagPointCreateRequest("10.0", "50.0"));
     }
 }

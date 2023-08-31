@@ -116,6 +116,7 @@ public class ReviewService {
     /**
      * <p>리뷰 목록 조회.
      * <p>장소에 대한 정보는 <code>null</code>로 처리하여 반환합니다. (query 최적화)
+     * <p>정렬 기준은 최근 등록된 순서입니다.
      *
      * @param loginMemberId PK of login member
      * @param writerId      filter - 특정 회원이 작성한 리뷰만 조회
@@ -129,17 +130,6 @@ public class ReviewService {
     }
 
     /**
-     * 전체 리뷰 조회. 최신순 정렬
-     *
-     * @param pageable paging 정보
-     * @return 조회된 리뷰 목록(slice)
-     */
-    public Slice<ReviewDto> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
-        return reviewRepository.findAllByDeletedAtNull(pageable)
-                .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace())));
-    }
-
-    /**
      * 특정 회원이 작성한 리뷰 조회.
      *
      * @param writerId 작성자의 PK
@@ -149,6 +139,23 @@ public class ReviewService {
     public Slice<ReviewDto> findDtosByWriterId(Long writerId, Pageable pageable) {
         return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)
                 .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(writerId, review.getPlace())));
+    }
+
+    /**
+     * <p>리뷰 피드를 조회한다.
+     * <p>내가 작성한 리뷰는 노출되지 않는다.
+     * <p>정렬 기준은 다음과 같다.
+     * <ol>
+     *     <li>리뷰를 작성한 장소의 카테고리가 내가 선호하는 음식 카테고리에 해당되는 경우</li>
+     *     <li>최근 등록된 순서</li>
+     * </ol>
+     *
+     * @param loginMemberId PK of login member
+     * @param pageable      paging 정보
+     * @return 조회된 리뷰 dtos
+     */
+    public Slice<ReviewDto> findReviewReed(long loginMemberId, Pageable pageable) {
+        return reviewRepository.findReviewFeed(loginMemberId, pageable);
     }
 
     /**

@@ -39,6 +39,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -160,7 +161,7 @@ class ReviewControllerTest {
         long loginMemberId = 1L;
         long reviewId = 2L;
         Slice<ReviewDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(reviewId, createMemberDto(3L), createPlaceDto(4L))));
-        given(reviewService.findDtosOrderByCreatedAt(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
+        given(reviewService.findReviewReed(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(get("/api/reviews/feed")
@@ -170,7 +171,7 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.contents[0].id").value(reviewId))
                 .andExpect(jsonPath("$.contents[0].reviewImage").exists())
                 .andDo(print());
-        then(reviewService).should().findDtosOrderByCreatedAt(eq(loginMemberId), any(Pageable.class));
+        then(reviewService).should().findReviewReed(eq(loginMemberId), any(Pageable.class));
         then(reviewService).shouldHaveNoMoreInteractions();
     }
 
@@ -315,7 +316,8 @@ class ReviewControllerTest {
                         "storedName",
                         "url",
                         "thumbnailStoredName",
-                        "thumbnailUrl"))
+                        "thumbnailUrl")),
+                LocalDateTime.now()
         );
     }
 

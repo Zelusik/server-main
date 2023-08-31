@@ -132,14 +132,20 @@ public class ReviewController {
     }
 
     @Operation(
-            summary = "피드 조회",
-            description = "<p>피드에 보여줄 리뷰 목록을 조회합니다." +
-                          "<p>모든 리뷰를 최신순으로 보여줍니다." +
-                          "<p>추후 기획 단계에서 고안된 알고리즘에 의해 정렬하여 제공할 예정입니다. (현재는 미구현) 다만, 요청/응답 데이터의 변경은 없을 예정",
+            summary = "리뷰 피드 조회",
+            description = """
+                    <p>리뷰 피드를 조회합니다.
+                    <p>내가 작성한 리뷰는 노출되지 않습니다.
+                    <p>정렬 기준은 다음과 같습니다.
+                    <ol>
+                        <li>리뷰를 작성한 장소의 카테고리가 내가 선호하는 음식 카테고리에 해당되는 경우</li>
+                        <li>최근 등록된 순서</li>
+                    </ol>
+                    """,
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/feed")
-    public SliceResponse<FeedResponse> searchFeed(
+    public SliceResponse<FindReviewFeedResponse> findReviewFeed(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
@@ -150,9 +156,8 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return new SliceResponse<FeedResponse>()
-                .from(reviewService.findDtosOrderByCreatedAt(userPrincipal.getMemberId(), pageRequest).map(FeedResponse::from));
+        Slice<ReviewDto> reviewDtos = reviewService.findReviewReed(userPrincipal.getMemberId(), PageRequest.of(page, size));
+        return new SliceResponse<FindReviewFeedResponse>().from(reviewDtos.map(FindReviewFeedResponse::from));
     }
 
     // TODO: 메뉴 태그 정보가 담긴 ReviewResponse를 응답 객체로 사용할 것인지 검토 필요
