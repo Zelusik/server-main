@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,6 +35,8 @@ import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.zelusik.eatery.constant.review.ReviewEmbedOption.PLACE;
 
 @Tag(name = "리뷰 관련 API")
 @RequiredArgsConstructor
@@ -160,14 +161,14 @@ public class ReviewController {
         return new SliceResponse<FindReviewFeedResponse>().from(reviewDtos.map(FindReviewFeedResponse::from));
     }
 
-    // TODO: 메뉴 태그 정보가 담긴 ReviewResponse를 응답 객체로 사용할 것인지 검토 필요
     @Operation(
             summary = "내가 작성한 리뷰 조회",
-            description = "<p>내가 작성한 리뷰를 최신순으로 조회합니다.",
+            description = "<p>내가 작성한 리뷰를 조회합니다." +
+                          "<p>정렬 기준은 최근 등록된 순(최신순)입니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping("/me")
-    public SliceResponse<ReviewResponse> searchOfMe(
+    public SliceResponse<FindReviewsWrittenByMeResponse> findReviewsWrittenByMe(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
@@ -178,10 +179,9 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return new SliceResponse<ReviewResponse>()
-                .from(reviewService.findDtosByWriterId(userPrincipal.getMemberId(), pageRequest)
-                        .map(ReviewResponse::from));
+        long loginMemberId = userPrincipal.getMemberId();
+        Slice<ReviewDto> reviewDtos = reviewService.findDtos(loginMemberId, loginMemberId, null, List.of(PLACE), PageRequest.of(page, size));
+        return new SliceResponse<FindReviewsWrittenByMeResponse>().from(reviewDtos.map(FindReviewsWrittenByMeResponse::from));
     }
 
     @Operation(

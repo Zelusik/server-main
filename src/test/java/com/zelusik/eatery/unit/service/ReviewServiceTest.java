@@ -193,26 +193,6 @@ class ReviewServiceTest {
         assertThat(actualSearchResult).hasSize(expectedSearchResult.getSize());
     }
 
-    @DisplayName("회원의 PK가 주어지고, 해당 회원이 작성한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
-    @Test
-    void givenMemberId_whenSearchReviewsOfWriter_thenReturnReviews() {
-        // given
-        long writerId = 2L;
-        Pageable pageable = Pageable.ofSize(15);
-        SliceImpl<Review> expectedSearchResult = new SliceImpl<>(List.of(createReview(1L, createMember(writerId), createPlace(3L, "12345"))));
-        given(reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)).willReturn(expectedSearchResult);
-        given(bookmarkService.isMarkedPlace(eq(writerId), any(Place.class))).willReturn(false);
-
-        // when
-        Slice<ReviewDto> actualSearchResult = sut.findDtosByWriterId(writerId, pageable);
-
-        // then
-        then(reviewRepository).should().findByWriter_IdAndDeletedAtNull(writerId, pageable);
-        then(bookmarkService).should().isMarkedPlace(eq(writerId), any(Place.class));
-        verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualSearchResult.hasContent()).isTrue();
-    }
-
     @DisplayName("리뷰 피드를 조회한다.")
     @Test
     void given_whenFindReviewFeed_thenReturnResults() {

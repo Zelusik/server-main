@@ -180,8 +180,8 @@ class ReviewControllerTest {
     void whenSearchMyReviews_thenReturnReviews() throws Exception {
         // given
         long loginMemberId = 1L;
-        given(reviewService.findDtosByWriterId(eq(loginMemberId), any(Pageable.class)))
-                .willReturn(new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceDto(4L)))));
+        SliceImpl<ReviewDto> expectedResults = new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceDto(4L))));
+        given(reviewService.findDtos(eq(loginMemberId), eq(loginMemberId), isNull(), eq(List.of(PLACE)), any(Pageable.class))).willReturn(expectedResults);
 
         // when & then
         mvc.perform(
@@ -191,7 +191,7 @@ class ReviewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true))
                 .andDo(print());
-        then(reviewService).should().findDtosByWriterId(eq(loginMemberId), any(Pageable.class));
+        then(reviewService).should().findDtos(eq(loginMemberId), eq(loginMemberId), isNull(), eq(List.of(PLACE)), any(Pageable.class));
         then(reviewService).shouldHaveNoMoreInteractions();
     }
 
