@@ -20,4 +20,19 @@ public interface ReviewRepositoryQCustom {
      * @return 조회된 리뷰 목록(Slice)
      */
     Slice<ReviewDto> findDtos(Long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable);
+
+    /**
+     * <p>리뷰 피드를 조회한다.
+     * <p>내가 작성한 리뷰는 노출되지 않는다.
+     * <p>정렬 기준은 다음과 같다.
+     * <ol>
+     *     <li>리뷰를 작성한 장소의 카테고리가 내가 선호하는 음식 카테고리에 해당되는 경우</li>
+     *     <li>최근 등록된 순서</li>
+     * </ol>
+     *
+     * @param loginMemberId PK of login member
+     * @param pageable      paging 정보
+     * @return 조회된 리뷰 dtos
+     */
+    Slice<ReviewDto> findReviewFeed(long loginMemberId, Pageable pageable);
 }

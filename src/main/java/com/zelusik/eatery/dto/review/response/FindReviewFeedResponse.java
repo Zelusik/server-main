@@ -14,7 +14,7 @@ import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class FeedResponse {
+public class FindReviewFeedResponse {
 
     @Schema(description = "리뷰 id(PK)", example = "1")
     private Long id;
@@ -34,11 +34,11 @@ public class FeedResponse {
     @Schema(description = "리뷰 대표 이미지")
     private ImageResponse reviewImage;
 
-    public static FeedResponse of(Long id, MemberResponse writer, PlaceCompactResponse place, List<String> keywords, String content, ImageResponse reviewImage) {
-        return new FeedResponse(id, writer, place, keywords, content, reviewImage);
+    public static FindReviewFeedResponse of(Long id, MemberResponse writer, PlaceCompactResponse place, List<String> keywords, String content, ImageResponse reviewImage) {
+        return new FindReviewFeedResponse(id, writer, place, keywords, content, reviewImage);
     }
 
-    public static FeedResponse from(ReviewDto dto) {
+    public static FindReviewFeedResponse from(ReviewDto dto) {
         return of(
                 dto.getId(),
                 MemberResponse.from(dto.getWriter()),

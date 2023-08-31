@@ -2,10 +2,12 @@ package com.zelusik.eatery.integration.repository.review;
 
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.QuerydslConfig;
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.Bookmark;
+import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
@@ -14,6 +16,7 @@ import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.repository.member.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
@@ -32,6 +35,7 @@ import java.util.Set;
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.PLACE;
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.WRITER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("[Integration] Review Repository")
 @ActiveProfiles("test")
@@ -41,13 +45,15 @@ class ReviewRepositoryTest {
 
     private final ReviewRepository sut;
     private final MemberRepository memberRepository;
+    private final FavoriteFoodCategoryRepository favoriteFoodCategoryRepository;
     private final PlaceRepository placeRepository;
     private final BookmarkRepository bookmarkRepository;
 
     @Autowired
-    public ReviewRepositoryTest(ReviewRepository sut, MemberRepository memberRepository, PlaceRepository placeRepository, BookmarkRepository bookmarkRepository) {
+    public ReviewRepositoryTest(ReviewRepository sut, MemberRepository memberRepository, FavoriteFoodCategoryRepository favoriteFoodCategoryRepository, PlaceRepository placeRepository, BookmarkRepository bookmarkRepository) {
         this.sut = sut;
         this.memberRepository = memberRepository;
+        this.favoriteFoodCategoryRepository = favoriteFoodCategoryRepository;
         this.placeRepository = placeRepository;
         this.bookmarkRepository = bookmarkRepository;
     }
@@ -182,7 +188,7 @@ class ReviewRepositoryTest {
         }
     }
 
-    @DisplayName("작성자와 장소 정보 없이 리뷰만을 조회한다.")
+    @DisplayName("작성자와 장소 정보 모두 제외한 오직 리뷰만을 조회한다.")
     @Test
     void given_whenFindReviewDtos_thenReturnResult() {
         // given
@@ -211,7 +217,7 @@ class ReviewRepositoryTest {
         }
     }
 
-    @DisplayName("장소 정보 없이 리뷰를 조회한다.")
+    @DisplayName("장소 정보를 제외한 리뷰를 조회한다.")
     @Test
     void given_whenFindReviewDtosWithWriter_thenReturnResult() {
         // given
@@ -240,7 +246,7 @@ class ReviewRepositoryTest {
         }
     }
 
-    @DisplayName("작성자 정보 없이 리뷰를 조회한다.")
+    @DisplayName("작성자 정보를 제외한 리뷰를 조회한다.")
     @Test
     void given_whenFindReviewDtosWithPlace_thenReturnResult() {
         // given
@@ -269,6 +275,41 @@ class ReviewRepositoryTest {
         }
     }
 
+    @DisplayName("리뷰 피드를 조회한다.")
+    @Test
+    void given_whenFindReviewFeed_thenReturnReview() {
+        // given
+        Member member1 = memberRepository.save(createNewMember("1"));
+        FavoriteFoodCategory favoriteFoodCategoryOfMember1 = favoriteFoodCategoryRepository.save(createNewFavoriteFoodCategory(member1, FoodCategoryValue.KOREAN));
+        member1.getFavoriteFoodCategories().add(favoriteFoodCategoryOfMember1);
+        Member member2 = memberRepository.save(createNewMember("2"));
+        Place place1 = placeRepository.save(createNewPlace("1", new PlaceCategory("한식", null, null)));
+        Place place2 = placeRepository.save(createNewPlace("2", new PlaceCategory("일식", null, null)));
+        sut.saveAll(List.of(
+                createNewReview(member1, place1),
+                createNewReview(member1, place2),
+                createNewReview(member2, place1),
+                createNewReview(member2, place2),
+                createNewReview(member2, place1)
+        ));
+
+        // when
+        Slice<ReviewDto> results = sut.findReviewFeed(member1.getId(), Pageable.ofSize(10));
+
+        // then
+        assertThat(results).hasSize(3);  // 내가 작성한 리뷰는 조회되지 않음
+        List<ReviewDto> content = results.getContent();
+        for (int i = 0; i < results.getNumberOfElements(); i++) {
+            ReviewDto result = content.get(i);
+            assertThat(result).hasFieldOrPropertyWithValue("writer.id", member2.getId());
+            // 리뷰를 작성한 장소의 카테고리가 내가 선호하는 음식 카테고리에 해당되는 리뷰의 우선순위가 더 높다
+            if (i < results.getNumberOfElements() - 1
+                && result.getPlace().getCategory().getFirstCategory().equals("일식")) {
+                assertEquals("일식", content.get(i + 1).getPlace().getCategory().getFirstCategory());
+            }
+        }
+    }
+
     private Member createNewMember(String socialId) {
         return createNewMember(socialId, Set.of(RoleType.USER));
     }
@@ -287,13 +328,21 @@ class ReviewRepositoryTest {
         );
     }
 
+    private FavoriteFoodCategory createNewFavoriteFoodCategory(Member member, FoodCategoryValue foodCategory) {
+        return FavoriteFoodCategory.of(member, foodCategory);
+    }
+
     private Place createNewPlace(String kakaoPid) {
+        return createNewPlace(kakaoPid, new PlaceCategory("한식", "냉면", null));
+    }
+
+    private Place createNewPlace(String kakaoPid, PlaceCategory placeCategory) {
         return Place.of(
                 kakaoPid,
                 "place name " + kakaoPid,
                 "https://place.map.kakao.com/" + kakaoPid,
                 KakaoCategoryGroupCode.FD6,
-                new PlaceCategory("한식", "냉면", null),
+                placeCategory,
                 null,
                 new Address("sido", "sgg", "lot number address", "road address"),
                 null,
