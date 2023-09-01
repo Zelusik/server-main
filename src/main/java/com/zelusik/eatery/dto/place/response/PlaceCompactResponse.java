@@ -49,7 +49,7 @@ public class PlaceCompactResponse {
         return new PlaceCompactResponse(
                 dto.getId(),
                 dto.getTop3Keywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
                 dto.getName(),
                 category,

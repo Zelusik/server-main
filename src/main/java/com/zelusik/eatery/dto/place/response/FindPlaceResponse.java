@@ -69,7 +69,7 @@ public class FindPlaceResponse {
         return new FindPlaceResponse(
                 dto.getId(),
                 dto.getTop3Keywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
                 dto.getName(),
                 dto.getCategory().getSecondCategory() != null

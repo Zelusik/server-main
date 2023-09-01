@@ -45,7 +45,7 @@ public class ReviewResponse {
                 MemberResponse.from(reviewDto.getWriter()),
                 PlaceResponse.from(reviewDto.getPlace()),
                 reviewDto.getKeywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
                 reviewDto.getContent(),
                 reviewDto.getReviewImageDtos().stream()

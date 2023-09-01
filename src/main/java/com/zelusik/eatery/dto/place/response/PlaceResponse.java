@@ -82,7 +82,7 @@ public class PlaceResponse {
         return new PlaceResponse(
                 dto.getId(),
                 dto.getTop3Keywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
                 dto.getName(),
                 category,

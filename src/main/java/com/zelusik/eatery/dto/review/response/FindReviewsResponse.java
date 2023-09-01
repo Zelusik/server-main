@@ -45,7 +45,7 @@ public class FindReviewsResponse {
                 dto.getId(),
                 dto.getWriter() != null ? WriterResponse.from(dto.getWriter()) : null,
                 dto.getPlace() != null ? PlaceResponse.from(dto.getPlace()) : null,
-                dto.getKeywords().stream().map(ReviewKeywordValue::getDescription).toList(),
+                dto.getKeywords().stream().map(ReviewKeywordValue::getContent).toList(),
                 dto.getContent(),
                 dto.getReviewImageDtos().stream().map(ReviewImageDto::getThumbnailUrl).toList()
         );

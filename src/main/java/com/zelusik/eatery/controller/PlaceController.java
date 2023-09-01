@@ -245,7 +245,7 @@ public class PlaceController {
             ) @RequestParam(required = false, defaultValue = "20") int size
     ) {
         if (type == FilteringType.TOP_3_KEYWORDS) {
-            keyword = ReviewKeywordValue.valueOfDescription(keyword).toString();
+            keyword = ReviewKeywordValue.valueOfContent(keyword).toString();
         }
         Page<PlaceDto> markedPlaceDtos = placeService.findMarkedDtos(userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size));
         return new PageResponse<FindMarkedPlacesResponse>().from(markedPlaceDtos.map(FindMarkedPlacesResponse::from));

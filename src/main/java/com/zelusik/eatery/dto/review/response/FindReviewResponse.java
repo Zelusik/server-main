@@ -46,7 +46,7 @@ public class FindReviewResponse {
                 WriterResponse.from(dto.getWriter(), loginMemberId),
                 PlaceResponse.from(dto.getPlace()),
                 dto.getKeywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
                 dto.getContent(),
                 dto.getReviewImageDtos().stream()

@@ -46,7 +46,7 @@ public class FindReviewFeedResponse {
                 MemberResponse.from(dto.getWriter()),
                 PlaceCompactResponse.from(dto.getPlace()),
                 dto.getKeywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
                 dto.getContent(),
                 new ReviewImageResponse(dto.getReviewImageDtos().get(0).getUrl(), dto.getReviewImageDtos().get(0).getThumbnailUrl()),

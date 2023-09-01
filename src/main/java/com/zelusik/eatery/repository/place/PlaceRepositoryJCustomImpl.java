@@ -478,7 +478,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
     private RowMapper<PlaceFilteringKeywordDto> placeTop3KeywordFilteringKeywordRowMapper() {
         return (rs, rowNum) -> PlaceFilteringKeywordDto.of(
-                ReviewKeywordValue.valueOf(rs.getString("keyword")).getDescription(),
+                ReviewKeywordValue.valueOf(rs.getString("keyword")).getContent(),
                 (int) rs.getDouble("cnt"),
                 FilteringType.TOP_3_KEYWORDS
         );
