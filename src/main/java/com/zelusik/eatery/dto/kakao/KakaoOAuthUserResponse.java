@@ -8,6 +8,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -103,18 +104,17 @@ public class KakaoOAuthUserResponse {
 
     public MemberDto toMemberDto(Set<RoleType> roleTypes) {
         String profileImageUrl = getProfileImageUrl();
-        if (profileImageUrl == null) {
+        if (!StringUtils.hasText(profileImageUrl)) {
             profileImageUrl = ConstantUtil.defaultProfileImageUrl;
         }
-
         String thumbnailImageUrl = getThumbnailImageUrl();
-        if (thumbnailImageUrl == null) {
+        if (!StringUtils.hasText(thumbnailImageUrl)) {
             thumbnailImageUrl = ConstantUtil.defaultProfileThumbnailImageUrl;
         }
 
         return new MemberDto(
-                profileImageUrl,
-                thumbnailImageUrl,
+                profileImageUrl.startsWith("http://") ? convertImageUrlFromHttpToHttps(profileImageUrl) : profileImageUrl,
+                thumbnailImageUrl.startsWith("http://") ? convertImageUrlFromHttpToHttps(thumbnailImageUrl) : thumbnailImageUrl,
                 getSocialUid(),
                 LoginType.KAKAO,
                 roleTypes,
@@ -123,6 +123,10 @@ public class KakaoOAuthUserResponse {
                 getAgeRange(),
                 getGender() != null ? getGender() : Gender.ETC
         );
+    }
+
+    private String convertImageUrlFromHttpToHttps(String imageUrl) {
+        return imageUrl.replace("http://", "https://");
     }
 
     // Getter
