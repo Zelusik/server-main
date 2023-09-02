@@ -9,7 +9,5 @@ import java.util.Optional;
 
 public interface PlaceRepositoryQCustom {
 
-    Optional<PlaceDto> findDtoWithMarkedStatus(Long id, Long memberId);
-
     Slice<Place> searchByKeyword(String keyword, Pageable pageable);
 }

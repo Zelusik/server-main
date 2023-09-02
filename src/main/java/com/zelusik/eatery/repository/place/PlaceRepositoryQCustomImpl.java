@@ -19,25 +19,6 @@ public class PlaceRepositoryQCustomImpl implements PlaceRepositoryQCustom {
 
     private final JPAQueryFactory queryFactory;
 
-    public Optional<PlaceDto> findDtoWithMarkedStatus(Long id, Long memberId) {
-        Place result = queryFactory.selectFrom(place)
-                .where(place.id.eq(id))
-                .fetchOne();
-
-        if (result == null) {
-            return Optional.empty();
-        }
-
-        Long count = queryFactory.select(bookmark.count())
-                .from(bookmark)
-                .where(bookmark.place.id.eq(id)
-                        .and(bookmark.member.id.eq(memberId)))
-                .fetchOne();
-        boolean isMarked = count != null && count > 0;
-
-        return Optional.of(PlaceDto.from(result, isMarked));
-    }
-
     @Override
     public Slice<Place> searchByKeyword(String keyword, Pageable pageable) {
         List<Place> content = queryFactory
