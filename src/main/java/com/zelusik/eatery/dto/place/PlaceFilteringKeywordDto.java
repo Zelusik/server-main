@@ -4,16 +4,14 @@ import com.zelusik.eatery.constant.place.FilteringType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class PlaceFilteringKeywordDto {
 
     private String keyword;
     private Integer count;
     private FilteringType type;
-
-    public static PlaceFilteringKeywordDto of(String keyword, Integer count, FilteringType type) {
-        return new PlaceFilteringKeywordDto(keyword, count, type);
-    }
 }

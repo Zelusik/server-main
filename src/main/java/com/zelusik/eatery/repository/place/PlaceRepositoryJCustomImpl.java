@@ -401,7 +401,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     private RowMapper<PlaceFilteringKeywordDto> placeFilteringKeywordRowMapper(FilteringType filteringType) {
-        return (rs, rowNum) -> PlaceFilteringKeywordDto.of(
+        return (rs, rowNum) -> new PlaceFilteringKeywordDto(
                 rs.getString("keyword"),
                 rs.getInt("cnt"),
                 filteringType
@@ -446,7 +446,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             if (count < minCount) {
                 continue;
             }
-            result.add(PlaceFilteringKeywordDto.of(keyword, count, FilteringType.ADDRESS));
+            result.add(new PlaceFilteringKeywordDto(keyword, count, FilteringType.ADDRESS));
         }
         return result;
     }
@@ -487,7 +487,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             if (count < minCount) {
                 continue;
             }
-            result.add(PlaceFilteringKeywordDto.of(keyword, (int) count, FilteringType.TOP_3_KEYWORDS));
+            result.add(new PlaceFilteringKeywordDto(keyword, (int) count, FilteringType.TOP_3_KEYWORDS));
         }
         return result;
     }

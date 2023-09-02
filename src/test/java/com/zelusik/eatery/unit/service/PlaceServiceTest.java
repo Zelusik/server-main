@@ -301,8 +301,8 @@ class PlaceServiceTest {
         long memberId = 1L;
         given(placeRepository.getFilteringKeywords(memberId))
                 .willReturn(List.of(
-                        PlaceFilteringKeywordDto.of("연남동", 5, FilteringType.ADDRESS),
-                        PlaceFilteringKeywordDto.of("신선한 재료", 3, FilteringType.TOP_3_KEYWORDS)
+                        new PlaceFilteringKeywordDto("연남동", 5, FilteringType.ADDRESS),
+                        new PlaceFilteringKeywordDto("신선한 재료", 3, FilteringType.TOP_3_KEYWORDS)
                 ));
 
         // when
