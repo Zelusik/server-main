@@ -37,7 +37,7 @@ public class Address {
     @Nullable
     private String roadAddress;
 
-    public Address(String lotNumberAddress, String roadAddress) {
+    public static Address of(String lotNumberAddress, String roadAddress) {
         String address;
         if (StringUtils.hasText(lotNumberAddress)) {
             address = lotNumberAddress;
@@ -48,10 +48,12 @@ public class Address {
         int sidoIdx = address.indexOf(" ");
         int sggIdx = address.indexOf(" ", sidoIdx + 1);
 
-        this.sido = address.substring(0, sidoIdx);
-        this.sgg = address.substring(sidoIdx + 1, sggIdx);
-        this.lotNumberAddress = StringUtils.hasText(lotNumberAddress) ? lotNumberAddress.substring(sggIdx + 1) : null;
-        this.roadAddress = StringUtils.hasText(roadAddress) ? roadAddress.substring(sggIdx + 1) : null;
+        return new Address(
+                address.substring(0, sidoIdx),
+                address.substring(sidoIdx + 1, sggIdx),
+                StringUtils.hasText(lotNumberAddress) ? lotNumberAddress.substring(sggIdx + 1) : null,
+                StringUtils.hasText(roadAddress) ? roadAddress.substring(sggIdx + 1) : null
+        );
     }
 
     @Override
@@ -59,9 +61,9 @@ public class Address {
         if (this == o) return true;
         if (!(o instanceof Address that)) return false;
         return Objects.equals(this.getSido(), that.getSido())
-                && Objects.equals(this.getSgg(), that.getSgg())
-                && Objects.equals(this.getLotNumberAddress(), that.getLotNumberAddress())
-                && Objects.equals(this.getRoadAddress(), that.getRoadAddress());
+               && Objects.equals(this.getSgg(), that.getSgg())
+               && Objects.equals(this.getLotNumberAddress(), that.getLotNumberAddress())
+               && Objects.equals(this.getRoadAddress(), that.getRoadAddress());
     }
 
     @Override

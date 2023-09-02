@@ -66,7 +66,7 @@ public class PlaceCreateRequest {
                 this.getCategoryGroupCode(),
                 PlaceCategory.of(this.getCategoryName()),
                 this.getPhone(),
-                new Address(this.getLotNumberAddress(), this.getRoadAddress()),
+                Address.of(this.getLotNumberAddress(), this.getRoadAddress()),
                 homepageUrl,
                 new Point(this.getLat(), this.getLng()),
                 closingHours
