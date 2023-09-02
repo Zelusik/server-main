@@ -8,7 +8,6 @@ import com.zelusik.eatery.dto.place.OpeningHoursDto;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -179,12 +178,6 @@ public class PlaceTestUtils {
                 openAt,
                 closeAt
         );
-    }
-
-    public static OpeningHours createOpeningHours(Long id, Place place, DayOfWeek dayOfWeek) {
-        OpeningHours openingHours = OpeningHours.of(place, dayOfWeek, LocalTime.now().minusHours(6), LocalTime.now());
-        ReflectionTestUtils.setField(openingHours, "id", id);
-        return openingHours;
     }
 
     public static PlaceMenusDto createPlaceMenusDto(Long id, Long placeId, List<String> menus) {

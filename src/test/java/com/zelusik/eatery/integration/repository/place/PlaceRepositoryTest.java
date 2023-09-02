@@ -2,13 +2,21 @@ package com.zelusik.eatery.integration.repository.place;
 
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.QuerydslConfig;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.place.DayOfWeek;
-import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.domain.place.Point;
+import com.zelusik.eatery.constant.place.FilteringType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.domain.Bookmark;
+import com.zelusik.eatery.domain.member.Member;
+import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
+import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
-import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +27,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import static com.zelusik.eatery.constant.review.ReviewKeywordValue.*;
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
-import static com.zelusik.eatery.util.PlaceTestUtils.createNewPlace;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -35,15 +47,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 class PlaceRepositoryTest {
 
-    private final PlaceRepository placeRepository;
+    private final PlaceRepository sut;
+    private final MemberRepository memberRepository;
     private final OpeningHoursRepository openingHoursRepository;
+    private final BookmarkRepository bookmarkRepository;
 
-    public PlaceRepositoryTest(
-            @Autowired PlaceRepository placeRepository,
-            @Autowired OpeningHoursRepository openingHoursRepository
-    ) {
-        this.placeRepository = placeRepository;
+    @Autowired
+    public PlaceRepositoryTest(PlaceRepository placeRepository, MemberRepository memberRepository, @Autowired OpeningHoursRepository openingHoursRepository, BookmarkRepository bookmarkRepository) {
+        this.sut = placeRepository;
+        this.memberRepository = memberRepository;
         this.openingHoursRepository = openingHoursRepository;
+        this.bookmarkRepository = bookmarkRepository;
     }
 
     @DisplayName("장소들이 존재하고, 중심 좌표 주변의 장소를 조회하면, 거리순으로 정렬된 장소 목록이 반환된다.")
@@ -53,7 +67,7 @@ class PlaceRepositoryTest {
         Long memberId = 1L;
         Point center = new Point("37", "127");
         for (int i = 0; i < 50; i++) {
-            placeRepository.save(PlaceTestUtils.createPlace(
+            sut.save(createPlace(
                     (long) (i + 1),
                     String.valueOf(i),
                     null,
@@ -64,7 +78,7 @@ class PlaceRepositoryTest {
         }
 
         // when
-        Slice<PlaceDto> places = placeRepository.findDtosNearBy(memberId, null, null, null, center, 1100, MAX_NUM_OF_PLACE_IMAGES, PageRequest.of(0, 30));
+        Slice<PlaceDto> places = sut.findDtosNearBy(memberId, null, null, null, center, 1100, MAX_NUM_OF_PLACE_IMAGES, PageRequest.of(0, 30));
 
         // then
         assertThat(places.getSize()).isEqualTo(30);
@@ -87,22 +101,22 @@ class PlaceRepositoryTest {
         // given
         Long memberId = 1L;
         Point pos = new Point("37.5776087830657", "126.976896737645");  // 경복궁
-        Place place1 = placeRepository.save(PlaceTestUtils.createPlace(1L, "1", "성심당", "36.32765802936324", "127.42727719121109", null));    // 대전
-        place1.getOpeningHoursList().add(openingHoursRepository.save(PlaceTestUtils.createOpeningHours(1L, place1, DayOfWeek.MON)));
-        placeRepository.save(PlaceTestUtils.createPlace(2L, "2", "해운대암소갈비집", "35.163310169485634", "129.1666092786243", null));  // 부산
-        Place place3 = placeRepository.save(PlaceTestUtils.createPlace(3L, "3", "연남토마 본점", "37.5595073462493", "126.921462488105", null));   // 서울
-        place3.getOpeningHoursList().add(openingHoursRepository.save(PlaceTestUtils.createOpeningHours(2L, place3, DayOfWeek.MON)));
-        placeRepository.save(PlaceTestUtils.createPlace(4L, "4", "연돈", "33.258895288625645", "126.40715814631936", null));   // 제주
-        Place place5 = placeRepository.save(PlaceTestUtils.createPlace(5L, "5", "본수원갈비", "37.27796181430103", "127.04060364807957", null));  // 수원
-        place5.getOpeningHoursList().add(openingHoursRepository.save(PlaceTestUtils.createOpeningHours(3L, place5, DayOfWeek.WED)));
+        Place place1 = sut.save(createPlace(1L, "1", "성심당", "36.32765802936324", "127.42727719121109", null));    // 대전
+        place1.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(1L, place1, DayOfWeek.MON)));
+        sut.save(createPlace(2L, "2", "해운대암소갈비집", "35.163310169485634", "129.1666092786243", null));  // 부산
+        Place place3 = sut.save(createPlace(3L, "3", "연남토마 본점", "37.5595073462493", "126.921462488105", null));   // 서울
+        place3.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(2L, place3, DayOfWeek.MON)));
+        sut.save(createPlace(4L, "4", "연돈", "33.258895288625645", "126.40715814631936", null));   // 제주
+        Place place5 = sut.save(createPlace(5L, "5", "본수원갈비", "37.27796181430103", "127.04060364807957", null));  // 수원
+        place5.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(3L, place5, DayOfWeek.WED)));
 
         // when
         Pageable pageable = Pageable.ofSize(30);
-        Slice<PlaceDto> placesLimit50 = placeRepository.findDtosNearBy(memberId, null, null, null, pos, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100 = placeRepository.findDtosNearBy(memberId, null, null, null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMon = placeRepository.findDtosNearBy(memberId, null, List.of(DayOfWeek.MON), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysWed = placeRepository.findDtosNearBy(memberId, null, List.of(DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMonAndWed = placeRepository.findDtosNearBy(memberId, null, List.of(DayOfWeek.MON, DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit50 = sut.findDtosNearBy(memberId, null, null, null, pos, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100 = sut.findDtosNearBy(memberId, null, null, null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysMon = sut.findDtosNearBy(memberId, null, List.of(DayOfWeek.MON), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysWed = sut.findDtosNearBy(memberId, null, List.of(DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysMonAndWed = sut.findDtosNearBy(memberId, null, List.of(DayOfWeek.MON, DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
 
         // then
         assertThat(placesLimit50.getNumberOfElements()).isEqualTo(2);
@@ -116,16 +130,16 @@ class PlaceRepositoryTest {
     @Test
     void givenSearchKeyword_whenSearching_thenReturnPlaces() {
         // given
-        Place place1 = placeRepository.save(createNewPlace("1", "김치 맛집", "https://homepage-1", "37", "127", "일요일"));
-        Place place2 = placeRepository.save(createNewPlace("2", "햄버거 맛집", "https://homepage-1", "37", "127", "일요일"));
-        Place place3 = placeRepository.save(createNewPlace("3", "그냥 식당", "https://homepage-1", "37", "127", "일요일"));
-        Place place4 = placeRepository.save(createNewPlace("4", "돈까스 맛집", "https://homepage-1", "37", "127", "일요일"));
-        Place place5 = placeRepository.save(createNewPlace("5", "테스트", "https://homepage-1", "37", "127", "일요일"));
+        Place place1 = sut.save(createNewPlace("1", "김치 맛집"));
+        Place place2 = sut.save(createNewPlace("2", "햄버거 맛집"));
+        Place place3 = sut.save(createNewPlace("3", "그냥 식당"));
+        Place place4 = sut.save(createNewPlace("4", "돈까스 맛집"));
+        Place place5 = sut.save(createNewPlace("5", "테스트"));
         Pageable pageable = Pageable.ofSize(30);
         String keyword = "맛집";
 
         // when
-        Slice<Place> result = placeRepository.searchByKeyword(keyword, pageable);
+        Slice<Place> result = sut.searchByKeyword(keyword, pageable);
 
         // then
         assertThat(result.getNumberOfElements()).isEqualTo(3);
@@ -133,5 +147,154 @@ class PlaceRepositoryTest {
         assertThat(content.get(0).getId()).isEqualTo(place1.getId());
         assertThat(content.get(1).getId()).isEqualTo(place2.getId());
         assertThat(content.get(2).getId()).isEqualTo(place4.getId());
+    }
+
+    @DisplayName("내가 북마크한 장소들의 top 3 keywords에 대한 filtering keywords를 개수가 많은 순으로 추출한다.")
+    @Test
+    void given_whenGetFilteringKeywordsForTop3KeywordsOrderByCountDesc_thenReturnFilteringKeywords() {
+        // given
+        Member member = memberRepository.save(createNewMember("1"));
+        List<Place> places = sut.saveAll(List.of(
+                createNewPlace("1", List.of(FRESH, GOOD_PRICE, GOOD_FOR_DATE), "name"),
+                createNewPlace("2", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
+                createNewPlace("3", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
+                createNewPlace("4", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
+                createNewPlace("5", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
+                createNewPlace("6", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
+                createNewPlace("7", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
+                createNewPlace("8", List.of(FRESH, BEST_FLAVOR, NOISY), "name"),
+                createNewPlace("9", List.of(FRESH), "name"),
+                createNewPlace("10", List.of(), "name")
+        ));
+        bookmarkRepository.saveAll(places.stream().map(place -> createNewBookmark(member, place)).toList());
+
+        // when
+        List<PlaceFilteringKeywordDto> filteringKeywords = sut.getFilteringKeywords(member.getId());
+
+        // then
+        List<PlaceFilteringKeywordDto> filteringKeywordsForTop3Keywords = filteringKeywords.stream()
+                .filter(filteringKeyword -> filteringKeyword.getType().equals(FilteringType.TOP_3_KEYWORDS))
+                .toList();
+        assertThat(filteringKeywordsForTop3Keywords).hasSize(3);
+        assertThat(filteringKeywordsForTop3Keywords.get(0))
+                .hasFieldOrPropertyWithValue("keyword", FRESH.name())
+                .hasFieldOrPropertyWithValue("count", 4)
+                .hasFieldOrPropertyWithValue("type", FilteringType.TOP_3_KEYWORDS);
+        assertThat(filteringKeywordsForTop3Keywords.get(1))
+                .hasFieldOrPropertyWithValue("keyword", BEST_FLAVOR.name())
+                .hasFieldOrPropertyWithValue("count", 3)    // 3.5는 int type variable에 할당되면서 3으로 내림된다.
+                .hasFieldOrPropertyWithValue("type", FilteringType.TOP_3_KEYWORDS);
+        assertThat(filteringKeywordsForTop3Keywords.get(2))
+                .hasFieldOrPropertyWithValue("keyword", WITH_ALCOHOL.name())
+                .hasFieldOrPropertyWithValue("count", 3)
+                .hasFieldOrPropertyWithValue("type", FilteringType.TOP_3_KEYWORDS);
+    }
+
+    @DisplayName("내가 북마크한 장소들의 주소(읍면동 단위)에 대한 filtering keywords를 개수가 많은 순으로 추출한다.")
+    @Test
+    void given_whenGetFilteringKeywordsForAddressOrderByCountDesc_thenReturnFilteringKeywords() {
+        // given
+        Member member = memberRepository.save(createNewMember("1"));
+        List<Place> places = sut.saveAll(List.of(
+                createNewPlace("1", Address.of("시 구 연남동 123", null)),
+                createNewPlace("2", Address.of("시 구 연남동 234", null)),
+                createNewPlace("3", Address.of("시 구 연남동 345", null)),
+                createNewPlace("4", Address.of("시 구 연남동 456", null)),
+                createNewPlace("5", Address.of("시 구 공덕동 123", null)),
+                createNewPlace("6", Address.of("시 구 공덕동 123", null)),
+                createNewPlace("7", Address.of("시 구 표선면 세화리 123", null)),
+                createNewPlace("8", Address.of("시 구 표선면 세화리 123", null)),
+                createNewPlace("9", Address.of("시 구 표선면 세화리 123", null)),
+                createNewPlace("10", Address.of("시 구 을지로1가 123", null))
+        ));
+        bookmarkRepository.saveAll(places.stream().map(place -> createNewBookmark(member, place)).toList());
+
+        // when
+        List<PlaceFilteringKeywordDto> filteringKeywords = sut.getFilteringKeywords(member.getId());
+
+        // then
+        List<PlaceFilteringKeywordDto> filteringKeywordsForAddress = filteringKeywords.stream()
+                .filter(filteringKeyword -> filteringKeyword.getType().equals(FilteringType.ADDRESS))
+                .toList();
+        assertThat(filteringKeywordsForAddress).hasSize(2);
+        assertThat(filteringKeywordsForAddress.get(0))
+                .hasFieldOrPropertyWithValue("keyword", "연남동")
+                .hasFieldOrPropertyWithValue("count", 4);
+        assertThat(filteringKeywordsForAddress.get(1))
+                .hasFieldOrPropertyWithValue("keyword", "표선면")
+                .hasFieldOrPropertyWithValue("count", 3);
+    }
+
+    private Member createNewMember(String socialId) {
+        return Member.of(
+                "https://default-profile-image",
+                "https://defualt-profile-thumbnail-image",
+                socialId,
+                LoginType.KAKAO,
+                Set.of(RoleType.USER),
+                "test" + socialId + "@test.com",
+                "test" + socialId,
+                null,
+                null
+        );
+    }
+
+    private Place createNewPlace(String kakaoPid, String name) {
+        return createNewPlace(kakaoPid, List.of(), name, new PlaceCategory("한식", "냉면", null), new Address("sido", "sgg", "lot number address", "road address"), null, "37", "127", null);
+    }
+
+    private Place createNewPlace(String kakaoPid, Address address) {
+        return createNewPlace(kakaoPid, List.of(), "test", new PlaceCategory("한식", "냉면", null), address, null, "37", "127", null);
+    }
+
+    private Place createNewPlace(String kakaoPid, List<ReviewKeywordValue> top3Keywords, String name) {
+        return createNewPlace(kakaoPid, top3Keywords, name, new PlaceCategory("한식", "냉면", null), new Address("sido", "sgg", "lot number address", "road address"), null, "37", "127", null);
+    }
+
+    private Place createNewPlace(String kakaoPid, List<ReviewKeywordValue> top3Keywords, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
+        return createPlace(null, top3Keywords, kakaoPid, name, placeCategory, address, homepageUrl, lat, lng, closingHours);
+    }
+
+    private Place createPlace(Long id, String kakaoPid, String homepageUrl, String lat, String lng, String closingHours) {
+        return createPlace(id, List.of(), kakaoPid, "test", homepageUrl, lat, lng, closingHours);
+    }
+
+    private Place createPlace(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
+        return createPlace(id, top3Keywords, kakaoPid, name, new PlaceCategory("한식", "냉면", null), new Address("sido", "sgg", "lot number address", "road address"), homepageUrl, lat, lng, closingHours);
+    }
+
+    private Place createPlace(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
+        return Place.of(
+                id,
+                top3Keywords,
+                kakaoPid,
+                name,
+                "https://page-url",
+                KakaoCategoryGroupCode.FD6,
+                placeCategory,
+                "02-123-4567",
+                address,
+                homepageUrl,
+                new Point(lat, lng),
+                closingHours,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private OpeningHours createOpeningHours(Long id, Place place, DayOfWeek dayOfWeek) {
+        return OpeningHours.of(
+                id,
+                place,
+                dayOfWeek,
+                LocalTime.now().minusHours(6),
+                LocalTime.now(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private Bookmark createNewBookmark(Member member, Place place) {
+        return Bookmark.of(member, place);
     }
 }

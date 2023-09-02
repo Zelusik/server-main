@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,10 +40,16 @@ public class OpeningHours extends BaseTimeEntity {
     private LocalTime closeAt;
 
     public static OpeningHours of(Place place, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt) {
-        return new OpeningHours(place, dayOfWeek, openAt, closeAt);
+        return new OpeningHours(null, place, dayOfWeek, openAt, closeAt, null, null);
     }
 
-    private OpeningHours(Place place, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt) {
+    public static OpeningHours of(Long id, Place place, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return new OpeningHours(id, place, dayOfWeek, openAt, closeAt, createdAt, updatedAt);
+    }
+
+    private OpeningHours(Long id, Place place, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
         this.place = place;
         this.dayOfWeek = dayOfWeek;
         this.openAt = openAt;
