@@ -10,7 +10,6 @@ import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,14 +17,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
-
-import static com.zelusik.eatery.constant.ConstantUtil.MAX_NUM_OF_FILTERING_KEYWORDS;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
@@ -311,184 +309,5 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 rs.getString(alias + "_thumbnail_stored_name"),
                 rs.getString(alias + "_thumbnail_url")
         );
-    }
-
-    @Override
-    public List<PlaceFilteringKeywordDto> getFilteringKeywords(Long memberId) {
-        int numOfMarkedPlaces = getNumOfMarkedPlaces(memberId);
-        int minCount = numOfMarkedPlaces < 20 ? 3 : 5;
-
-        List<PlaceFilteringKeywordDto> filteringKeywords = new ArrayList<>();
-        filteringKeywords.addAll(getFilteringKeywordsForFirstCategory(memberId, minCount));
-        filteringKeywords.addAll(getFilteringKeywordsForSecondCategory(memberId, minCount));
-        filteringKeywords.addAll(getFilteringKeywordsForAddress(memberId, minCount));
-        filteringKeywords.addAll(getFilteringKeywordsForTop3Keywords(memberId, minCount));
-        filteringKeywords.sort(Comparator.comparing(PlaceFilteringKeywordDto::getCount).reversed());
-
-        return filteringKeywords.size() < MAX_NUM_OF_FILTERING_KEYWORDS
-                ? filteringKeywords
-                : filteringKeywords.subList(0, MAX_NUM_OF_FILTERING_KEYWORDS);
-    }
-
-    /**
-     * 저장된 장소의 개수(북마크 개수)를 조회한다.
-     *
-     * @param memberId PK of member
-     * @return 북마크에 저장된 장소의 개수
-     */
-    private int getNumOfMarkedPlaces(Long memberId) {
-        Integer count = template.queryForObject(
-                """
-                        SELECT COUNT(bm.place_id)
-                        FROM bookmark bm
-                        WHERE bm.member_id = :member_id;
-                        """,
-                Map.of("member_id", memberId),
-                Integer.class
-        );
-        return count != null ? count : 0;
-    }
-
-    /**
-     * 저장된 장소들의 카테고리(first category)에 대해 filtering keywords를 조회한다.
-     *
-     * @param memberId PK of member
-     * @param minCount filtering keyword가 되기 위한 최소 개수 조건. 3 또는 5
-     * @return 조회된 filtering keywords
-     */
-    private List<PlaceFilteringKeywordDto> getFilteringKeywordsForFirstCategory(Long memberId, int minCount) {
-        String query = """
-                SELECT p.first_category        AS keyword,
-                       COUNT(p.first_category) AS cnt
-                FROM bookmark bm
-                         JOIN place p ON bm.place_id = p.place_id
-                WHERE bm.member_id = :member_id
-                GROUP BY p.first_category
-                HAVING cnt >= :min_count;
-                """;
-
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("member_id", memberId)
-                .addValue("min_count", minCount);
-
-        return template.query(query, params, placeFilteringKeywordRowMapper(FilteringType.FIRST_CATEGORY));
-    }
-
-    /**
-     * 저장된 장소들의 카테고리(second category)에 대해 filtering keywords를 조회한다.
-     *
-     * @param memberId PK of member
-     * @param minCount filtering keyword가 되기 위한 최소 개수 조건. 3 또는 5
-     * @return 조회된 filtering keywords
-     */
-    private List<PlaceFilteringKeywordDto> getFilteringKeywordsForSecondCategory(Long memberId, int minCount) {
-        String query = """
-                SELECT p.second_category        AS keyword,
-                       COUNT(p.second_category) AS cnt
-                FROM bookmark bm
-                         JOIN place p ON bm.place_id = p.place_id
-                WHERE bm.member_id = :member_id
-                  AND p.second_category IS NOT NULL
-                GROUP BY p.second_category
-                HAVING cnt >= :min_count;
-                """;
-
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("member_id", memberId)
-                .addValue("min_count", minCount);
-
-        return template.query(query, params, placeFilteringKeywordRowMapper(FilteringType.SECOND_CATEGORY));
-    }
-
-    private RowMapper<PlaceFilteringKeywordDto> placeFilteringKeywordRowMapper(FilteringType filteringType) {
-        return (rs, rowNum) -> new PlaceFilteringKeywordDto(
-                rs.getString("keyword"),
-                rs.getInt("cnt"),
-                filteringType
-        );
-    }
-
-    /**
-     * 저장된 장소들의 주소(읍면동 단위)에 대한 filtering keywords를 조회한다.
-     *
-     * @param memberId PK of member
-     * @param minCount filtering keyword가 되기 위한 최소 개수 조건. 3 또는 5
-     * @return 조회된 filtering keywords
-     */
-    private List<PlaceFilteringKeywordDto> getFilteringKeywordsForAddress(Long memberId, int minCount) {
-        List<PlaceFilteringKeywordDto> result = new ArrayList<>();
-
-        String query = """
-                SELECT p.lot_number_address
-                FROM bookmark bm
-                         JOIN place p ON bm.place_id = p.place_id
-                WHERE bm.member_id = :member_id
-                  AND p.lot_number_address IS NOT NULL;
-                """;
-
-        List<String> lotNumberAddresses = template.queryForList(query, Map.of("member_id", memberId), String.class);
-        List<String> emdAddresses = lotNumberAddresses.stream()
-                .map(addr -> {
-                    if (!StringUtils.hasText(addr)) {
-                        return null;
-                    }
-                    return addr.substring(0, addr.indexOf(" "));
-                }).toList();
-
-        Map<String, Integer> countMap = new HashMap<>();
-        emdAddresses.forEach(emdAddr -> {
-            countMap.put(emdAddr, countMap.getOrDefault(emdAddr, 0) + 1);
-        });
-
-        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
-            String keyword = entry.getKey();
-            int count = entry.getValue();
-            if (count < minCount) {
-                continue;
-            }
-            result.add(new PlaceFilteringKeywordDto(keyword, count, FilteringType.ADDRESS));
-        }
-        return result;
-    }
-
-    /**
-     * 저장된 장소들의 top 3 keywords에 대해 filtering keywords를 조회한다.
-     *
-     * @param memberId PK of member
-     * @param minCount filtering keyword가 되기 위한 최소 개수 조건. 3 또는 5
-     * @return 조회된 filtering keywords
-     */
-    private List<PlaceFilteringKeywordDto> getFilteringKeywordsForTop3Keywords(Long memberId, int minCount) {
-        List<PlaceFilteringKeywordDto> result = new ArrayList<>();
-
-        String query = """
-                SELECT p.top3keywords
-                FROM bookmark bm
-                         JOIN place p ON bm.place_id = p.place_id
-                WHERE bm.member_id = :member_id;
-                """;
-
-        List<String> top3KeywordsList = template.queryForList(query, Map.of("member_id", memberId), String.class);
-
-        Map<String, Integer> countMap = new HashMap<>();
-        top3KeywordsList.forEach(top3Keywords -> {
-            if (!StringUtils.hasText(top3Keywords)) {
-                return;
-            }
-            String[] keywords = top3Keywords.split(" ");
-            for (String keyword : keywords) {
-                countMap.put(keyword, countMap.getOrDefault(keyword, 0) + 1);
-            }
-        });
-
-        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
-            String keyword = entry.getKey();
-            double count = (double) entry.getValue() / 2;   // top 3 keyword의 경우 다른 항목들에 비해 자주 겹치는 데이터이므로 실제 개수의 절반을 개수로 한다. (노션 기획 문서 참고)
-            if (count < minCount) {
-                continue;
-            }
-            result.add(new PlaceFilteringKeywordDto(keyword, (int) count, FilteringType.TOP_3_KEYWORDS));
-        }
-        return result;
     }
 }

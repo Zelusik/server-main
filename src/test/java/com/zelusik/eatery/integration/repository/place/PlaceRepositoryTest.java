@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static com.zelusik.eatery.constant.review.ReviewKeywordValue.*;
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
@@ -149,6 +148,87 @@ class PlaceRepositoryTest {
         assertThat(content.get(2).getId()).isEqualTo(place4.getId());
     }
 
+    @DisplayName("내가 북마크한 장소들의 first category에 대한 filtering keywords를 개수가 많은 순으로 추출한다.")
+    @Test
+    void given_whenGetFilteringKeywordsForFirstCategoryOrderByCountDesc_thenReturnFilteringKeywords() {
+        // given
+        Member member = memberRepository.save(createNewMember("1"));
+        List<Place> places = sut.saveAll(List.of(
+                createNewPlace("1", new PlaceCategory("한식", "비빔밥", null)),
+                createNewPlace("2", new PlaceCategory("한식", "비빔밥", null)),
+                createNewPlace("3", new PlaceCategory("한식", "비빔밥", null)),
+                createNewPlace("4", new PlaceCategory("양식", "파스타", null)),
+                createNewPlace("5", new PlaceCategory("양식", "파스타", null)),
+                createNewPlace("6", new PlaceCategory("양식", "파스타", null)),
+                createNewPlace("7", new PlaceCategory("양식", "파스타", null)),
+                createNewPlace("8", new PlaceCategory("일식", "라멘", null)),
+                createNewPlace("9", new PlaceCategory("분식", null, null)),
+                createNewPlace("10", new PlaceCategory("", null, null)),
+                createNewPlace("11", new PlaceCategory("", null, null)),
+                createNewPlace("12", new PlaceCategory("", null, null))
+        ));
+        bookmarkRepository.saveAll(places.stream().map(place -> createNewBookmark(member, place)).toList());
+
+        // when
+        List<PlaceFilteringKeywordDto> filteringKeywords = sut.getFilteringKeywords(member.getId());
+
+        // then
+        List<PlaceFilteringKeywordDto> filteringKeywordsForSecondCategory = filteringKeywords.stream()
+                .filter(filteringKeyword -> filteringKeyword.getType().equals(FilteringType.FIRST_CATEGORY))
+                .toList();
+        assertThat(filteringKeywordsForSecondCategory).hasSize(2);
+        assertThat(filteringKeywordsForSecondCategory.get(0))
+                .hasFieldOrPropertyWithValue("keyword", "양식")
+                .hasFieldOrPropertyWithValue("count", 4)
+                .hasFieldOrPropertyWithValue("type", FilteringType.FIRST_CATEGORY);
+        assertThat(filteringKeywordsForSecondCategory.get(1))
+                .hasFieldOrPropertyWithValue("keyword", "한식")
+                .hasFieldOrPropertyWithValue("count", 3)
+                .hasFieldOrPropertyWithValue("type", FilteringType.FIRST_CATEGORY);
+    }
+
+    @DisplayName("내가 북마크한 장소들의 second category에 대한 filtering keywords를 개수가 많은 순으로 추출한다.")
+    @Test
+    void given_whenGetFilteringKeywordsForSecondCategoryOrderByCountDesc_thenReturnFilteringKeywords() {
+        // given
+        Member member = memberRepository.save(createNewMember("1"));
+        List<Place> places = sut.saveAll(List.of(
+                createNewPlace("1", new PlaceCategory("한식", "비빔밥", null)),
+                createNewPlace("2", new PlaceCategory("한식", "비빔밥", null)),
+                createNewPlace("3", new PlaceCategory("한식", "비빔밥", null)),
+                createNewPlace("4", new PlaceCategory("한식", "국밥", null)),
+                createNewPlace("5", new PlaceCategory("한식", "국밥", null)),
+                createNewPlace("6", new PlaceCategory("한식", "국밥", null)),
+                createNewPlace("7", new PlaceCategory("한식", "국밥", null)),
+                createNewPlace("8", new PlaceCategory("한식", "불고기", null)),
+                createNewPlace("9", new PlaceCategory("한식", "김밥", null)),
+                createNewPlace("10", new PlaceCategory("한식", "", null)),
+                createNewPlace("11", new PlaceCategory("한식", "", null)),
+                createNewPlace("12", new PlaceCategory("한식", "", null)),
+                createNewPlace("13", new PlaceCategory("한식", null, null)),
+                createNewPlace("14", new PlaceCategory("한식", null, null)),
+                createNewPlace("15", new PlaceCategory("한식", null, null))
+        ));
+        bookmarkRepository.saveAll(places.stream().map(place -> createNewBookmark(member, place)).toList());
+
+        // when
+        List<PlaceFilteringKeywordDto> filteringKeywords = sut.getFilteringKeywords(member.getId());
+
+        // then
+        List<PlaceFilteringKeywordDto> filteringKeywordsForSecondCategory = filteringKeywords.stream()
+                .filter(filteringKeyword -> filteringKeyword.getType().equals(FilteringType.SECOND_CATEGORY))
+                .toList();
+        assertThat(filteringKeywordsForSecondCategory).hasSize(2);
+        assertThat(filteringKeywordsForSecondCategory.get(0))
+                .hasFieldOrPropertyWithValue("keyword", "국밥")
+                .hasFieldOrPropertyWithValue("count", 4)
+                .hasFieldOrPropertyWithValue("type", FilteringType.SECOND_CATEGORY);
+        assertThat(filteringKeywordsForSecondCategory.get(1))
+                .hasFieldOrPropertyWithValue("keyword", "비빔밥")
+                .hasFieldOrPropertyWithValue("count", 3)
+                .hasFieldOrPropertyWithValue("type", FilteringType.SECOND_CATEGORY);
+    }
+
     @DisplayName("내가 북마크한 장소들의 top 3 keywords에 대한 filtering keywords를 개수가 많은 순으로 추출한다.")
     @Test
     void given_whenGetFilteringKeywordsForTop3KeywordsOrderByCountDesc_thenReturnFilteringKeywords() {
@@ -163,8 +243,9 @@ class PlaceRepositoryTest {
                 createNewPlace("6", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
                 createNewPlace("7", List.of(FRESH, BEST_FLAVOR, WITH_ALCOHOL), "name"),
                 createNewPlace("8", List.of(FRESH, BEST_FLAVOR, NOISY), "name"),
-                createNewPlace("9", List.of(FRESH), "name"),
-                createNewPlace("10", List.of(), "name")
+                createNewPlace("9", List.of(FRESH, BEST_FLAVOR), "name"),
+                createNewPlace("10", List.of(FRESH), "name"),
+                createNewPlace("11", List.of(), "name")
         ));
         bookmarkRepository.saveAll(places.stream().map(place -> createNewBookmark(member, place)).toList());
 
@@ -177,15 +258,15 @@ class PlaceRepositoryTest {
                 .toList();
         assertThat(filteringKeywordsForTop3Keywords).hasSize(3);
         assertThat(filteringKeywordsForTop3Keywords.get(0))
-                .hasFieldOrPropertyWithValue("keyword", FRESH.name())
-                .hasFieldOrPropertyWithValue("count", 4)
+                .hasFieldOrPropertyWithValue("keyword", FRESH.getContent())
+                .hasFieldOrPropertyWithValue("count", 5)
                 .hasFieldOrPropertyWithValue("type", FilteringType.TOP_3_KEYWORDS);
         assertThat(filteringKeywordsForTop3Keywords.get(1))
-                .hasFieldOrPropertyWithValue("keyword", BEST_FLAVOR.name())
-                .hasFieldOrPropertyWithValue("count", 3)    // 3.5는 int type variable에 할당되면서 3으로 내림된다.
+                .hasFieldOrPropertyWithValue("keyword", BEST_FLAVOR.getContent())
+                .hasFieldOrPropertyWithValue("count", 4)    // 3.5는 int type variable에 할당되면서 3으로 내림된다.
                 .hasFieldOrPropertyWithValue("type", FilteringType.TOP_3_KEYWORDS);
         assertThat(filteringKeywordsForTop3Keywords.get(2))
-                .hasFieldOrPropertyWithValue("keyword", WITH_ALCOHOL.name())
+                .hasFieldOrPropertyWithValue("keyword", WITH_ALCOHOL.getContent())
                 .hasFieldOrPropertyWithValue("count", 3)
                 .hasFieldOrPropertyWithValue("type", FilteringType.TOP_3_KEYWORDS);
     }
@@ -225,15 +306,15 @@ class PlaceRepositoryTest {
                 .hasFieldOrPropertyWithValue("count", 3);
     }
 
-    private Member createNewMember(String socialId) {
+    private Member createNewMember(String socialUid) {
         return Member.of(
                 "https://default-profile-image",
                 "https://defualt-profile-thumbnail-image",
-                socialId,
+                socialUid,
                 LoginType.KAKAO,
                 Set.of(RoleType.USER),
-                "test" + socialId + "@test.com",
-                "test" + socialId,
+                "test" + socialUid + "@test.com",
+                "test" + socialUid,
                 null,
                 null
         );
@@ -245,6 +326,10 @@ class PlaceRepositoryTest {
 
     private Place createNewPlace(String kakaoPid, Address address) {
         return createNewPlace(kakaoPid, List.of(), "test", new PlaceCategory("한식", "냉면", null), address, null, "37", "127", null);
+    }
+
+    private Place createNewPlace(String kakaoPid, PlaceCategory category) {
+        return createNewPlace(kakaoPid, List.of(), "test", category, new Address("sido", "sigungu", "lot number address", "road address"), null, "37", "127", null);
     }
 
     private Place createNewPlace(String kakaoPid, List<ReviewKeywordValue> top3Keywords, String name) {

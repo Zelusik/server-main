@@ -6,7 +6,6 @@ import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
@@ -40,12 +39,4 @@ public interface PlaceRepositoryJCustom {
      * @return 조회된 장소 목록
      */
     Page<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable);
-
-    /**
-     * 북마크에 저장한 장소들에 대해 filtering keywords를 조회한다.
-     *
-     * @param memberId filtering keyword 목록을 조회하고자 하는 회원의 PK
-     * @return 조회된 filtering keywords
-     */
-    List<PlaceFilteringKeywordDto> getFilteringKeywords(Long memberId);
 }
