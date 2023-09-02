@@ -36,11 +36,6 @@ public class RedisCacheConfig {
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory).cacheDefaults(createRedisCacheConfig(60)).build();
     }
 
-    @Bean
-    public CacheManager curationCacheManager() {
-        return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(connectionFactory).cacheDefaults(createRedisCacheConfig(12 * 60)).build();
-    }
-
     private static RedisCacheConfiguration createRedisCacheConfig(long cacheTtlMin) {
         return RedisCacheConfiguration
                 .defaultCacheConfig()

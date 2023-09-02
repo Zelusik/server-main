@@ -45,10 +45,6 @@ public class SecurityConfig {
             "/api/auth/validity"
     };
 
-    private static final Map<String, HttpMethod> MANAGER_AUTH_LIST = Map.of(
-            "/api/curation/**", HttpMethod.POST
-    );
-
     private static final Map<String, HttpMethod> ADMIN_AUTH_LIST = Map.of(
             "/api/places/*/menus", HttpMethod.DELETE
     );
@@ -68,10 +64,8 @@ public class SecurityConfig {
                     auth
                             .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                             .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                            .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll()
-                            .mvcMatchers(GET, "/api/curation").permitAll();
+                            .mvcMatchers("/swagger-ui/**", "/v3/api-docs/**", "/actuator/**").permitAll();
                     Arrays.stream(AUTH_WHITE_PATHS).forEach(authWhiteListElem -> auth.mvcMatchers(authWhiteListElem).permitAll());
-                    MANAGER_AUTH_LIST.forEach((path, httpMethod) -> auth.mvcMatchers(httpMethod, path).hasAnyRole(rolesAboveManager));
                     ADMIN_AUTH_LIST.forEach((path, httpMethod) -> auth.mvcMatchers(httpMethod, path).hasAnyRole(rolesAboveAdmin));
                     auth.anyRequest().authenticated();
                 })
