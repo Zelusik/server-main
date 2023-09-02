@@ -146,7 +146,7 @@ class RecommendedReviewRepositoryTest {
                 KakaoCategoryGroupCode.FD6,
                 new PlaceCategory("한식", "냉면", null),
                 null,
-                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
                 "homepage url",
                 new Point("12.34", "23.45"),
                 null

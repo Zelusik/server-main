@@ -291,7 +291,7 @@ class ReviewControllerTest {
                 KakaoCategoryGroupCode.FD6,
                 PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
                 "02-332-8064",
-                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
                 "https://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,

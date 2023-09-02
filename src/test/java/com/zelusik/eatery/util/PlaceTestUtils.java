@@ -41,7 +41,7 @@ public class PlaceTestUtils {
                 KakaoCategoryGroupCode.FD6,
                 PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
                 "02-332-8064",
-                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
                 "http://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
@@ -65,7 +65,7 @@ public class PlaceTestUtils {
                 KakaoCategoryGroupCode.FD6,
                 PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
                 "02-332-8064",
-                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
                 "https://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
@@ -97,7 +97,7 @@ public class PlaceTestUtils {
                 KakaoCategoryGroupCode.FD6,
                 PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
                 "02-332-8064",
-                new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
                 "https://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
@@ -112,7 +112,7 @@ public class PlaceTestUtils {
     }
 
     public static Place createNewPlace(String kakaoPid, String name) {
-        return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), "homepage-url", "12.34", "23.45", null);
+        return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), "homepage-url", "12.34", "23.45", null);
     }
 
     public static Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address) {
@@ -120,7 +120,7 @@ public class PlaceTestUtils {
     }
 
     public static Place createNewPlace(String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
-        return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
+        return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
     }
 
     public static Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
@@ -144,7 +144,7 @@ public class PlaceTestUtils {
     }
 
     public static Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, String homepageUrl, String lat, String lng, String closingHours) {
-        return createPlace(id, kakaoPid, name, placeCategory, new Address("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
+        return createPlace(id, kakaoPid, name, placeCategory, Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
     }
 
     public static Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {

@@ -27,7 +27,7 @@ class AddressTest {
         // given
 
         // when
-        Address address = new Address(fullLotNumberAddress, fullRoadAddress);
+        Address address = Address.of(fullLotNumberAddress, fullRoadAddress);
 
         // then
         assertThat(address.getSido()).isEqualTo(sido);
