@@ -322,7 +322,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         filteringKeywords.addAll(getSecondCategoryFilteringKeywords(memberId, minCount));
         filteringKeywords.addAll(getAddressFilteringKeywords(memberId, minCount));
         filteringKeywords.addAll(getTop3KeywordFilteringKeywords(memberId, minCount));
-        filteringKeywords.sort(Comparator.comparing(PlaceFilteringKeywordDto::getCount));
+        filteringKeywords.sort(Comparator.comparing(PlaceFilteringKeywordDto::getCount).reversed());
 
         return filteringKeywords.size() < MAX_NUM_OF_FILTERING_KEYWORDS
                 ? filteringKeywords
