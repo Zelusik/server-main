@@ -58,7 +58,7 @@ public class FindMarkedPlacesResponse {
                 category,
                 dto.getAddress(),
                 dto.getTop3Keywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
                 placeImages
         );

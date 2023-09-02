@@ -54,7 +54,7 @@ public class GetMemberProfileInfoResponse {
                 memberProfileInfoDto.getNumOfFollowings(),
                 new MemberTasteStatisticsResponse(
                         memberProfileInfoDto.getMostVisitedLocation(),
-                        memberProfileInfoDto.getMostTaggedReviewKeyword() != null ? memberProfileInfoDto.getMostTaggedReviewKeyword().getDescription() : "",
+                        memberProfileInfoDto.getMostTaggedReviewKeyword() != null ? memberProfileInfoDto.getMostTaggedReviewKeyword().getContent() : "",
                         memberProfileInfoDto.getMostEatenFoodCategory() != null ? memberProfileInfoDto.getMostEatenFoodCategory().getCategoryName() : ""
                 )
         );
