@@ -2,7 +2,6 @@ package com.zelusik.eatery.exception;
 
 import com.zelusik.eatery.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.domain.Bookmark;
-import com.zelusik.eatery.domain.curation.Curation;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
@@ -12,7 +11,6 @@ import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import com.zelusik.eatery.exception.bookmark.AlreadyMarkedPlaceException;
 import com.zelusik.eatery.exception.bookmark.BookmarkNotFoundException;
-import com.zelusik.eatery.exception.curation.CurationNotFoundException;
 import com.zelusik.eatery.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.exception.kakao.KakaoTokenValidateException;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
@@ -57,7 +55,6 @@ import java.util.Optional;
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
  *     <li>3000 ~ 3499: 장소 관련 예외</li>
  *     <li>3500 ~ 3999: 리뷰 관련 예외</li>
- *     <li>4000 ~ 4299: 큐레이션 관련 예외</li>
  *     <li>4300 ~ 4599: 북마크 관련 예외</li>
  *     <li>1XXXX: Kakao server 관련 예외</li>
  *     <li>2XXXX: Apple server/login 관련 예외</li>
@@ -144,11 +141,6 @@ public enum ExceptionType {
     REVIEW_UPDATE_PERMISSION_DENIED(3503, "리뷰를 수정할 권한이 없습니다.", ReviewUpdatePermissionDeniedException.class),
     MISMATCHED_MENU_KEYWORD_COUNT(3504, "요청 데이터가 잘못되었습니다. 메뉴와 메뉴에 대한 키워드의 개수가 일치하지 않습니다.", MismatchedMenuKeywordCountException.class),
     INVALID_TYPE_OF_REVIEW_KEYWORD_VALUE(3505, "잘못된 리뷰 키워드 값 유형입니다.", InvalidTypeOfReviewKeywordValueException.class),
-
-    /**
-     * 큐레이션({@link Curation}) 관련 예외
-     */
-    CURATION_NOT_FOUND(4000, "큐레이션을 찾을 수 없습니다.", CurationNotFoundException.class),
 
     /**
      * 북마크({@link Bookmark} 관련 예외
