@@ -30,6 +30,7 @@ public class PlaceMenus extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     private Place place;
 
+    @Column(length = 10000)
     @Convert(converter = PlaceMenusConverter.class)
     private List<String> menus;
 
