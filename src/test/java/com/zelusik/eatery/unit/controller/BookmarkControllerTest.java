@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -61,7 +62,7 @@ class BookmarkControllerTest {
         // when & then
         mvc.perform(
                         post("/api/v1/bookmarks")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("placeId", String.valueOf(placeId))
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
@@ -83,7 +84,7 @@ class BookmarkControllerTest {
         // when & then
         mvc.perform(
                         delete("/api/v1/bookmarks")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("placeId", String.valueOf(placeId))
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )

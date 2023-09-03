@@ -21,6 +21,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.MenuKeywordCategory.MENU_NAME;
 import static com.zelusik.eatery.constant.MenuKeywordCategory.PLACE_CATEGORY;
 
@@ -38,7 +39,7 @@ public class MenuKeywordController {
             description = "각 메뉴에 대해 적절한 키워드 목록을 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping(value = "/v1/menu-keywords", headers = "Eatery-API-Minor-Version=1")
+    @GetMapping(value = "/v1/menu-keywords", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public MenuKeywordListResponseList getMenuKeywordsV1_1(
             @Parameter(
                     description = "<p>리뷰를 작성하고자 하는 장소의 카테고리 정보. Kakao에서 전달받은 정보 그대로 사용한다.",

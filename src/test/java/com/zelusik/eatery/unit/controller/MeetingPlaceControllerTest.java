@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -79,7 +80,7 @@ class MeetingPlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/v1/meeting-places")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
                                 .with(user(createTestUserDetails()))
@@ -122,7 +123,7 @@ class MeetingPlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/v1/meeting-places")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
                                 .with(user(createTestUserDetails()))
@@ -174,7 +175,7 @@ class MeetingPlaceControllerTest {
         // when & then
         mvc.perform(
                         get("/api/v1/meeting-places")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
                                 .with(user(createTestUserDetails()))

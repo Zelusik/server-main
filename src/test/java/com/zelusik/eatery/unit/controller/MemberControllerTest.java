@@ -37,6 +37,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -74,7 +75,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/v1/members/me")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
@@ -101,7 +102,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/v1/members/me/profile")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
@@ -136,7 +137,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/v1/members/" + memberId + "/profile")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
@@ -165,7 +166,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         get("/api/v1/members/search")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("keyword", searchKeyword)
                                 .with(user(createTestUserDetails(1L)))
                 )
@@ -186,7 +187,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         multipart(HttpMethod.PUT, "/api/v1/members")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("nickname", memberUpdateInfo.getNickname())
                                 .param("birthDay", memberUpdateInfo.getBirthDay().toString())
                                 .param("gender", memberUpdateInfo.getGender().toString())
@@ -207,7 +208,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         put("/api/v1/members/favorite-food")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(user(createTestUserDetails(memberId)))
@@ -230,7 +231,7 @@ class MemberControllerTest {
         // when & then
         mvc.perform(
                         delete("/api/v1/members")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(MemberDeletionSurveyRequest.of(surveyType)))
                                 .with(user(createTestUserDetails(memberId)))

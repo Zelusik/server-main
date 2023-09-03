@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -68,7 +69,7 @@ class TermsInfoControllerTest {
         // when & then
         mvc.perform(
                         post("/api/v1/members/terms")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .content(mapper.writeValueAsString(agreeToTermsRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(user(createTestUserDetails(loginMemberId)))
@@ -94,7 +95,7 @@ class TermsInfoControllerTest {
         // when & then
         mvc.perform(
                         post("/api/v1/members/terms")
-                                .header("Eatery-API-Minor-Version", 1)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .content(mapper.writeValueAsString(agreeToTermsRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(user(createTestUserDetails(loginMemberId)))
