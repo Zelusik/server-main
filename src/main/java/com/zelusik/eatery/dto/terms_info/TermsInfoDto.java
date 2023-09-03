@@ -1,6 +1,6 @@
 package com.zelusik.eatery.dto.terms_info;
 
-import com.zelusik.eatery.domain.member.TermsInfo;
+import com.zelusik.eatery.domain.terms_info.TermsInfo;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class TermsInfoDto {
 
     private Long id;
+    private Long memberId;
     private Boolean isNotMinor;
     private Boolean service;
     private LocalDateTime serviceUpdatedAt;
@@ -31,6 +32,7 @@ public class TermsInfoDto {
 
         return new TermsInfoDto(
                 entity.getId(),
+                entity.getMember().getId(),
                 entity.getIsNotMinor(),
                 entity.getService(),
                 entity.getServiceUpdatedAt(),

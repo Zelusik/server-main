@@ -10,10 +10,13 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class TermsInfoResponse {
+public class AgreeToTermsResponse {
 
-    @Schema(description = "약관 동의 entity의 PK", example = "1")
+    @Schema(description = "PK of terms info", example = "10")
     private Long id;
+
+    @Schema(description = "약관 동의를 한 회원의 id(PK)", example = "1")
+    private Long memberId;
 
     @Schema(description = "미성년자(14세 미만) 여부", example = "true")
     private Boolean isNotMinor;
@@ -42,13 +45,14 @@ public class TermsInfoResponse {
     @Schema(description = "마케팅 수신 약관 동의 갱신 일시", example = "2023-02-27T08:29:11.091Z")
     private LocalDateTime marketingReceptionUpdatedAt;
 
-    public static TermsInfoResponse from(TermsInfoDto termsInfoDto) {
+    public static AgreeToTermsResponse from(TermsInfoDto termsInfoDto) {
         if (termsInfoDto == null) {
             return null;
         }
 
-        return new TermsInfoResponse(
+        return new AgreeToTermsResponse(
                 termsInfoDto.getId(),
+                termsInfoDto.getMemberId(),
                 termsInfoDto.getIsNotMinor(),
                 termsInfoDto.getService(), termsInfoDto.getServiceUpdatedAt(),
                 termsInfoDto.getUserInfo(), termsInfoDto.getUserInfoUpdatedAt(),

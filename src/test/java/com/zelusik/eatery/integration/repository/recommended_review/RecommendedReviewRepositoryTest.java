@@ -9,7 +9,6 @@ import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.Bookmark;
 import com.zelusik.eatery.domain.RecommendedReview;
 import com.zelusik.eatery.domain.member.Member;
-import com.zelusik.eatery.domain.member.TermsInfo;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceCategory;
@@ -19,7 +18,6 @@ import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.recommended_review.RecommendedReviewDto;
 import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.member.MemberRepository;
-import com.zelusik.eatery.repository.member.TermsInfoRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.recommended_review.RecommendedReviewRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
@@ -31,7 +29,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -45,17 +42,15 @@ class RecommendedReviewRepositoryTest {
 
     private final RecommendedReviewRepository sut;
     private final MemberRepository memberRepository;
-    private final TermsInfoRepository termsInfoRepository;
     private final PlaceRepository placeRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
     private final BookmarkRepository bookmarkRepository;
 
     @Autowired
-    public RecommendedReviewRepositoryTest(RecommendedReviewRepository sut, MemberRepository memberRepository, TermsInfoRepository termsInfoRepository, PlaceRepository placeRepository, ReviewRepository reviewRepository, ReviewKeywordRepository reviewKeywordRepository, BookmarkRepository bookmarkRepository) {
+    public RecommendedReviewRepositoryTest(RecommendedReviewRepository sut, MemberRepository memberRepository, PlaceRepository placeRepository, ReviewRepository reviewRepository, ReviewKeywordRepository reviewKeywordRepository, BookmarkRepository bookmarkRepository) {
         this.sut = sut;
         this.memberRepository = memberRepository;
-        this.termsInfoRepository = termsInfoRepository;
         this.placeRepository = placeRepository;
         this.reviewRepository = reviewRepository;
         this.reviewKeywordRepository = reviewKeywordRepository;
@@ -67,8 +62,6 @@ class RecommendedReviewRepositoryTest {
     void given_whenFindingAllRecommendedReviewDtosWithPlaceMarkedStatusByMemberId_thenReturnRecommendedReviewDtos() {
         // given
         Member member = memberRepository.save(createNewMember("social id", Set.of(RoleType.USER), "member"));
-        TermsInfo termsInfo = termsInfoRepository.save(createNewTermsInfo());
-        member.addTermsInfo(termsInfo);
         Place place = placeRepository.save(createNewPlace("kakao place id", "place name"));
         Bookmark bookmark = bookmarkRepository.save(createNewBookmark(member, place));
         Review review1 = reviewRepository.save(createNewReview(member, place));
@@ -125,16 +118,6 @@ class RecommendedReviewRepositoryTest {
                 nickname,
                 null,
                 null
-        );
-    }
-
-    private TermsInfo createNewTermsInfo() {
-        return TermsInfo.of(
-                true,
-                true, LocalDateTime.now(),
-                true, LocalDateTime.now(),
-                true, LocalDateTime.now(),
-                true, LocalDateTime.now()
         );
     }
 

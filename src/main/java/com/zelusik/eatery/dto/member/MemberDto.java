@@ -23,7 +23,6 @@ import java.util.Set;
 public class MemberDto {
 
     private Long id;
-    private TermsInfoDto termsInfoDto;
     private String profileImageUrl;
     private String profileThumbnailImageUrl;
     private String socialUid;
@@ -38,13 +37,12 @@ public class MemberDto {
     private LocalDateTime deletedAt;
 
     public MemberDto(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, Integer ageRange, Gender gender) {
-        this(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null);
+        this(null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null);
     }
 
     public static MemberDto from(Member entity) {
         return new MemberDto(
                 entity.getId(),
-                TermsInfoDto.from(entity.getTermsInfo()),
                 entity.getProfileImageUrl(),
                 entity.getProfileThumbnailImageUrl(),
                 entity.getSocialUid(),

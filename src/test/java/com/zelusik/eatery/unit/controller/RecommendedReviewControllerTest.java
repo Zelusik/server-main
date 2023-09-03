@@ -188,7 +188,6 @@ class RecommendedReviewControllerTest {
     private MemberDto createMemberDto(long memberId, Set<RoleType> roleTypes) {
         return new MemberDto(
                 memberId,
-                null,
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 "1234567890",
