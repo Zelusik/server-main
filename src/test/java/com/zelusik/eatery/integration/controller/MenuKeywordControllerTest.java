@@ -67,7 +67,7 @@ class MenuKeywordControllerTest {
         );
 
         // when
-        List<MenuKeywordResponse> actualResults = sut.getMenuKeywords("음식점 > 양식 > 햄버거", List.of("까스버거", "버거", "특이한거")).getMenuKeywords();
+        List<MenuKeywordResponse> actualResults = sut.getMenuKeywordsV1_1("음식점 > 양식 > 햄버거", List.of("까스버거", "버거", "특이한거")).getMenuKeywords();
 
         // then
         assertThat(actualResults).isNotEmpty();
