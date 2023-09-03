@@ -78,7 +78,8 @@ class MeetingPlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/meeting-places")
+                        get("/api/v1/meeting-places")
+                                .header("Eatery-API-Minor-Version", 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
                                 .with(user(createTestUserDetails()))
@@ -120,7 +121,8 @@ class MeetingPlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/meeting-places")
+                        get("/api/v1/meeting-places")
+                                .header("Eatery-API-Minor-Version", 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
                                 .with(user(createTestUserDetails()))
@@ -171,7 +173,8 @@ class MeetingPlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/meeting-places")
+                        get("/api/v1/meeting-places")
+                                .header("Eatery-API-Minor-Version", 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
                                 .with(user(createTestUserDetails()))
