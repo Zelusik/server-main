@@ -67,7 +67,8 @@ class TermsInfoControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/members/terms")
+                        post("/api/v1/members/terms")
+                                .header("Eatery-API-Minor-Version", 1)
                                 .content(mapper.writeValueAsString(agreeToTermsRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(user(createTestUserDetails(loginMemberId)))
@@ -92,7 +93,8 @@ class TermsInfoControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/members/terms")
+                        post("/api/v1/members/terms")
+                                .header("Eatery-API-Minor-Version", 1)
                                 .content(mapper.writeValueAsString(agreeToTermsRequest))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(user(createTestUserDetails(loginMemberId)))
