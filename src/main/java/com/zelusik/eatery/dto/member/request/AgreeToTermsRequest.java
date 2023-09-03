@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class TermsAgreeRequest {
+public class AgreeToTermsRequest {
 
     @Schema(description = "미성년자 여부. 만 14세 이상이라면 true", example = "true")
     @AssertTrue
@@ -36,8 +36,4 @@ public class TermsAgreeRequest {
     @Schema(description = "마케팅 수신 동의", example = "false")
     @NotNull
     private Boolean marketingReception;
-
-    public static TermsAgreeRequest of(Boolean isNotMinor, Boolean service, Boolean userInfo, Boolean locationInfo, Boolean marketingReception) {
-        return new TermsAgreeRequest(isNotMinor, service, userInfo, locationInfo, marketingReception);
-    }
 }

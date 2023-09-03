@@ -1,21 +1,17 @@
 package com.zelusik.eatery.controller;
 
-import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
-import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.member.response.*;
 import com.zelusik.eatery.dto.review.request.MemberDeletionSurveyRequest;
-import com.zelusik.eatery.dto.terms_info.response.TermsInfoResponse;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,14 +20,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import java.net.URI;
-import java.util.List;
 
 @Tag(name = "회원 관련 API")
 @RequiredArgsConstructor
@@ -40,27 +33,6 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-
-    @Operation(
-            summary = "약관 동의",
-            description = "<p>전체 약관에 대한 동의/비동의 결과를 제출한다.",
-            security = @SecurityRequirement(name = "access-token")
-    )
-    @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "201", content = @Content(schema = @Schema(implementation = TermsInfoResponse.class))),
-            @ApiResponse(description = "[1200] 필수 이용 약관이 `false`로 전달된 경우", responseCode = "422", content = @Content)
-    })
-    @PostMapping("/terms")
-    public ResponseEntity<TermsInfoResponse> agree(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Valid @RequestBody TermsAgreeRequest request
-    ) {
-        TermsInfoResponse response = TermsInfoResponse.from(memberService.agreeToTerms(userPrincipal.getMemberId(), request));
-
-        return ResponseEntity
-                .created(URI.create("/api/members/terms/" + response.getId()))
-                .body(response);
-    }
 
     @Operation(
             summary = "내 정보 조회",

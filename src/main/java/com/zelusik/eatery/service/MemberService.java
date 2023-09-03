@@ -2,19 +2,19 @@ package com.zelusik.eatery.service;
 
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.review.MemberDeletionSurveyType;
-import com.zelusik.eatery.domain.member.*;
+import com.zelusik.eatery.domain.member.FavoriteFoodCategory;
+import com.zelusik.eatery.domain.member.Member;
+import com.zelusik.eatery.domain.member.MemberDeletionSurvey;
+import com.zelusik.eatery.domain.member.ProfileImage;
 import com.zelusik.eatery.dto.member.MemberDeletionSurveyDto;
 import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
-import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
-import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.exception.member.MemberNotFoundException;
 import com.zelusik.eatery.repository.member.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.repository.member.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.repository.member.MemberRepository;
-import com.zelusik.eatery.repository.member.TermsInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +34,8 @@ import java.util.Optional;
 public class MemberService {
 
     private final ProfileImageService profileImageService;
+    private final TermsInfoService termsInfoService;
     private final MemberRepository memberRepository;
-    private final TermsInfoRepository termsInfoRepository;
     private final MemberDeletionSurveyRepository memberDeletionSurveyRepository;
     private final FavoriteFoodCategoryRepository favoriteFoodCategoryRepository;
 
@@ -49,32 +48,6 @@ public class MemberService {
     @Transactional
     public MemberDto save(MemberDto memberDto) {
         return MemberDto.from(memberRepository.save(memberDto.toEntity()));
-    }
-
-    /**
-     * 전체 약관에 대한 동의 정보를 받아 약관 동의를 진행한다.
-     *
-     * @param memberId 로그인 회원 id(PK)
-     * @param request  약관 동의 정보
-     * @return 적용된 약관 동의 결과 정보
-     */
-    @CacheEvict(value = "member", key = "#memberId")
-    @Transactional
-    public TermsInfoDto agreeToTerms(Long memberId, TermsAgreeRequest request) {
-        LocalDateTime now = LocalDateTime.now();
-        TermsInfo termsInfo = TermsInfo.of(
-                request.getIsNotMinor(),
-                request.getService(), now,
-                request.getUserInfo(), now,
-                request.getLocationInfo(), now,
-                request.getMarketingReception(), now
-        );
-        termsInfoRepository.save(termsInfo);
-
-        Member member = findById(memberId);
-        member.addTermsInfo(termsInfo);
-
-        return TermsInfoDto.from(termsInfo);
     }
 
     /**
@@ -228,18 +201,13 @@ public class MemberService {
     @Transactional
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
         Member member = findById(memberId);
-
         if (member.getDeletedAt() != null) {
             throw new MemberNotFoundException();
         }
 
-        TermsInfo memberTermsInfo = member.getTermsInfo();
-        if (memberTermsInfo != null) {
-            member.removeTermsInfo();
-            termsInfoRepository.delete(memberTermsInfo);
-        }
+        termsInfoService.deleteByMemberId(memberId);
 
-        softDelete(member);
+        member.softDelete();
 
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);
@@ -257,16 +225,5 @@ public class MemberService {
     private Member findByIdWithDeleted(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberIdNotFoundException(memberId));
-    }
-
-    /**
-     * <p>Member soft delete.
-     * <p>Member의 deletedAt 값을 현재 시간으로 update한다.
-     *
-     * @param member
-     */
-    private void softDelete(Member member) {
-        member.softDelete();
-        memberRepository.flush();
     }
 }

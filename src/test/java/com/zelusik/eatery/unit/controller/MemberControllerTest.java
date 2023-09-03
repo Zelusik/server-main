@@ -14,9 +14,7 @@ import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.dto.member.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.dto.member.request.MemberUpdateRequest;
-import com.zelusik.eatery.dto.member.request.TermsAgreeRequest;
 import com.zelusik.eatery.dto.review.request.MemberDeletionSurveyRequest;
-import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
@@ -36,12 +34,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -63,60 +61,6 @@ class MemberControllerTest {
     public MemberControllerTest(@Autowired MockMvc mvc) {
         this.mvc = mvc;
         this.mapper = new ObjectMapper();
-    }
-
-    @DisplayName("약관 동의 정보가 주어지고, 약관에 동의하면, 약관 동의 결과를 반환한다.")
-    @Test
-    void givenAgreementOfTermsInfo_whenAgreeToTerms_thenReturnTermsInfoResult() throws Exception {
-        // given
-        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, true, true, true, false);
-        LocalDateTime now = LocalDateTime.now();
-        given(memberService.agreeToTerms(anyLong(), any(TermsAgreeRequest.class)))
-                .willReturn(new TermsInfoDto(1L,
-                        true,
-                        true, now,
-                        true, now,
-                        true, now,
-                        false, now));
-
-        // when & then
-        mvc.perform(
-                        post("/api/members/terms")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(termsAgreeRequest))
-                                .with(user(createTestUserDetails(1L)))
-                )
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.isNotMinor").value(true))
-                .andExpect(jsonPath("$.service").value(true))
-                .andExpect(jsonPath("$.userInfo").value(true))
-                .andExpect(jsonPath("$.locationInfo").value(true))
-                .andExpect(jsonPath("$.marketingReception").value(false));
-    }
-
-    @DisplayName("필수 이용약관에 동의하지 않은 약관 동의 정보가 주어지고, 약관에 동의하면, 에러가 발생한다.")
-    @Test
-    void givenAgreementOfTermsInfoThatNotAgreedToRequiredTerms_whenAgreeToTerms_thenThrowException() throws Exception {
-        // given
-        TermsAgreeRequest termsAgreeRequest = TermsAgreeRequest.of(true, false, true, true, false);
-        LocalDateTime now = LocalDateTime.now();
-        given(memberService.agreeToTerms(anyLong(), any(TermsAgreeRequest.class)))
-                .willReturn(new TermsInfoDto(1L,
-                        true,
-                        false, now,
-                        true, now,
-                        true, now,
-                        false, now));
-
-        // when & then
-        mvc.perform(
-                        post("/api/members/terms")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(mapper.writeValueAsString(termsAgreeRequest))
-                                .with(user(createTestUserDetails(1L)))
-                )
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.code").value(1200));
     }
 
     @DisplayName("내 정보를 조회하면, 조회된 내 회원 정보가 응답된다.")
@@ -301,7 +245,6 @@ class MemberControllerTest {
     private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
         return new MemberDto(
                 memberId,
-                null,
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 "1234567890",

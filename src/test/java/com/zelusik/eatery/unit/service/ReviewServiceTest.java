@@ -291,7 +291,6 @@ class ReviewServiceTest {
     private Member createMember(Long memberId, Set<RoleType> roleTypes) {
         return Member.of(
                 memberId,
-                null,
                 "profile image url",
                 "profile thunmbnail image url",
                 "social user id",
@@ -315,7 +314,6 @@ class ReviewServiceTest {
     private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
         return new MemberDto(
                 memberId,
-                null,
                 ConstantUtil.defaultProfileImageUrl,
                 ConstantUtil.defaultProfileThumbnailImageUrl,
                 "1234567890",
