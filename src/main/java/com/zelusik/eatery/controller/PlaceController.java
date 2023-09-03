@@ -37,10 +37,12 @@ import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.List;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+
 @Tag(name = "장소 관련 API")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/api/places")
+@RequestMapping("/api")
 @RestController
 public class PlaceController {
 
@@ -56,15 +58,15 @@ public class PlaceController {
             @ApiResponse(description = "[3000] 동일한 장소 데이터가 이미 존재하는 경우", responseCode = "409", content = @Content),
             @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 추출할 Scraping server에서 에러가 발생한 경우.", responseCode = "500", content = @Content)
     })
-    @PostMapping
-    public ResponseEntity<PlaceResponse> save(
+    @PostMapping(value = "/v1/places", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public ResponseEntity<PlaceResponse> saveV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody PlaceCreateRequest request
     ) {
         PlaceResponse response = PlaceResponse.from(placeService.create(userPrincipal.getMemberId(), request));
 
         return ResponseEntity
-                .created(URI.create("/api/places/" + response.getId()))
+                .created(URI.create("/api/v1/places/" + response.getId()))
                 .body(response);
     }
 
@@ -77,8 +79,8 @@ public class PlaceController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
-    @GetMapping("/{placeId}")
-    public FindPlaceResponse findPlaceById(
+    @GetMapping(value = "/v1/places/{placeId}", headers = API_MINOR_VERSION_HEADER_NAME)
+    public FindPlaceResponse findPlaceByIdV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "PK of place",
@@ -98,8 +100,8 @@ public class PlaceController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
-    @GetMapping
-    public FindPlaceResponse findPlaceByKakaoPid(
+    @GetMapping(value = "/v1/places", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public FindPlaceResponse findPlaceByKakaoPidV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "Kakao place unique id",
@@ -115,8 +117,8 @@ public class PlaceController {
             description = "키워드로 장소를 검색한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/search")
-    public SliceResponse<SearchPlacesByKeywordResponse> searchPlacesByKeyword(
+    @GetMapping(value = "/v1/places/search", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public SliceResponse<SearchPlacesByKeywordResponse> searchPlacesByKeywordV1_1(
             @Parameter(
                     description = "검색 키워드",
                     example = "강남"
@@ -139,12 +141,12 @@ public class PlaceController {
             description = "중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/near")
+    @GetMapping(value = "/v1/places/near", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "[3505] <code>preferredVibe</code>에 분위기에 대한 내용이 아닌 값이 주어진 경우", responseCode = "400", content = @Content)
     })
-    public PageResponse<FindNearPlacesResponse> findNearPlaces(
+    public PageResponse<FindNearPlacesResponse> findNearPlacesV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "중심 위치 - 위도",
@@ -202,8 +204,8 @@ public class PlaceController {
                           "<p>필터링 키워드에 대한 설명은 <strong><a href=\"https://www.notion.so/asdfqweasd/f6f39969ea1e48f8afee61e696e4d038?pvs=4\">[노션]데이터</a> - MY 저장 페이지: 상단버튼</strong>을 참고해주세요.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/bookmarks/filtering-keywords")
-    public PlaceFilteringKeywordListResponse getFilteringKeywords(
+    @GetMapping(value = "/v1/places/bookmarks/filtering-keywords", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public PlaceFilteringKeywordListResponse getFilteringKeywordsV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         List<PlaceFilteringKeywordResponse> filteringKeywords = placeService.getFilteringKeywords(userPrincipal.getMemberId()).stream()
@@ -218,8 +220,8 @@ public class PlaceController {
                           "<p>정렬 기준은 최근에 북마크에 저장한 순서입니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/bookmarks")
-    public PageResponse<FindMarkedPlacesResponse> findMarkedPlaces(
+    @GetMapping(value = "/v1/places/bookmarks", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public PageResponse<FindMarkedPlacesResponse> findMarkedPlacesV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "<p>Filtering 조건 유형. 값은 다음과 같습니다." +
