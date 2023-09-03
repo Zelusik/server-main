@@ -1,7 +1,5 @@
 package com.zelusik.eatery.service;
 
-import com.zelusik.eatery.constant.FoodCategoryValue;
-import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
@@ -10,6 +8,7 @@ import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
+import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.exception.place.PlaceAlreadyExistsException;
@@ -23,7 +22,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +34,7 @@ import java.util.Optional;
 public class PlaceService {
 
     public static final int MAX_NUM_OF_PLACE_IMAGES = 4;
-    public static final int DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH = 50;
+    public static final int DISTANCE_LIMITS_FOR_FIND_NEARBY_PLACES = 50;
 
     private final WebScrapingService webScrapingService;
     private final ReviewImageService reviewImageService;
@@ -152,22 +150,14 @@ public class PlaceService {
      * <p>중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
      * <p>최대 50km 범위까지 조회한다.
      *
-     * @param memberId      API 요청한 회원의 PK 값
-     * @param daysOfWeek    검색할 요일 목록
-     * @param preferredVibe 선호하는 분위기
-     * @param center        중심 좌표 정보
-     * @param pageable      paging 정보
+     * @param loginMemberId      PK of login member
+     * @param filteringCondition 필터링 조건
+     * @param center             중심 좌표 정보
+     * @param pageable           paging 정보
      * @return 조회한 장소 목록
      */
-    public Page<PlaceDto> findDtosNearBy(
-            Long memberId,
-            @Nullable FoodCategoryValue foodCategory,
-            @Nullable List<DayOfWeek> daysOfWeek,
-            @Nullable ReviewKeywordValue preferredVibe,
-            Point center,
-            Pageable pageable
-    ) {
-        return placeRepository.findDtosNearBy(memberId, foodCategory, daysOfWeek, preferredVibe, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
+    public Page<PlaceDto> findDtosNearBy(long loginMemberId, FindNearPlacesFilteringConditionRequest filteringCondition, Point center, Pageable pageable) {
+        return placeRepository.findDtosNearBy(loginMemberId, filteringCondition, center, DISTANCE_LIMITS_FOR_FIND_NEARBY_PLACES, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**

@@ -13,6 +13,7 @@ import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
@@ -32,6 +33,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
+import static com.zelusik.eatery.constant.place.DayOfWeek.MON;
+import static com.zelusik.eatery.constant.place.DayOfWeek.WED;
 import static com.zelusik.eatery.constant.review.ReviewKeywordValue.*;
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +68,7 @@ class PlaceRepositoryTest {
         // given
         Long memberId = 1L;
         Point center = new Point("37", "127");
+        FindNearPlacesFilteringConditionRequest filteringCondition = new FindNearPlacesFilteringConditionRequest(null, null, null, false);
         for (int i = 0; i < 50; i++) {
             sut.save(createPlace(
                     (long) (i + 1),
@@ -77,7 +81,7 @@ class PlaceRepositoryTest {
         }
 
         // when
-        Slice<PlaceDto> places = sut.findDtosNearBy(memberId, null, null, null, center, 1100, MAX_NUM_OF_PLACE_IMAGES, PageRequest.of(0, 30));
+        Slice<PlaceDto> places = sut.findDtosNearBy(memberId, filteringCondition, center, 1100, MAX_NUM_OF_PLACE_IMAGES, PageRequest.of(0, 30));
 
         // then
         assertThat(places.getSize()).isEqualTo(30);
@@ -101,21 +105,21 @@ class PlaceRepositoryTest {
         Long memberId = 1L;
         Point pos = new Point("37.5776087830657", "126.976896737645");  // 경복궁
         Place place1 = sut.save(createPlace(1L, "1", "성심당", "36.32765802936324", "127.42727719121109", null));    // 대전
-        place1.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(1L, place1, DayOfWeek.MON)));
+        place1.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(1L, place1, MON)));
         sut.save(createPlace(2L, "2", "해운대암소갈비집", "35.163310169485634", "129.1666092786243", null));  // 부산
         Place place3 = sut.save(createPlace(3L, "3", "연남토마 본점", "37.5595073462493", "126.921462488105", null));   // 서울
-        place3.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(2L, place3, DayOfWeek.MON)));
+        place3.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(2L, place3, MON)));
         sut.save(createPlace(4L, "4", "연돈", "33.258895288625645", "126.40715814631936", null));   // 제주
         Place place5 = sut.save(createPlace(5L, "5", "본수원갈비", "37.27796181430103", "127.04060364807957", null));  // 수원
-        place5.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(3L, place5, DayOfWeek.WED)));
+        place5.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(3L, place5, WED)));
 
         // when
         Pageable pageable = Pageable.ofSize(30);
-        Slice<PlaceDto> placesLimit50 = sut.findDtosNearBy(memberId, null, null, null, pos, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100 = sut.findDtosNearBy(memberId, null, null, null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMon = sut.findDtosNearBy(memberId, null, List.of(DayOfWeek.MON), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysWed = sut.findDtosNearBy(memberId, null, List.of(DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMonAndWed = sut.findDtosNearBy(memberId, null, List.of(DayOfWeek.MON, DayOfWeek.WED), null, pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit50 = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, null, null, false), pos, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100 = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, null, null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysMon = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(MON), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysWed = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(WED), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceDto> placesLimit1100DaysMonAndWed = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(MON, WED), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
 
         // then
         assertThat(placesLimit50.getNumberOfElements()).isEqualTo(2);

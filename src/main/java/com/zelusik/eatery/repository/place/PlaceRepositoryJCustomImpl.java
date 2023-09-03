@@ -10,13 +10,13 @@ import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.lang.Nullable;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -62,16 +62,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Page<PlaceDto> findDtosNearBy(
-            Long memberId,
-            @Nullable FoodCategoryValue foodCategory,
-            @Nullable List<DayOfWeek> daysOfWeek,
-            @Nullable ReviewKeywordValue preferredVibe,
-            Point center,
-            int distanceLimit,
-            int numOfPlaceImages,
-            Pageable pageable
-    ) {
+    public Page<PlaceDto> findDtosNearBy(long loginMemberId, FindNearPlacesFilteringConditionRequest filteringCondition, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable) {
         // SELECT
         StringBuilder sqlForCountingTotalElements =
                 new StringBuilder()
@@ -99,14 +90,15 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         }
         sql.append("LEFT JOIN bookmark bm ON p.place_id = bm.place_id AND bm.member_id = :member_id ");
 
-        if (daysOfWeek != null && !daysOfWeek.isEmpty()) {
+        List<DayOfWeek> daysOfWeeks = filteringCondition.getDaysOfWeek();
+        if (daysOfWeeks != null && !daysOfWeeks.isEmpty()) {
             StringBuilder joinOpeningHours = new StringBuilder("JOIN opening_hours oh ON p.place_id = oh.place_id AND (");
-            for (int i = 0; i < daysOfWeek.size(); i++) {
+            for (int i = 0; i < daysOfWeeks.size(); i++) {
                 if (i != 0) {
                     joinOpeningHours.append("OR ");
                 }
                 joinOpeningHours.append("oh.day_of_week = '")
-                        .append(daysOfWeek.get(i))
+                        .append(daysOfWeeks.get(i))
                         .append("' ");
             }
             joinOpeningHours.append(") ");
@@ -117,6 +109,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         // WHERE
         boolean flagForWhere = false;
         StringBuilder whereClause = new StringBuilder();
+        FoodCategoryValue foodCategory = filteringCondition.getFoodCategory();
         if (foodCategory != null) {
             whereClause.append("WHERE p.first_category IN (");
             List<String> matchingFirstCategories = foodCategory.getMatchingFirstCategories();
@@ -130,6 +123,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
             whereClause.append(") ");
             flagForWhere = true;
         }
+        ReviewKeywordValue preferredVibe = filteringCondition.getPreferredVibe();
         if (preferredVibe != null) {
             if (flagForWhere) {
                 whereClause.append("AND ");
@@ -153,6 +147,10 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
         // HAVING
         sql.append("HAVING distance <= :distance_limit ");
+        boolean onlyMarkedPlaces = filteringCondition.getOnlyMarkedPlaces();
+        if (onlyMarkedPlaces) {
+            sql.append("AND is_marked IS TRUE ");
+        }
 
         // ORDER BY, LIMIT, OFFSET
         sql.append("ORDER BY distance ")
@@ -161,7 +159,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("lat", center.getLat())
                 .addValue("lng", center.getLng())
-                .addValue("member_id", memberId)
+                .addValue("member_id", loginMemberId)
                 .addValue("distance_limit", distanceLimit)
                 .addValue("size_of_page", pageable.getPageSize())
                 .addValue("offset", pageable.getOffset());

@@ -2,13 +2,13 @@ package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.constant.FoodCategoryValue;
-import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.PlaceController;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceService;
@@ -167,11 +167,14 @@ class PlaceControllerTest {
         // given
         long memberId = 1L;
         Point point = new Point("37", "127");
-        FoodCategoryValue foodCategory = FoodCategoryValue.KOREAN;
-        List<DayOfWeek> daysOfWeek = List.of(MON, WED, FRI);
-        ReviewKeywordValue preferredVibe = ReviewKeywordValue.WITH_ALCOHOL;
+        FindNearPlacesFilteringConditionRequest filteringCondition = new FindNearPlacesFilteringConditionRequest(
+                FoodCategoryValue.KOREAN,
+                List.of(MON, WED, FRI),
+                ReviewKeywordValue.WITH_ALCOHOL,
+                false
+        );
         PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), 1);
-        given(placeService.findDtosNearBy(eq(memberId), eq(foodCategory), eq(daysOfWeek), eq(preferredVibe), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        given(placeService.findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -179,16 +182,16 @@ class PlaceControllerTest {
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("lat", point.getLat())
                                 .queryParam("lng", point.getLng())
-                                .queryParam("foodCategory", foodCategory.name())
+                                .queryParam("foodCategory", filteringCondition.getFoodCategory().name())
                                 .queryParam("daysOfWeek", MON.name(), WED.name(), FRI.name())
-                                .queryParam("preferredVibe", preferredVibe.name())
+                                .queryParam("preferredVibe", filteringCondition.getPreferredVibe().name())
                                 .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isEmpty").value(false))
                 .andExpect(jsonPath("$.numOfElements").value(1))
                 .andDo(print());
-        then(placeService).should().findDtosNearBy(eq(memberId), eq(foodCategory), eq(daysOfWeek), eq(preferredVibe), eq(point), any(Pageable.class));
+        then(placeService).should().findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class));
         then(placeService).shouldHaveNoMoreInteractions();
     }
 

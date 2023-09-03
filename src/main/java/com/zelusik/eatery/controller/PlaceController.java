@@ -1,13 +1,12 @@
 package com.zelusik.eatery.controller;
 
-import com.zelusik.eatery.constant.FoodCategoryValue;
-import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.PageResponse;
 import com.zelusik.eatery.dto.SliceResponse;
 import com.zelusik.eatery.dto.place.PlaceDto;
+import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.place.response.*;
 import com.zelusik.eatery.exception.review.InvalidTypeOfReviewKeywordValueException;
@@ -22,11 +21,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -156,35 +155,13 @@ public class PlaceController {
             @Parameter(
                     description = "중심 위치 - 위도",
                     example = "37.566826004661"
-            ) @RequestParam String lat,
+            ) @RequestParam @NotBlank String lat,
+
             @Parameter(
                     description = "중심 위치 - 경도",
                     example = "126.978652258309"
-            ) @RequestParam String lng,
-            @Parameter(
-                    description = "(필터링 조건) 음식 카테고리",
-                    example = "KOREAN"
-            ) @RequestParam(required = false) @Nullable FoodCategoryValue foodCategory,
-            @Parameter(
-                    description = "(필터링 조건) 요일 목록",
-                    example = "[\"MON\", \"TUE\", \"WED\"]"
-            ) @RequestParam(required = false) @Nullable List<DayOfWeek> daysOfWeek,
-            @Parameter(
-                    description = """
-                            <p>(필터링 조건) 선호하는 분위기. 가능한 값은 다음과 같다.</p>
-                            <ul>
-                                <li><code>WITH_ALCOHOL</code>: 술과 함께하기 좋은</li>
-                                <li><code>GOOD_FOR_DATE</code>: 데이트 하기에 좋은</li>
-                                <li><code>WITH_ELDERS</code>: 웃어른과 함께하기 좋은</li>
-                                <li><code>CAN_ALONE</code>: 혼밥 가능한</li>
-                                <li><code>PERFECT_FOR_GROUP_MEETING</code>: 단체 모임에 좋은</li>
-                                <li><code>WAITING</code>: 웨이팅 있는</li>
-                                <li><code>SILENT</code>: 조용조용한</li>
-                                <li><code>NOISY</code>: 왁자지껄한</li>
-                             </ul>
-                             """,
-                    example = "WITH_ALCOHOL"
-            ) @RequestParam(required = false) @Nullable ReviewKeywordValue preferredVibe,
+            ) @RequestParam @NotBlank String lng,
+            @ParameterObject @ModelAttribute @Valid FindNearPlacesFilteringConditionRequest filteringCondition,
             @Parameter(
                     description = "페이지 번호 (0부터 시작)",
                     example = "0"
@@ -192,13 +169,14 @@ public class PlaceController {
             @Parameter(
                     description = "한 페이지에 담긴 데이터의 최대 개수(사이즈)",
                     example = "30"
-            ) @RequestParam(required = false, defaultValue = "30") int size
+            ) @RequestParam(required = false, defaultValue = "10") int size
     ) {
-        if (preferredVibe != null && !preferredVibe.getType().equals(ReviewKeywordValue.ReviewKeywordType.VIBE)) {
+        if (filteringCondition.getPreferredVibe() != null
+            && !filteringCondition.getPreferredVibe().getType().equals(ReviewKeywordValue.ReviewKeywordType.VIBE)) {
             throw new InvalidTypeOfReviewKeywordValueException("분위기에 대한 값만 사용할 수 있습니다.");
         }
 
-        Page<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(userPrincipal.getMemberId(), foodCategory, daysOfWeek, preferredVibe, new Point(lat, lng), PageRequest.of(page, size));
+        Page<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(userPrincipal.getMemberId(), filteringCondition, new Point(lat, lng), PageRequest.of(page, size));
         return new PageResponse<FindNearPlacesResponse>()
                 .from(searchedPlaceDtos.map(FindNearPlacesResponse::from));
     }
