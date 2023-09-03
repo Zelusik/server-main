@@ -12,8 +12,16 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+        @Index(name = "idx__review__writer", columnList = "writer_id"),
+        @Index(name = "idx__review__place", columnList = "place_id"),
+        @Index(name = "idx__review__created_at", columnList = "createdAt"),
+        @Index(name = "idx__review__deleted_at", columnList = "deletedAt")
+})
 @Entity
 public class Review extends BaseTimeEntity {
+
+    public static final int MAX_LEN_OF_REVIEW_CONTENT = 400;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +36,11 @@ public class Review extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
 
-    @Column(length = 400)
+    @Column(length = MAX_LEN_OF_REVIEW_CONTENT)
     private String autoCreatedContent;
 
     @Setter(AccessLevel.PRIVATE)
-    @Column(length = 400)
+    @Column(length = MAX_LEN_OF_REVIEW_CONTENT)
     private String content;
 
     @OneToMany(mappedBy = "review")

@@ -10,5 +10,7 @@ public interface PlaceRepository extends
         PlaceRepositoryQCustom,
         PlaceRepositoryJCustom {
 
+    boolean existsByKakaoPid(String kakaoPid);
+
     Optional<Place> findByKakaoPid(String kakaoPid);
 }

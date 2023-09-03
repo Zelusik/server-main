@@ -1,31 +1,24 @@
 package com.zelusik.eatery.exception;
 
+import com.zelusik.eatery.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.domain.Bookmark;
-import com.zelusik.eatery.domain.curation.Curation;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
-import com.zelusik.eatery.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.exception.auth.AccessTokenValidateException;
 import com.zelusik.eatery.exception.auth.AppleOAuthLoginException;
 import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import com.zelusik.eatery.exception.bookmark.AlreadyMarkedPlaceException;
 import com.zelusik.eatery.exception.bookmark.BookmarkNotFoundException;
-import com.zelusik.eatery.exception.curation.CurationNotFoundException;
 import com.zelusik.eatery.exception.file.MultipartFileNotReadableException;
 import com.zelusik.eatery.exception.kakao.KakaoTokenValidateException;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
-import com.zelusik.eatery.exception.place.NotAcceptableFoodCategory;
-import com.zelusik.eatery.exception.place.NotAcceptablePlaceSearchKeyword;
-import com.zelusik.eatery.exception.place.PlaceNotFoundException;
-import com.zelusik.eatery.exception.review.NotAcceptableReviewKeyword;
-import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
-import com.zelusik.eatery.exception.review.ReviewNotFoundException;
-import com.zelusik.eatery.exception.review.ReviewUpdatePermissionDeniedException;
-import com.zelusik.eatery.exception.scraping.OpeningHoursUnexpectedFormatException;
-import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.exception.member.ProfileImageNotFoundException;
+import com.zelusik.eatery.exception.open_ai.OpenAIServerException;
+import com.zelusik.eatery.exception.place.*;
+import com.zelusik.eatery.exception.review.*;
+import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.log.LogUtils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,7 +45,7 @@ import java.util.Optional;
  * Error code 목록
  *
  * <ul>
- *     <li>1000 ~ 1999: 일반 예외. 아래 항목에 해당하지 않는 대부분의 예외가 여기에 해당한다</li>
+ *     <li>1000 ~ 1499: 일반 예외. 아래 항목에 해당하지 않는 대부분의 예외가 여기에 해당한다.</li>
  *     <li>120X: Validation 관련 예외</li>
  *     <li>1210 ~ 1299: 구체적인 Validation content에 대한 exception. 해당 내용은 {@link ValidationErrorCode}, {@link GlobalExceptionHandler} 참고)</li>
  *     <li>1300 ~ 1349: API/Controller 관련 예외</li>
@@ -62,10 +55,10 @@ import java.util.Optional;
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
  *     <li>3000 ~ 3499: 장소 관련 예외</li>
  *     <li>3500 ~ 3999: 리뷰 관련 예외</li>
- *     <li>4000 ~ 4299: 큐레이션 관련 예외</li>
  *     <li>4300 ~ 4599: 북마크 관련 예외</li>
  *     <li>1XXXX: Kakao server 관련 예외</li>
  *     <li>2XXXX: Apple server/login 관련 예외</li>
+ *     <li>3XXXX: Open AI 관련 예외</li>
  * </ul>
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -131,10 +124,13 @@ public enum ExceptionType {
     /**
      * 장소({@link Place}) 관련 예외
      */
-    OPENING_HOURS_UNEXPECTED_FORMAT(3000, "장소 영업시간이 처리할 수 없는 형태입니다. 서버 관리자에게 문의해주세요.게", OpeningHoursUnexpectedFormatException.class),
+    PLACE_ALREADY_EXISTS(3000, "동일한 장소 데이터가 이미 존재합니다.", PlaceAlreadyExistsException.class),
     PLACE_NOT_FOUND(3001, "장소를 찾을 수 없습니다.", PlaceNotFoundException.class),
     NOT_ACCEPTABLE_PLACE_SEARCH_KEYWORD(3002, "유효하지 않은 검색 키워드입니다.", NotAcceptablePlaceSearchKeyword.class),
     NOT_ACCEPTABLE_FOOD_CATEGORY(3003, "유효하지 않은 음식 카테고리입니다.", NotAcceptableFoodCategory.class),
+    PLACE_MENUS_NOT_FOUND(3004, "일치하는 장소의 메뉴 데이터를 찾을 수 없습니다.", PlaceMenusNotFoundException.class),
+    PLACE_MENUS_ALREADY_EXISTS(3005, "장소의 메뉴 데이터가 이미 존재합니다. 추가로 데이터를 생성/저장할 수 없습니다.", PlaceMenusAlreadyExistsException.class),
+    CONTAINS_DUPLICATE_MENUS(3006, "전달받은 메뉴 목록에 중복된 메뉴가 존재합니다.", ContainsDuplicateMenusException.class),
 
     /**
      * 리뷰({@link Review}) 관련 예외
@@ -143,11 +139,8 @@ public enum ExceptionType {
     REVIEW_NOT_FOUND(3501, "리뷰를 찾을 수 없습니다.", ReviewNotFoundException.class),
     REVIEW_DELETE_PERMISSION_DENIED(3502, "리뷰를 삭제할 권한이 없습니다.", ReviewDeletePermissionDeniedException.class),
     REVIEW_UPDATE_PERMISSION_DENIED(3503, "리뷰를 수정할 권한이 없습니다.", ReviewUpdatePermissionDeniedException.class),
-
-    /**
-     * 큐레이션({@link Curation}) 관련 예외
-     */
-    CURATION_NOT_FOUND(4000, "큐레이션을 찾을 수 없습니다.", CurationNotFoundException.class),
+    MISMATCHED_MENU_KEYWORD_COUNT(3504, "요청 데이터가 잘못되었습니다. 메뉴와 메뉴에 대한 키워드의 개수가 일치하지 않습니다.", MismatchedMenuKeywordCountException.class),
+    INVALID_TYPE_OF_REVIEW_KEYWORD_VALUE(3505, "잘못된 리뷰 키워드 값 유형입니다.", InvalidTypeOfReviewKeywordValueException.class),
 
     /**
      * 북마크({@link Bookmark} 관련 예외
@@ -165,6 +158,11 @@ public enum ExceptionType {
      * Apple server/login 관련 예외
      */
     APPLE_OAUTH_LOGIN(20000, "애플 로그인 과정에서 알 수 없는 에러가 발생했습니다.", AppleOAuthLoginException.class),
+
+    /**
+     * Open AI 관련 예외
+     */
+    OPEN_AI_SERVER(30000, "API 통신 중 문제가 발생했습니다.", OpenAIServerException.class),
     ;
 
     private final Integer code;

@@ -52,7 +52,7 @@ public class MemberResponse {
                 gender.getDescription(),
                 birthDay,
                 favoriteFoodCategories.stream()
-                        .map(FoodCategoryValue::getName)
+                        .map(FoodCategoryValue::getCategoryName)
                         .toList()
         );
     }

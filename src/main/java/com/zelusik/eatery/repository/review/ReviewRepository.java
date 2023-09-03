@@ -8,13 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRepositoryQCustom {
 
     @EntityGraph(attributePaths = {"writer", "place"})
     Optional<Review> findByIdAndDeletedAtNull(Long reviewId);
-
-    @EntityGraph(attributePaths = {"writer"})
-    Slice<Review> findByPlace_IdAndDeletedAtNull(Long placeId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"writer", "place"})
     Slice<Review> findByWriter_IdAndDeletedAtNull(Long writerId, Pageable pageable);

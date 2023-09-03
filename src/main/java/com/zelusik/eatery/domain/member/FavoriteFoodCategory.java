@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "category")
+        @Index(name = "idx__favorite_food_category__category", columnList = "category")
 })
 @Entity
 public class FavoriteFoodCategory {

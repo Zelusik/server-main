@@ -5,7 +5,12 @@ import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.converter.RoleTypesConverter;
 import com.zelusik.eatery.domain.BaseTimeEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -17,7 +22,9 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(indexes = {
-        @Index(columnList = "socialUid")
+        @Index(name = "idx__member__social_uid", columnList = "socialUid"),
+        @Index(name = "idx__member__created_at", columnList = "createdAt"),
+        @Index(name = "idx__member__deleted_at", columnList = "deletedAt")
 })
 @Entity
 public class Member extends BaseTimeEntity {
@@ -26,11 +33,6 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", nullable = false)
     private Long id;
-
-    @Setter(AccessLevel.PRIVATE)
-    @JoinColumn(name = "terms_info_id")
-    @OneToOne(fetch = FetchType.LAZY)
-    private TermsInfo termsInfo;
 
     @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
@@ -73,32 +75,53 @@ public class Member extends BaseTimeEntity {
     @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
-    public static Member of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, Integer ageRange, Gender gender) {
-        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null);
+    public static Member of(
+            @NonNull String profileImageUrl,
+            @NonNull String profileThumbnailImageUrl,
+            @NonNull String socialUid,
+            @NonNull LoginType loginType,
+            @NonNull Set<RoleType> roleTypes,
+            @Nullable String email,
+            @NonNull String nickname,
+            @Nullable Integer ageRange,
+            @Nullable Gender gender
+    ) {
+        return of(null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null);
     }
 
-    public static Member of(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return Member.builder()
-                .id(id)
-                .termsInfo(termsInfo)
-                .profileImageUrl(profileImageUrl)
-                .profileThumbnailImageUrl(profileThumbnailImageUrl)
-                .socialUid(socialUid)
-                .loginType(loginType)
-                .roleTypes(roleTypes)
-                .email(email)
-                .nickname(nickname)
-                .ageRange(ageRange)
-                .birthDay(birthDay)
-                .gender(gender)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .deletedAt(deletedAt)
-                .build();
+    public static Member of(
+            @Nullable Long id,
+            @NonNull String profileImageUrl,
+            @NonNull String profileThumbnailImageUrl,
+            @NonNull String socialUid,
+            @NonNull LoginType loginType,
+            @NonNull Set<RoleType> roleTypes,
+            @Nullable String email,
+            @NonNull String nickname,
+            @Nullable LocalDate birthDay,
+            @Nullable Integer ageRange,
+            @Nullable Gender gender,
+            @Nullable LocalDateTime createdAt,
+            @Nullable LocalDateTime updatedAt,
+            @Nullable LocalDateTime deletedAt
+    ) {
+        return new Member(id, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, birthDay, ageRange, gender, createdAt, updatedAt, deletedAt);
     }
 
-    public void addTermsInfo(TermsInfo termsInfo) {
-        this.setTermsInfo(termsInfo);
+    private Member(@Nullable Long id, @NonNull String profileImageUrl, @NonNull String profileThumbnailImageUrl, @NonNull String socialUid, @NonNull LoginType loginType, @NonNull Set<RoleType> roleTypes, @Nullable String email, @NonNull String nickname, @Nullable LocalDate birthDay, @Nullable Integer ageRange, @Nullable Gender gender, @Nullable LocalDateTime createdAt, @Nullable LocalDateTime updatedAt, @Nullable LocalDateTime deletedAt) {
+        super(createdAt, updatedAt);
+        this.id = id;
+        this.profileImageUrl = profileImageUrl;
+        this.profileThumbnailImageUrl = profileThumbnailImageUrl;
+        this.socialUid = socialUid;
+        this.loginType = loginType;
+        this.roleTypes = roleTypes;
+        this.email = email;
+        this.nickname = nickname;
+        this.birthDay = birthDay;
+        this.ageRange = ageRange;
+        this.gender = gender;
+        this.deletedAt = deletedAt;
     }
 
     public void update(String profileImageUrl, String profileThumbnailImageUrl, String nickname, LocalDate birthDay, Gender gender) {
@@ -119,29 +142,7 @@ public class Member extends BaseTimeEntity {
         this.setDeletedAt(null);
     }
 
-    public void removeTermsInfo() {
-        this.setTermsInfo(null);
-    }
-
     public void softDelete() {
         this.setDeletedAt(LocalDateTime.now());
-    }
-
-    @Builder(access = AccessLevel.PRIVATE)
-    private Member(Long id, TermsInfo termsInfo, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        super(createdAt, updatedAt);
-        this.id = id;
-        this.termsInfo = termsInfo;
-        this.profileImageUrl = profileImageUrl;
-        this.profileThumbnailImageUrl = profileThumbnailImageUrl;
-        this.socialUid = socialUid;
-        this.loginType = loginType;
-        this.roleTypes = roleTypes;
-        this.email = email;
-        this.nickname = nickname;
-        this.birthDay = birthDay;
-        this.ageRange = ageRange;
-        this.gender = gender;
-        this.deletedAt = deletedAt;
     }
 }

@@ -8,6 +8,11 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = {
+        @Index(name = "idx__profile_image__member_id", columnList = "member_id"),
+        @Index(name = "idx__profile_image__created_at", columnList = "createdAt"),
+        @Index(name = "idx__profile_image__deleted_at", columnList = "deletedAt")
+})
 @Entity
 public class ProfileImage extends S3Image {
 

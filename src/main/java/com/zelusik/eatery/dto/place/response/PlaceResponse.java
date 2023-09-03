@@ -46,43 +46,53 @@ public class PlaceResponse {
     @Schema(description = "휴무일", example = "금요일")
     private String closingHours;
 
-    @Schema(description = "영업시간 정보")
-    private List<OpeningHoursResponse> openingHours;
+    @Schema(description = "영업시간 정보", example = """
+            [
+                "월 11:30-22:00",
+                "화 11:30-22:00",
+                "수 11:30-22:00",
+                "목 11:30-22:00",
+                "금 11:30-22:00"
+            ]
+            """)
+    private List<String> openingHours;
 
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static PlaceResponse of(Long id, List<String> top3Keywords, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<OpeningHoursResponse> openingHours, Boolean isMarked) {
+    public static PlaceResponse of(Long id, List<String> top3Keywords, String name, String category, String phone, Address address, String snsUrl, Point point, String closingHours, List<String> openingHours, Boolean isMarked) {
         return new PlaceResponse(id, top3Keywords, name, category, phone, address, snsUrl, point, closingHours, openingHours, isMarked);
     }
 
-    public static PlaceResponse from(PlaceDto placeDto) {
-        String snsUrl = placeDto.getHomepageUrl();
+    public static PlaceResponse from(PlaceDto dto) {
+        String snsUrl = dto.getHomepageUrl();
         if (snsUrl != null && !snsUrl.contains("instagram")) {
             snsUrl = null;
         }
 
-        String category = placeDto.getCategory().getSecondCategory();
+        String category = dto.getCategory().getSecondCategory();
         if (category == null) {
-            category = placeDto.getCategory().getFirstCategory();
+            category = dto.getCategory().getFirstCategory();
         }
 
+        List<String> openingHours = dto.getOpeningHoursDtos().stream()
+                .map(oh -> String.format(oh.getDayOfWeek().getDescription() + " " + oh.getOpenAt() + "-" + oh.getCloseAt()))
+                .toList();
+
         return new PlaceResponse(
-                placeDto.getId(),
-                placeDto.getTop3Keywords().stream()
-                        .map(ReviewKeywordValue::getDescription)
+                dto.getId(),
+                dto.getTop3Keywords().stream()
+                        .map(ReviewKeywordValue::getContent)
                         .toList(),
-                placeDto.getName(),
+                dto.getName(),
                 category,
-                placeDto.getPhone(),
-                placeDto.getAddress(),
+                dto.getPhone(),
+                dto.getAddress(),
                 snsUrl,
-                placeDto.getPoint(),
-                placeDto.getClosingHours(),
-                placeDto.getOpeningHoursDtos().stream()
-                        .map(OpeningHoursResponse::from)
-                        .toList(),
-                placeDto.getIsMarked()
+                dto.getPoint(),
+                dto.getClosingHours(),
+                openingHours,
+                dto.getIsMarked()
         );
     }
 }

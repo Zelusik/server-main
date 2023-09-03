@@ -59,14 +59,14 @@ public class PlaceCreateRequest {
     }
 
     public PlaceDto toDto(String homepageUrl, String closingHours) {
-        return PlaceDto.of(
+        return new PlaceDto(
                 this.getKakaoPid(),
                 this.getName(),
                 this.getPageUrl(),
                 this.getCategoryGroupCode(),
-                new PlaceCategory(this.getCategoryName()),
+                PlaceCategory.of(this.getCategoryName()),
                 this.getPhone(),
-                new Address(this.getLotNumberAddress(), this.getRoadAddress()),
+                Address.of(this.getLotNumberAddress(), this.getRoadAddress()),
                 homepageUrl,
                 new Point(this.getLat(), this.getLng()),
                 closingHours

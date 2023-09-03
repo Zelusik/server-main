@@ -17,13 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class MemberDto {
 
     private Long id;
-    private TermsInfoDto termsInfoDto;
     private String profileImageUrl;
     private String profileThumbnailImageUrl;
     private String socialUid;
@@ -35,22 +34,15 @@ public class MemberDto {
     private Integer ageRange;
     private Gender gender;
     private List<FoodCategoryValue> favoriteFoodCategories;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
 
-    public static MemberDto of(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, Integer ageRange, Gender gender) {
-        return of(null, null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null, null);
-    }
-
-    public static MemberDto of(Long id, TermsInfoDto termsInfoDto, String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, LocalDate birthDay, Integer ageRange, Gender gender, List<FoodCategoryValue> favoriteFoodCategories, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new MemberDto(id, termsInfoDto, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, birthDay, ageRange, gender, favoriteFoodCategories, createdAt, updatedAt, deletedAt);
+    public MemberDto(String profileImageUrl, String profileThumbnailImageUrl, String socialUid, LoginType loginType, Set<RoleType> roleTypes, String email, String nickname, Integer ageRange, Gender gender) {
+        this(null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null);
     }
 
     public static MemberDto from(Member entity) {
-        return of(
+        return new MemberDto(
                 entity.getId(),
-                TermsInfoDto.from(entity.getTermsInfo()),
                 entity.getProfileImageUrl(),
                 entity.getProfileThumbnailImageUrl(),
                 entity.getSocialUid(),
@@ -64,8 +56,6 @@ public class MemberDto {
                 entity.getFavoriteFoodCategories().stream()
                         .map(FavoriteFoodCategory::getCategory)
                         .toList(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
                 entity.getDeletedAt()
         );
     }

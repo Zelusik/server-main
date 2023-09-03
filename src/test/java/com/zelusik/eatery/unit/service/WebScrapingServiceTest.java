@@ -46,7 +46,7 @@ class WebScrapingServiceTest {
         this.mapper = mapper;
     }
 
-    @DisplayName("카카오 장소 아이디가 주어지고, 장소 정보를 스크래핑하면, 추출된 정보를 반환한다.")
+    @DisplayName("장소의 고유 id가 주어지고, 장소 정보를 스크래핑하면, 추출된 정보를 반환한다.")
     @Test
     void givenKakaoPid_whenScrapingPlaceInfo_thenReturnPlaceScarpingInfo() throws Exception {
         // given
@@ -72,6 +72,33 @@ class WebScrapingServiceTest {
         assertThat(result.getHomepageUrl()).isNull();
     }
 
+    @DisplayName("장소의 고유 id가 주어지고, 해당 장소에 대한 메뉴 목록을 추출하면, 추출된 정보를 반환한다.")
+    @Test
+    void givenKakaoPid_whenScrapPlaceMenuList_thenReturnPlaceMenuList() throws Exception {
+        // given
+        String kakaoPid = "12345";
+        URI requestUri = UriComponentsBuilder.fromUriString(scrapingServerUrl + "/places/scraping/menus")
+                .queryParam("kakaoPid", kakaoPid)
+                .encode(StandardCharsets.UTF_8)
+                .build().toUri();
+        List<String> menus = List.of("돈까스", "라면", "김밥");
+        restServer.expect(requestTo(requestUri))
+                .andRespond(withSuccess(
+                        mapper.writeValueAsString(createMenuListResponse(menus)),
+                        MediaType.APPLICATION_JSON
+                ));
+
+        // when
+        List<String> result = sut.scrapMenuList(kakaoPid);
+
+        // then
+        restServer.verify();
+        assertThat(result)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(3);
+    }
+
     private static PlaceScrapingResponse createPlaceScrapingResponse() {
         return PlaceScrapingResponse.of(
                 List.of(
@@ -82,5 +109,9 @@ class WebScrapingServiceTest {
                 "목요일\n금요일\n토요일\n일",
                 null
         );
+    }
+
+    private static WebScrapingService.MenuListResponseFromScrapingServer createMenuListResponse(List<String> menus) {
+        return new WebScrapingService.MenuListResponseFromScrapingServer(menus);
     }
 }

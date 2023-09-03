@@ -1,17 +1,20 @@
 package com.zelusik.eatery.service;
 
+import com.zelusik.eatery.constant.review.ReviewEmbedOption;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.domain.review.ReviewImage;
+import com.zelusik.eatery.domain.review.ReviewImageMenuTag;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
-import com.zelusik.eatery.dto.ImageDto;
 import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.request.ReviewCreateRequest;
+import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.exception.review.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.exception.review.ReviewNotFoundException;
 import com.zelusik.eatery.exception.review.ReviewUpdatePermissionDeniedException;
+import com.zelusik.eatery.repository.review.ReviewImageMenuTagRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import com.zelusik.eatery.repository.review.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,49 +34,60 @@ public class ReviewService {
     private final ReviewImageService reviewImageService;
     private final MemberService memberService;
     private final PlaceService placeService;
+    private final BookmarkService bookmarkService;
     private final ReviewRepository reviewRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
-    private final BookmarkService bookmarkService;
+    private final ReviewImageMenuTagRepository reviewImageMenuTagRepository;
 
     /**
      * 리뷰를 생성합니다.
      *
      * @param writerId      리뷰를 생성하고자 하는 회원의 PK.
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
-     * @param images        리뷰와 함께 업로드 할 파일 목록
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
     @Transactional
-    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest, List<ImageDto> images) {
-        // 장소 조회 or 저장
-        PlaceCreateRequest placeCreateRequest = reviewRequest.getPlace();
-        Place place = placeService.findOptByKakaoPid(placeCreateRequest.getKakaoPid())
-                .orElseGet(() -> {
-                    Long createdPlaceId = placeService.create(writerId, placeCreateRequest).getId();
-                    return placeService.findById(createdPlaceId);
-                });
-
+    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest) {
+        List<ReviewImageCreateRequest> images = reviewRequest.getImages();
+        Place place = placeService.findById(reviewRequest.getPlaceId());
         Member writer = memberService.findById(writerId);
-
-        boolean isMarkedPlace = bookmarkService.isMarkedPlace(writerId, place);
+        boolean placeMarkedStatus = bookmarkService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
-        ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, isMarkedPlace));
-        Review review = reviewDto.toEntity(writer, place);
-        reviewRepository.save(review);
-        reviewDto.getKeywords()
-                .forEach(keyword -> {
-                    ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
-                    review.getKeywords().add(reviewKeyword);
-                    reviewKeywordRepository.save(reviewKeyword);
-                });
+        ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, placeMarkedStatus));
+        Review review = reviewRepository.save(reviewDto.toEntity(writer, place));
 
-        reviewImageService.upload(review, images);
+        // 리뷰 키워드 저장
+        reviewDto.getKeywords().forEach(keyword -> {
+            ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
+            review.getKeywords().add(reviewKeyword);
+            reviewKeywordRepository.save(reviewKeyword);
+        });
 
-        // 장소 top 3 keyword 설정
+        // 리뷰 이미지 저장 및 업로드
+        List<ReviewImage> reviewImages = reviewImageService.upload(review, images);
+        review.getReviewImages().addAll(reviewImages);
+
+        // 메뉴 태그 저장
+        for (int i = 0; i < images.size(); i++) {
+            ReviewImageCreateRequest reviewImageReq = images.get(i);
+            ReviewImage reviewImage = review.getReviewImages().get(i);
+
+            if (reviewImageReq.getMenuTags() == null || reviewImageReq.getMenuTags().isEmpty()) {
+                continue;
+            }
+
+            List<ReviewImageMenuTag> menuTags = reviewImageReq.getMenuTags().stream()
+                    .map(reviewMenuTagReq -> reviewMenuTagReq.toDto().toEntity(reviewImage))
+                    .toList();
+            reviewImage.getMenuTags().addAll(menuTags);
+            reviewImageMenuTagRepository.saveAll(reviewImage.getMenuTags());
+        }
+
+        // 장소 top 3 keyword 갱신
         placeService.renewTop3Keywords(place);
 
-        return ReviewDto.from(review, isMarkedPlace);
+        return ReviewDto.from(review, placeMarkedStatus);
     }
 
     /**
@@ -82,43 +96,54 @@ public class ReviewService {
      * @param reviewId 조회하고자 하는 리뷰의 PK
      * @return 조회된 리뷰
      */
-    private Review findById(Long reviewId) {
-        return reviewRepository.findByIdAndDeletedAtNull(reviewId)
-                .orElseThrow(ReviewNotFoundException::new);
+    public Review findById(Long reviewId) {
+        return reviewRepository.findByIdAndDeletedAtNull(reviewId).orElseThrow(ReviewNotFoundException::new);
     }
 
     /**
-     * 전체 리뷰 조회. 최신순 정렬
+     * 주어진 PK에 해당하는 리뷰를 단건 조회한다.
      *
-     * @param pageable paging 정보
-     * @return 조회된 리뷰 목록(slice)
+     * @param memberId PK of member. 리뷰 내 장소의 북마크 여부 확인을 위해 필요하다.
+     * @param reviewId 조회하고자 하는 리뷰의 PK
+     * @return 조회된 리뷰 dto
      */
-    public Slice<ReviewDto> findDtosOrderByCreatedAt(Long memberId, Pageable pageable) {
-        return reviewRepository.findAllByDeletedAtNull(pageable)
-                .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace())));
+    public ReviewDto findDtoById(Long memberId, Long reviewId) {
+        Review review = findById(reviewId);
+        boolean isMarkedPlace = bookmarkService.isMarkedPlace(memberId, review.getPlace());
+        return ReviewDto.from(review, isMarkedPlace);
     }
 
     /**
-     * 특정 가게에 대헌 리뷰 목록(Slice) 조회.
+     * <p>리뷰 목록 조회.
+     * <p>장소에 대한 정보는 <code>null</code>로 처리하여 반환합니다. (query 최적화)
+     * <p>정렬 기준은 최근 등록된 순서입니다.
      *
-     * @param placeId  리뷰를 조회할 가게의 id(PK)
-     * @param pageable paging 정보
+     * @param loginMemberId PK of login member
+     * @param writerId      filter - 특정 회원이 작성한 리뷰만 조회
+     * @param placeId       filter - 특정 가게에 대한 리뷰만 조회
+     * @param embed         연관된 entity를 포함할지에 대한 여부
+     * @param pageable      paging 정보
      * @return 조회된 리뷰 목록(Slice)
      */
-    public Slice<ReviewDto> findDtosByPlaceId(Long placeId, Pageable pageable) {
-        return reviewRepository.findByPlace_IdAndDeletedAtNull(placeId, pageable).map(ReviewDto::fromWithoutPlace);
+    public Slice<ReviewDto> findDtos(long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable) {
+        return reviewRepository.findDtos(loginMemberId, writerId, placeId, embed, pageable);
     }
 
     /**
-     * 특정 회원이 작성한 리뷰 조회.
+     * <p>리뷰 피드를 조회한다.
+     * <p>내가 작성한 리뷰는 노출되지 않는다.
+     * <p>정렬 기준은 다음과 같다.
+     * <ol>
+     *     <li>리뷰를 작성한 장소의 카테고리가 내가 선호하는 음식 카테고리에 해당되는 경우</li>
+     *     <li>최근 등록된 순서</li>
+     * </ol>
      *
-     * @param writerId 작성자의 PK
-     * @param pageable paging, sorting 정보
-     * @return 조회된 리뷰 목록(slice)
+     * @param loginMemberId PK of login member
+     * @param pageable      paging 정보
+     * @return 조회된 리뷰 dtos
      */
-    public Slice<ReviewDto> findDtosByWriterId(Long writerId, Pageable pageable) {
-        return reviewRepository.findByWriter_IdAndDeletedAtNull(writerId, pageable)
-                .map(review -> ReviewDto.from(review, bookmarkService.isMarkedPlace(writerId, review.getPlace())));
+    public Slice<ReviewDto> findReviewReed(long loginMemberId, Pageable pageable) {
+        return reviewRepository.findReviewFeed(loginMemberId, pageable);
     }
 
     /**
@@ -136,6 +161,19 @@ public class ReviewService {
         review.update(content);
 
         return ReviewDto.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace()));
+    }
+
+    /**
+     * 리뷰 슈정 권한이 있는지 검증한다.
+     *
+     * @param memberId 리뷰를 수정하고자 하는 회원(로그인 회원)
+     * @param review   수정할 리뷰
+     * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
+     */
+    private void validateReviewUpdatePermission(Long memberId, Review review) {
+        if (!review.getWriter().getId().equals(memberId)) {
+            throw new ReviewUpdatePermissionDeniedException();
+        }
     }
 
     /**
@@ -162,19 +200,6 @@ public class ReviewService {
     private void softDelete(Review review) {
         review.softDelete();
         reviewRepository.flush();
-    }
-
-    /**
-     * 리뷰 슈정 권한이 있는지 검증한다.
-     *
-     * @param memberId 리뷰를 수정하고자 하는 회원(로그인 회원)
-     * @param review   수정할 리뷰
-     * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
-     */
-    private void validateReviewUpdatePermission(Long memberId, Review review) {
-        if (!review.getWriter().getId().equals(memberId)) {
-            throw new ReviewUpdatePermissionDeniedException();
-        }
     }
 
     /**

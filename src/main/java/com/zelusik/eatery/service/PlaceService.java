@@ -1,24 +1,29 @@
 package com.zelusik.eatery.service;
 
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
-import com.zelusik.eatery.constant.place.PlaceSearchKeyword;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.OpeningHours;
 import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
+import com.zelusik.eatery.exception.place.PlaceAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
 import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
 import com.zelusik.eatery.repository.place.OpeningHoursRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.repository.review.ReviewKeywordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +34,9 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 @Service
 public class PlaceService {
+
+    public static final int MAX_NUM_OF_PLACE_IMAGES = 4;
+    public static final int DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH = 50;
 
     private final WebScrapingService webScrapingService;
     private final ReviewImageService reviewImageService;
@@ -43,34 +51,30 @@ public class PlaceService {
      * @param placeCreateRequest 장소 정보가 담긴 dto.
      * @return 저장된 장소 entity.
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
+     * @throws PlaceAlreadyExistsException 동일한 장소 데이터가 이미 존재하는 경우
      */
     @Transactional
     public PlaceDto create(Long memberId, PlaceCreateRequest placeCreateRequest) {
-        PlaceScrapingResponse scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
-
-        Place place = placeRepository.save(placeCreateRequest
-                .toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours())
-                .toEntity());
-
-        if (scrapingInfo.getOpeningHours() != null) {
-            List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
-                    .map(oh -> oh.toOpeningHoursEntity(place))
-                    .toList();
-            openingHoursRepository.saveAll(openingHoursList);
-            place.getOpeningHoursList().addAll(openingHoursList);
+        String kakaoPid = placeCreateRequest.getKakaoPid();
+        if (placeRepository.existsByKakaoPid(kakaoPid)) {
+            throw new PlaceAlreadyExistsException(kakaoPid);
         }
 
-        return PlaceDto.from(place, bookmarkService.isMarkedPlace(memberId, place));
-    }
+        PlaceScrapingResponse scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
 
-    /**
-     * placeId에 해당하는 장소를 조회한 후 반환한다.
-     *
-     * @param placeId 조회하고자 하는 장소의 PK
-     * @return 조회한 장소 entity
-     */
-    public Place findById(Long placeId) {
-        return placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
+        Place savedPlace = placeRepository.save(placeCreateRequest.toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours()).toEntity());
+        boolean placeMarkedStatus = bookmarkService.isMarkedPlace(memberId, savedPlace);
+
+        if (scrapingInfo.getOpeningHours() == null || scrapingInfo.getOpeningHours().isEmpty()) {
+            return PlaceDto.from(savedPlace, placeMarkedStatus);
+        }
+
+        List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
+                .map(oh -> oh.toOpeningHoursEntity(savedPlace))
+                .toList();
+        openingHoursRepository.saveAll(openingHoursList);
+        savedPlace.getOpeningHoursList().addAll(openingHoursList);
+        return PlaceDto.from(savedPlace, placeMarkedStatus);
     }
 
     /**
@@ -87,28 +91,83 @@ public class PlaceService {
      * placeId에 해당하는 장소를 조회한 후 반환한다.
      *
      * @param placeId 조회하고자 하는 장소의 PK
+     * @return 조회한 장소 entity
+     * @throws PlaceNotFoundException 조회하고자 하는 장소가 존재하지 않는 경우
+     */
+    public Place findById(Long placeId) {
+        return placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
+    }
+
+    /**
+     * <code>kakaoPid</code>에 해당하는 장소를 조회한다.
+     *
+     * @param kakaoPid 조회하고자 하는 장소의 kakao unique id
+     * @return 조회한 장소 entity
+     * @throws PlaceNotFoundException 조회하고자 하는 장소가 존재하지 않는 경우
+     */
+    @NonNull
+    public Place findByKakaoPid(@NonNull String kakaoPid) {
+        return findOptByKakaoPid(kakaoPid).orElseThrow(() -> PlaceNotFoundException.kakaoPid(kakaoPid));
+    }
+
+    /**
+     * placeId에 해당하는 장소를 조회한 후 반환한다.
+     *
+     * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceDto findDtoWithMarkedStatusAndImages(Long memberId, Long placeId) {
-        Place place = findById(placeId);
-        boolean isMarked = bookmarkService.isMarkedPlace(memberId, place);
-        List<ReviewImageDto> Latest3Images = reviewImageService.findLatest3ByPlace(place.getId());
-        return PlaceDto.fromWithImages(place, isMarked, Latest3Images);
+    public PlaceDto findDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
+        Place foundPlace = findById(placeId);
+        boolean isMarked = bookmarkService.isMarkedPlace(memberId, foundPlace);
+        List<ReviewImageDto> latest3Images = reviewImageService.findLatest3ByPlace(foundPlace.getId());
+        return PlaceDto.fromWithImages(foundPlace, isMarked, latest3Images);
+    }
+
+    /**
+     * <code>kakaoPid</code>에 해당하는 장소를 조회한다.
+     *
+     * @param kakaoPid 조회하고자 하는 장소의 kakao unique id
+     * @return 조회한 장소 dto
+     */
+    @NonNull
+    public PlaceDto findDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
+        Place foundPlace = findByKakaoPid(kakaoPid);
+        boolean isMarked = bookmarkService.isMarkedPlace(memberId, foundPlace);
+        List<ReviewImageDto> latest3ByPlace = reviewImageService.findLatest3ByPlace(foundPlace.getId());
+        return PlaceDto.fromWithImages(foundPlace, isMarked, latest3ByPlace);
+    }
+
+    /**
+     * 검색 키워드를 받아 장소를 검색한다.
+     *
+     * @param searchKeyword 검색 키워드
+     * @param pageable      paging 정보
+     * @return 조회된 장소 목록
+     */
+    public Slice<PlaceDto> searchDtosByKeyword(String searchKeyword, Pageable pageable) {
+        return placeRepository.searchByKeyword(searchKeyword, pageable).map(PlaceDto::fromWithoutMarkedStatusAndImages);
     }
 
     /**
      * <p>중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
      * <p>최대 50km 범위까지 조회한다.
      *
-     * @param daysOfWeek 검색할 요일 목록
-     * @param keyword    검색 키워드
-     * @param lat        중심좌표의 위도
-     * @param lng        중심좌표의 경도
-     * @param pageable   paging 정보
+     * @param memberId      API 요청한 회원의 PK 값
+     * @param daysOfWeek    검색할 요일 목록
+     * @param preferredVibe 선호하는 분위기
+     * @param center        중심 좌표 정보
+     * @param pageable      paging 정보
      * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findDtosNearBy(Long memberId, List<DayOfWeek> daysOfWeek, PlaceSearchKeyword keyword, String lat, String lng, Pageable pageable) {
-        return placeRepository.findDtosNearBy(memberId, daysOfWeek, keyword, lat, lng, 50, pageable);
+    public Page<PlaceDto> findDtosNearBy(
+            Long memberId,
+            @Nullable FoodCategoryValue foodCategory,
+            @Nullable List<DayOfWeek> daysOfWeek,
+            @Nullable ReviewKeywordValue preferredVibe,
+            Point center,
+            Pageable pageable
+    ) {
+        return placeRepository.findDtosNearBy(memberId, foodCategory, daysOfWeek, preferredVibe, center, DISTANCE_LIMITS_FOR_NEARBY_PLACES_SEARCH, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**
@@ -118,10 +177,10 @@ public class PlaceService {
      *
      * @param memberId 로그인 회원의 PK.
      * @param pageable paging 정보
-     * @return 조회한 장소 목록과 사진 데이터
+     * @return 조회한 장소 목록
      */
-    public Slice<PlaceDto> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
-        return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, pageable);
+    public Page<PlaceDto> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+        return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**

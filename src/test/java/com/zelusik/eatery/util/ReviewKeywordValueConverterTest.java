@@ -59,8 +59,8 @@ class ReviewKeywordValueConverterTest {
 
     static Stream<Arguments> keywordList() {
         return Stream.of(
-                arguments(null, null),
-                arguments(List.of(), null),
+                arguments(null, ""),
+                arguments(List.of(), ""),
                 arguments(List.of(FRESH), "FRESH"),
                 arguments(List.of(FRESH, BEST_FLAVOR), "FRESH BEST_FLAVOR"),
                 arguments(List.of(FRESH, BEST_FLAVOR, BEST_MENU_COMBINATION), "FRESH BEST_FLAVOR BEST_MENU_COMBINATION"),

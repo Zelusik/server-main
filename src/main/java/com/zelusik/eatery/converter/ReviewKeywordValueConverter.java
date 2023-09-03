@@ -14,7 +14,7 @@ public class ReviewKeywordValueConverter implements AttributeConverter<List<Revi
     @Override
     public String convertToDatabaseColumn(List<ReviewKeywordValue> attribute) {
         if (attribute == null || attribute.size() == 0) {
-            return null;
+            return "";
         }
 
         return attribute.stream()
