@@ -1,7 +1,7 @@
 package com.zelusik.eatery.service;
 
 import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.dto.auth.response.TokenResponse;
+import com.zelusik.eatery.dto.auth.TokenDto;
 import com.zelusik.eatery.dto.redis.RefreshToken;
 import com.zelusik.eatery.exception.auth.RefreshTokenValidateException;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
@@ -30,12 +30,12 @@ public class JwtTokenService {
      * @return 생성된 access token과 refresh token 정보가 담긴 <code>TokenResponse</code> 객체
      */
     @Transactional
-    public TokenResponse create(Long memberId, LoginType loginType) {
+    public TokenDto create(Long memberId, LoginType loginType) {
         JwtTokenInfoDto accessTokenInfo = jwtTokenProvider.createAccessToken(memberId, loginType);
         JwtTokenInfoDto refreshTokenInfo = jwtTokenProvider.createRefreshToken(memberId, loginType);
         refreshTokenRepository.save(RefreshToken.of(refreshTokenInfo.token(), memberId));
 
-        return TokenResponse.of(
+        return new TokenDto(
                 accessTokenInfo.token(), accessTokenInfo.expiresAt(),
                 refreshTokenInfo.token(), refreshTokenInfo.expiresAt()
         );
@@ -51,7 +51,7 @@ public class JwtTokenService {
      * @throws TokenValidateException 유효하지 않은 token인 경우
      */
     @Transactional
-    public TokenResponse refresh(String oldRefreshToken) {
+    public TokenDto refresh(String oldRefreshToken) {
         jwtTokenProvider.validateToken(oldRefreshToken);
 
         RefreshToken oldRedisRefreshToken = refreshTokenRepository.findById(oldRefreshToken).orElseThrow(RefreshTokenValidateException::new);

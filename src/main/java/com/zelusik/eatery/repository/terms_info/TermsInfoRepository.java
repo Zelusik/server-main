@@ -8,5 +8,7 @@ import java.util.Optional;
 
 public interface TermsInfoRepository extends JpaRepository<TermsInfo, Long> {
 
+    Optional<TermsInfo> findByMember_Id(long memberId);
+
     void deleteByMember_Id(long memberId);
 }
