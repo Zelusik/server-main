@@ -35,7 +35,8 @@ public class TermsInfoController {
 
     @Operation(
             summary = "약관 동의",
-            description = "<p>전체 약관에 대한 동의/비동의 결과를 제출한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>전체 약관에 대한 동의/비동의 결과를 제출한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({

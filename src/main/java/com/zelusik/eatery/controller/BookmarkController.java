@@ -30,7 +30,8 @@ public class BookmarkController {
 
     @Operation(
             summary = "장소 북마크",
-            description = "특정 장소를 북마크에 저장한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>특정 장소를 북마크에 저장한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -54,7 +55,8 @@ public class BookmarkController {
 
     @Operation(
             summary = "장소 북마크 취소",
-            description = "특정 장소에 대해 저장한 북마크를 취소합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>특정 장소에 대해 저장한 북마크를 취소합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({

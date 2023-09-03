@@ -38,7 +38,8 @@ public class MemberController {
 
     @Operation(
             summary = "내 정보 조회",
-            description = "내 정보를 조회합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>내 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/members/me", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -49,6 +50,7 @@ public class MemberController {
     @Operation(
             summary = "내 프로필 정보 조회",
             description = """
+                    <p><strong>Latest version: v1.1</strong>
                     <p>내 프로필 정보를 조회합니다.
                     <p>회원 프로필 정보란 다음 항목들을 의미합니다.
                     <ul>
@@ -72,6 +74,7 @@ public class MemberController {
     @Operation(
             summary = "회원 프로필 정보 조회",
             description = """
+                    <p><strong>Latest version: v1.1</strong>
                     <p>회원 id를 전달받아 일치하는 회원의 프로필 정보를 조회합니다.
                     <p>회원 프로필 정보란 다음 항목들을 의미합니다.
                     <ul>
@@ -102,7 +105,8 @@ public class MemberController {
 
     @Operation(
             summary = "키워드로 회원 검색하기",
-            description = "검색 키워드를 전달받아 회원을 검색한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>검색 키워드를 전달받아 회원을 검색한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/members/search", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -126,7 +130,8 @@ public class MemberController {
 
     @Operation(
             summary = "내 정보 수정",
-            description = "<p>내 정보를 수정한다." +
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>내 정보를 수정한다." +
                           "<p>프로필 이미지는 수정하고자 하는 경우에만 요청해야 하고, " +
                           "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
             security = @SecurityRequirement(name = "access-token")
@@ -142,7 +147,8 @@ public class MemberController {
 
     @Operation(
             summary = "선호하는 음식 카테고리(음식 취향) 변경",
-            description = "<p>선호하는 음식 카테고리(음식 취향)를 변경한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>선호하는 음식 카테고리(음식 취향)를 변경한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @PutMapping(value = "/v1/members/favorite-food", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -156,7 +162,8 @@ public class MemberController {
 
     @Operation(
             summary = "회원 탈퇴",
-            description = "<p>회원 탈퇴를 진행한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>회원 탈퇴를 진행한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @DeleteMapping(value = "/v1/members", headers = API_MINOR_VERSION_HEADER_NAME + "=1")

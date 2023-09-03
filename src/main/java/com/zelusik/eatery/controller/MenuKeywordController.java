@@ -36,7 +36,8 @@ public class MenuKeywordController {
 
     @Operation(
             summary = "메뉴 키워드 조회",
-            description = "각 메뉴에 대해 적절한 키워드 목록을 조회합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>각 메뉴에 대해 적절한 키워드 목록을 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/menu-keywords", headers = API_MINOR_VERSION_HEADER_NAME + "=1")

@@ -51,7 +51,8 @@ public class ReviewController {
 
     @Operation(
             summary = "리뷰 생성",
-            description = "<p>리뷰 내용과 장소 정보를 받아 리뷰를 생성합니다.</p>" +
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>리뷰 내용과 장소 정보를 받아 리뷰를 생성합니다.</p>" +
                           "<p>영업시간, SNS 주소 등 추가로 필요한 정보는 상세 페이지(<code>place.pageUrl</code>)에서 받아옵니다.</p>" +
                           "<p>요청 시 <strong>multipart/form-data</strong> content-type으로 요쳥해야 합니다.",
             security = @SecurityRequirement(name = "access-token")
@@ -61,7 +62,7 @@ public class ReviewController {
             @ApiResponse(description = "[1001] 전달받은 파일을 읽을 수 없는 경우.", responseCode = "400", content = @Content),
             @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 스크래핑 할 Scraping server에서 에러가 발생한 경우.", responseCode = "500", content = @Content),
     })
-    @PostMapping(value = "/v1/reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/v1/reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReviewResponse> createV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ParameterObject @Valid @ModelAttribute ReviewCreateRequest request
@@ -74,7 +75,8 @@ public class ReviewController {
 
     @Operation(
             summary = "리뷰 상세 조회",
-            description = "리뷰 상세 정보를 단건 조회합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>리뷰 상세 정보를 단건 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -96,7 +98,8 @@ public class ReviewController {
 
     @Operation(
             summary = "리뷰 목록 조회",
-            description = "리뷰 목록을 조회합니다",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>리뷰 목록을 조회합니다",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -136,6 +139,7 @@ public class ReviewController {
     @Operation(
             summary = "리뷰 피드 조회",
             description = """
+                    <p><strong>Latest version: v1.1</strong>
                     <p>리뷰 피드를 조회합니다.
                     <p>내가 작성한 리뷰는 노출되지 않습니다.
                     <p>정렬 기준은 다음과 같습니다.
@@ -164,7 +168,8 @@ public class ReviewController {
 
     @Operation(
             summary = "내가 작성한 리뷰 조회",
-            description = "<p>내가 작성한 리뷰를 조회합니다." +
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>내가 작성한 리뷰를 조회합니다." +
                           "<p>정렬 기준은 최근 등록된 순(최신순)입니다.",
             security = @SecurityRequirement(name = "access-token")
     )
@@ -187,7 +192,8 @@ public class ReviewController {
 
     @Operation(
             summary = "리뷰 내용 자동 생성",
-            description = "사용자로부터 장소에 대한 키워드, 메뉴에 대한 키워드들을 받아 리뷰 내용을 자동으로 작성합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>사용자로부터 장소에 대한 키워드, 메뉴에 대한 키워드들을 받아 리뷰 내용을 자동으로 작성합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/reviews/contents/auto-creations", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -247,7 +253,8 @@ public class ReviewController {
 
     @Operation(
             summary = "리뷰 내용 수정",
-            description = "<p>리뷰 내용을 수정합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>리뷰 내용을 수정합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -268,7 +275,8 @@ public class ReviewController {
 
     @Operation(
             summary = "리뷰 삭제",
-            description = "<p>리뷰를 삭제합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>리뷰를 삭제합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({

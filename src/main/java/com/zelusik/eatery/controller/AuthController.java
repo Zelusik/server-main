@@ -3,13 +3,13 @@ package com.zelusik.eatery.controller;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
-import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.auth.request.AppleLoginRequest;
 import com.zelusik.eatery.dto.auth.request.KakaoLoginRequest;
 import com.zelusik.eatery.dto.auth.request.TokenRefreshRequest;
 import com.zelusik.eatery.dto.auth.response.LoginResponse;
 import com.zelusik.eatery.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.dto.auth.response.TokenValidateResponse;
+import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.member.response.LoggedInMemberResponse;
 import com.zelusik.eatery.service.AppleOAuthService;
@@ -46,11 +46,14 @@ public class AuthController {
 
     @Operation(
             summary = "카카오 로그인",
-            description = "<p>Kakao에서 전달받은 access token으로 로그인합니다." +
-                    "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다. 이후 로그인 원한이 필요한 API를 호출할 때는 HTTP header의 <strong>Authorization</strong>에 access token을 담아서 요청해야 합니다." +
-                    "<p>Access token의 만료기한은 하루, refresh token의 만료기한은 1달입니다." +
-                    "<p>이전에 탈퇴했던 회원이고 DB에서 완전히 삭제되지 않은 경우, 재가입을 진행합니다." +
-                    "<p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다."
+            description = """
+                    <p><strong>Latest version: v1.1</strong>
+                    <p>Kakao에서 전달받은 access token으로 로그인합니다.
+                    <p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다. 이후 로그인 원한이 필요한 API를 호출할 때는 HTTP header의 <strong>Authorization</strong>에 access token을 담아서 요청해야 합니다.
+                    <p>Access token의 만료기한은 하루, refresh token의 만료기한은 1달입니다.
+                    <p>이전에 탈퇴했던 회원이고 DB에서 완전히 삭제되지 않은 경우, 재가입을 진행합니다.
+                    <p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다.
+                    """
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
@@ -74,11 +77,14 @@ public class AuthController {
 
     @Operation(
             summary = "애플 로그인",
-            description = "<p>Apple에서 전달받은 identity token으로 로그인합니다." +
-                    "<p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다. 이후 로그인 원한이 필요한 API를 호출할 때는 HTTP header의 <strong>Authorization</strong>에 access token을 담아서 요청해야 합니다." +
-                    "<p>Access token의 만료기한은 하루, refresh token의 만료기한은 1달입니다." +
-                    "<p>이전에 탈퇴했던 회원이고 DB에서 완전히 삭제되지 않은 경우, 재가입을 진행합니다." +
-                    "<p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다."
+            description = """
+                    <p><strong>Latest version: v1.1</strong>
+                    <p>Apple에서 전달받은 identity token으로 로그인합니다.
+                    <p>로그인에 성공하면 로그인 사용자 정보, access token. refresh token을 응답합니다. 이후 로그인 원한이 필요한 API를 호출할 때는 HTTP header의 <strong>Authorization</strong>에 access token을 담아서 요청해야 합니다.
+                    <p>Access token의 만료기한은 하루, refresh token의 만료기한은 1달입니다.
+                    <p>이전에 탈퇴했던 회원이고 DB에서 완전히 삭제되지 않은 경우, 재가입을 진행합니다.
+                    <p>사용자 정보에 포함된 약관 동의 정보(<code>termsInfo</code>)는 아직 약관 동의를 진행하지 않은 경우 <code>null</code>입니다.
+                    """
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
@@ -103,7 +109,8 @@ public class AuthController {
 
     @Operation(
             summary = "토큰 갱신하기",
-            description = "<p>기존 발급받은 refresh token으로 새로운 access token과 refresh token을 발급 받습니다."
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>기존 발급받은 refresh token으로 새로운 access token과 refresh token을 발급 받습니다."
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenResponse.class))),
@@ -116,13 +123,16 @@ public class AuthController {
 
     @Operation(
             summary = "Refresh token 유효성 검사",
-            description = "<p>Refresh token의 유효성을 확인합니다.</p>" +
-                    "<p>유효하지 않은 refresh token이란 다음과 같은 경우를 말합니다.</p>" +
-                    "<ul>" +
-                    "<li>Refresh token의 값이 잘못된 경우</li>" +
-                    "<li>Refresh token이 만료된 경우</li>" +
-                    "<li>Refresh token의 발행 기록을 찾을 수 없는 경우</li>" +
-                    "</ul>"
+            description = """
+                    <p><strong>Latest version: v1.1</strong>
+                    <p>Refresh token의 유효성을 확인합니다.</p>
+                    <p>유효하지 않은 refresh token이란 다음과 같은 경우를 말합니다.</p>
+                    <ul>
+                        <li>Refresh token의 값이 잘못된 경우</li>
+                        <li>Refresh token이 만료된 경우</li>
+                        <li>Refresh token의 발행 기록을 찾을 수 없는 경우</li>
+                    </ul>
+                    """
     )
     @GetMapping(value = "/v1/auth/validity", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public TokenValidateResponse validateRefreshTokenV1_1(@RequestParam @NotBlank String refreshToken) {

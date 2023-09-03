@@ -38,9 +38,10 @@ public class MeetingPlaceController {
 
     @Operation(
             summary = "키워드로 약속 장소 검색하기",
-            description = "<p>키워드로 매칭된 장소 검색 결과를 제공합니다." +
-                    "<p>검색 대상은 행정구역(시/도, 시/군/구, 읍/면/동/구), 지하철역, 관광명소와 학교입니다." +
-                    "<p>한 페이지에 제공되는 장소의 개수는 30개 미만입니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>키워드로 매칭된 장소 검색 결과를 제공합니다." +
+                          "<p>검색 대상은 행정구역(시/도, 시/군/구, 읍/면/동/구), 지하철역, 관광명소와 학교입니다." +
+                          "<p>한 페이지에 제공되는 장소의 개수는 30개 미만입니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/meeting-places", headers = API_MINOR_VERSION_HEADER_NAME + "=1")

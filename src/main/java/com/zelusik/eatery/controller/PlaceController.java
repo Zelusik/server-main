@@ -50,7 +50,8 @@ public class PlaceController {
 
     @Operation(
             summary = "장소 저장",
-            description = "장소 정보를 전달받아 장소를 서버에 저장합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>장소 정보를 전달받아 장소를 서버에 저장합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -72,7 +73,8 @@ public class PlaceController {
 
     @Operation(
             summary = "장소 단건 조회 - PK",
-            description = "장소의 PK를 받아 해당하는 장소 정보를 조회합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>장소의 PK를 받아 해당하는 장소 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -93,7 +95,8 @@ public class PlaceController {
 
     @Operation(
             summary = "장소 단건 조회 - kakao place unique id",
-            description = "장소의 고유 id(<code>kakaoPid</code>)를 받아 해당하는 장소 정보를 조회합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>장소의 고유 id(<code>kakaoPid</code>)를 받아 해당하는 장소 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -114,7 +117,8 @@ public class PlaceController {
 
     @Operation(
             summary = "키워드로 장소 검색하기",
-            description = "키워드로 장소를 검색한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>키워드로 장소를 검색한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/places/search", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -138,7 +142,8 @@ public class PlaceController {
 
     @Operation(
             summary = "주변 장소 검색 (거리순 정렬)",
-            description = "중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>중심 좌표를 받아 중심 좌표에서 가까운 장소들을 검색합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/places/near", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -200,7 +205,8 @@ public class PlaceController {
 
     @Operation(
             summary = "저장한 장소들에 대한 필터링 키워드 조회",
-            description = "<p>저장한 장소들에 대한 필터링 키워드를 조회합니다." +
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>저장한 장소들에 대한 필터링 키워드를 조회합니다." +
                           "<p>필터링 키워드에 대한 설명은 <strong><a href=\"https://www.notion.so/asdfqweasd/f6f39969ea1e48f8afee61e696e4d038?pvs=4\">[노션]데이터</a> - MY 저장 페이지: 상단버튼</strong>을 참고해주세요.",
             security = @SecurityRequirement(name = "access-token")
     )
@@ -216,7 +222,8 @@ public class PlaceController {
 
     @Operation(
             summary = "북마크에 저장한 장소 조회",
-            description = "<p>북마크에 저장한 장소들을 조회합니다." +
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>북마크에 저장한 장소들을 조회합니다." +
                           "<p>정렬 기준은 최근에 북마크에 저장한 순서입니다.",
             security = @SecurityRequirement(name = "access-token")
     )

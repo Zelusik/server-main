@@ -33,7 +33,8 @@ public class RecommendedReviewController {
 
     @Operation(
             summary = "추천 리뷰 설정",
-            description = "내 추천 리뷰를 지정하여 저장합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>내 추천 리뷰를 지정하여 저장합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @PostMapping(value = "/v1/members/recommended-reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -49,7 +50,8 @@ public class RecommendedReviewController {
 
     @Operation(
             summary = "추천 리뷰 조회",
-            description = "전달받은 <code>memberId</code>에 해당하는 회원의 추천 리뷰 정보를 조회합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>전달받은 <code>memberId</code>에 해당하는 회원의 추천 리뷰 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/members/{memberId}/recommended-reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -60,7 +62,8 @@ public class RecommendedReviewController {
 
     @Operation(
             summary = "내 추천 리뷰 조회",
-            description = "로그인 회원의 추천 리뷰 정보를 조회합니다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>로그인 회원의 추천 리뷰 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/members/me/recommended-reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -71,7 +74,8 @@ public class RecommendedReviewController {
 
     @Operation(
             summary = "추천 리뷰 목록 갱신",
-            description = "<p>내 추천 리뷰를 갱신한다.\n" +
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>내 추천 리뷰를 갱신한다." +
                           "<p>기존 등록된 추천 리뷰 내역을 전부 삭제한 후, 새로 전달받은 추천 리뷰 목록으로 대체한다.",
             security = @SecurityRequirement(name = "access-token")
     )

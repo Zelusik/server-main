@@ -32,8 +32,9 @@ public class PlaceMenusController {
 
     @Operation(
             summary = "장소 메뉴 데이터 생성",
-            description = "<p><code>placeId</code>에 해당하는 장소의 메뉴 목록을 스크래핑 한 후, 해당 데이터를 DB에 저장한다." +
-                    "<p>응답으로, DB에 저장된 메뉴들의 목록을 반환한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p><code>placeId</code>에 해당하는 장소의 메뉴 목록을 스크래핑 한 후, 해당 데이터를 DB에 저장한다." +
+                          "<p>응답으로, DB에 저장된 메뉴들의 목록을 반환한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -50,8 +51,9 @@ public class PlaceMenusController {
 
     @Operation(
             summary = "장소 메뉴 데이터 생성",
-            description = "<p><code>kakaoPid</code>에 해당하는 장소의 메뉴 목록을 스크래핑 한 후, 해당 데이터를 DB에 저장한다." +
-                    "<p>응답으로, DB에 저장된 메뉴들의 목록을 반환한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p><code>kakaoPid</code>에 해당하는 장소의 메뉴 목록을 스크래핑 한 후, 해당 데이터를 DB에 저장한다." +
+                          "<p>응답으로, DB에 저장된 메뉴들의 목록을 반환한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -68,14 +70,15 @@ public class PlaceMenusController {
 
     @Operation(
             summary = "장소 메뉴 목록 조회",
-            description = "<p><code>placeId</code>에 해당하는 장소의 메뉴 목록 데이터를 조회한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p><code>placeId</code>에 해당하는 장소의 메뉴 목록 데이터를 조회한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
             @ApiResponse(description = "[3004] 일치하는 장소의 메뉴 데이터를 찾을 수 없는 경우.", responseCode = "404", content = @Content)
     })
-    @GetMapping(value = "/v1/places/{placeId}/menus",headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    @GetMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public PlaceMenusResponse findPlaceMenusByPlaceIdV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         PlaceMenusDto result = placeMenusService.findDtoByPlaceId(placeId);
         return PlaceMenusResponse.fromWithoutIds(result);
@@ -83,7 +86,8 @@ public class PlaceMenusController {
 
     @Operation(
             summary = "장소 메뉴 목록 조회",
-            description = "<p><code>kakaoPid</code>에 해당하는 장소의 메뉴 목록 데이터를 조회한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p><code>kakaoPid</code>에 해당하는 장소의 메뉴 목록 데이터를 조회한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/v1/places/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -94,8 +98,9 @@ public class PlaceMenusController {
 
     @Operation(
             summary = "장소 메뉴 목록 업데이트",
-            description = "<p>메뉴 목록 데이터를 전달받아 `placeId`에 대해 기존에 존재하는 장소 메뉴 데이터를 업데이트한다." +
-                    "<p>전달받은 데이터가 추가되는 것이 아닌, 기존 데이터가 덮어씌워지는 것(overwrite)이므로 주의해야 한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>메뉴 목록 데이터를 전달받아 `placeId`에 대해 기존에 존재하는 장소 메뉴 데이터를 업데이트한다." +
+                          "<p>전달받은 데이터가 추가되는 것이 아닌, 기존 데이터가 덮어씌워지는 것(overwrite)이므로 주의해야 한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -113,7 +118,8 @@ public class PlaceMenusController {
 
     @Operation(
             summary = "메뉴 추가하기(직접 등록하기)",
-            description = "<p>메뉴를 하나 전달받아 기존 메뉴 목록에 새로 추가한다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>메뉴를 하나 전달받아 기존 메뉴 목록에 새로 추가한다.",
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
@@ -131,11 +137,12 @@ public class PlaceMenusController {
 
     @Operation(
             summary = "메뉴 목록 데이터 삭제하기 (관리자용)",
-            description = "<p>기존에 존재하는 <code>placeId</code>에 해당하는 메뉴 목록 데이터를 전부 삭제한다." +
-                    "<p>관리자 권한을 가진 사용자만 사용 가능하다.",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p>기존에 존재하는 <code>placeId</code>에 해당하는 메뉴 목록 데이터를 전부 삭제한다." +
+                          "<p>관리자 권한을 가진 사용자만 사용 가능하다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @DeleteMapping(value = "/v1/places/{placeId}/menus",headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    @DeleteMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public void deletePlaceMenusV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         placeMenusService.delete(placeId);
     }
