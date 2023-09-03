@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.Set;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceMenusDto;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
@@ -63,11 +64,12 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/places/" + placeId + "/menus")
+                        post("/api/v1/places/" + placeId + "/menus")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/places/" + placeId + "/menus"))
+                .andExpect(header().string("Location", "/api/v1/places/" + placeId + "/menus"))
                 .andExpect(jsonPath("$.id").value(placeMenusId))
                 .andExpect(jsonPath("$.placeId").value(placeId))
                 .andExpect(jsonPath("$.menus").isArray())
@@ -86,7 +88,8 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places/" + placeId + "/menus")
+                        get("/api/v1/places/" + placeId + "/menus")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isOk())
@@ -107,7 +110,8 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places/menus")
+                        get("/api/v1/places/menus")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("kakaoPid", kakaoPid)
                                 .with(user(createTestUserDetails()))
                 )
@@ -131,7 +135,8 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                        put("/api/places/" + placeId + "/menus")
+                        put("/api/v1/places/" + placeId + "/menus")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .content(mapper.writeValueAsString(requestBody))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(user(createTestUserDetails()))
@@ -156,7 +161,8 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                        patch("/api/places/" + placeId + "/menus")
+                        patch("/api/v1/places/" + placeId + "/menus")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .content(mapper.writeValueAsString(requestBody))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .with(user(createTestUserDetails()))
@@ -177,7 +183,8 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                        delete("/api/places/" + placeId + "/menus")
+                        delete("/api/v1/places/" + placeId + "/menus")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestAdminDetails()))
                 )
                 .andExpect(status().isOk());
@@ -192,7 +199,8 @@ class PlaceMenusControllerTest {
 
         // when & then
         mvc.perform(
-                        delete("/api/places/" + placeId + "/menus")
+                        delete("/api/v1/places/" + placeId + "/menus")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails()))
                 )
                 .andExpect(status().isForbidden());

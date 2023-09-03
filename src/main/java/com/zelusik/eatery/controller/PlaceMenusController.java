@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.net.URI;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+
 @Tag(name = "장소 메뉴 관련 API")
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -38,11 +40,11 @@ public class PlaceMenusController {
             @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
             @ApiResponse(description = "[3005] 메뉴 목록 데이터가 이미 존재하는 경우.", responseCode = "409", content = @Content)
     })
-    @PostMapping("/places/{placeId}/menus")
-    public ResponseEntity<PlaceMenusResponse> savePlaceMenusByPlaceId(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
+    @PostMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public ResponseEntity<PlaceMenusResponse> savePlaceMenusByPlaceIdV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         PlaceMenusDto result = placeMenusService.savePlaceMenus(placeId);
         return ResponseEntity
-                .created(URI.create("/api/places/" + placeId + "/menus"))
+                .created(URI.create("/api/v1/places/" + placeId + "/menus"))
                 .body(PlaceMenusResponse.from(result));
     }
 
@@ -56,11 +58,11 @@ public class PlaceMenusController {
             @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
             @ApiResponse(description = "[3005] 메뉴 목록 데이터가 이미 존재하는 경우.", responseCode = "409", content = @Content)
     })
-    @PostMapping("/places/menus")
-    public ResponseEntity<PlaceMenusResponse> savePlaceMenusByKakaoPid(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
+    @PostMapping(value = "/v1/places/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public ResponseEntity<PlaceMenusResponse> savePlaceMenusByKakaoPidV1_1(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
         PlaceMenusDto result = placeMenusService.savePlaceMenus(kakaoPid);
         return ResponseEntity
-                .created(URI.create("/api/places/" + result.getPlaceId() + "/menus"))
+                .created(URI.create("/api/v1/places/" + result.getPlaceId() + "/menus"))
                 .body(PlaceMenusResponse.from(result));
     }
 
@@ -73,8 +75,8 @@ public class PlaceMenusController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
             @ApiResponse(description = "[3004] 일치하는 장소의 메뉴 데이터를 찾을 수 없는 경우.", responseCode = "404", content = @Content)
     })
-    @GetMapping("/places/{placeId}/menus")
-    public PlaceMenusResponse findPlaceMenusByPlaceId(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
+    @GetMapping(value = "/v1/places/{placeId}/menus",headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public PlaceMenusResponse findPlaceMenusByPlaceIdV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         PlaceMenusDto result = placeMenusService.findDtoByPlaceId(placeId);
         return PlaceMenusResponse.fromWithoutIds(result);
     }
@@ -84,8 +86,8 @@ public class PlaceMenusController {
             description = "<p><code>kakaoPid</code>에 해당하는 장소의 메뉴 목록 데이터를 조회한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/places/menus")
-    public PlaceMenusResponse findPlaceMenusByKakaoPid(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
+    @GetMapping(value = "/v1/places/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public PlaceMenusResponse findPlaceMenusByKakaoPidV1_1(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
         PlaceMenusDto result = placeMenusService.findDtoByKakaoPid(kakaoPid);
         return PlaceMenusResponse.fromWithoutIds(result);
     }
@@ -100,8 +102,8 @@ public class PlaceMenusController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
             @ApiResponse(description = "[3006] 전달받은 메뉴 목록에 중복된 메뉴가 존재하는 경우", responseCode = "400", content = @Content)
     })
-    @PutMapping("/places/{placeId}/menus")
-    public PlaceMenusResponse updatePlaceMenus(
+    @PutMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public PlaceMenusResponse updatePlaceMenusV1_1(
             @Parameter(description = "PK of place", example = "3") @PathVariable Long placeId,
             @RequestBody PlaceMenusUpdateRequest request
     ) {
@@ -118,8 +120,8 @@ public class PlaceMenusController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceMenusResponse.class))),
             @ApiResponse(description = "[3006] 전달받은 메뉴가 기존 메뉴 목록에 이미 존재하는 경우. 즉, 중복된 경우이므로 다른 값으로 요청해야 한다.", responseCode = "400", content = @Content)
     })
-    @PatchMapping("/places/{placeId}/menus")
-    public PlaceMenusResponse addMenuToPlaceMenus(
+    @PatchMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public PlaceMenusResponse addMenuToPlaceMenusV1_1(
             @Parameter(description = "PK of place", example = "3") @PathVariable Long placeId,
             @Valid @RequestBody AddMenuToPlaceMenusRequest request
     ) {
@@ -133,8 +135,8 @@ public class PlaceMenusController {
                     "<p>관리자 권한을 가진 사용자만 사용 가능하다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @DeleteMapping("/places/{placeId}/menus")
-    public void deletePlaceMenus(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
+    @DeleteMapping(value = "/v1/places/{placeId}/menus",headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public void deletePlaceMenusV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
         placeMenusService.delete(placeId);
     }
 }
