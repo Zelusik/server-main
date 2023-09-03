@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -73,7 +74,8 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/members/recommended-reviews")
+                        post("/api/v1/members/recommended-reviews")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(user(createTestUser(memberId)))
@@ -96,7 +98,8 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/members/recommended-reviews")
+                        post("/api/v1/members/recommended-reviews")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(request))
                                 .with(user(createTestUser(memberId)))
@@ -118,7 +121,8 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/members/" + memberId + "/recommended-reviews")
+                        get("/api/v1/members/" + memberId + "/recommended-reviews")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUser(1L)))
                 )
                 .andExpect(status().isOk())
@@ -147,7 +151,8 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        put("/api/members/recommended-reviews/batch-update")
+                        put("/api/v1/members/recommended-reviews/batch-update")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(batchUpdateRecommendedReviewsRequest))
                                 .with(user(createTestUser(memberId)))
@@ -168,7 +173,8 @@ class RecommendedReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        put("/api/members/recommended-reviews/batch-update")
+                        put("/api/v1/members/recommended-reviews/batch-update")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(batchUpdateRecommendedReviewsRequest))
                                 .with(user(createTestUser(memberId)))
