@@ -1,7 +1,7 @@
 package com.zelusik.eatery.unit.service;
 
 import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.dto.auth.response.TokenResponse;
+import com.zelusik.eatery.dto.auth.TokenDto;
 import com.zelusik.eatery.dto.redis.RefreshToken;
 import com.zelusik.eatery.exception.auth.TokenValidateException;
 import com.zelusik.eatery.repository.redis.RefreshTokenRepository;
@@ -37,7 +37,7 @@ class JwtTokenServiceTest {
     private JwtTokenProvider jwtTokenProvider;
 
     @DisplayName("회원 PK와 로그인 타입이 주어지면 access, refresh token을 생성하고 " +
-            "refresh token을 redis에 저장한 후, 생성된 token들을 반환한다.")
+                 "refresh token을 redis에 저장한 후, 생성된 token들을 반환한다.")
     @Test
     void givenMemberIdAndLoginType_whenCreateJwtTokens_thenSaveAndReturnTokens() {
         // given
@@ -52,9 +52,9 @@ class JwtTokenServiceTest {
                 .willReturn(createRedisRefreshToken(memberId));
 
         // when
-        TokenResponse tokenResponse = sut.create(memberId, loginType);
-        String actualAccessToken = tokenResponse.getAccessToken();
-        String actualRefreshToken = tokenResponse.getRefreshToken();
+        TokenDto tokenDto = sut.create(memberId, loginType);
+        String actualAccessToken = tokenDto.accessToken();
+        String actualRefreshToken = tokenDto.refreshToken();
 
         // then
         then(jwtTokenProvider).should().createRefreshToken(memberId, loginType);
@@ -64,7 +64,7 @@ class JwtTokenServiceTest {
     }
 
     @DisplayName("Refresh token이 주어지면 주어진 token을 삭제한 후, " +
-            "새로운 access token과 refresh token을 생성하고 반환한다.")
+                 "새로운 access token과 refresh token을 생성하고 반환한다.")
     @Test
     void givenOldRefreshToken_whenRefresh_thenDeleteOldTokenAndSaveAndReturnNewTokens() {
         // given
@@ -90,9 +90,9 @@ class JwtTokenServiceTest {
                 .willReturn(createRedisRefreshToken(memberId));
 
         // when
-        TokenResponse tokenResponse = sut.refresh(oldRefreshToken);
-        String actualNewAccessToken = tokenResponse.getAccessToken();
-        String actualNewRefreshToken = tokenResponse.getRefreshToken();
+        TokenDto tokenDto = sut.refresh(oldRefreshToken);
+        String actualNewAccessToken = tokenDto.accessToken();
+        String actualNewRefreshToken = tokenDto.refreshToken();
 
         // then
         then(jwtTokenProvider).should().createRefreshToken(memberId, loginType);

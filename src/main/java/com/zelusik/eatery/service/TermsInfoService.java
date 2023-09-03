@@ -5,14 +5,17 @@ import com.zelusik.eatery.domain.terms_info.TermsInfo;
 import com.zelusik.eatery.dto.member.request.AgreeToTermsRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
+import com.zelusik.eatery.exception.terms_info.TermsInfoNotFoundByMemberIdException;
 import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.terms_info.TermsInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -48,6 +51,16 @@ public class TermsInfoService {
 
     private Member findMemberById(long memberId) {
         return memberRepository.findByIdAndDeletedAtNull(memberId).orElseThrow(() -> new MemberIdNotFoundException(memberId));
+    }
+
+    /**
+     * <code>memberId</code>에 해당하는 회원의 약관 동의 정보(termsInfo)를 조회한다.
+     *
+     * @param memberId 약관 동의 정보를 조회하고자 하는 회원의 id(PK)
+     * @return 조회된 약관 동의 정보(termsInfo entity)가 담긴 optional dto
+     */
+    public Optional<TermsInfoDto> findOptionalDtoByMemberId(long memberId) {
+        return termsInfoRepository.findByMember_Id(memberId).map(TermsInfoDto::from);
     }
 
     /**

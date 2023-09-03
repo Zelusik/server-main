@@ -3,19 +3,16 @@ package com.zelusik.eatery.controller;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.dto.apple.AppleOAuthUserResponse;
+import com.zelusik.eatery.dto.auth.TokenDto;
 import com.zelusik.eatery.dto.auth.request.AppleLoginRequest;
 import com.zelusik.eatery.dto.auth.request.KakaoLoginRequest;
-import com.zelusik.eatery.dto.auth.request.TokenRefreshRequest;
+import com.zelusik.eatery.dto.auth.request.RefreshTokensRequest;
 import com.zelusik.eatery.dto.auth.response.LoginResponse;
-import com.zelusik.eatery.dto.auth.response.TokenResponse;
 import com.zelusik.eatery.dto.auth.response.TokenValidateResponse;
 import com.zelusik.eatery.dto.kakao.KakaoOAuthUserResponse;
 import com.zelusik.eatery.dto.member.MemberDto;
-import com.zelusik.eatery.dto.member.response.LoggedInMemberResponse;
-import com.zelusik.eatery.service.AppleOAuthService;
-import com.zelusik.eatery.service.JwtTokenService;
-import com.zelusik.eatery.service.KakaoService;
-import com.zelusik.eatery.service.MemberService;
+import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
+import com.zelusik.eatery.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,6 +40,7 @@ public class AuthController {
     private final AppleOAuthService appleOAuthService;
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
+    private final TermsInfoService termsInfoService;
 
     @Operation(
             summary = "카카오 로그인",
@@ -65,14 +63,15 @@ public class AuthController {
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto(Set.of(RoleType.USER))));
-
         if (memberDto.getDeletedAt() != null) {
             memberService.rejoin(memberDto.getId());
         }
 
-        TokenResponse tokenResponse = jwtTokenService.create(memberDto.getId(), LoginType.KAKAO);
+        TermsInfoDto termsInfoDto = termsInfoService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
 
-        return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
+        TokenDto tokenDto = jwtTokenService.create(memberDto.getId(), LoginType.KAKAO);
+
+        return LoginResponse.from(memberDto, termsInfoDto, tokenDto);
     }
 
     @Operation(
@@ -97,14 +96,15 @@ public class AuthController {
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
                 .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName(), Set.of(RoleType.USER))));
-
         if (memberDto.getDeletedAt() != null) {
             memberService.rejoin(memberDto.getId());
         }
 
-        TokenResponse tokenResponse = jwtTokenService.create(memberDto.getId(), LoginType.APPLE);
+        TermsInfoDto termsInfoDto = termsInfoService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
 
-        return LoginResponse.of(LoggedInMemberResponse.from(memberDto), tokenResponse);
+        TokenDto tokenDto = jwtTokenService.create(memberDto.getId(), LoginType.APPLE);
+
+        return LoginResponse.from(memberDto, termsInfoDto, tokenDto);
     }
 
     @Operation(
@@ -113,12 +113,13 @@ public class AuthController {
                           "<p>기존 발급받은 refresh token으로 새로운 access token과 refresh token을 발급 받습니다."
     )
     @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenDto.class))),
             @ApiResponse(description = "[1504] 유효하지 않은 refresh token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
     })
     @PostMapping(value = "/v1/auth/token", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
-    public TokenResponse tokenRefreshV1_1(@Valid @RequestBody TokenRefreshRequest request) {
-        return jwtTokenService.refresh(request.getRefreshToken());
+    public RefreshTokensResponse refreshTokensV1_1(@Valid @RequestBody RefreshTokensRequest request) {
+        TokenDto tokenDto = jwtTokenService.refresh(request.getRefreshToken());
+        return RefreshTokensResponse.from(tokenDto);
     }
 
     @Operation(
