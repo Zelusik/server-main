@@ -5,12 +5,10 @@ import com.zelusik.eatery.domain.terms_info.TermsInfo;
 import com.zelusik.eatery.dto.member.request.AgreeToTermsRequest;
 import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
-import com.zelusik.eatery.exception.terms_info.TermsInfoNotFoundByMemberIdException;
 import com.zelusik.eatery.repository.member.MemberRepository;
 import com.zelusik.eatery.repository.terms_info.TermsInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

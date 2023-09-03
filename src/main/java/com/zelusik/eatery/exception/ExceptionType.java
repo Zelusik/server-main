@@ -19,7 +19,6 @@ import com.zelusik.eatery.exception.open_ai.OpenAIServerException;
 import com.zelusik.eatery.exception.place.*;
 import com.zelusik.eatery.exception.review.*;
 import com.zelusik.eatery.exception.scraping.ScrapingServerInternalError;
-import com.zelusik.eatery.exception.terms_info.TermsInfoNotFoundByMemberIdException;
 import com.zelusik.eatery.log.LogUtils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -121,7 +120,6 @@ public enum ExceptionType {
      */
     MEMBER_ID_NOT_FOUND(2000, "회원을 찾을 수 없습니다.", MemberIdNotFoundException.class),
     PROFILE_IMAGE_NOT_FOUND(2001, "프로필 이미지를 찾을 수 없습니다.", ProfileImageNotFoundException.class),
-    TERMS_INFO_NOT_FOUND_BY_ID(2002, "회원의 약관 동의 정보를 찾을 수 없습니다.", TermsInfoNotFoundByMemberIdException.class),
 
     /**
      * 장소({@link Place}) 관련 예외
