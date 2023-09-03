@@ -40,20 +40,18 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     private static final String[] AUTH_WHITE_PATHS = {
-            "/api/auth/login/**",
-            "/api/auth/token",
-            "/api/auth/validity"
+            "/api/v*/auth/login/**",
+            "/api/v*/auth/token",
+            "/api/v*/auth/validity"
     };
 
     private static final Map<String, HttpMethod> ADMIN_AUTH_LIST = Map.of(
-            "/api/places/*/menus", HttpMethod.DELETE
+            "/api/v*/places/*/menus", HttpMethod.DELETE
     );
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        String[] rolesAboveManager = {RoleType.MANAGER.name(), RoleType.ADMIN.name()};
         String[] rolesAboveAdmin = {RoleType.ADMIN.name()};
-
         return http
                 .httpBasic().disable()
                 .csrf().disable()

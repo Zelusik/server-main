@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+
 @Tag(name = "북마크 API")
 @RequiredArgsConstructor
-@RequestMapping("/api/bookmarks")
+@RequestMapping("/api")
 @RestController
 public class BookmarkController {
 
@@ -35,8 +37,8 @@ public class BookmarkController {
             @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = BookmarkResponse.class))),
             @ApiResponse(description = "[4300] 이미 저장한 장소를 다시 북마크에 저장하고자 하는 경우", responseCode = "409", content = @Content)
     })
-    @PostMapping
-    public ResponseEntity<BookmarkResponse> mark(
+    @PostMapping(value = "/v1/bookmarks", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public ResponseEntity<BookmarkResponse> markPlaceV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "북마크에 저장하고자 하는 장소의 PK",
@@ -46,7 +48,7 @@ public class BookmarkController {
         BookmarkResponse response = BookmarkResponse.from(bookmarkService.mark(userPrincipal.getMemberId(), placeId));
 
         return ResponseEntity
-                .created(URI.create("/api/bookmarks/" + response.getId()))
+                .created(URI.create("/api/v1/bookmarks/" + response.getId()))
                 .body(response);
     }
 
@@ -59,8 +61,8 @@ public class BookmarkController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content),
             @ApiResponse(description = "[4301] 북마크에 저장하지 않은 장소인 경우.", responseCode = "404", content = @Content)
     })
-    @DeleteMapping
-    public void delete(
+    @DeleteMapping(value = "/v1/bookmarks", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public void deletePlaceBookmarkV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "저장된 북마크를 삭제하고자 하는 장소의 PK",

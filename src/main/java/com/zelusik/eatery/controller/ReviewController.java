@@ -36,12 +36,13 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.PLACE;
 
 @Tag(name = "리뷰 관련 API")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/api/reviews")
+@RequestMapping("/api")
 @RestController
 public class ReviewController {
 
@@ -60,8 +61,8 @@ public class ReviewController {
             @ApiResponse(description = "[1001] 전달받은 파일을 읽을 수 없는 경우.", responseCode = "400", content = @Content),
             @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 스크래핑 할 Scraping server에서 에러가 발생한 경우.", responseCode = "500", content = @Content),
     })
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ReviewResponse> create(
+    @PostMapping(value = "/v1/reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ReviewResponse> createV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ParameterObject @Valid @ModelAttribute ReviewCreateRequest request
     ) {
@@ -80,8 +81,8 @@ public class ReviewController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = FindReviewResponse.class))),
             @ApiResponse(description = "[3501] <code>reviewId</code>에 해당하는 리뷰를 찾을 수 없는 경우", responseCode = "404", content = @Content)
     })
-    @GetMapping("/{reviewId}")
-    public FindReviewResponse findReview(
+    @GetMapping(value = "/v1/reviews/{reviewId}", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public FindReviewResponse findReviewV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "PK of review",
@@ -98,8 +99,8 @@ public class ReviewController {
             description = "리뷰 목록을 조회합니다",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping
-    public SliceResponse<FindReviewsResponse> findReviews(
+    @GetMapping(value = "/v1/reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public SliceResponse<FindReviewsResponse> findReviewsV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "필터 - 특정 회원이 작성한 리뷰만 조회",
@@ -145,8 +146,8 @@ public class ReviewController {
                     """,
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/feed")
-    public SliceResponse<FindReviewFeedResponse> findReviewFeed(
+    @GetMapping(value = "/v1/reviews/feed", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public SliceResponse<FindReviewFeedResponse> findReviewFeedV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
@@ -167,8 +168,8 @@ public class ReviewController {
                           "<p>정렬 기준은 최근 등록된 순(최신순)입니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/me")
-    public SliceResponse<FindReviewsWrittenByMeResponse> findReviewsWrittenByMe(
+    @GetMapping(value = "/v1/reviews/me", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public SliceResponse<FindReviewsWrittenByMeResponse> findReviewsWrittenByMeV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "페이지 번호 (0부터 시작합니다). 기본값은 0입니다.",
@@ -189,8 +190,8 @@ public class ReviewController {
             description = "사용자로부터 장소에 대한 키워드, 메뉴에 대한 키워드들을 받아 리뷰 내용을 자동으로 작성합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping(value = "/contents/auto-creations")
-    public GettingAutoCreatedReviewContentResponse getAutoCreatedContentWithGpt(
+    @GetMapping(value = "/v1/reviews/contents/auto-creations", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public GettingAutoCreatedReviewContentResponse getAutoCreatedContentWithGptV1_1(
             @Parameter(
                     description = """ 
                             <p>리뷰 키워드. 목록은 다음과 같다.</p>
@@ -253,8 +254,8 @@ public class ReviewController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = ReviewResponse.class))),
             @ApiResponse(description = "[3503] 리뷰 수정 권한이 없는 경우.", responseCode = "403", content = @Content)
     })
-    @PatchMapping("/{reviewId}")
-    public ReviewResponse update(
+    @PatchMapping(value = "/v1/reviews/{reviewId}", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public ReviewResponse updateV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "수정할 리뷰의 PK",
@@ -274,8 +275,8 @@ public class ReviewController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema)),
             @ApiResponse(description = "[3502] 리뷰 삭제 권한이 없는 경우", responseCode = "403", content = @Content)
     })
-    @DeleteMapping("/{reviewId}")
-    public void delete(
+    @DeleteMapping(value = "/v1/reviews/{reviewId}", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public void deleteV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
                     description = "삭제할 리뷰의 PK",

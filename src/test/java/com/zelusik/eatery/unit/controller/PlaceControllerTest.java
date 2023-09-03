@@ -32,6 +32,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.place.DayOfWeek.*;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDto;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
@@ -74,7 +75,8 @@ class PlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        post("/api/places")
+                        post("/api/v1/places")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(placeCreateRequest))
                                 .with(user(createTestUserDetails(memberId)))
@@ -97,7 +99,8 @@ class PlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places/" + placeId)
+                        get("/api/v1/places/" + placeId)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
@@ -120,7 +123,8 @@ class PlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places")
+                        get("/api/v1/places")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("kakaoPid", kakaoPid)
                                 .with(user(createTestUserDetails(memberId)))
                 )
@@ -144,7 +148,8 @@ class PlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places/search")
+                        get("/api/v1/places/search")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("keyword", searchKeyword)
                                 .with(user(createTestUserDetails(1L)))
                 )
@@ -170,7 +175,8 @@ class PlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places/near")
+                        get("/api/v1/places/near")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("lat", point.getLat())
                                 .queryParam("lng", point.getLng())
                                 .queryParam("foodCategory", foodCategory.name())
@@ -195,7 +201,8 @@ class PlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places/near")
+                        get("/api/v1/places/near")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("lat", point.getLat())
                                 .queryParam("lng", point.getLng())
                                 .queryParam("preferredVibe", preferredVibe.name())
@@ -219,7 +226,8 @@ class PlaceControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/places/bookmarks/filtering-keywords")
+                        get("/api/v1/places/bookmarks/filtering-keywords")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
@@ -242,7 +250,8 @@ class PlaceControllerTest {
         given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
-        mvc.perform(get("/api/places/bookmarks")
+        mvc.perform(get("/api/v1/places/bookmarks")
+                        .header(API_MINOR_VERSION_HEADER_NAME, 1)
                         .queryParam("type", filteringType.toString())
                         .queryParam("keyword", filteringKeywordDescription)
                         .with(user(createTestUserDetails(memberId)))

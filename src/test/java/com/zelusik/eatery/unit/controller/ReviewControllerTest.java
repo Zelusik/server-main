@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.PLACE;
 import static com.zelusik.eatery.constant.review.ReviewEmbedOption.WRITER;
 import static com.zelusik.eatery.constant.review.ReviewKeywordValue.*;
@@ -89,8 +90,9 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        multipart("/api/reviews")
+                        multipart("/api/v1/reviews")
                                 .file(createMockMultipartFile())
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("placeId", String.valueOf(placeId))
                                 .param("keywords", FRESH.name(), NOISY.name())
                                 .param("autoCreatedContent", reviewCreateRequest.getAutoCreatedContent())
@@ -116,7 +118,8 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/reviews/" + reviewId)
+                        get("/api/v1/reviews/" + reviewId)
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
@@ -143,7 +146,8 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/reviews")
+                        get("/api/v1/reviews")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("embed", WRITER.name(), PLACE.name())
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
@@ -164,7 +168,8 @@ class ReviewControllerTest {
         given(reviewService.findReviewReed(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
-        mvc.perform(get("/api/reviews/feed")
+        mvc.perform(get("/api/v1/reviews/feed")
+                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                         .with(user(createTestUserDetails(loginMemberId))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents", hasSize(expectedResult.getSize())))
@@ -185,7 +190,8 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/reviews/me")
+                        get("/api/v1/reviews/me")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
@@ -213,7 +219,8 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/reviews/contents/auto-creations")
+                        get("/api/v1/reviews/contents/auto-creations")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("placeKeywords", placeKeywords.stream().map(ReviewKeywordValue::name).toList().toArray(new String[0]))
                                 .param("menus", menus.toArray(new String[0]))
                                 .param("menuKeywords", menuKeywords.toArray(new String[0]))
@@ -243,7 +250,8 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(
-                        get("/api/reviews/contents/auto-creations")
+                        get("/api/v1/reviews/contents/auto-creations")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("placeKeywords", placeKeywords.toArray(new String[0]))
                                 .param("menus", menus.toArray(new String[0]))
                                 .param("menuKeywords", menuKeywords.toArray(new String[0]))

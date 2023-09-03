@@ -4,10 +4,12 @@ import com.zelusik.eatery.domain.Bookmark;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class BookmarkDto {
 
@@ -15,12 +17,8 @@ public class BookmarkDto {
     private Long memberId;
     private Long placeId;
 
-    public static BookmarkDto of(Long id, Long memberId, Long placeId) {
-        return new BookmarkDto(id, memberId, placeId);
-    }
-
     public static BookmarkDto from(Bookmark entity) {
-        return of(
+        return new BookmarkDto(
                 entity.getId(),
                 entity.getMember().getId(),
                 entity.getPlace().getId()

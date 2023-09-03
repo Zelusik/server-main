@@ -30,10 +30,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
-@Tag(name = "로그인 등 인증 관련")
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+
+@Tag(name = "로그인 등 인증 관련 API")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RestController
 public class AuthController {
 
@@ -54,8 +56,8 @@ public class AuthController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
             @ApiResponse(description = "[10401] 유효하지 않은 kakao access token으로 요청한 경우.", responseCode = "401", content = @Content)
     })
-    @PostMapping("/login/kakao")
-    public LoginResponse kakaoLogin(@Valid @RequestBody KakaoLoginRequest request) {
+    @PostMapping(value = "/v1/auth/login/kakao", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public LoginResponse kakaoLoginV1_1(@Valid @RequestBody KakaoLoginRequest request) {
         KakaoOAuthUserResponse userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
@@ -83,8 +85,8 @@ public class AuthController {
             @ApiResponse(description = "[1502] 유효하지 않은 token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
             @ApiResponse(description = "[20000] Apple 로그인 과정에서 알 수 없는 에러가 발생한 경우. 서버 관리자에게 문의해주세요.", responseCode = "500", content = @Content)
     })
-    @PostMapping("/login/apple")
-    public LoginResponse appleLogin(@Valid @RequestBody AppleLoginRequest request) {
+    @PostMapping(value = "/v1/auth/login/apple", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public LoginResponse appleLoginV1_1(@Valid @RequestBody AppleLoginRequest request) {
         AppleOAuthUserResponse userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
         MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
@@ -107,8 +109,8 @@ public class AuthController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenResponse.class))),
             @ApiResponse(description = "[1504] 유효하지 않은 refresh token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
     })
-    @PostMapping("/token")
-    public TokenResponse tokenRefresh(@Valid @RequestBody TokenRefreshRequest request) {
+    @PostMapping(value = "/v1/auth/token", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public TokenResponse tokenRefreshV1_1(@Valid @RequestBody TokenRefreshRequest request) {
         return jwtTokenService.refresh(request.getRefreshToken());
     }
 
@@ -122,8 +124,8 @@ public class AuthController {
                     "<li>Refresh token의 발행 기록을 찾을 수 없는 경우</li>" +
                     "</ul>"
     )
-    @GetMapping("/validity")
-    public TokenValidateResponse validate(@RequestParam @NotBlank String refreshToken) {
+    @GetMapping(value = "/v1/auth/validity", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public TokenValidateResponse validateRefreshTokenV1_1(@RequestParam @NotBlank String refreshToken) {
         return new TokenValidateResponse(jwtTokenService.validateOfRefreshToken(refreshToken));
     }
 }

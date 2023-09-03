@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.EnumMap;
 import java.util.List;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.MenuKeywordCategory.MENU_NAME;
 import static com.zelusik.eatery.constant.MenuKeywordCategory.PLACE_CATEGORY;
 import static org.hamcrest.Matchers.hasSize;
@@ -66,7 +67,8 @@ class MenuKeywordControllerTest {
 
         // when & then
         ResultActions resultActions = mvc.perform(
-                        get("/api/menu-keywords")
+                        get("/api/v1/menu-keywords")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("placeCategory", "음식점 > " + placeCategory.getFirstCategory() + " > " + placeCategory.getSecondCategory())
                                 .param("menus", menus.toArray(new String[0]))
                                 .with(user(createTestUserDetails()))

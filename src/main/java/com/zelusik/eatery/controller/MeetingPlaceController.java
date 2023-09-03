@@ -23,12 +23,13 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 
 @Tag(name = "약속 장소 관련 API")
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/api/meeting-places")
+@RequestMapping("/api")
 @RestController
 public class MeetingPlaceController {
 
@@ -42,8 +43,8 @@ public class MeetingPlaceController {
                     "<p>한 페이지에 제공되는 장소의 개수는 30개 미만입니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping
-    public SliceResponse<MeetingPlaceResponse> searchMeetingPlaces(
+    @GetMapping(value = "/v1/meeting-places", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public SliceResponse<MeetingPlaceResponse> searchMeetingPlacesV1_1(
             @Parameter(
                     description = "검색 키워드",
                     example = "광교"

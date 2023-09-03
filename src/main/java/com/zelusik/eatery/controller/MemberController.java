@@ -26,9 +26,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+
 @Tag(name = "회원 관련 API")
 @RequiredArgsConstructor
-@RequestMapping("/api/members")
+@RequestMapping("/api")
 @RestController
 public class MemberController {
 
@@ -39,8 +41,8 @@ public class MemberController {
             description = "내 정보를 조회합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/me")
-    public GetMyInfoResponse getMyInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    @GetMapping(value = "/v1/members/me", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public GetMyInfoResponse getMyInfoV1_1(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return GetMyInfoResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
     }
 
@@ -62,8 +64,8 @@ public class MemberController {
                     """,
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/me/profile")
-    public GetMyProfileInfoResponse getMyProfileInfo(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+    @GetMapping(value = "/v1/members/me/profile", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public GetMyProfileInfoResponse getMyProfileInfoV1_1(@AuthenticationPrincipal UserPrincipal userPrincipal) {
         return GetMyProfileInfoResponse.from(memberService.getMemberProfileInfoById(userPrincipal.getMemberId()));
     }
 
@@ -89,8 +91,8 @@ public class MemberController {
             @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "[2000] 전달받은 <code>memberId</code>에 해당하는 회원을 찾을 수 없는 경우", responseCode = "404", content = @Content)
     })
-    @GetMapping("/{memberId}/profile")
-    public GetMemberProfileInfoResponse getMemberProfileInfo(
+    @GetMapping(value = "/v1/members/{memberId}/profile", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public GetMemberProfileInfoResponse getMemberProfileInfoV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long memberId
     ) {
@@ -103,8 +105,8 @@ public class MemberController {
             description = "검색 키워드를 전달받아 회원을 검색한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @GetMapping("/search")
-    public SliceResponse<SearchMembersByKeywordResponse> searchMembersByKeyword(
+    @GetMapping(value = "/v1/members/search", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public SliceResponse<SearchMembersByKeywordResponse> searchMembersByKeywordV1_1(
             @Parameter(
                     description = "검색 키워드",
                     example = "강남"
@@ -129,8 +131,8 @@ public class MemberController {
                           "수정하지 않는 경우 보내지 않거나 <code>null</code>로 보내야 한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public MemberResponse updateMember(
+    @PutMapping(value = "/v1/members", headers = API_MINOR_VERSION_HEADER_NAME + "=1", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public MemberResponse updateMemberV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @ModelAttribute MemberUpdateRequest memberUpdateRequest
     ) {
@@ -143,8 +145,8 @@ public class MemberController {
             description = "<p>선호하는 음식 카테고리(음식 취향)를 변경한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @PutMapping("/favorite-food")
-    public UpdateFavoriteFoodCategoriesResponse updateFavoriteFoodCategories(
+    @PutMapping(value = "/v1/members/favorite-food", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public UpdateFavoriteFoodCategoriesResponse updateFavoriteFoodCategoriesV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
     ) {
@@ -157,8 +159,8 @@ public class MemberController {
             description = "<p>회원 탈퇴를 진행한다.",
             security = @SecurityRequirement(name = "access-token")
     )
-    @DeleteMapping
-    public MemberDeletionSurveyResponse delete(
+    @DeleteMapping(value = "/v1/members", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public MemberDeletionSurveyResponse deleteV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody MemberDeletionSurveyRequest memberDeletionSurveyRequest
     ) {

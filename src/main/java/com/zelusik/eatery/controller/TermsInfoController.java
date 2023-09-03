@@ -23,9 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.net.URI;
 
-@Tag(name = "회원 약관 동의 관련 API")
+import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+
+@Tag(name = "회원 약관 관련 API")
 @RequiredArgsConstructor
-@RequestMapping("/api/members/terms")
+@RequestMapping("/api")
 @RestController
 public class TermsInfoController {
 
@@ -40,14 +42,14 @@ public class TermsInfoController {
             @ApiResponse(description = "OK", responseCode = "201", content = @Content(schema = @Schema(implementation = AgreeToTermsResponse.class))),
             @ApiResponse(description = "[1200] 필수 이용 약관이 `false`로 전달된 경우", responseCode = "422", content = @Content)
     })
-    @PostMapping
-    public ResponseEntity<AgreeToTermsResponse> saveTermsInfo(
+    @PostMapping(value = "/v1/members/terms", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public ResponseEntity<AgreeToTermsResponse> saveTermsInfoV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody AgreeToTermsRequest request
     ) {
         TermsInfoDto termsInfoDto = termsInfoService.saveTermsInfo(userPrincipal.getMemberId(), request);
         return ResponseEntity
-                .created(URI.create("/api/members/terms/" + termsInfoDto.getId()))
+                .created(URI.create("/api/v1/members/terms/" + termsInfoDto.getId()))
                 .body(AgreeToTermsResponse.from(termsInfoDto));
     }
 }
