@@ -53,7 +53,6 @@ public class Member extends BaseTimeEntity {
     @Convert(converter = RoleTypesConverter.class)
     private Set<RoleType> roleTypes;
 
-    @Column(unique = true)
     private String email;
 
     @Setter(AccessLevel.PRIVATE)
