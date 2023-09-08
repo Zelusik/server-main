@@ -128,7 +128,7 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.writer.isEqualLoginMember").value(loginMemberId == writerId))
                 .andExpect(jsonPath("$.place").exists())
                 .andExpect(jsonPath("$.keywords").isArray())
-                .andExpect(jsonPath("$.keywords[0]").value(expectedResult.getKeywords().get(0).getDescription()))
+                .andExpect(jsonPath("$.keywords[0]").value(expectedResult.getKeywords().get(0).getContent()))
                 .andExpect(jsonPath("$.content").value(expectedResult.getContent()))
                 .andExpect(jsonPath("$.reviewImages").exists())
                 .andDo(print());
@@ -169,7 +169,7 @@ class ReviewControllerTest {
 
         // when & then
         mvc.perform(get("/api/v1/reviews/feed")
-                .header(API_MINOR_VERSION_HEADER_NAME, 1)
+                        .header(API_MINOR_VERSION_HEADER_NAME, 1)
                         .with(user(createTestUserDetails(loginMemberId))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.contents", hasSize(expectedResult.getSize())))
@@ -210,7 +210,7 @@ class ReviewControllerTest {
         List<String> menuKeywords = List.of("싱그러운+육즙 가득힌+매콤한", "부드러운+촉촉한");
         String expectedResult = "생성된 리뷰 내용";
         given(openAIService.getAutoCreatedReviewContent(
-                placeKeywords.stream().map(ReviewKeywordValue::getDescription).toList(),
+                placeKeywords,
                 menus,
                 menuKeywords.stream()
                         .map(keywords -> Arrays.asList(keywords.split("/+")))
@@ -230,7 +230,7 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.content").value(expectedResult))
                 .andDo(print());
         then(openAIService).should().getAutoCreatedReviewContent(
-                placeKeywords.stream().map(ReviewKeywordValue::getDescription).toList(),
+                placeKeywords,
                 menus,
                 menuKeywords.stream()
                         .map(keywords -> Arrays.asList(keywords.split("/+")))

@@ -29,6 +29,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -117,7 +118,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.numOfFollowers").value(0))
                 .andExpect(jsonPath("$.numOfFollowings").value(0))
                 .andExpect(jsonPath("$.tasteStatistics.mostVisitedLocation").value(mostVisitedLocation))
-                .andExpect(jsonPath("$.tasteStatistics.mostTaggedReviewKeyword").value(mostTaggedReviewKeyword.getDescription()))
+                .andExpect(jsonPath("$.tasteStatistics.mostTaggedReviewKeyword").value(mostTaggedReviewKeyword.getContent()))
                 .andExpect(jsonPath("$.tasteStatistics.mostEatenFoodCategory").value(mostEatenFoodCategory.getCategoryName()));
     }
 
@@ -180,13 +181,13 @@ class MemberControllerTest {
     void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMyInfo_thenUpdate() throws Exception {
         // given
         long memberId = 1L;
-        MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, null);
-        given(memberService.update(eq(memberId), any(MemberUpdateRequest.class)))
-                .willReturn(createMemberDto(memberId));
+        MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
+        given(memberService.update(eq(memberId), any(MemberUpdateRequest.class))).willReturn(createMemberDto(memberId));
 
         // when & then
         mvc.perform(
                         multipart(HttpMethod.PUT, "/api/v1/members")
+                                .file("profileImage", createMockMultipartFile().getBytes())
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("nickname", memberUpdateInfo.getNickname())
                                 .param("birthDay", memberUpdateInfo.getBirthDay().toString())
@@ -292,6 +293,15 @@ class MemberControllerTest {
                 mostVisitedLocation,
                 mostTaggedReviewKeyword,
                 mostEatenFoodCategory
+        );
+    }
+
+    private MockMultipartFile createMockMultipartFile() {
+        return new MockMultipartFile(
+                "test",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "test".getBytes()
         );
     }
 }

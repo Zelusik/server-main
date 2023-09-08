@@ -1,5 +1,6 @@
 package com.zelusik.eatery.service;
 
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.dto.open_ai.ChatCompletionApiMessageDto;
 import com.zelusik.eatery.dto.open_ai.ChatCompletionApiRequest;
@@ -32,7 +33,7 @@ public class OpenAIService {
     private String apiKey;
 
     public String getAutoCreatedReviewContent(
-            @NonNull List<String> placeKeywords,
+            @NonNull List<ReviewKeywordValue> placeKeywords,
             @Nullable List<String> menus,
             @Nullable List<List<String>> menuKeywords
     ) {
@@ -42,6 +43,7 @@ public class OpenAIService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey);
 
+        List<String> placeKeywordDescriptions = placeKeywords.stream().map(ReviewKeywordValue::getContent).toList();
         StringBuilder messageBuilder = new StringBuilder();
         if (isNotEmpty(menus) && isNotEmpty(menuKeywords)) {
             for (int i = 0; i < menus.size(); i++) {
@@ -49,19 +51,19 @@ public class OpenAIService {
                 List<String> keywords = menuKeywords.get(i);
                 messageBuilder
                         .append(String.join(", ", keywords))
-                        .append(" ")
-                        .append(menu);
+                        .append(" '").append(menu).append("'");
                 if (i != menus.size() - 1) {
                     messageBuilder.append("와 ");
                 }
             }
-            messageBuilder.append("가 있고 ");
+            messageBuilder.append(" 메뉴가 있고 ");
         }
         messageBuilder
-                .append(String.join(", ", placeKeywords))
-                .append("이라는 특징이 있는 식당에 대한 후기를 공백 포함 ")
-                .append(Review.MAX_LEN_OF_REVIEW_CONTENT)
-                .append("자 이하로 작성해줘.");
+                .append(String.join(", ", placeKeywordDescriptions))
+                .append("라는 특징이 있는 식당에 대한 후기를 작성해줘. ")
+                .append("Summarize in ")
+                .append(Review.MAX_LEN_OF_REVIEW_CONTENT - 100)
+                .append(" character and Korean.");
 
         ChatCompletionApiRequest requestBody = new ChatCompletionApiRequest(
                 "gpt-3.5-turbo",

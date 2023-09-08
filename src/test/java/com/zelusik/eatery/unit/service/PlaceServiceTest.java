@@ -1,5 +1,6 @@
 package com.zelusik.eatery.unit.service;
 
+import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
@@ -10,6 +11,7 @@ import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingOpeningHourDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
+import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.exception.place.PlaceAlreadyExistsException;
 import com.zelusik.eatery.exception.place.PlaceNotFoundException;
@@ -34,6 +36,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zelusik.eatery.constant.place.DayOfWeek.*;
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
 import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
@@ -281,14 +284,20 @@ class PlaceServiceTest {
         long memberId = 1L;
         Point point = new Point("37", "127");
         Pageable pageable = Pageable.ofSize(30);
+        FindNearPlacesFilteringConditionRequest filteringCondition = new FindNearPlacesFilteringConditionRequest(
+                FoodCategoryValue.KOREAN,
+                List.of(MON, WED, FRI),
+                ReviewKeywordValue.WITH_ALCOHOL,
+                false
+        );
         Page<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), pageable, 1);
-        given(placeRepository.findDtosNearBy(memberId, null, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
+        given(placeRepository.findDtosNearBy(memberId, filteringCondition, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, null, null, null, point, pageable);
+        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, filteringCondition, point, pageable);
 
         // then
-        then(placeRepository).should().findDtosNearBy(memberId, null, null, null, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        then(placeRepository).should().findDtosNearBy(memberId, filteringCondition, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());

@@ -60,7 +60,7 @@ public class MemberTestUtils {
                 nickname,
                 null,
                 null,
-                null,
+                Gender.ETC,
                 null,
                 null,
                 null

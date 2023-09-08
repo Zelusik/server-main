@@ -3,6 +3,7 @@ package com.zelusik.eatery.integration.repository.review;
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.QuerydslConfig;
 import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
@@ -324,7 +325,7 @@ class ReviewRepositoryTest {
                 "test" + socialId + "@test.com",
                 "test" + socialId,
                 null,
-                null
+                Gender.ETC
         );
     }
 
