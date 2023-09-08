@@ -79,13 +79,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
             @Value("${eatery.web.dev.url}") String eateryWebDevUrl,
-            @Value("${eatery.web.prod.url}") String eateryWebProdUrl
+            @Value("${eatery.web.prod.url}") String eateryWebProdUrl,
+            @Value("${eatery.server.dev.url}") String eateryServerDevUrl,
+            @Value("${eatery.server.prod.url}") String eateryServerProdUrl
     ) {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowCredentials(true);
         corsConfig.setAllowedOrigins(List.of(
                 "http://localhost", "http://localhost:8080",
-                eateryWebDevUrl, eateryWebProdUrl
+                eateryWebDevUrl, eateryWebProdUrl,
+                eateryServerDevUrl, eateryServerProdUrl
         ));
         corsConfig.setAllowedMethods(List.of(GET.name(), POST.name(), PUT.name(), DELETE.name(), PATCH.name(), OPTIONS.name()));
         corsConfig.setAllowedHeaders(List.of("*"));
