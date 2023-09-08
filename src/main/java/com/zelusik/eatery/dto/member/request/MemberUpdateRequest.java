@@ -21,6 +21,7 @@ public class MemberUpdateRequest {
 
     @Schema(description = "닉네임. 최대 15자", example = "우기")
     @Length(max = 15)
+    @NotBlank
     private String nickname;
 
     @Schema(description = "생년월일 (yyyy-MM-dd 형식)", example = "1998-01-05")
@@ -32,5 +33,6 @@ public class MemberUpdateRequest {
     private Gender gender;
 
     @Schema(description = "변경하고자 하는 프로필 이미지")
+    @NotNull
     private MultipartFile profileImage;
 }
