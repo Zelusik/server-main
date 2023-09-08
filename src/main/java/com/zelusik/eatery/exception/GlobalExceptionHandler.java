@@ -1,9 +1,9 @@
 package com.zelusik.eatery.exception;
 
+import com.zelusik.eatery.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.dto.exception.ErrorResponse;
 import com.zelusik.eatery.dto.exception.ValidationErrorDetails;
 import com.zelusik.eatery.dto.exception.ValidationErrorResponse;
-import com.zelusik.eatery.constant.exception.ValidationErrorCode;
 import com.zelusik.eatery.exception.kakao.KakaoServerException;
 import com.zelusik.eatery.exception.util.ViolationMessageResolver;
 import com.zelusik.eatery.log.LogUtils;
@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -53,8 +54,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponse(ex.getCode(), ex.getMessage()));
     }
 
+    @NonNull
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(@NonNull MethodArgumentNotValidException ex, @NonNull HttpHeaders headers, @NonNull HttpStatus status, @NonNull WebRequest request) {
         log.error("[{}] Validation Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         List<ValidationErrorDetails> errorDetails = ex.getBindingResult().getFieldErrors().stream()
@@ -83,20 +85,27 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                     return new ValidationErrorDetails(resolver.getErrorCode(), resolver.getFieldName(), resolver.getMessage());
                 }).toList();
 
-        ExceptionType exceptionType = ExceptionType.CONSTRAINT_VIOLATION;
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ValidationErrorResponse(exceptionType.getCode(), exceptionType.getMessage(), errorDetails));
+                .body(new ValidationErrorResponse(
+                        ExceptionType.CONSTRAINT_VIOLATION.getCode(),
+                        ExceptionType.CONSTRAINT_VIOLATION.getMessage(),
+                        errorDetails)
+                );
     }
 
+    @NonNull
     @Override
-    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleExceptionInternal(@NonNull Exception ex, @Nullable Object body, @NonNull HttpHeaders headers, @NonNull HttpStatus status, @NonNull WebRequest request) {
         log.error("[{}] Spring MVC Basic Exception: {}", LogUtils.getLogTraceId(), ExceptionUtils.getExceptionStackTrace(ex));
 
         ExceptionType exceptionType = ExceptionType.from(ex.getClass()).orElse(ExceptionType.UNHANDLED);
         return ResponseEntity
                 .status(status)
-                .body(new ErrorResponse(exceptionType.getCode(), exceptionType.getMessage()));
+                .body(new ErrorResponse(
+                        exceptionType.getCode(),
+                        exceptionType.getMessage() + " " + ex.getMessage())
+                );
     }
 
     @ExceptionHandler(Exception.class)
