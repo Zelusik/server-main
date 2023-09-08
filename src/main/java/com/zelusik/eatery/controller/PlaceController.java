@@ -80,7 +80,7 @@ public class PlaceController {
             @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
-    @GetMapping(value = "/v1/places/{placeId}", headers = API_MINOR_VERSION_HEADER_NAME)
+    @GetMapping(value = "/v1/places/{placeId}", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public FindPlaceResponse findPlaceByIdV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Parameter(
