@@ -35,7 +35,7 @@ public class BookmarkController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = BookmarkResponse.class))),
+            @ApiResponse(description = "Created", responseCode = "201"),
             @ApiResponse(description = "[4300] 이미 저장한 장소를 다시 북마크에 저장하고자 하는 경우", responseCode = "409", content = @Content)
     })
     @PostMapping(value = "/v1/bookmarks", headers = API_MINOR_VERSION_HEADER_NAME + "=1")

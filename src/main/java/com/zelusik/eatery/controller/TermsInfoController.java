@@ -40,7 +40,7 @@ public class TermsInfoController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "201", content = @Content(schema = @Schema(implementation = AgreeToTermsResponse.class))),
+            @ApiResponse(description = "OK", responseCode = "201"),
             @ApiResponse(description = "[1200] 필수 이용 약관이 `false`로 전달된 경우", responseCode = "422", content = @Content)
     })
     @PostMapping(value = "/v1/members/terms", headers = API_MINOR_VERSION_HEADER_NAME + "=1")

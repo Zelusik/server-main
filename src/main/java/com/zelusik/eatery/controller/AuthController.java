@@ -54,7 +54,7 @@ public class AuthController {
                     """
     )
     @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "[10401] 유효하지 않은 kakao access token으로 요청한 경우.", responseCode = "401", content = @Content)
     })
     @PostMapping(value = "/v1/auth/login/kakao", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -86,7 +86,7 @@ public class AuthController {
                     """
     )
     @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "[1502] 유효하지 않은 token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
             @ApiResponse(description = "[20000] Apple 로그인 과정에서 알 수 없는 에러가 발생한 경우. 서버 관리자에게 문의해주세요.", responseCode = "500", content = @Content)
     })
@@ -113,7 +113,7 @@ public class AuthController {
                           "<p>기존 발급받은 refresh token으로 새로운 access token과 refresh token을 발급 받습니다."
     )
     @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = TokenDto.class))),
+            @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "[1504] 유효하지 않은 refresh token으로 요청한 경우. Token 값이 잘못되었거나 만료되어 유효하지 않은 경우로 token 갱신 필요", responseCode = "401", content = @Content),
     })
     @PostMapping(value = "/v1/auth/token", headers = API_MINOR_VERSION_HEADER_NAME + "=1")

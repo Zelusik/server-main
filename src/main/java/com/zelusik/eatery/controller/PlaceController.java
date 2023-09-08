@@ -54,7 +54,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(description = "Created", responseCode = "201", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
+            @ApiResponse(description = "Created", responseCode = "201"),
             @ApiResponse(description = "[3000] 동일한 장소 데이터가 이미 존재하는 경우", responseCode = "409", content = @Content),
             @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 추출할 Scraping server에서 에러가 발생한 경우.", responseCode = "500", content = @Content)
     })
@@ -77,7 +77,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
+            @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping(value = "/v1/places/{placeId}", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
@@ -99,7 +99,7 @@ public class PlaceController {
             security = @SecurityRequirement(name = "access-token")
     )
     @ApiResponses({
-            @ApiResponse(description = "OK", responseCode = "200", content = @Content(schema = @Schema(implementation = PlaceResponse.class))),
+            @ApiResponse(description = "OK", responseCode = "200"),
             @ApiResponse(description = "[3001] 찾고자 하는 장소가 존재하지 않는 경우", responseCode = "404", content = @Content)
     })
     @GetMapping(value = "/v1/places", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
