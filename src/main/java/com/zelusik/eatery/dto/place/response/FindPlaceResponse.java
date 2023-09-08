@@ -2,6 +2,7 @@ package com.zelusik.eatery.dto.place.response;
 
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.Address;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,6 +38,9 @@ public class FindPlaceResponse {
     @Schema(description = "주소")
     private Address address;
 
+    @Schema(description = "장소 좌표 정보")
+    private Point point;
+
     @Schema(description = "인스타그램 url (nullable)", example = "www.instagram.com/toma_wv/")
     private String snsUrl;
 
@@ -66,6 +70,13 @@ public class FindPlaceResponse {
                     .toList();
         }
 
+        List<String> openingHours = List.of();
+        if (dto.getOpeningHoursDtos() != null && !dto.getOpeningHoursDtos().isEmpty()) {
+            openingHours = dto.getOpeningHoursDtos().stream()
+                    .map(oh -> String.format(oh.getDayOfWeek().getDescription() + " " + oh.getOpenAt() + "-" + oh.getCloseAt()))
+                    .toList();
+        }
+
         return new FindPlaceResponse(
                 dto.getId(),
                 dto.getTop3Keywords().stream()
@@ -77,11 +88,10 @@ public class FindPlaceResponse {
                         : dto.getCategory().getFirstCategory(),
                 dto.getPhone(),
                 dto.getAddress(),
+                dto.getPoint(),
                 snsUrl,
                 dto.getClosingHours(),
-                dto.getOpeningHoursDtos().stream()
-                        .map(oh -> String.format(oh.getDayOfWeek().getDescription() + " " + oh.getOpenAt() + "-" + oh.getCloseAt()))
-                        .toList(),
+                openingHours,
                 placeImages,
                 dto.getIsMarked()
         );
