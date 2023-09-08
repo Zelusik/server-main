@@ -14,7 +14,6 @@ import com.zelusik.eatery.service.ReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -243,11 +242,7 @@ public class ReviewController {
                 .map(keywords -> Arrays.asList(keywords.split("/+")))
                 .toList();
 
-        String result = openAIService.getAutoCreatedReviewContent(
-                placeKeywords.stream().map(ReviewKeywordValue::getDescription).toList(),
-                menus,
-                parsedMenuKeywords
-        );
+        String result = openAIService.getAutoCreatedReviewContent(placeKeywords, menus, parsedMenuKeywords);
         return new GettingAutoCreatedReviewContentResponse(result);
     }
 

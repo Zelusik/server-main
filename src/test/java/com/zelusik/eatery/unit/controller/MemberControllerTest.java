@@ -118,7 +118,7 @@ class MemberControllerTest {
                 .andExpect(jsonPath("$.numOfFollowers").value(0))
                 .andExpect(jsonPath("$.numOfFollowings").value(0))
                 .andExpect(jsonPath("$.tasteStatistics.mostVisitedLocation").value(mostVisitedLocation))
-                .andExpect(jsonPath("$.tasteStatistics.mostTaggedReviewKeyword").value(mostTaggedReviewKeyword.getDescription()))
+                .andExpect(jsonPath("$.tasteStatistics.mostTaggedReviewKeyword").value(mostTaggedReviewKeyword.getContent()))
                 .andExpect(jsonPath("$.tasteStatistics.mostEatenFoodCategory").value(mostEatenFoodCategory.getCategoryName()));
     }
 
