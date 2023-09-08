@@ -2,6 +2,7 @@ package com.zelusik.eatery.integration.repository.place;
 
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.QuerydslConfig;
+import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.place.DayOfWeek;
@@ -320,7 +321,7 @@ class PlaceRepositoryTest {
                 "test" + socialUid + "@test.com",
                 "test" + socialUid,
                 null,
-                null
+                Gender.ETC
         );
     }
 

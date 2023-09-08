@@ -66,6 +66,7 @@ public class Member extends BaseTimeEntity {
 
     @Setter(AccessLevel.PRIVATE)
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Gender gender;
 
     @OneToMany(mappedBy = "member")
