@@ -267,6 +267,27 @@ class PlaceControllerTest {
         then(placeService).shouldHaveNoMoreInteractions();
     }
 
+    @DisplayName("kakao place id가 주어지고, 주어진 kakao place id로 장소의 DB 존재 여부를 조회하면, 조회된 결과를 반환한다.")
+    @Test
+    void givenKakaoPid_whenGetExistenceOfPlaceByKakaoPid_thenReturnExistenceOfPlace() throws Exception {
+        // given
+        String kakaoPid = "123";
+        boolean expectedResult = true;
+        given(placeService.existsByKakaoPid(kakaoPid)).willReturn(expectedResult);
+
+        // when & then
+        mvc.perform(
+                        get("/api/v1/places/existence")
+                                .header(API_MINOR_VERSION_HEADER_NAME, 1)
+                                .queryParam("kakaoPid", kakaoPid)
+                                .with(user(createTestUserDetails(1L)))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.existenceOfPlace").value(expectedResult));
+        then(placeService).should().existsByKakaoPid(kakaoPid);
+        then(placeService).shouldHaveNoMoreInteractions();
+    }
+
     private UserDetails createTestUserDetails(long memberId) {
         return UserPrincipal.of(MemberTestUtils.createMemberDto(memberId));
     }

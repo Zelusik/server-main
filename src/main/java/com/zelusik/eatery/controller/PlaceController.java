@@ -15,7 +15,6 @@ import com.zelusik.eatery.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -236,5 +235,22 @@ public class PlaceController {
         }
         Page<PlaceDto> markedPlaceDtos = placeService.findMarkedDtos(userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size));
         return new PageResponse<FindMarkedPlacesResponse>().from(markedPlaceDtos.map(FindMarkedPlacesResponse::from));
+    }
+
+    @Operation(
+            summary = "kakaoPid로 장소 존재고 여부 조회하기",
+            description = "<p><strong>Latest version: v1.1</strong>" +
+                          "<p><code>kakaoPid</code>로 장소가 DB에 존재하는지 여부를 조회합니다.",
+            security = @SecurityRequirement(name = "access-token")
+    )
+    @GetMapping(value = "/v1/places/existence", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
+    public GetExistenceOfPlaceResponse getExistenceOfPlaceByKakaoPidV1_1(
+            @Parameter(
+                    description = "Kakao place unique id",
+                    example = "263830255"
+            ) @RequestParam @NotBlank String kakaoPid
+    ) {
+        boolean existenceOfPlaceByKakaoPid = placeService.existsByKakaoPid(kakaoPid);
+        return new GetExistenceOfPlaceResponse(existenceOfPlaceByKakaoPid);
     }
 }
