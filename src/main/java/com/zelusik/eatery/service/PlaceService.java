@@ -184,6 +184,16 @@ public class PlaceService {
     }
 
     /**
+     * <code>kakaoPid</code>로 장소 존재 여부를 조회한다.
+     *
+     * @param kakaoPid Kakao place unique id
+     * @return 장소 존재 여부
+     */
+    public boolean existsByKakaoPid(String kakaoPid) {
+        return placeRepository.existsByKakaoPid(kakaoPid);
+    }
+
+    /**
      * 장소의 top 3 keyword를 DB에서 조회 후 갱신한다.
      *
      * @param place top 3 keyword를 갱신할 장소

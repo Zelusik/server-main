@@ -323,6 +323,23 @@ class PlaceServiceTest {
         assertThat(filteringKeywords.size()).isEqualTo(2);
     }
 
+    @DisplayName("kakao place id가 주어지고, 주어진 kakao place id로 장소의 DB 존재 여부를 조회하면, 조회된 결과를 반환한다.")
+    @Test
+    void givenKakaoPid_whenGetExistenceOfPlaceByKakaoPid_thenReturnExistenceOfPlace() {
+        // given
+        String kakaoPid = "12345";
+        boolean expectedResult = true;
+        given(placeRepository.existsByKakaoPid(kakaoPid)).willReturn(expectedResult);
+
+        // when
+        boolean actualResult = sut.existsByKakaoPid(kakaoPid);
+
+        // then
+        then(placeRepository).should().existsByKakaoPid(kakaoPid);
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(actualResult).isEqualTo(expectedResult);
+    }
+
     @DisplayName("장소가 주어지고, 장소의 top 3 keyword를 갱신하면, 업데이트한다.")
     @Test
     void givenPlace_whenRenewTop3Keywords_thenUpdate() {
