@@ -79,5 +79,9 @@
 </ul>
 
 <br>
+<h2>System Architecture Diagram</h2>
+<img src="https://github.com/Zelusik/server-main/assets/60748900/51143d4a-518d-48f2-af56-950840cd4407" alt="System architecture">
+
+<br>
 <h2>ER Diagram</h2>
-<img src="https://github.com/Zelusik/server-main/assets/60748900/d133ec35-1c18-4ffd-b230-fa563db669a8" alt="eatery erd">
+<img src="https://github.com/Zelusik/server-main/blob/develop/docs/eatery-erd.png" alt="eatery erd">
