@@ -5,6 +5,7 @@ import com.zelusik.eatery.domain.member.ProfileImage;
 import com.zelusik.eatery.repository.member.ProfileImageRepository;
 import com.zelusik.eatery.service.FileService;
 import com.zelusik.eatery.service.ProfileImageService;
+import com.zelusik.eatery.service.S3ImageDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +19,6 @@ import java.util.Optional;
 import static com.zelusik.eatery.util.MemberTestUtils.createMember;
 import static com.zelusik.eatery.util.MemberTestUtils.createProfileImage;
 import static com.zelusik.eatery.util.MultipartFileTestUtils.createMockMultipartFile;
-import static com.zelusik.eatery.util.S3FileTestUtils.createS3ImageDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -87,5 +87,15 @@ class ProfileImageServiceTest {
         // then
         then(profileImageRepository).should().flush();
         assertThat(profileImage.getDeletedAt()).isNotNull();
+    }
+
+    private S3ImageDto createS3ImageDto() {
+        return S3ImageDto.of(
+                "originalFileName",
+                "storedFileName",
+                "url",
+                "thumbnailStoredFileName",
+                "thumbnailUrl"
+        );
     }
 }

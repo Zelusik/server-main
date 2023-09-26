@@ -5,6 +5,7 @@ import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.repository.review.ReviewImageRepository;
 import com.zelusik.eatery.service.FileService;
 import com.zelusik.eatery.service.ReviewImageService;
+import com.zelusik.eatery.service.S3ImageDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,6 @@ import java.util.List;
 
 import static com.zelusik.eatery.util.ReviewTestUtils.createReview;
 import static com.zelusik.eatery.util.ReviewTestUtils.createReviewImageCreateRequest;
-import static com.zelusik.eatery.util.S3FileTestUtils.createS3ImageDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -51,5 +51,15 @@ class ReviewImageServiceTest {
         then(reviewImageRepository).should().saveAll(any());
         then(fileService).shouldHaveNoMoreInteractions();
         then(reviewImageRepository).shouldHaveNoMoreInteractions();
+    }
+
+    private S3ImageDto createS3ImageDto() {
+        return S3ImageDto.of(
+                "originalFileName",
+                "storedFileName",
+                "url",
+                "thumbnailStoredFileName",
+                "thumbnailUrl"
+        );
     }
 }
