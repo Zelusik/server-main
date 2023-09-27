@@ -12,13 +12,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.Optional;
 
 import static com.zelusik.eatery.util.MemberTestUtils.createMember;
 import static com.zelusik.eatery.util.MemberTestUtils.createProfileImage;
-import static com.zelusik.eatery.util.MultipartFileTestUtils.createMockMultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -96,6 +96,15 @@ class ProfileImageServiceTest {
                 "url",
                 "thumbnailStoredFileName",
                 "thumbnailUrl"
+        );
+    }
+
+    public static MockMultipartFile createMockMultipartFile() {
+        return new MockMultipartFile(
+                "test",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "test".getBytes()
         );
     }
 }

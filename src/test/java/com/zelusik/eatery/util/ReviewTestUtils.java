@@ -13,8 +13,6 @@ import com.zelusik.eatery.dto.review.request.ReviewMenuTagCreateRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createReviewKeyword;
-
 public class ReviewTestUtils {
 
     public static Review createNewReview(Member writer, Place place, List<ReviewKeyword> reviewKeywords) {

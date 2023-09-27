@@ -39,6 +39,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -438,7 +440,7 @@ class ReviewServiceTest {
 
     private ReviewImageCreateRequest createReviewImageCreateRequest() {
         return new ReviewImageCreateRequest(
-                MultipartFileTestUtils.createMockMultipartFile(),
+                createMockMultipartFile(),
                 List.of(
                         createReviewMenuTagCreateRequest("치킨"),
                         createReviewMenuTagCreateRequest("피자")
@@ -448,5 +450,14 @@ class ReviewServiceTest {
 
     private ReviewMenuTagCreateRequest createReviewMenuTagCreateRequest(String content) {
         return new ReviewMenuTagCreateRequest(content, new MenuTagPointCreateRequest("10.0", "50.0"));
+    }
+
+    public static MockMultipartFile createMockMultipartFile() {
+        return new MockMultipartFile(
+                "test",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "test".getBytes()
+        );
     }
 }
