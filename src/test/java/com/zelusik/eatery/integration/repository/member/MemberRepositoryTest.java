@@ -9,6 +9,7 @@ import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.repository.member.MemberRepository;
@@ -24,11 +25,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.zelusik.eatery.util.MemberTestUtils.createNotSavedMember;
 import static com.zelusik.eatery.util.PlaceTestUtils.createNewPlace;
-import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createNewReviewKeyword;
 import static com.zelusik.eatery.util.ReviewTestUtils.createNewReview;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -117,5 +118,19 @@ class MemberRepositoryTest {
 
         // then
         assertThat(t).isInstanceOf(MemberIdNotFoundException.class);
+    }
+
+    private ReviewKeyword createNewReviewKeyword(Review review, ReviewKeywordValue reviewKeywordValue) {
+        return createReviewKeyword(null, review, reviewKeywordValue);
+    }
+
+    private ReviewKeyword createReviewKeyword(Long reviewKeywordId, Review review, ReviewKeywordValue reviewKeywordValue) {
+        return ReviewKeyword.of(
+                reviewKeywordId,
+                review,
+                reviewKeywordValue,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 }
