@@ -3,12 +3,16 @@ package com.zelusik.eatery.integration.repository.member;
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.QuerydslConfig;
 import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
@@ -25,12 +29,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static com.zelusik.eatery.util.MemberTestUtils.createNotSavedMember;
 import static com.zelusik.eatery.util.PlaceTestUtils.createNewPlace;
-import static com.zelusik.eatery.util.ReviewTestUtils.createNewReview;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -118,6 +123,30 @@ class MemberRepositoryTest {
 
         // then
         assertThat(t).isInstanceOf(MemberIdNotFoundException.class);
+    }
+
+    private Review createNewReview(Member writer, Place place, List<ReviewKeyword> reviewKeywords) {
+        return createReview(null, writer, place, reviewKeywords, List.of());
+    }
+
+    private Review createReview(Long reviewId, Member member, Place place, List<ReviewKeyword> reviewKeywords, List<ReviewImage> reviewImages) {
+        Review review = Review.of(
+                reviewId,
+                member,
+                place,
+                "자동 생성된 내용",
+                "제출한 내용",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+        if (reviewKeywords != null && !reviewKeywords.isEmpty()) {
+            reviewKeywords.forEach(reviewKeyword -> review.getKeywords().add(reviewKeyword));
+        }
+        if (reviewImages != null && !reviewImages.isEmpty()) {
+            reviewImages.forEach(reviewImage -> review.getReviewImages().add(reviewImage));
+        }
+        return review;
     }
 
     private ReviewKeyword createNewReviewKeyword(Review review, ReviewKeywordValue reviewKeywordValue) {
