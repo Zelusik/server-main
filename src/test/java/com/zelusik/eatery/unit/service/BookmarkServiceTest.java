@@ -1,5 +1,8 @@
 package com.zelusik.eatery.unit.service;
 
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.domain.Bookmark;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Place;
@@ -10,7 +13,6 @@ import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.service.BookmarkService;
 import com.zelusik.eatery.service.MemberService;
-import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -48,7 +52,7 @@ class BookmarkServiceTest {
         long memberId = 1L;
         long placeId = 2L;
         long bookmarkId = 3L;
-        Member member = MemberTestUtils.createMember(memberId);
+        Member member = createMember(memberId);
         Place place = PlaceTestUtils.createPlace(placeId, "12345");
         Bookmark expectedResult = createBookmark(bookmarkId, member, place);
         given(bookmarkRepository.existsByMember_IdAndPlace_Id(memberId, placeId)).willReturn(false);
@@ -116,7 +120,7 @@ class BookmarkServiceTest {
         long memberId = 1L;
         long placeId = 2L;
         long bookmarkId = 3L;
-        Member member = MemberTestUtils.createMember(memberId);
+        Member member = createMember(memberId);
         Place place = PlaceTestUtils.createPlace(placeId, "12345");
         Bookmark foundBookmark = createBookmark(bookmarkId, member, place);
         given(bookmarkRepository.findByMember_IdAndPlace_Id(memberId, placeId)).willReturn(Optional.of(foundBookmark));
@@ -152,6 +156,31 @@ class BookmarkServiceTest {
         assertThat(t).isInstanceOf(BookmarkNotFoundException.class);
     }
 
+    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
+        then(memberService).shouldHaveNoMoreInteractions();
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkRepository).shouldHaveNoMoreInteractions();
+    }
+
+    private Member createMember(long memberId) {
+        return Member.of(
+                memberId,
+                "profile image url",
+                "profile thunmbnail image url",
+                "social user id" + memberId,
+                LoginType.KAKAO,
+                Set.of(RoleType.USER),
+                "email",
+                "nickname",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
     private Bookmark createBookmark(long bookmarkId, Member member, Place place) {
         return Bookmark.of(
                 bookmarkId,
@@ -160,11 +189,5 @@ class BookmarkServiceTest {
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0)
         );
-    }
-
-    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(memberService).shouldHaveNoMoreInteractions();
-        then(placeRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkRepository).shouldHaveNoMoreInteractions();
     }
 }

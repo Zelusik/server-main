@@ -1,18 +1,22 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.ConstantUtil;
 import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.place.FilteringType;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.PlaceController;
 import com.zelusik.eatery.domain.place.Point;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceService;
-import com.zelusik.eatery.util.MemberTestUtils;
 import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +34,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.place.DayOfWeek.*;
@@ -288,7 +294,29 @@ class PlaceControllerTest {
         then(placeService).shouldHaveNoMoreInteractions();
     }
 
-    private UserDetails createTestUserDetails(long memberId) {
-        return UserPrincipal.of(MemberTestUtils.createMemberDto(memberId));
+    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
+        return new MemberDto(
+                memberId,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com",
+                "test",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null
+        );
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId, Set<RoleType> roleTypes) {
+        return UserPrincipal.of(createMemberDto(loginMemberId, roleTypes));
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId) {
+        return createTestUserDetails(loginMemberId, Set.of(RoleType.USER));
     }
 }

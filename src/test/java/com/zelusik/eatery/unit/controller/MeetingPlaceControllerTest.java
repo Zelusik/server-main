@@ -1,15 +1,20 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.ConstantUtil;
+import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.controller.MeetingPlaceController;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
 import com.zelusik.eatery.dto.location.LocationDto;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.KakaoService;
 import com.zelusik.eatery.service.LocationService;
-import com.zelusik.eatery.util.MemberTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +29,9 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
@@ -55,7 +62,7 @@ class MeetingPlaceControllerTest {
     @Test
     void givenKeywordAnd15LocationsAsResult_whenSearchingByKeyword_thenReturnPlaces() throws Exception {
         // given
-        long memberId = 1L;
+        long loginMemberId = 1L;
         String keyword = "서울";
         Pageable pageable = Pageable.ofSize(PAGE_SIZE_OF_SEARCHING_MEETING_PLACES);
         PageImpl<LocationDto> expectedResult = new PageImpl<>(List.of(
@@ -83,7 +90,7 @@ class MeetingPlaceControllerTest {
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(0))
@@ -97,7 +104,7 @@ class MeetingPlaceControllerTest {
     @Test
     void givenKeywordAnd15KakaoPlacesAsResult_whenSearchingByKeyword_thenReturnPlaces() throws Exception {
         // given
-        long memberId = 1L;
+        long loginMemberId = 1L;
         String keyword = "광교";
         Pageable pageable = Pageable.ofSize(PAGE_SIZE_OF_SEARCHING_MEETING_PLACES);
         List<KakaoPlaceResponse> expectedContent = List.of(
@@ -126,7 +133,7 @@ class MeetingPlaceControllerTest {
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(0))
@@ -140,7 +147,7 @@ class MeetingPlaceControllerTest {
     @Test
     void givenKeywordAnd3LocationsAnd15KakaoPlacesAsResult_whenSearchingByKeyword_thenReturnPlaces() throws Exception {
         // given
-        long memberId = 1L;
+        long loginMemberId = 1L;
         String keyword = "수원";
         Pageable pageable = Pageable.ofSize(PAGE_SIZE_OF_SEARCHING_MEETING_PLACES);
         PageImpl<LocationDto> locations = new PageImpl<>(
@@ -178,7 +185,7 @@ class MeetingPlaceControllerTest {
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .queryParam("page", "0")
                                 .queryParam("keyword", keyword)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.number").value(0))
@@ -188,7 +195,29 @@ class MeetingPlaceControllerTest {
                 .andExpect(jsonPath("$.contents").isNotEmpty());
     }
 
-    private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDto());
+    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
+        return new MemberDto(
+                memberId,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com",
+                "test",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null
+        );
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId, Set<RoleType> roleTypes) {
+        return UserPrincipal.of(createMemberDto(loginMemberId, roleTypes));
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId) {
+        return createTestUserDetails(loginMemberId, Set.of(RoleType.USER));
     }
 }
