@@ -1,11 +1,11 @@
 package com.zelusik.eatery.unit.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review.Review;
-import com.zelusik.eatery.dto.open_ai.ChatCompletionApiMessageDto;
-import com.zelusik.eatery.dto.open_ai.ChatCompletionApiRequest;
-import com.zelusik.eatery.service.OpenAIService;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review.entity.Review;
+import com.zelusik.eatery.global.open_ai.dto.ChatCompletionApiMessageDto;
+import com.zelusik.eatery.global.open_ai.dto.ChatCompletionApiRequest;
+import com.zelusik.eatery.global.open_ai.service.OpenAIService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.zelusik.eatery.constant.review.ReviewKeywordValue.*;
+import static com.zelusik.eatery.domain.review.constant.ReviewKeywordValue.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;

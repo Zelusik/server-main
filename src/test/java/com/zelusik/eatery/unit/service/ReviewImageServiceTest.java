@@ -1,25 +1,25 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.constant.member.Gender;
-import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.constant.member.RoleType;
-import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
-import com.zelusik.eatery.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.domain.member.Member;
-import com.zelusik.eatery.domain.place.Address;
-import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.domain.place.PlaceCategory;
-import com.zelusik.eatery.domain.place.Point;
-import com.zelusik.eatery.domain.review.Review;
-import com.zelusik.eatery.domain.review.ReviewImage;
-import com.zelusik.eatery.domain.review.ReviewKeyword;
-import com.zelusik.eatery.dto.review.request.MenuTagPointCreateRequest;
-import com.zelusik.eatery.dto.review.request.ReviewImageCreateRequest;
-import com.zelusik.eatery.dto.review.request.ReviewMenuTagCreateRequest;
-import com.zelusik.eatery.repository.review.ReviewImageRepository;
-import com.zelusik.eatery.service.FileService;
-import com.zelusik.eatery.service.ReviewImageService;
-import com.zelusik.eatery.service.S3ImageDto;
+import com.zelusik.eatery.domain.member.constant.Gender;
+import com.zelusik.eatery.domain.member.constant.LoginType;
+import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.place.entity.Address;
+import com.zelusik.eatery.domain.place.entity.Place;
+import com.zelusik.eatery.domain.place.entity.PlaceCategory;
+import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.review.entity.Review;
+import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
+import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
+import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
+import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
+import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTagCreateRequest;
+import com.zelusik.eatery.domain.review_image.repository.ReviewImageRepository;
+import com.zelusik.eatery.global.file.service.S3FileService;
+import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.global.file.dto.S3ImageDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,7 @@ class ReviewImageServiceTest {
     private ReviewImageService sut;
 
     @Mock
-    private FileService fileService;
+    private S3FileService s3FileService;
     @Mock
     private ReviewImageRepository reviewImageRepository;
 
@@ -59,16 +59,16 @@ class ReviewImageServiceTest {
         Member member = createMember(2L);
         Place place = createPlace(3L, "12345");
         Review review = createReview(1L, member, place);
-        given(fileService.uploadImageWithResizing(any(MultipartFile.class), any(String.class))).willReturn(createS3ImageDto());
+        given(s3FileService.uploadImageWithResizing(any(MultipartFile.class), any(String.class))).willReturn(createS3ImageDto());
         given(reviewImageRepository.saveAll(any())).willReturn(List.of());
 
         // when
         sut.upload(review, images);
 
         // then
-        then(fileService).should().uploadImageWithResizing(any(MultipartFile.class), any(String.class));
+        then(s3FileService).should().uploadImageWithResizing(any(MultipartFile.class), any(String.class));
         then(reviewImageRepository).should().saveAll(any());
-        then(fileService).shouldHaveNoMoreInteractions();
+        then(s3FileService).shouldHaveNoMoreInteractions();
         then(reviewImageRepository).shouldHaveNoMoreInteractions();
     }
 

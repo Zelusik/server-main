@@ -2,10 +2,10 @@ package com.zelusik.eatery.unit.service;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.constant.place.DayOfWeek;
-import com.zelusik.eatery.dto.place.PlaceScrapingOpeningHourDto;
-import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
-import com.zelusik.eatery.service.WebScrapingService;
+import com.zelusik.eatery.domain.place.constant.DayOfWeek;
+import com.zelusik.eatery.domain.place.dto.PlaceScrapingOpeningHourDto;
+import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
+import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +62,7 @@ class WebScrapingServiceTest {
                 ));
 
         // when
-        PlaceScrapingResponse result = sut.getPlaceScrapingInfo(kakaoPid);
+        PlaceScrapingInfo result = sut.getPlaceScrapingInfo(kakaoPid);
 
         // then
         restServer.verify();
@@ -99,8 +99,8 @@ class WebScrapingServiceTest {
                 .hasSize(3);
     }
 
-    private static PlaceScrapingResponse createPlaceScrapingResponse() {
-        return PlaceScrapingResponse.of(
+    private static PlaceScrapingInfo createPlaceScrapingResponse() {
+        return PlaceScrapingInfo.of(
                 List.of(
                         PlaceScrapingOpeningHourDto.of(DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(21, 0)),
                         PlaceScrapingOpeningHourDto.of(DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(21, 0)),

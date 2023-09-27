@@ -1,13 +1,13 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.dto.auth.TokenDto;
-import com.zelusik.eatery.dto.redis.RefreshToken;
-import com.zelusik.eatery.exception.auth.TokenValidateException;
-import com.zelusik.eatery.repository.redis.RefreshTokenRepository;
-import com.zelusik.eatery.security.JwtTokenInfoDto;
-import com.zelusik.eatery.security.JwtTokenProvider;
-import com.zelusik.eatery.service.JwtTokenService;
+import com.zelusik.eatery.domain.member.constant.LoginType;
+import com.zelusik.eatery.global.auth.dto.JwtTokenDto;
+import com.zelusik.eatery.global.auth.entity.RefreshToken;
+import com.zelusik.eatery.global.auth.exception.TokenValidateException;
+import com.zelusik.eatery.global.auth.repository.RefreshTokenRepository;
+import com.zelusik.eatery.global.security.dto.JwtTokenInfoDto;
+import com.zelusik.eatery.global.security.JwtTokenProvider;
+import com.zelusik.eatery.global.auth.service.JwtTokenService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,9 +52,9 @@ class JwtTokenServiceTest {
                 .willReturn(createRedisRefreshToken(memberId));
 
         // when
-        TokenDto tokenDto = sut.create(memberId, loginType);
-        String actualAccessToken = tokenDto.accessToken();
-        String actualRefreshToken = tokenDto.refreshToken();
+        JwtTokenDto jwtTokenDto = sut.create(memberId, loginType);
+        String actualAccessToken = jwtTokenDto.accessToken();
+        String actualRefreshToken = jwtTokenDto.refreshToken();
 
         // then
         then(jwtTokenProvider).should().createRefreshToken(memberId, loginType);
@@ -90,9 +90,9 @@ class JwtTokenServiceTest {
                 .willReturn(createRedisRefreshToken(memberId));
 
         // when
-        TokenDto tokenDto = sut.refresh(oldRefreshToken);
-        String actualNewAccessToken = tokenDto.accessToken();
-        String actualNewRefreshToken = tokenDto.refreshToken();
+        JwtTokenDto jwtTokenDto = sut.refresh(oldRefreshToken);
+        String actualNewAccessToken = jwtTokenDto.accessToken();
+        String actualNewRefreshToken = jwtTokenDto.refreshToken();
 
         // then
         then(jwtTokenProvider).should().createRefreshToken(memberId, loginType);
