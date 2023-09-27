@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceMenusDto;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -242,5 +241,9 @@ class PlaceMenusControllerTest {
 
     private UserDetails createTestAdminDetails(long loginMemberId) {
         return UserPrincipal.of(createMemberDto(loginMemberId, Set.of(RoleType.USER, RoleType.MANAGER, RoleType.ADMIN)));
+    }
+
+    private PlaceMenusDto createPlaceMenusDto(Long id, Long placeId, List<String> menus) {
+        return PlaceMenusDto.of(id, placeId, menus);
     }
 }

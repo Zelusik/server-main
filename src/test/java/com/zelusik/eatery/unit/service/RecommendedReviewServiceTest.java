@@ -15,6 +15,7 @@ import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.recommended_review.RecommendedReviewDto;
 import com.zelusik.eatery.dto.recommended_review.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.dto.review.ReviewDto;
@@ -89,10 +90,11 @@ class RecommendedReviewServiceTest {
     void given_whenFindingRecommendedReviewsWithMemberId_thenReturnRecommendedReviews() {
         // given
         long memberId = 1L;
-        long recommendedReviewId = 2L;
-        long reviewId = 3L;
-        short ranking = 4;
-        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, reviewId, ranking));
+        long placeId = 2L;
+        long recommendedReviewId = 3L;
+        long reviewId = 4L;
+        short ranking = 3;
+        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking));
         given(recommendedReviewRepository.findAllDtosWithPlaceMarkedStatusByMemberId(memberId)).willReturn(expectedResults);
 
         // when
@@ -226,6 +228,26 @@ class RecommendedReviewServiceTest {
         );
     }
 
+    private PlaceDto createPlaceDto(Long placeId) {
+        return new PlaceDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                "308342289",
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "http://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                List.of(),
+                null,
+                false
+        );
+    }
+
     private Review createReview(Long reviewId, Member member, Place place) {
         return Review.of(
                 reviewId,
@@ -239,11 +261,11 @@ class RecommendedReviewServiceTest {
         );
     }
 
-    private ReviewDto createReviewDto(long reviewId, MemberDto writer) {
+    private ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceDto place) {
         return new ReviewDto(
                 reviewId,
                 writer,
-                PlaceTestUtils.createPlaceDto(),
+                place,
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
@@ -270,11 +292,11 @@ class RecommendedReviewServiceTest {
         );
     }
 
-    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, long reviewId, short ranking) {
+    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewDto review, short ranking) {
         return new RecommendedReviewDto(
                 id,
                 memberId,
-                createReviewDto(reviewId, createMemberDto(memberId)),
+                review,
                 ranking
         );
     }

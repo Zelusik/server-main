@@ -6,11 +6,13 @@ import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceCategory;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.domain.review.Review;
 import com.zelusik.eatery.domain.review.ReviewImage;
 import com.zelusik.eatery.domain.review.ReviewKeyword;
@@ -33,7 +35,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.util.PlaceTestUtils.createNewPlace;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -134,6 +135,21 @@ class MemberRepositoryTest {
                 nickname,
                 null,
                 Gender.ETC
+        );
+    }
+
+    private Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address) {
+        return Place.of(
+                kakaoPid,
+                name,
+                "https://place.map.kakao.com/" + kakaoPid,
+                KakaoCategoryGroupCode.FD6,
+                placeCategory,
+                null,
+                address,
+                null,
+                new Point("37", "127"),
+                null
         );
     }
 

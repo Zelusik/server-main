@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PlaceTestUtils {
 
-    public static PlaceCreateRequest createPlaceRequest() {
+    private PlaceCreateRequest createPlaceRequest() {
         return PlaceCreateRequest.of(
                 "308342289",
                 "연남토마 본점",
@@ -30,7 +30,7 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDto createPlaceDto() {
+    private PlaceDto createPlaceDto() {
         return new PlaceDto(
                 1L,
                 List.of(ReviewKeywordValue.FRESH),
@@ -54,7 +54,7 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDto createPlaceDto(Long placeId) {
+    private PlaceDto createPlaceDto(Long placeId) {
         return new PlaceDto(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
@@ -78,15 +78,15 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceDto createPlaceDtoWithMarkedStatusAndImages() {
+    private PlaceDto createPlaceDtoWithMarkedStatusAndImages() {
         return createPlaceDtoWithMarkedStatusAndImages(1L);
     }
 
-    public static PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId) {
+    private PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId) {
         return createPlaceDtoWithMarkedStatusAndImages(placeId, "308342289");
     }
 
-    public static PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId, String kakaoPid) {
+    private PlaceDto createPlaceDtoWithMarkedStatusAndImages(Long placeId, String kakaoPid) {
         return new PlaceDto(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
@@ -110,43 +110,43 @@ public class PlaceTestUtils {
         );
     }
 
-    public static Place createNewPlace(String kakaoPid, String name) {
+    private Place createNewPlace(String kakaoPid, String name) {
         return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), "homepage-url", "12.34", "23.45", null);
     }
 
-    public static Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address) {
+    private Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address) {
         return createNewPlace(kakaoPid, name, placeCategory, address, "homepage-url", "12.34", "23.45", null);
     }
 
-    public static Place createNewPlace(String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
+    private Place createNewPlace(String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
         return createNewPlace(kakaoPid, name, new PlaceCategory("한식", "냉면", null), Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
     }
 
-    public static Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
+    private Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
         return createPlace(null, kakaoPid, name, placeCategory, address, homepageUrl, lat, lng, closingHours);
     }
 
-    public static Place createPlace(Long id, String kakaoPid) {
+    private Place createPlace(Long id, String kakaoPid) {
         return createPlace(id, kakaoPid, null, "37.5595073462493", "126.921462488105", null);
     }
 
-    public static Place createPlace(Long id, String kakaoPid, String homepageUrl, String closingHours) {
+    private Place createPlace(Long id, String kakaoPid, String homepageUrl, String closingHours) {
         return createPlace(id, kakaoPid, homepageUrl, "37.5595073462493", "126.921462488105", closingHours);
     }
 
-    public static Place createPlace(Long id, String kakaoPid, String homepageUrl, String lat, String lng, String closingHours) {
+    private Place createPlace(Long id, String kakaoPid, String homepageUrl, String lat, String lng, String closingHours) {
         return createPlace(id, kakaoPid, "name for test", homepageUrl, lat, lng, closingHours);
     }
 
-    public static Place createPlace(Long id, String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
+    private Place createPlace(Long id, String kakaoPid, String name, String homepageUrl, String lat, String lng, String closingHours) {
         return createPlace(id, kakaoPid, name, new PlaceCategory("한식", "냉면", null), homepageUrl, lat, lng, closingHours);
     }
 
-    public static Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, String homepageUrl, String lat, String lng, String closingHours) {
+    private Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, String homepageUrl, String lat, String lng, String closingHours) {
         return createPlace(id, kakaoPid, name, placeCategory, Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"), homepageUrl, lat, lng, closingHours);
     }
 
-    public static Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
+    private Place createPlace(Long id, String kakaoPid, String name, PlaceCategory placeCategory, Address address, String homepageUrl, String lat, String lng, String closingHours) {
         return Place.of(
                 id,
                 List.of(ReviewKeywordValue.FRESH),
@@ -165,7 +165,7 @@ public class PlaceTestUtils {
         );
     }
 
-    public static OpeningHoursDto createOpeningHoursDto(
+    private OpeningHoursDto createOpeningHoursDto(
             Long id,
             DayOfWeek dayOfWeek,
             LocalTime openAt,
@@ -180,11 +180,11 @@ public class PlaceTestUtils {
         );
     }
 
-    public static PlaceMenusDto createPlaceMenusDto(Long id, Long placeId, List<String> menus) {
+    private PlaceMenusDto createPlaceMenusDto(Long id, Long placeId, List<String> menus) {
         return PlaceMenusDto.of(id, placeId, menus);
     }
 
-    public static PlaceMenus createPlaceMenus(Long id, Place place, List<String> menus) {
+    private PlaceMenus createPlaceMenus(Long id, Place place, List<String> menus) {
         return PlaceMenus.of(
                 id,
                 place,
