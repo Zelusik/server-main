@@ -1,16 +1,16 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.constant.ConstantUtil;
-import com.zelusik.eatery.constant.FoodCategoryValue;
-import com.zelusik.eatery.constant.member.Gender;
-import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.constant.member.RoleType;
-import com.zelusik.eatery.controller.BookmarkController;
-import com.zelusik.eatery.dto.bookmark.BookmarkDto;
-import com.zelusik.eatery.dto.member.MemberDto;
-import com.zelusik.eatery.security.UserPrincipal;
-import com.zelusik.eatery.service.BookmarkService;
+import com.zelusik.eatery.global.common.constant.ConstantUtil;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.domain.member.constant.Gender;
+import com.zelusik.eatery.domain.member.constant.LoginType;
+import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.bookmark.api.BookmarkController;
+import com.zelusik.eatery.domain.bookmark.dto.BookmarkDto;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
+import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;

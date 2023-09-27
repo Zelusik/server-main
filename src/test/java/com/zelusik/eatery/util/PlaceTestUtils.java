@@ -1,13 +1,17 @@
 package com.zelusik.eatery.util;
 
-import com.zelusik.eatery.constant.place.DayOfWeek;
-import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
-import com.zelusik.eatery.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.domain.place.*;
-import com.zelusik.eatery.dto.place.OpeningHoursDto;
-import com.zelusik.eatery.dto.place.PlaceDto;
-import com.zelusik.eatery.dto.place.PlaceMenusDto;
-import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
+import com.zelusik.eatery.domain.place.constant.DayOfWeek;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.entity.Address;
+import com.zelusik.eatery.domain.place.entity.Place;
+import com.zelusik.eatery.domain.place.entity.PlaceCategory;
+import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.place_menus.entity.PlaceMenus;
+import com.zelusik.eatery.domain.opening_hours.dto.OpeningHoursDto;
+import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
+import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

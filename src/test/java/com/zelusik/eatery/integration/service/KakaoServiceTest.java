@@ -1,7 +1,7 @@
 package com.zelusik.eatery.integration.service;
 
-import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
-import com.zelusik.eatery.service.KakaoService;
+import com.zelusik.eatery.global.kakao.dto.KakaoPlaceInfo;
+import com.zelusik.eatery.global.kakao.service.KakaoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
-import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
+import static com.zelusik.eatery.domain.meeting_place.api.MeetingPlaceController.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("[Integration] Kakao Service")
@@ -29,7 +29,7 @@ class KakaoServiceTest {
         String keyword = "서울";
 
         // when
-        Slice<KakaoPlaceResponse> kakaoPlaceResponses = sut.searchKakaoPlacesByKeyword(keyword, Pageable.ofSize(PAGE_SIZE_OF_SEARCHING_MEETING_PLACES));
+        Slice<KakaoPlaceInfo> kakaoPlaceResponses = sut.searchKakaoPlacesByKeyword(keyword, Pageable.ofSize(PAGE_SIZE_OF_SEARCHING_MEETING_PLACES));
 
         // then
         assertThat(kakaoPlaceResponses.getContent()).isNotEmpty();

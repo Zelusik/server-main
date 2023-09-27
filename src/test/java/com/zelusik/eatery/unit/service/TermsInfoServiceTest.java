@@ -1,15 +1,15 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.constant.member.Gender;
-import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.constant.member.RoleType;
-import com.zelusik.eatery.domain.member.Member;
-import com.zelusik.eatery.domain.terms_info.TermsInfo;
-import com.zelusik.eatery.dto.member.request.AgreeToTermsRequest;
-import com.zelusik.eatery.dto.terms_info.TermsInfoDto;
-import com.zelusik.eatery.repository.member.MemberRepository;
-import com.zelusik.eatery.repository.terms_info.TermsInfoRepository;
-import com.zelusik.eatery.service.TermsInfoService;
+import com.zelusik.eatery.domain.member.constant.Gender;
+import com.zelusik.eatery.domain.member.constant.LoginType;
+import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.terms_info.entity.TermsInfo;
+import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
+import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
+import com.zelusik.eatery.domain.member.repository.MemberRepository;
+import com.zelusik.eatery.domain.terms_info.repository.TermsInfoRepository;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,11 +1,11 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.constant.MenuKeywordCategory;
-import com.zelusik.eatery.domain.MenuKeyword;
-import com.zelusik.eatery.domain.place.PlaceCategory;
-import com.zelusik.eatery.dto.menu_keyword.response.MenuKeywordResponse;
-import com.zelusik.eatery.repository.menu_keyword.MenuKeywordRepository;
-import com.zelusik.eatery.service.MenuKeywordService;
+import com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory;
+import com.zelusik.eatery.domain.menu_keyword.entity.MenuKeyword;
+import com.zelusik.eatery.domain.place.entity.PlaceCategory;
+import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
+import com.zelusik.eatery.domain.menu_keyword.repository.MenuKeywordRepository;
+import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +17,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.zelusik.eatery.constant.MenuKeywordCategory.MENU_NAME;
-import static com.zelusik.eatery.constant.MenuKeywordCategory.PLACE_CATEGORY;
+import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory.MENU_NAME;
+import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory.PLACE_CATEGORY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.BDDMockito.given;

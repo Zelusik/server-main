@@ -1,7 +1,7 @@
 package com.zelusik.eatery.integration.service;
 
-import com.zelusik.eatery.dto.place.PlaceScrapingResponse;
-import com.zelusik.eatery.service.WebScrapingService;
+import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
+import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class WebScrapingServiceTest {
         String kakaoPid = "1879186093"; // 경기도 수원시 일호선의 kakao place id
 
         // when
-        PlaceScrapingResponse response = sut.getPlaceScrapingInfo(kakaoPid);
+        PlaceScrapingInfo response = sut.getPlaceScrapingInfo(kakaoPid);
 
         // then
         assertThat(response).isNotNull();

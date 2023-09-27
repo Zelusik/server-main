@@ -1,9 +1,10 @@
 package com.zelusik.eatery.dto.place.response;
 
-import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.place.Point;
-import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
-import com.zelusik.eatery.dto.location.LocationDto;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
+import com.zelusik.eatery.domain.meeting_place.dto.response.MeetingPlaceResponse;
+import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.global.kakao.dto.KakaoPlaceInfo;
+import com.zelusik.eatery.domain.location.dto.LocationDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,7 @@ class MeetingPlaceResponseTest {
     @Test
     void givenKakaoPlaceResponseObject_whenInstantiating_thenConvertMeetingPlaceResponseObject() {
         // given
-        KakaoPlaceResponse kakaoPlaceResponse = KakaoPlaceResponse.of(
+        KakaoPlaceInfo kakaoPlaceInfo = KakaoPlaceInfo.of(
                 "카카오프렌즈 코엑스점",
                 418,
                 "http://place.map.kakao.com/26338954",
@@ -49,7 +50,7 @@ class MeetingPlaceResponseTest {
         );
 
         // when
-        MeetingPlaceResponse result = MeetingPlaceResponse.from(kakaoPlaceResponse);
+        MeetingPlaceResponse result = MeetingPlaceResponse.from(kakaoPlaceInfo);
 
         // then
         assertThat(result.getName()).isEqualTo("카카오프렌즈 코엑스점");

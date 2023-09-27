@@ -1,7 +1,7 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.dto.kakao.KakaoPlaceResponse;
-import com.zelusik.eatery.service.KakaoService;
+import com.zelusik.eatery.global.kakao.dto.KakaoPlaceInfo;
+import com.zelusik.eatery.global.kakao.service.KakaoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
-import static com.zelusik.eatery.constant.ConstantUtil.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
+import static com.zelusik.eatery.domain.meeting_place.api.MeetingPlaceController.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -289,7 +289,7 @@ class KakaoServiceTest {
                 ));
 
         // when
-        Slice<KakaoPlaceResponse> result = sut.searchKakaoPlacesByKeyword(keyword, pageable);
+        Slice<KakaoPlaceInfo> result = sut.searchKakaoPlacesByKeyword(keyword, pageable);
 
         // then
         restServer.verify();

@@ -1,14 +1,14 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.constant.member.Gender;
-import com.zelusik.eatery.constant.member.LoginType;
-import com.zelusik.eatery.constant.member.RoleType;
-import com.zelusik.eatery.domain.member.Member;
-import com.zelusik.eatery.domain.member.ProfileImage;
-import com.zelusik.eatery.repository.member.ProfileImageRepository;
-import com.zelusik.eatery.service.FileService;
-import com.zelusik.eatery.service.ProfileImageService;
-import com.zelusik.eatery.service.S3ImageDto;
+import com.zelusik.eatery.domain.member.constant.Gender;
+import com.zelusik.eatery.domain.member.constant.LoginType;
+import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
+import com.zelusik.eatery.domain.profile_image.repository.ProfileImageRepository;
+import com.zelusik.eatery.global.file.service.S3FileService;
+import com.zelusik.eatery.domain.profile_image.service.ProfileImageService;
+import com.zelusik.eatery.global.file.dto.S3ImageDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +35,7 @@ class ProfileImageServiceTest {
     private ProfileImageService sut;
 
     @Mock
-    private FileService fileService;
+    private S3FileService s3FileService;
     @Mock
     private ProfileImageRepository profileImageRepository;
 
@@ -47,14 +47,14 @@ class ProfileImageServiceTest {
         Member member = createMember(memberId);
         MockMultipartFile profileImageForUpdate = createMockMultipartFile();
         ProfileImage expectedResult = createProfileImage(member, 10L);
-        given(fileService.uploadImageWithResizing(eq(profileImageForUpdate), any(String.class))).willReturn(createS3ImageDto());
+        given(s3FileService.uploadImageWithResizing(eq(profileImageForUpdate), any(String.class))).willReturn(createS3ImageDto());
         given(profileImageRepository.save(any(ProfileImage.class))).willReturn(expectedResult);
 
         // when
         ProfileImage actualResult = sut.upload(member, profileImageForUpdate);
 
         // then
-        then(fileService).should().uploadImageWithResizing(eq(profileImageForUpdate), any(String.class));
+        then(s3FileService).should().uploadImageWithResizing(eq(profileImageForUpdate), any(String.class));
         then(profileImageRepository).should().save(any(ProfileImage.class));
         assertThat(actualResult).isNotNull();
         assertThat(actualResult.getId()).isEqualTo(expectedResult.getId());

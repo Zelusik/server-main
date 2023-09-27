@@ -1,12 +1,12 @@
 package com.zelusik.eatery.integration.controller;
 
-import com.zelusik.eatery.config.JpaConfig;
-import com.zelusik.eatery.config.QuerydslConfig;
-import com.zelusik.eatery.controller.MenuKeywordController;
-import com.zelusik.eatery.domain.MenuKeyword;
-import com.zelusik.eatery.dto.menu_keyword.response.MenuKeywordResponse;
-import com.zelusik.eatery.repository.menu_keyword.MenuKeywordRepository;
-import com.zelusik.eatery.service.MenuKeywordService;
+import com.zelusik.eatery.global.config.JpaConfig;
+import com.zelusik.eatery.global.config.QuerydslConfig;
+import com.zelusik.eatery.domain.menu_keyword.api.MenuKeywordController;
+import com.zelusik.eatery.domain.menu_keyword.entity.MenuKeyword;
+import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
+import com.zelusik.eatery.domain.menu_keyword.repository.MenuKeywordRepository;
+import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static com.zelusik.eatery.constant.MenuKeywordCategory.*;
+import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
