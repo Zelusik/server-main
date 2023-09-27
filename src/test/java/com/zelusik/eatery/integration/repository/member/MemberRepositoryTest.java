@@ -3,12 +3,19 @@ package com.zelusik.eatery.integration.repository.member;
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.QuerydslConfig;
 import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
 import com.zelusik.eatery.domain.place.PlaceCategory;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.domain.review.Review;
+import com.zelusik.eatery.domain.review.ReviewImage;
+import com.zelusik.eatery.domain.review.ReviewKeyword;
 import com.zelusik.eatery.dto.member.MemberProfileInfoDto;
 import com.zelusik.eatery.exception.member.MemberIdNotFoundException;
 import com.zelusik.eatery.repository.member.MemberRepository;
@@ -24,12 +31,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
-import static com.zelusik.eatery.util.MemberTestUtils.createNotSavedMember;
-import static com.zelusik.eatery.util.PlaceTestUtils.createNewPlace;
-import static com.zelusik.eatery.util.ReviewKeywordTestUtils.createNewReviewKeyword;
-import static com.zelusik.eatery.util.ReviewTestUtils.createNewReview;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -56,11 +61,11 @@ class MemberRepositoryTest {
     @Test
     void givenSearchKeyword_whenSearchMembersByKeyword_thenReturnSearchedMembers() {
         // given
-        Member member1 = sut.save(createNotSavedMember("1", "7 옥타브 고양이"));
-        Member member2 = sut.save(createNotSavedMember("2", "하얀 강아지"));
-        Member member3 = sut.save(createNotSavedMember("3", "까만 고양이"));
-        Member member4 = sut.save(createNotSavedMember("4", "개냥이"));
-        Member member5 = sut.save(createNotSavedMember("5", "반려묘"));
+        Member member1 = sut.save(createNewMember("1", "7 옥타브 고양이"));
+        Member member2 = sut.save(createNewMember("2", "하얀 강아지"));
+        Member member3 = sut.save(createNewMember("3", "까만 고양이"));
+        Member member4 = sut.save(createNewMember("4", "개냥이"));
+        Member member5 = sut.save(createNewMember("5", "반려묘"));
         String searchKeyword = "고양이";
 
         // when
@@ -76,7 +81,7 @@ class MemberRepositoryTest {
     @Test
     void given_whenGetMemberProfileInfoWithMemberId_thenReturnMemberProfileInfos() {
         // given
-        Member member = sut.save(createNotSavedMember("1", "돼지 고양이"));
+        Member member = sut.save(createNewMember("1", "돼지 고양이"));
         Place place1 = placeRepository.save(createNewPlace("123", "place1", new PlaceCategory("한식", "냉면", null), new Address("sido", "sigungu", "연남동 123", "연남로 123")));
         Place place2 = placeRepository.save(createNewPlace("234", "place2", new PlaceCategory("일식", "라멘", null), new Address("sido", "sigungu", "이의동 123", "이의로 123")));
         Review review1 = reviewRepository.save(createNewReview(member, place2, List.of()));
@@ -110,12 +115,79 @@ class MemberRepositoryTest {
     @Test
     void given_whenGetMemberProfileInfoWithNotExistentMemberId_thenReturnMemberProfileInfos() {
         // given
-        Member member = sut.save(createNotSavedMember("1", "돼지 고양이"));
+        Member member = sut.save(createNewMember("1", "돼지 고양이"));
 
         // when
         Throwable t = catchThrowable(() -> sut.getMemberProfileInfoById(100));
 
         // then
         assertThat(t).isInstanceOf(MemberIdNotFoundException.class);
+    }
+
+    private Member createNewMember(String socialUid, String nickname) {
+        return Member.of(
+                "https://default-profile-image",
+                "https://defualt-profile-thumbnail-image",
+                socialUid,
+                LoginType.KAKAO,
+                Set.of(RoleType.USER),
+                "test" + socialUid + "@test.com",
+                nickname,
+                null,
+                Gender.ETC
+        );
+    }
+
+    private Place createNewPlace(String kakaoPid, String name, PlaceCategory placeCategory, Address address) {
+        return Place.of(
+                kakaoPid,
+                name,
+                "https://place.map.kakao.com/" + kakaoPid,
+                KakaoCategoryGroupCode.FD6,
+                placeCategory,
+                null,
+                address,
+                null,
+                new Point("37", "127"),
+                null
+        );
+    }
+
+    private Review createNewReview(Member writer, Place place, List<ReviewKeyword> reviewKeywords) {
+        return createReview(null, writer, place, reviewKeywords, List.of());
+    }
+
+    private Review createReview(Long reviewId, Member member, Place place, List<ReviewKeyword> reviewKeywords, List<ReviewImage> reviewImages) {
+        Review review = Review.of(
+                reviewId,
+                member,
+                place,
+                "자동 생성된 내용",
+                "제출한 내용",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+        if (reviewKeywords != null && !reviewKeywords.isEmpty()) {
+            reviewKeywords.forEach(reviewKeyword -> review.getKeywords().add(reviewKeyword));
+        }
+        if (reviewImages != null && !reviewImages.isEmpty()) {
+            reviewImages.forEach(reviewImage -> review.getReviewImages().add(reviewImage));
+        }
+        return review;
+    }
+
+    private ReviewKeyword createNewReviewKeyword(Review review, ReviewKeywordValue reviewKeywordValue) {
+        return createReviewKeyword(null, review, reviewKeywordValue);
+    }
+
+    private ReviewKeyword createReviewKeyword(Long reviewKeywordId, Review review, ReviewKeywordValue reviewKeywordValue) {
+        return ReviewKeyword.of(
+                reviewKeywordId,
+                review,
+                reviewKeywordValue,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 }

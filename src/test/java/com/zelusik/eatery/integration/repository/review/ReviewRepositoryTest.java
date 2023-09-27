@@ -311,19 +311,19 @@ class ReviewRepositoryTest {
         }
     }
 
-    private Member createNewMember(String socialId) {
-        return createNewMember(socialId, Set.of(RoleType.USER));
+    private Member createNewMember(String socialUid) {
+        return createNewMember(socialUid, Set.of(RoleType.USER));
     }
 
-    private Member createNewMember(String socialId, Set<RoleType> roleTypes) {
+    private Member createNewMember(String socialUid, Set<RoleType> roleTypes) {
         return Member.of(
                 "https://default-profile-image",
                 "https://defualt-profile-thumbnail-image",
-                socialId,
+                socialUid,
                 LoginType.KAKAO,
                 roleTypes,
-                "test" + socialId + "@test.com",
-                "test" + socialId,
+                "test" + socialUid + "@test.com",
+                "test" + socialUid,
                 null,
                 Gender.ETC
         );

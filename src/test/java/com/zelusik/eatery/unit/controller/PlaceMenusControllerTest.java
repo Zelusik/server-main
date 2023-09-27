@@ -3,14 +3,18 @@ package com.zelusik.eatery.unit.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.config.JpaConfig;
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.ConstantUtil;
+import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.controller.PlaceMenusController;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
 import com.zelusik.eatery.dto.place.request.AddMenuToPlaceMenusRequest;
 import com.zelusik.eatery.dto.place.request.PlaceMenusUpdateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceMenusService;
-import com.zelusik.eatery.util.MemberTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +26,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceMenusDto;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -56,6 +60,7 @@ class PlaceMenusControllerTest {
     @Test
     void givenPlaceId_whenSavePlaceMenus_thenReturnSavedPlaceMenus() throws Exception {
         // given
+        long loginMemberId = 3L;
         long placeId = 1L;
         long placeMenusId = 2L;
         List<String> menus = List.of("돈까스", "계란찜", "라면");
@@ -66,7 +71,7 @@ class PlaceMenusControllerTest {
         mvc.perform(
                         post("/api/v1/places/" + placeId + "/menus")
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/api/v1/places/" + placeId + "/menus"))
@@ -80,6 +85,7 @@ class PlaceMenusControllerTest {
     @Test
     void givenPlaceId_whenFindPlaceMenus_thenReturnPlaceMenus() throws Exception {
         // given
+        long loginMemberId = 3L;
         long placeId = 1L;
         long placeMenusId = 2L;
         List<String> menus = List.of("돈까스", "계란찜", "라면");
@@ -90,7 +96,7 @@ class PlaceMenusControllerTest {
         mvc.perform(
                         get("/api/v1/places/" + placeId + "/menus")
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").doesNotExist())
@@ -103,6 +109,7 @@ class PlaceMenusControllerTest {
     @Test
     void givenKakaoPid_whenFindPlaceMenus_thenReturnPlaceMenus() throws Exception {
         // given
+        long loginMemberId = 3L;
         String kakaoPid = "12345";
         List<String> menus = List.of("돈까스", "계란찜", "라면");
         PlaceMenusDto expectedResult = createPlaceMenusDto(2L, 1L, menus);
@@ -113,7 +120,7 @@ class PlaceMenusControllerTest {
                         get("/api/v1/places/menus")
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("kakaoPid", kakaoPid)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").doesNotExist())
@@ -126,6 +133,7 @@ class PlaceMenusControllerTest {
     @Test
     void givenMenusWithPlaceId_whenUpdateMenus_thenReturnUpdatedPlaceMenus() throws Exception {
         // given
+        long loginMemberId = 3L;
         long placeId = 1L;
         long placeMenusId = 2L;
         List<String> menusForUpdate = List.of("치킨");
@@ -139,7 +147,7 @@ class PlaceMenusControllerTest {
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .content(mapper.writeValueAsString(requestBody))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(placeMenusId))
@@ -152,6 +160,7 @@ class PlaceMenusControllerTest {
     @Test
     void givenMenuWithPlaceId_whenAddMenu_thenReturnUpdatedPlaceMenus() throws Exception {
         // given
+        long loginMemberId = 3L;
         long placeId = 1L;
         long placeMenusId = 2L;
         String menuForAdd = "양념치킨";
@@ -165,7 +174,7 @@ class PlaceMenusControllerTest {
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .content(mapper.writeValueAsString(requestBody))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(placeMenusId))
@@ -178,6 +187,7 @@ class PlaceMenusControllerTest {
     @Test
     void givenPlaceIdWithAdmin_whenDeletePlaceMenus_thenDeleting() throws Exception {
         // given
+        long loginMemberId = 2L;
         long placeId = 1L;
         willDoNothing().given(placeMenusService).delete(placeId);
 
@@ -185,7 +195,7 @@ class PlaceMenusControllerTest {
         mvc.perform(
                         delete("/api/v1/places/" + placeId + "/menus")
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
-                                .with(user(createTestAdminDetails()))
+                                .with(user(createTestAdminDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk());
     }
@@ -194,6 +204,7 @@ class PlaceMenusControllerTest {
     @Test
     void givenPlaceIdWithUser_whenDeletePlaceMenus_thenAccessDenied() throws Exception {
         // given
+        long loginMemberId = 2L;
         long placeId = 1L;
         willDoNothing().given(placeMenusService).delete(placeId);
 
@@ -201,16 +212,38 @@ class PlaceMenusControllerTest {
         mvc.perform(
                         delete("/api/v1/places/" + placeId + "/menus")
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isForbidden());
     }
 
-    private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDto());
+    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
+        return new MemberDto(
+                memberId,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com",
+                "test",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null
+        );
     }
 
-    private UserDetails createTestAdminDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDto(1L, Set.of(RoleType.USER, RoleType.MANAGER, RoleType.ADMIN)));
+    private UserDetails createTestUserDetails(long loginMemberId) {
+        return UserPrincipal.of(createMemberDto(loginMemberId, Set.of(RoleType.USER)));
+    }
+
+    private UserDetails createTestAdminDetails(long loginMemberId) {
+        return UserPrincipal.of(createMemberDto(loginMemberId, Set.of(RoleType.USER, RoleType.MANAGER, RoleType.ADMIN)));
+    }
+
+    private PlaceMenusDto createPlaceMenusDto(Long id, Long placeId, List<String> menus) {
+        return PlaceMenusDto.of(id, placeId, menus);
     }
 }

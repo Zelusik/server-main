@@ -1,13 +1,18 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.ConstantUtil;
+import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.controller.MenuKeywordController;
 import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.dto.ListDto;
+import com.zelusik.eatery.dto.member.MemberDto;
 import com.zelusik.eatery.dto.menu_keyword.response.MenuKeywordResponse;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.MenuKeywordService;
-import com.zelusik.eatery.util.MemberTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +24,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Set;
 
 import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.MenuKeywordCategory.MENU_NAME;
@@ -71,7 +78,7 @@ class MenuKeywordControllerTest {
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
                                 .param("placeCategory", "음식점 > " + placeCategory.getFirstCategory() + " > " + placeCategory.getSecondCategory())
                                 .param("menus", menus.toArray(new String[0]))
-                                .with(user(createTestUserDetails()))
+                                .with(user(createTestUserDetails(1L)))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.menuKeywords").isArray())
@@ -85,7 +92,29 @@ class MenuKeywordControllerTest {
         resultActions.andDo(print());
     }
 
-    private UserDetails createTestUserDetails() {
-        return UserPrincipal.of(MemberTestUtils.createMemberDto());
+    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
+        return new MemberDto(
+                memberId,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com",
+                "test",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null
+        );
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId, Set<RoleType> roleTypes) {
+        return UserPrincipal.of(createMemberDto(loginMemberId, roleTypes));
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId) {
+        return createTestUserDetails(loginMemberId, Set.of(RoleType.USER));
     }
 }

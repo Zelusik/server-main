@@ -1,24 +1,28 @@
 package com.zelusik.eatery.unit.service;
 
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
 import com.zelusik.eatery.domain.member.Member;
 import com.zelusik.eatery.domain.member.ProfileImage;
 import com.zelusik.eatery.repository.member.ProfileImageRepository;
 import com.zelusik.eatery.service.FileService;
 import com.zelusik.eatery.service.ProfileImageService;
+import com.zelusik.eatery.service.S3ImageDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
-import static com.zelusik.eatery.util.MemberTestUtils.createMember;
-import static com.zelusik.eatery.util.MemberTestUtils.createProfileImage;
-import static com.zelusik.eatery.util.MultipartFileTestUtils.createMockMultipartFile;
-import static com.zelusik.eatery.util.S3FileTestUtils.createS3ImageDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
@@ -42,7 +46,7 @@ class ProfileImageServiceTest {
         long memberId = 1L;
         Member member = createMember(memberId);
         MockMultipartFile profileImageForUpdate = createMockMultipartFile();
-        ProfileImage expectedResult = createProfileImage(10L);
+        ProfileImage expectedResult = createProfileImage(member, 10L);
         given(fileService.uploadImageWithResizing(eq(profileImageForUpdate), any(String.class))).willReturn(createS3ImageDto());
         given(profileImageRepository.save(any(ProfileImage.class))).willReturn(expectedResult);
 
@@ -78,7 +82,7 @@ class ProfileImageServiceTest {
     @Test
     void givenProfileImage_whenSoftDeleting_thenUpdateDeletedAt() {
         // given
-        ProfileImage profileImage = createProfileImage(10L);
+        ProfileImage profileImage = createProfileImage(createMember(1L), 10L);
         willDoNothing().given(profileImageRepository).flush();
 
         // when
@@ -87,5 +91,58 @@ class ProfileImageServiceTest {
         // then
         then(profileImageRepository).should().flush();
         assertThat(profileImage.getDeletedAt()).isNotNull();
+    }
+
+    private Member createMember(long memberId) {
+        return Member.of(
+                memberId,
+                "profile image url",
+                "profile thunmbnail image url",
+                "social user id" + memberId,
+                LoginType.KAKAO,
+                Set.of(RoleType.USER),
+                "email",
+                "nickname",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    private ProfileImage createProfileImage(Member member, long profileImageId) {
+        return ProfileImage.of(
+                profileImageId,
+                member,
+                "originalFilename",
+                "storedFilename",
+                "url",
+                "thumbnailStoredFilename",
+                "thumbnailUrl",
+                LocalDateTime.of(2023, 1, 1, 0, 0),
+                LocalDateTime.of(2023, 1, 1, 0, 0),
+                null
+        );
+    }
+
+    private S3ImageDto createS3ImageDto() {
+        return S3ImageDto.of(
+                "originalFileName",
+                "storedFileName",
+                "url",
+                "thumbnailStoredFileName",
+                "thumbnailUrl"
+        );
+    }
+
+    public static MockMultipartFile createMockMultipartFile() {
+        return new MockMultipartFile(
+                "test",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "test".getBytes()
+        );
     }
 }

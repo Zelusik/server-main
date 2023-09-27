@@ -1,8 +1,16 @@
 package com.zelusik.eatery.unit.service;
 
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.domain.Bookmark;
 import com.zelusik.eatery.domain.member.Member;
+import com.zelusik.eatery.domain.place.Address;
 import com.zelusik.eatery.domain.place.Place;
+import com.zelusik.eatery.domain.place.PlaceCategory;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.bookmark.BookmarkDto;
 import com.zelusik.eatery.exception.bookmark.AlreadyMarkedPlaceException;
 import com.zelusik.eatery.exception.bookmark.BookmarkNotFoundException;
@@ -10,8 +18,6 @@ import com.zelusik.eatery.repository.bookmark.BookmarkRepository;
 import com.zelusik.eatery.repository.place.PlaceRepository;
 import com.zelusik.eatery.service.BookmarkService;
 import com.zelusik.eatery.service.MemberService;
-import com.zelusik.eatery.util.MemberTestUtils;
-import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +25,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -48,8 +57,8 @@ class BookmarkServiceTest {
         long memberId = 1L;
         long placeId = 2L;
         long bookmarkId = 3L;
-        Member member = MemberTestUtils.createMember(memberId);
-        Place place = PlaceTestUtils.createPlace(placeId, "12345");
+        Member member = createMember(memberId);
+        Place place = createPlace(placeId, "12345");
         Bookmark expectedResult = createBookmark(bookmarkId, member, place);
         given(bookmarkRepository.existsByMember_IdAndPlace_Id(memberId, placeId)).willReturn(false);
         given(memberService.findById(memberId)).willReturn(member);
@@ -94,7 +103,7 @@ class BookmarkServiceTest {
         // given
         long memberId = 1L;
         long placeId = 2L;
-        Place place = PlaceTestUtils.createPlace(placeId, "12345");
+        Place place = createPlace(placeId, "12345");
         boolean expectedResult = true;
         given(bookmarkRepository.existsByMember_IdAndPlace(memberId, place)).willReturn(expectedResult);
 
@@ -116,8 +125,8 @@ class BookmarkServiceTest {
         long memberId = 1L;
         long placeId = 2L;
         long bookmarkId = 3L;
-        Member member = MemberTestUtils.createMember(memberId);
-        Place place = PlaceTestUtils.createPlace(placeId, "12345");
+        Member member = createMember(memberId);
+        Place place = createPlace(placeId, "12345");
         Bookmark foundBookmark = createBookmark(bookmarkId, member, place);
         given(bookmarkRepository.findByMember_IdAndPlace_Id(memberId, placeId)).willReturn(Optional.of(foundBookmark));
         willDoNothing().given(bookmarkRepository).delete(foundBookmark);
@@ -152,6 +161,50 @@ class BookmarkServiceTest {
         assertThat(t).isInstanceOf(BookmarkNotFoundException.class);
     }
 
+    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
+        then(memberService).shouldHaveNoMoreInteractions();
+        then(placeRepository).shouldHaveNoMoreInteractions();
+        then(bookmarkRepository).shouldHaveNoMoreInteractions();
+    }
+
+    private Member createMember(long memberId) {
+        return Member.of(
+                memberId,
+                "profile image url",
+                "profile thunmbnail image url",
+                "social user id" + memberId,
+                LoginType.KAKAO,
+                Set.of(RoleType.USER),
+                "email",
+                "nickname",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                null
+        );
+    }
+
+    private Place createPlace(long id, String kakaoPid) {
+        return Place.of(
+                id,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "place name",
+                "page url",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("한식", "냉면", null),
+                null,
+                new Address("sido", "sgg", "lot number address", "road address"),
+                null,
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
     private Bookmark createBookmark(long bookmarkId, Member member, Place place) {
         return Bookmark.of(
                 bookmarkId,
@@ -160,11 +213,5 @@ class BookmarkServiceTest {
                 LocalDateTime.of(2023, 1, 1, 0, 0),
                 LocalDateTime.of(2023, 1, 1, 0, 0)
         );
-    }
-
-    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(memberService).shouldHaveNoMoreInteractions();
-        then(placeRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkRepository).shouldHaveNoMoreInteractions();
     }
 }

@@ -1,7 +1,8 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.domain.place.PlaceMenus;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
+import com.zelusik.eatery.constant.review.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.PlaceMenusDto;
 import com.zelusik.eatery.exception.place.ContainsDuplicateMenusException;
 import com.zelusik.eatery.exception.place.PlaceMenusAlreadyExistsException;
@@ -17,11 +18,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceMenus;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -320,5 +320,36 @@ class PlaceMenusServiceTest {
         then(placeService).shouldHaveNoMoreInteractions();
         then(webScrapingService).shouldHaveNoMoreInteractions();
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
+    }
+
+    private Place createPlace(long id, String kakaoPid) {
+        return Place.of(
+                id,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "place name",
+                "page url",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("한식", "냉면", null),
+                null,
+                new Address("sido", "sgg", "lot number address", "road address"),
+                null,
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private PlaceMenus createPlaceMenus(Long id, Place place, List<String> menus) {
+        return PlaceMenus.of(
+                id,
+                place,
+                menus,
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                1L,
+                1L
+        );
     }
 }

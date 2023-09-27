@@ -3,10 +3,9 @@ package com.zelusik.eatery.unit.service;
 import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
-import com.zelusik.eatery.domain.place.OpeningHours;
-import com.zelusik.eatery.domain.place.Place;
-import com.zelusik.eatery.domain.place.Point;
+import com.zelusik.eatery.domain.place.*;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.PlaceScrapingOpeningHourDto;
@@ -22,7 +21,6 @@ import com.zelusik.eatery.service.BookmarkService;
 import com.zelusik.eatery.service.PlaceService;
 import com.zelusik.eatery.service.ReviewImageService;
 import com.zelusik.eatery.service.WebScrapingService;
-import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,14 +30,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 import static com.zelusik.eatery.constant.place.DayOfWeek.*;
 import static com.zelusik.eatery.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlace;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,8 +79,8 @@ class PlaceServiceTest {
         String closingHours = "토요일\n일요일";
         String homepageUrl = "https://homepage.url";
         PlaceScrapingResponse placeScrapingResponse = PlaceScrapingResponse.of(openingHourDtos, closingHours, homepageUrl);
-        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
-        Place expectedResult = PlaceTestUtils.createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
+        PlaceCreateRequest placeCreateRequest = createPlaceRequest();
+        Place expectedResult = createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(false);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(placeScrapingResponse);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
@@ -108,7 +105,7 @@ class PlaceServiceTest {
     void givenPlaceRequestInfoWithMemberId_whenCreateAlreadyExistsPlace_thenThrowPlaceAlreadyExistsException() {
         // given
         long memberId = 1L;
-        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
+        PlaceCreateRequest placeCreateRequest = createPlaceRequest();
         given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(true);
 
         // when
@@ -127,7 +124,7 @@ class PlaceServiceTest {
         // given
         long placeId = 1L;
         long memberId = 2L;
-        Place expectedResult = PlaceTestUtils.createPlace(placeId, "12345");
+        Place expectedResult = createPlace(placeId, "12345");
         given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedResult));
         given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
         given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
@@ -167,7 +164,7 @@ class PlaceServiceTest {
         long placeId = 1L;
         long memberId = 2L;
         String kakaoPid = "12345";
-        Place expectedResult = PlaceTestUtils.createPlace(placeId, "12345");
+        Place expectedResult = createPlace(placeId, "12345");
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedResult));
         given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
         given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
@@ -206,7 +203,7 @@ class PlaceServiceTest {
     void givenKakaoPid_whenFindExistentPlace_thenReturnOptionalPlace() {
         // given
         String kakaoPid = "1";
-        Place expectedPlace = PlaceTestUtils.createPlace(1L, kakaoPid);
+        Place expectedPlace = createPlace(1L, kakaoPid);
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
@@ -241,7 +238,7 @@ class PlaceServiceTest {
         FilteringType filteringType = FilteringType.SECOND_CATEGORY;
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
-        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId)));
         given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
@@ -261,7 +258,7 @@ class PlaceServiceTest {
         String searchKeyword = "강남";
         Pageable pageable = Pageable.ofSize(30);
         long placeId = 1L;
-        List<Place> expectedResult = List.of(createPlace(placeId, "12345", "강남돈까스", "37", "127", "공휴일"));
+        List<Place> expectedResult = List.of(createPlace(placeId, "12345", null, "공휴일"));
         given(placeRepository.searchByKeyword(searchKeyword, pageable)).willReturn(new SliceImpl<>(expectedResult, pageable, false));
 
         // when
@@ -290,7 +287,7 @@ class PlaceServiceTest {
                 ReviewKeywordValue.WITH_ALCOHOL,
                 false
         );
-        Page<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), pageable, 1);
+        Page<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(2L)), pageable, 1);
         given(placeRepository.findDtosNearBy(memberId, filteringCondition, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
@@ -345,7 +342,7 @@ class PlaceServiceTest {
     void givenPlace_whenRenewTop3Keywords_thenUpdate() {
         // given
         long placeId = 1L;
-        Place place = PlaceTestUtils.createPlace(placeId, "1");
+        Place place = createPlace(placeId, "1");
         List<ReviewKeywordValue> top3Keywords = List.of(
                 ReviewKeywordValue.BEST_FLAVOR,
                 ReviewKeywordValue.GOOD_FOR_DATE,
@@ -372,5 +369,63 @@ class PlaceServiceTest {
         then(openingHoursRepository).shouldHaveNoMoreInteractions();
         then(bookmarkService).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
+    }
+
+    private Place createPlace(long id, String kakaoPid, String homepageUrl, String closingHours) {
+        return Place.of(
+                id,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "place name",
+                "page url",
+                KakaoCategoryGroupCode.FD6,
+                new PlaceCategory("한식", "냉면", null),
+                null,
+                new Address("sido", "sgg", "lot number address", "road address"),
+                homepageUrl,
+                new Point("37.5595073462493", "126.921462488105"),
+                closingHours,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+    }
+
+    private Place createPlace(long id, String kakaoPid) {
+        return createPlace(id, kakaoPid, null, null);
+    }
+
+    private PlaceDto createPlaceDto(Long placeId) {
+        return new PlaceDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                "308342289",
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "http://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                List.of(),
+                null,
+                false
+        );
+    }
+
+    private PlaceCreateRequest createPlaceRequest() {
+        return PlaceCreateRequest.of(
+                "308342289",
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                "음식점 > 퓨전요리 > 퓨전일식",
+                "02-332-8064",
+                "서울 마포구 연남동 568-26",
+                "서울 마포구 월드컵북로6길 61",
+                "37.5595073462493",
+                "126.921462488105"
+        );
     }
 }

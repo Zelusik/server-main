@@ -7,9 +7,14 @@ import com.zelusik.eatery.constant.FoodCategoryValue;
 import com.zelusik.eatery.constant.member.Gender;
 import com.zelusik.eatery.constant.member.LoginType;
 import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.RecommendedReviewController;
+import com.zelusik.eatery.domain.place.Address;
+import com.zelusik.eatery.domain.place.PlaceCategory;
+import com.zelusik.eatery.domain.place.Point;
 import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.recommended_review.RecommendedReviewDto;
 import com.zelusik.eatery.dto.recommended_review.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.dto.recommended_review.request.SaveRecommendedReviewsRequest;
@@ -17,7 +22,6 @@ import com.zelusik.eatery.dto.review.ReviewDto;
 import com.zelusik.eatery.dto.review.ReviewImageDto;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.RecommendedReviewService;
-import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,9 +71,10 @@ class RecommendedReviewControllerTest {
         // given
         long memberId = 1L;
         long reviewId = 2L;
+        long placeId = 3L;
         short ranking = 3;
         SaveRecommendedReviewsRequest request = new SaveRecommendedReviewsRequest(reviewId, ranking);
-        RecommendedReviewDto expectedResult = createRecommendedReviewDto(3L, memberId, createReviewDto(reviewId, createMemberDto(memberId)), ranking);
+        RecommendedReviewDto expectedResult = createRecommendedReviewDto(4L, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking);
         given(recommendedReviewService.saveRecommendedReview(memberId, reviewId, ranking)).willReturn(expectedResult);
 
         // when & then
@@ -113,10 +118,11 @@ class RecommendedReviewControllerTest {
     void given_whenFindingRecommendedReviewsWithMemberId_thenReturnRecommendedReviews() throws Exception {
         // given
         long memberId = 2L;
-        long recommendedReviewId = 3L;
-        long reviewId = 4L;
-        short ranking = 5;
-        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId)), ranking));
+        long placeId = 3L;
+        long recommendedReviewId = 4L;
+        long reviewId = 5L;
+        short ranking = 6;
+        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking));
         given(recommendedReviewService.findAllDtosWithPlaceMarkedStatus(memberId)).willReturn(expectedResults);
 
         // when & then
@@ -137,15 +143,18 @@ class RecommendedReviewControllerTest {
     void givenNewRecommendedReviewInfos_whenBatchUpdateRecommendedReviews_thenUpdateRecommendedReviews() throws Exception {
         // given
         long memberId = 1L;
+        long placeId = 2L;
         BatchUpdateRecommendedReviewsRequest batchUpdateRecommendedReviewsRequest = new BatchUpdateRecommendedReviewsRequest(List.of(
                 new BatchUpdateRecommendedReviewsRequest.RecommendedReviewRequest(2L, (short) 1),
                 new BatchUpdateRecommendedReviewsRequest.RecommendedReviewRequest(3L, (short) 2),
                 new BatchUpdateRecommendedReviewsRequest.RecommendedReviewRequest(4L, (short) 3)
         ));
+        MemberDto member = createMemberDto(memberId);
+        PlaceDto place = createPlaceDto(placeId);
         List<RecommendedReviewDto> expectedResults = List.of(
-                createRecommendedReviewDto(5L, memberId, createReviewDto(2L, createMemberDto(memberId)), (short) 1),
-                createRecommendedReviewDto(6L, memberId, createReviewDto(3L, createMemberDto(memberId)), (short) 2),
-                createRecommendedReviewDto(7L, memberId, createReviewDto(4L, createMemberDto(memberId)), (short) 3)
+                createRecommendedReviewDto(5L, memberId, createReviewDto(3L, member, place), (short) 1),
+                createRecommendedReviewDto(6L, memberId, createReviewDto(4L, member, place), (short) 2),
+                createRecommendedReviewDto(7L, memberId, createReviewDto(5L, member, place), (short) 3)
         );
         given(recommendedReviewService.batchUpdateRecommendedReviews(eq(memberId), any(BatchUpdateRecommendedReviewsRequest.class))).willReturn(expectedResults);
 
@@ -209,16 +218,31 @@ class RecommendedReviewControllerTest {
         );
     }
 
-    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewDto review, short ranking) {
-        return new RecommendedReviewDto(id, memberId, review, ranking
+    private PlaceDto createPlaceDto(Long placeId) {
+        return new PlaceDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                "308342289",
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "http://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                List.of(),
+                null,
+                false
         );
     }
 
-    private ReviewDto createReviewDto(long reviewId, MemberDto writer) {
+    private ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceDto place) {
         return new ReviewDto(
                 reviewId,
                 writer,
-                PlaceTestUtils.createPlaceDto(),
+                place,
                 List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",
                 "제출된 내용",
@@ -237,5 +261,9 @@ class RecommendedReviewControllerTest {
                 "thumbnailStoredName",
                 "thumbnailUrl"
         );
+    }
+
+    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewDto review, short ranking) {
+        return new RecommendedReviewDto(id, memberId, review, ranking);
     }
 }

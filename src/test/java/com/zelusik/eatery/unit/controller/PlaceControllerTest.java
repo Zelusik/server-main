@@ -1,19 +1,27 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
+import com.zelusik.eatery.constant.ConstantUtil;
 import com.zelusik.eatery.constant.FoodCategoryValue;
+import com.zelusik.eatery.constant.member.Gender;
+import com.zelusik.eatery.constant.member.LoginType;
+import com.zelusik.eatery.constant.member.RoleType;
+import com.zelusik.eatery.constant.place.DayOfWeek;
 import com.zelusik.eatery.constant.place.FilteringType;
+import com.zelusik.eatery.constant.place.KakaoCategoryGroupCode;
 import com.zelusik.eatery.constant.review.ReviewKeywordValue;
 import com.zelusik.eatery.controller.PlaceController;
+import com.zelusik.eatery.domain.place.Address;
+import com.zelusik.eatery.domain.place.PlaceCategory;
 import com.zelusik.eatery.domain.place.Point;
+import com.zelusik.eatery.dto.member.MemberDto;
+import com.zelusik.eatery.dto.place.OpeningHoursDto;
 import com.zelusik.eatery.dto.place.PlaceDto;
 import com.zelusik.eatery.dto.place.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.dto.place.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.dto.place.request.PlaceCreateRequest;
 import com.zelusik.eatery.security.UserPrincipal;
 import com.zelusik.eatery.service.PlaceService;
-import com.zelusik.eatery.util.MemberTestUtils;
-import com.zelusik.eatery.util.PlaceTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +38,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 import static com.zelusik.eatery.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.constant.place.DayOfWeek.*;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDto;
-import static com.zelusik.eatery.util.PlaceTestUtils.createPlaceDtoWithMarkedStatusAndImages;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -70,8 +79,9 @@ class PlaceControllerTest {
     void givenPlaceInfo_whenSaving_thenSavePlace() throws Exception {
         // given
         long memberId = 1L;
-        PlaceCreateRequest placeCreateRequest = PlaceTestUtils.createPlaceRequest();
-        given(placeService.create(eq(memberId), any(PlaceCreateRequest.class))).willReturn(PlaceTestUtils.createPlaceDto());
+        long placeId = 2L;
+        PlaceCreateRequest placeCreateRequest = createPlaceRequest();
+        given(placeService.create(eq(memberId), any(PlaceCreateRequest.class))).willReturn(createPlaceDto(placeId, "123"));
 
         // when & then
         mvc.perform(
@@ -94,7 +104,7 @@ class PlaceControllerTest {
         // given
         long memberId = 1L;
         long placeId = 2L;
-        PlaceDto expectedResult = createPlaceDtoWithMarkedStatusAndImages(placeId);
+        PlaceDto expectedResult = createPlaceDto(placeId, "123");
         given(placeService.findDtoWithMarkedStatusAndImagesById(memberId, placeId)).willReturn(expectedResult);
 
         // when & then
@@ -118,7 +128,7 @@ class PlaceControllerTest {
         // given
         long memberId = 1L;
         String kakaoPid = "12345";
-        PlaceDto expectedResult = createPlaceDtoWithMarkedStatusAndImages(2L, kakaoPid);
+        PlaceDto expectedResult = createPlaceDto(2L, kakaoPid);
         given(placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid)).willReturn(expectedResult);
 
         // when & then
@@ -143,7 +153,7 @@ class PlaceControllerTest {
         // given
         String searchKeyword = "강남";
         long placeId = 2L;
-        Slice<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDto(placeId)));
+        Slice<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDto(placeId, "123")));
         given(placeService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
@@ -166,6 +176,7 @@ class PlaceControllerTest {
     void givenCenterPoint_whenFindNearPlaces_thenReturnPlaces() throws Exception {
         // given
         long memberId = 1L;
+        long placeId = 2L;
         Point point = new Point("37", "127");
         FindNearPlacesFilteringConditionRequest filteringCondition = new FindNearPlacesFilteringConditionRequest(
                 FoodCategoryValue.KOREAN,
@@ -173,7 +184,7 @@ class PlaceControllerTest {
                 ReviewKeywordValue.WITH_ALCOHOL,
                 false
         );
-        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages()), Pageable.ofSize(30), 1);
+        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId, "123")), Pageable.ofSize(30), 1);
         given(placeService.findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
@@ -249,7 +260,7 @@ class PlaceControllerTest {
         FilteringType filteringType = FilteringType.TOP_3_KEYWORDS;
         String filteringKeywordDescription = "신선한 재료";
         String filteringKeyword = "FRESH";
-        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDtoWithMarkedStatusAndImages(placeId)));
+        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId, "123")));
         given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
@@ -288,7 +299,72 @@ class PlaceControllerTest {
         then(placeService).shouldHaveNoMoreInteractions();
     }
 
-    private UserDetails createTestUserDetails(long memberId) {
-        return UserPrincipal.of(MemberTestUtils.createMemberDto(memberId));
+    private PlaceCreateRequest createPlaceRequest() {
+        return PlaceCreateRequest.of(
+                "308342289",
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                "음식점 > 퓨전요리 > 퓨전일식",
+                "02-332-8064",
+                "서울 마포구 연남동 568-26",
+                "서울 마포구 월드컵북로6길 61",
+                "37.5595073462493",
+                "126.921462488105"
+        );
+    }
+
+    private PlaceDto createPlaceDto(Long placeId, String kakaoPid) {
+        return new PlaceDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "연남토마 본점",
+                "http://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "http://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
+                null,
+                List.of(
+                        createOpeningHoursDto(1L, DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        createOpeningHoursDto(1L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        createOpeningHoursDto(1L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
+                ),
+                null,
+                false
+        );
+    }
+
+    private OpeningHoursDto createOpeningHoursDto(Long id, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt) {
+        return OpeningHoursDto.of(id, 1L, dayOfWeek, openAt, closeAt);
+    }
+
+    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
+        return new MemberDto(
+                memberId,
+                ConstantUtil.defaultProfileImageUrl,
+                ConstantUtil.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                roleTypes,
+                "test@test.com",
+                "test",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null
+        );
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId, Set<RoleType> roleTypes) {
+        return UserPrincipal.of(createMemberDto(loginMemberId, roleTypes));
+    }
+
+    private UserDetails createTestUserDetails(Long loginMemberId) {
+        return createTestUserDetails(loginMemberId, Set.of(RoleType.USER));
     }
 }
