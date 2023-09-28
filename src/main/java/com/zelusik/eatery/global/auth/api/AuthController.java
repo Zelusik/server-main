@@ -16,7 +16,8 @@ import com.zelusik.eatery.global.auth.dto.request.RefreshTokensRequest;
 import com.zelusik.eatery.global.auth.dto.response.LoginResponse;
 import com.zelusik.eatery.global.auth.dto.response.RefreshTokenResponse;
 import com.zelusik.eatery.global.auth.dto.response.TokenValidateResponse;
-import com.zelusik.eatery.global.auth.service.JwtTokenService;
+import com.zelusik.eatery.global.auth.service.JwtTokenCommandService;
+import com.zelusik.eatery.global.auth.service.JwtTokenQueryService;
 import com.zelusik.eatery.global.kakao.dto.KakaoOAuthUserInfo;
 import com.zelusik.eatery.global.kakao.service.KakaoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +46,8 @@ public class AuthController {
     private final AppleOAuthService appleOAuthService;
     private final MemberCommandService memberCommandService;
     private final MemberQueryService memberQueryService;
-    private final JwtTokenService jwtTokenService;
+    private final JwtTokenCommandService jwtTokenCommandService;
+    private final JwtTokenQueryService jwtTokenQueryService;
     private final TermsInfoQueryService termsInfoQueryService;
 
     @Operation(
@@ -75,7 +77,7 @@ public class AuthController {
 
         TermsInfoDto termsInfoDto = termsInfoQueryService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
 
-        JwtTokenDto jwtTokenDto = jwtTokenService.create(memberDto.getId(), LoginType.KAKAO);
+        JwtTokenDto jwtTokenDto = jwtTokenCommandService.create(memberDto.getId(), LoginType.KAKAO);
 
         return LoginResponse.from(memberDto, termsInfoDto, jwtTokenDto);
     }
@@ -108,7 +110,7 @@ public class AuthController {
 
         TermsInfoDto termsInfoDto = termsInfoQueryService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
 
-        JwtTokenDto jwtTokenDto = jwtTokenService.create(memberDto.getId(), LoginType.APPLE);
+        JwtTokenDto jwtTokenDto = jwtTokenCommandService.create(memberDto.getId(), LoginType.APPLE);
 
         return LoginResponse.from(memberDto, termsInfoDto, jwtTokenDto);
     }
@@ -124,7 +126,7 @@ public class AuthController {
     })
     @PostMapping(value = "/v1/auth/token", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public RefreshTokenResponse refreshTokensV1_1(@Valid @RequestBody RefreshTokensRequest request) {
-        JwtTokenDto jwtTokenDto = jwtTokenService.refresh(request.getRefreshToken());
+        JwtTokenDto jwtTokenDto = jwtTokenCommandService.refresh(request.getRefreshToken());
         return RefreshTokenResponse.from(jwtTokenDto);
     }
 
@@ -143,6 +145,6 @@ public class AuthController {
     )
     @GetMapping(value = "/v1/auth/validity", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public TokenValidateResponse validateRefreshTokenV1_1(@RequestParam @NotBlank String refreshToken) {
-        return new TokenValidateResponse(jwtTokenService.validateOfRefreshToken(refreshToken));
+        return new TokenValidateResponse(jwtTokenQueryService.validateOfRefreshToken(refreshToken));
     }
 }

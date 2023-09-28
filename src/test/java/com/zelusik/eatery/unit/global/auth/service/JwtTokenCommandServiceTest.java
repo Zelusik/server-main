@@ -5,9 +5,9 @@ import com.zelusik.eatery.global.auth.dto.JwtTokenDto;
 import com.zelusik.eatery.global.auth.entity.RefreshToken;
 import com.zelusik.eatery.global.auth.exception.TokenValidateException;
 import com.zelusik.eatery.global.auth.repository.RefreshTokenRepository;
-import com.zelusik.eatery.global.security.dto.JwtTokenInfoDto;
+import com.zelusik.eatery.global.auth.service.JwtTokenCommandService;
 import com.zelusik.eatery.global.security.JwtTokenProvider;
-import com.zelusik.eatery.global.auth.service.JwtTokenService;
+import com.zelusik.eatery.global.security.dto.JwtTokenInfoDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,16 +23,15 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Unit] JwtToken Service")
+@DisplayName("[Unit] Service(Command) - Jwt token")
 @ExtendWith(MockitoExtension.class)
-class JwtTokenServiceTest {
+class JwtTokenCommandServiceTest {
 
     @InjectMocks
-    private JwtTokenService sut;
+    private JwtTokenCommandService sut;
 
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
-
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
@@ -120,55 +119,6 @@ class JwtTokenServiceTest {
         then(refreshTokenRepository).shouldHaveNoInteractions();
         then(jwtTokenProvider).shouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(TokenValidateException.class);
-    }
-
-    @DisplayName("유효한 refresh token이 주어지고, 유효성을 검사하면, true를 반환한다.")
-    @Test
-    void givenValidRefreshToken_whenValidate_thenReturnTrue() {
-        // given
-        String refreshToken = "test";
-        willDoNothing().given(jwtTokenProvider).validateToken(refreshToken);
-        given(refreshTokenRepository.existsById(refreshToken)).willReturn(true);
-
-        // when
-        boolean result = sut.validateOfRefreshToken(refreshToken);
-
-        // then
-        then(jwtTokenProvider).should().validateToken(refreshToken);
-        then(refreshTokenRepository).should().existsById(refreshToken);
-        assertThat(result).isTrue();
-    }
-
-    @DisplayName("유효하지 않은 refresh token이 주어지고, 유효성을 검사하면, false를 반환한다.")
-    @Test
-    void givenNotValidRefreshToken_whenValidate_thenReturnFalse() {
-        // given
-        String refreshToken = "test";
-        willThrow(TokenValidateException.class).given(jwtTokenProvider).validateToken(refreshToken);
-
-        // when
-        boolean result = sut.validateOfRefreshToken(refreshToken);
-
-        // then
-        then(jwtTokenProvider).should().validateToken(refreshToken);
-        then(refreshTokenRepository).shouldHaveNoInteractions();
-        assertThat(result).isFalse();
-    }
-
-    @DisplayName("유효한 refresh token이 주어졌지만 redis에 존재하지 않을 때, 유효성을 검사하면, false를 반환한다.")
-    @Test
-    void givenValidRefreshTokenButNotExistInRedis_whenValidate_thenReturnFalse() {
-        String refreshToken = "test";
-        willDoNothing().given(jwtTokenProvider).validateToken(refreshToken);
-        given(refreshTokenRepository.existsById(refreshToken)).willReturn(false);
-
-        // when
-        boolean result = sut.validateOfRefreshToken(refreshToken);
-
-        // then
-        then(jwtTokenProvider).should().validateToken(refreshToken);
-        then(refreshTokenRepository).should().existsById(refreshToken);
-        assertThat(result).isFalse();
     }
 
     private JwtTokenInfoDto createJwtToken() {
