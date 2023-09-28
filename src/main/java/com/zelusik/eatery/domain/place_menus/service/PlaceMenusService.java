@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.place_menus.service;
 
 import com.zelusik.eatery.domain.place.entity.Place;
-import com.zelusik.eatery.domain.place.service.PlaceService;
+import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.place_menus.entity.PlaceMenus;
 import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
 import com.zelusik.eatery.domain.place.exception.ContainsDuplicateMenusException;
@@ -25,7 +25,7 @@ import java.util.Set;
 @Service
 public class PlaceMenusService {
 
-    private final PlaceService placeService;
+    private final PlaceQueryService placeQueryService;
     private final PlaceMenusRepository placeMenusRepository;
     private final WebScrapingService webScrapingService;
 
@@ -42,7 +42,7 @@ public class PlaceMenusService {
         if (placeMenusRepository.existsByPlace_Id(placeId)) {
             throw new PlaceMenusAlreadyExistsException(placeId);
         }
-        Place place = placeService.findById(placeId);
+        Place place = placeQueryService.findById(placeId);
         return savePlaceMenus(place);
     }
 
@@ -59,7 +59,7 @@ public class PlaceMenusService {
         if (placeMenusRepository.existsByPlace_KakaoPid(kakaoPid)) {
             throw new PlaceMenusAlreadyExistsException(kakaoPid);
         }
-        Place place = placeService.findByKakaoPid(kakaoPid);
+        Place place = placeQueryService.findByKakaoPid(kakaoPid);
         return savePlaceMenus(place);
     }
 

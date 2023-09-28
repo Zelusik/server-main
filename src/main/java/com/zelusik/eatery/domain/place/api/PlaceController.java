@@ -1,17 +1,18 @@
 package com.zelusik.eatery.domain.place.api;
 
 import com.zelusik.eatery.domain.place.constant.FilteringType;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.place.dto.response.*;
-import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.global.common.dto.response.PageResponse;
-import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
+import com.zelusik.eatery.domain.place.dto.response.*;
+import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.place.service.PlaceCommandService;
+import com.zelusik.eatery.domain.place.service.PlaceQueryService;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.exception.InvalidTypeOfReviewKeywordValueException;
+import com.zelusik.eatery.global.common.dto.response.PageResponse;
+import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -44,7 +45,8 @@ import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINO
 @RestController
 public class PlaceController {
 
-    private final PlaceService placeService;
+    private final PlaceCommandService placeCommandService;
+    private final PlaceQueryService placeQueryService;
 
     @Operation(
             summary = "장소 저장",
@@ -62,7 +64,7 @@ public class PlaceController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody PlaceCreateRequest request
     ) {
-        PlaceResponse response = PlaceResponse.from(placeService.create(userPrincipal.getMemberId(), request));
+        PlaceResponse response = PlaceResponse.from(placeCommandService.create(userPrincipal.getMemberId(), request));
 
         return ResponseEntity
                 .created(URI.create("/api/v1/places/" + response.getId()))
@@ -87,7 +89,7 @@ public class PlaceController {
                     example = "3"
             ) @PathVariable Long placeId
     ) {
-        PlaceDto placeDtos = placeService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
+        PlaceDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
         return FindPlaceResponse.from(placeDtos);
     }
 
@@ -109,7 +111,7 @@ public class PlaceController {
                     example = "263830255"
             ) @RequestParam @NotBlank String kakaoPid
     ) {
-        PlaceDto placeDtos = placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
+        PlaceDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
         return FindPlaceResponse.from(placeDtos);
     }
 
@@ -134,7 +136,7 @@ public class PlaceController {
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
-        Slice<PlaceDto> placeDtos = placeService.searchDtosByKeyword(keyword, PageRequest.of(page, size));
+        Slice<PlaceDto> placeDtos = placeQueryService.searchDtosByKeyword(keyword, PageRequest.of(page, size));
         return new SliceResponse<SearchPlacesByKeywordResponse>().from(placeDtos.map(SearchPlacesByKeywordResponse::from));
     }
 
@@ -175,7 +177,7 @@ public class PlaceController {
             throw new InvalidTypeOfReviewKeywordValueException("분위기에 대한 값만 사용할 수 있습니다.");
         }
 
-        Page<PlaceDto> searchedPlaceDtos = placeService.findDtosNearBy(userPrincipal.getMemberId(), filteringCondition, new Point(lat, lng), PageRequest.of(page, size));
+        Page<PlaceDto> searchedPlaceDtos = placeQueryService.findDtosNearBy(userPrincipal.getMemberId(), filteringCondition, new Point(lat, lng), PageRequest.of(page, size));
         return new PageResponse<FindNearPlacesResponse>()
                 .from(searchedPlaceDtos.map(FindNearPlacesResponse::from));
     }
@@ -191,7 +193,7 @@ public class PlaceController {
     public PlaceFilteringKeywordListResponse getFilteringKeywordsV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
-        List<PlaceFilteringKeywordResponse> filteringKeywords = placeService.getFilteringKeywords(userPrincipal.getMemberId()).stream()
+        List<PlaceFilteringKeywordResponse> filteringKeywords = placeQueryService.getFilteringKeywords(userPrincipal.getMemberId()).stream()
                 .map(PlaceFilteringKeywordResponse::from)
                 .toList();
         return PlaceFilteringKeywordListResponse.of(filteringKeywords);
@@ -233,7 +235,7 @@ public class PlaceController {
         if (type == FilteringType.TOP_3_KEYWORDS) {
             keyword = ReviewKeywordValue.valueOfContent(keyword).toString();
         }
-        Page<PlaceDto> markedPlaceDtos = placeService.findMarkedDtos(userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size));
+        Page<PlaceDto> markedPlaceDtos = placeQueryService.findMarkedDtos(userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size));
         return new PageResponse<FindMarkedPlacesResponse>().from(markedPlaceDtos.map(FindMarkedPlacesResponse::from));
     }
 
@@ -250,7 +252,7 @@ public class PlaceController {
                     example = "263830255"
             ) @RequestParam @NotBlank String kakaoPid
     ) {
-        boolean existenceOfPlaceByKakaoPid = placeService.existsByKakaoPid(kakaoPid);
+        boolean existenceOfPlaceByKakaoPid = placeQueryService.existsByKakaoPid(kakaoPid);
         return new GetExistenceOfPlaceResponse(existenceOfPlaceByKakaoPid);
     }
 }

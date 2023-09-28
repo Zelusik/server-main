@@ -41,7 +41,7 @@ import java.util.Set;
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.MON;
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.WED;
 import static com.zelusik.eatery.domain.review.constant.ReviewKeywordValue.*;
-import static com.zelusik.eatery.domain.place.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
+import static com.zelusik.eatery.domain.place.service.PlaceQueryService.MAX_NUM_OF_PLACE_IMAGES;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

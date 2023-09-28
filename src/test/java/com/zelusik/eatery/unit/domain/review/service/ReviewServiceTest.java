@@ -13,7 +13,8 @@ import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.place.service.PlaceService;
+import com.zelusik.eatery.domain.place.service.PlaceCommandService;
+import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
@@ -70,7 +71,9 @@ class ReviewServiceTest {
     @Mock
     private MemberQueryService memberQueryService;
     @Mock
-    private PlaceService placeService;
+    private PlaceCommandService placeCommandService;
+    @Mock
+    private PlaceQueryService placeQueryService;
     @Mock
     private ReviewRepository reviewRepository;
     @Mock
@@ -95,27 +98,27 @@ class ReviewServiceTest {
         createdReview.getKeywords().add(reviewKeyword);
         ReviewImage reviewImage = createReviewImage(100L, createdReview);
         createdReview.getReviewImages().add(reviewImage);
-        given(placeService.findById(placeId)).willReturn(expectedPlace);
+        given(placeQueryService.findById(placeId)).willReturn(expectedPlace);
         given(memberQueryService.findById(writerId)).willReturn(expectedMember);
         given(bookmarkQueryService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(reviewKeyword);
         given(reviewImageService.upload(any(Review.class), any())).willReturn(List.of(reviewImage));
         given(reviewImageMenuTagRepository.saveAll(anyList())).willReturn(List.of());
-        willDoNothing().given(placeService).renewTop3Keywords(expectedPlace);
+        willDoNothing().given(placeCommandService).renewTop3Keywords(expectedPlace);
 
         // when
         ReviewDto actualSavedReview = sut.create(writerId, reviewCreateRequest);
 
         // then
-        then(placeService).should().findById(placeId);
+        then(placeQueryService).should().findById(placeId);
         then(memberQueryService).should().findById(writerId);
         then(bookmarkQueryService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         verify(reviewImageService, times(reviewCreateRequest.getImages().size())).upload(any(Review.class), any());
         then(reviewImageMenuTagRepository).should().saveAll(anyList());
-        then(placeService).should().renewTop3Keywords(expectedPlace);
+        then(placeCommandService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSavedReview.getPlace().getKakaoPid()).isEqualTo(kakaoPid);
     }
@@ -237,7 +240,7 @@ class ReviewServiceTest {
         willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
         willDoNothing().given(reviewKeywordRepository).deleteAll(findReview.getKeywords());
         willDoNothing().given(reviewRepository).flush();
-        willDoNothing().given(placeService).renewTop3Keywords(findReview.getPlace());
+        willDoNothing().given(placeCommandService).renewTop3Keywords(findReview.getPlace());
 
         // when
         sut.delete(memberId, reviewId);
@@ -248,7 +251,7 @@ class ReviewServiceTest {
         then(reviewImageService).should().softDeleteAll(findReview.getReviewImages());
         then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
         then(reviewRepository).should().flush();
-        then(placeService).should().renewTop3Keywords(findReview.getPlace());
+        then(placeCommandService).should().renewTop3Keywords(findReview.getPlace());
         verifyEveryMocksShouldHaveNoMoreInteractions();
     }
 
@@ -283,7 +286,7 @@ class ReviewServiceTest {
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(reviewImageService).shouldHaveNoMoreInteractions();
         then(memberQueryService).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).shouldHaveNoMoreInteractions();
         then(reviewRepository).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
         then(bookmarkQueryService).shouldHaveNoMoreInteractions();

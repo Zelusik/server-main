@@ -13,7 +13,7 @@ import com.zelusik.eatery.domain.place.exception.PlaceMenusAlreadyExistsExceptio
 import com.zelusik.eatery.domain.place.exception.PlaceMenusNotFoundException;
 import com.zelusik.eatery.domain.place_menus.repository.PlaceMenusRepository;
 import com.zelusik.eatery.domain.place_menus.service.PlaceMenusService;
-import com.zelusik.eatery.domain.place.service.PlaceService;
+import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class PlaceMenusServiceTest {
     private PlaceMenusService sut;
 
     @Mock
-    private PlaceService placeService;
+    private PlaceQueryService placeQueryService;
     @Mock
     private PlaceMenusRepository placeMenusRepository;
     @Mock
@@ -56,7 +56,7 @@ class PlaceMenusServiceTest {
         List<String> extractedMenus = List.of("돈까스", "파스타", "수제비", "라면");
         PlaceMenus expectedResult = createPlaceMenus(placeMenusId, place, extractedMenus);
         given(placeMenusRepository.existsByPlace_Id(placeId)).willReturn(false);
-        given(placeService.findById(placeId)).willReturn(place);
+        given(placeQueryService.findById(placeId)).willReturn(place);
         given(webScrapingService.scrapMenuList(kakaoPid)).willReturn(extractedMenus);
         given(placeMenusRepository.save(any(PlaceMenus.class))).willReturn(expectedResult);
 
@@ -65,7 +65,7 @@ class PlaceMenusServiceTest {
 
         // then
         then(placeMenusRepository).should().existsByPlace_Id(placeId);
-        then(placeService).should().findById(placeId);
+        then(placeQueryService).should().findById(placeId);
         then(webScrapingService).should().scrapMenuList(kakaoPid);
         then(placeMenusRepository).should().save(any(PlaceMenus.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -88,7 +88,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().existsByPlace_Id(placeId);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(t).isInstanceOf(PlaceMenusAlreadyExistsException.class);
     }
@@ -104,7 +104,7 @@ class PlaceMenusServiceTest {
         List<String> extractedMenus = List.of("돈까스", "파스타", "수제비", "라면");
         PlaceMenus expectedResult = createPlaceMenus(placeMenusId, place, extractedMenus);
         given(placeMenusRepository.existsByPlace_KakaoPid(kakaoPid)).willReturn(false);
-        given(placeService.findByKakaoPid(kakaoPid)).willReturn(place);
+        given(placeQueryService.findByKakaoPid(kakaoPid)).willReturn(place);
         given(webScrapingService.scrapMenuList(kakaoPid)).willReturn(extractedMenus);
         given(placeMenusRepository.save(any(PlaceMenus.class))).willReturn(expectedResult);
 
@@ -113,7 +113,7 @@ class PlaceMenusServiceTest {
 
         // then
         then(placeMenusRepository).should().existsByPlace_KakaoPid(kakaoPid);
-        then(placeService).should().findByKakaoPid(kakaoPid);
+        then(placeQueryService).should().findByKakaoPid(kakaoPid);
         then(webScrapingService).should().scrapMenuList(kakaoPid);
         then(placeMenusRepository).should().save(any(PlaceMenus.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -136,7 +136,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().existsByPlace_KakaoPid(kakaoPid);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(t).isInstanceOf(PlaceMenusAlreadyExistsException.class);
     }
@@ -159,7 +159,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_Id(placeId);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(actualResult)
                 .hasFieldOrPropertyWithValue("id", placeMenusId)
@@ -180,7 +180,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_Id(placeId);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(t).isInstanceOf(PlaceMenusNotFoundException.class);
     }
@@ -203,7 +203,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_KakaoPid(kakaoPid);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(actualResult)
                 .hasFieldOrPropertyWithValue("id", placeMenusId)
@@ -224,7 +224,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_KakaoPid(kakaoPid);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(t).isInstanceOf(PlaceMenusNotFoundException.class);
     }
@@ -247,7 +247,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_Id(placeId);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(updatedPlaceMenusDto)
                 .hasFieldOrPropertyWithValue("id", placeMenusId)
@@ -288,7 +288,7 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_Id(placeId);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         assertThat(result)
                 .hasFieldOrPropertyWithValue("id", placeMenusId)
@@ -310,18 +310,18 @@ class PlaceMenusServiceTest {
         // then
         then(placeMenusRepository).should().deleteByPlace_Id(placeId);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
     }
 
     private void verifyEveryMocksShouldHaveNoInteractions() {
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
         then(webScrapingService).shouldHaveNoInteractions();
         then(placeMenusRepository).shouldHaveNoInteractions();
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).shouldHaveNoMoreInteractions();
         then(webScrapingService).shouldHaveNoMoreInteractions();
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
     }

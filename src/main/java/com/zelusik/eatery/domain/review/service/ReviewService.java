@@ -5,7 +5,8 @@ import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.entity.Place;
-import com.zelusik.eatery.domain.place.service.PlaceService;
+import com.zelusik.eatery.domain.place.service.PlaceCommandService;
+import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
@@ -37,7 +38,8 @@ public class ReviewService {
 
     private final ReviewImageService reviewImageService;
     private final MemberQueryService memberQueryService;
-    private final PlaceService placeService;
+    private final PlaceCommandService placeCommandService;
+    private final PlaceQueryService placeQueryService;
     private final BookmarkQueryService bookmarkQueryService;
     private final ReviewRepository reviewRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
@@ -53,7 +55,7 @@ public class ReviewService {
     @Transactional
     public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest) {
         List<ReviewImageCreateRequest> images = reviewRequest.getImages();
-        Place place = placeService.findById(reviewRequest.getPlaceId());
+        Place place = placeQueryService.findById(reviewRequest.getPlaceId());
         Member writer = memberQueryService.findById(writerId);
         boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(writerId, place);
 
@@ -89,7 +91,7 @@ public class ReviewService {
         }
 
         // 장소 top 3 keyword 갱신
-        placeService.renewTop3Keywords(place);
+        placeCommandService.renewTop3Keywords(place);
 
         return ReviewDto.from(review, placeMarkedStatus);
     }
@@ -198,7 +200,7 @@ public class ReviewService {
         reviewKeywordRepository.deleteAll(review.getKeywords());
         softDelete(review);
 
-        placeService.renewTop3Keywords(review.getPlace());
+        placeCommandService.renewTop3Keywords(review.getPlace());
     }
 
     private void softDelete(Review review) {
