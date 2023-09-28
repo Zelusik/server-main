@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class LocationService {
+public class LocationQueryService {
 
     private final LocationRepository locationRepository;
 

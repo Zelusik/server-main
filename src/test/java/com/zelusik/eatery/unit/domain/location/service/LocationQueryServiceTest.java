@@ -3,7 +3,7 @@ package com.zelusik.eatery.unit.domain.location.service;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.location.dto.LocationDto;
 import com.zelusik.eatery.domain.location.repository.LocationRepository;
-import com.zelusik.eatery.domain.location.service.LocationService;
+import com.zelusik.eatery.domain.location.service.LocationQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,12 +20,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("[Unit] Location Service")
+@DisplayName("[Unit] Service(Query) - Location")
 @ExtendWith(MockitoExtension.class)
-class LocationServiceTest {
+class LocationQueryServiceTest {
 
     @InjectMocks
-    private LocationService sut;
+    private LocationQueryService sut;
 
     @Mock
     private LocationRepository locationRepository;
