@@ -84,7 +84,7 @@ public class MemberCommandService {
                     updateRequest.getGender()
             );
         } else {
-            Optional<ProfileImage> oldProfileImage = profileImageQueryService.findByMember(member);
+            Optional<ProfileImage> oldProfileImage = profileImageQueryService.findOptionalByMember(member);
             oldProfileImage.ifPresent(profileImageCommandService::softDelete);
 
             ProfileImage profileImage = profileImageCommandService.upload(member, profileImageForUpdate);

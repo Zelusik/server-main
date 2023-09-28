@@ -43,7 +43,7 @@ class ProfileImageQueryServiceTest {
         given(profileImageRepository.findByMemberAndDeletedAtIsNull(member)).willReturn(Optional.of(profileImage));
 
         // when
-        Optional<ProfileImage> findProfileImage = sut.findByMember(member);
+        Optional<ProfileImage> findProfileImage = sut.findOptionalByMember(member);
 
         // then
         then(profileImageRepository).should().findByMemberAndDeletedAtIsNull(member);

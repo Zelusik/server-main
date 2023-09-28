@@ -17,6 +17,7 @@ import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurvey
 import com.zelusik.eatery.domain.member_deletion_survey.entity.MemberDeletionSurvey;
 import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
+import com.zelusik.eatery.domain.profile_image.service.ProfileImageCommandService;
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageQueryService;
 import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
 import com.zelusik.eatery.global.common.constant.EateryConstants;
@@ -34,6 +35,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.zelusik.eatery.global.common.constant.FoodCategoryValue.*;
@@ -52,6 +54,8 @@ class MemberCommandServiceTest {
 
     @Mock
     private MemberQueryService memberQueryService;
+    @Mock
+    private ProfileImageCommandService profileImageCommandService;
     @Mock
     private ProfileImageQueryService profileImageQueryService;
     @Mock
@@ -111,15 +115,21 @@ class MemberCommandServiceTest {
         long memberId = 1L;
         Member member = createMember(memberId);
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
+        ProfileImage oldProfileImage = createProfileImage(member, 2L);
         given(memberQueryService.findById(memberId)).willReturn(member);
-        given(profileImageQueryService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(member, 10L));
+        given(profileImageQueryService.findOptionalByMember(member)).willReturn(Optional.of(oldProfileImage));
+        willDoNothing().given(profileImageCommandService).softDelete(oldProfileImage);
+        given(profileImageCommandService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(member, 10L));
 
         // when
         MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
 
         // then
         then(memberQueryService).should().findById(memberId);
-        then(profileImageQueryService).should().upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()));
+        then(profileImageQueryService).should().findOptionalByMember(member);
+        then(profileImageCommandService).should().softDelete(oldProfileImage);
+        then(profileImageCommandService).should().upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()));
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
         assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
         assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
@@ -199,6 +209,7 @@ class MemberCommandServiceTest {
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(profileImageQueryService).shouldHaveNoMoreInteractions();
+        then(profileImageCommandService).shouldHaveNoMoreInteractions();
         then(termsInfoService).shouldHaveNoMoreInteractions();
         then(memberRepository).shouldHaveNoMoreInteractions();
         then(memberDeletionSurveyRepository).shouldHaveNoMoreInteractions();

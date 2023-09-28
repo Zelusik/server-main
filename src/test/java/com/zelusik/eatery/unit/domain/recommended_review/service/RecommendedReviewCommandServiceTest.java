@@ -1,28 +1,22 @@
 package com.zelusik.eatery.unit.domain.recommended_review.service;
 
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.recommended_review.entity.RecommendedReview;
 import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
 import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecommendedReviewsRequest;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
-import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
+import com.zelusik.eatery.domain.recommended_review.entity.RecommendedReview;
 import com.zelusik.eatery.domain.recommended_review.repository.RecommendedReviewRepository;
-import com.zelusik.eatery.domain.member.service.MemberQueryService;
-import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewService;
+import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewCommandService;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.service.ReviewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,12 +37,12 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-@DisplayName("[Unit] Recommended Review Service")
+@DisplayName("[Unit] Service(Command) - Recommended review")
 @ExtendWith(MockitoExtension.class)
-class RecommendedReviewServiceTest {
+class RecommendedReviewCommandServiceTest {
 
     @InjectMocks
-    private RecommendedReviewService sut;
+    private RecommendedReviewCommandService sut;
 
     @Mock
     private MemberQueryService memberQueryService;
@@ -82,32 +76,6 @@ class RecommendedReviewServiceTest {
         assertThat(actualResult)
                 .hasFieldOrPropertyWithValue("memberId", member.getId())
                 .hasFieldOrPropertyWithValue("review.id", review.getId());
-    }
-
-    @DisplayName("회원 id가 주어지고, id에 해당하는 회원이 설정한 추천 리뷰들을 함께 조회한다.")
-    @Test
-    void given_whenFindingRecommendedReviewsWithMemberId_thenReturnRecommendedReviews() {
-        // given
-        long memberId = 1L;
-        long placeId = 2L;
-        long recommendedReviewId = 3L;
-        long reviewId = 4L;
-        short ranking = 3;
-        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking));
-        given(recommendedReviewRepository.findAllDtosWithPlaceMarkedStatusByMemberId(memberId)).willReturn(expectedResults);
-
-        // when
-        List<RecommendedReviewDto> actualResults = sut.findAllDtosWithPlaceMarkedStatus(memberId);
-
-        // then
-        then(recommendedReviewRepository).should().findAllDtosWithPlaceMarkedStatusByMemberId(memberId);
-        verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualResults).hasSize(expectedResults.size());
-        assertThat(actualResults.get(0))
-                .hasFieldOrPropertyWithValue("id", expectedResults.get(0).getId())
-                .hasFieldOrPropertyWithValue("memberId", expectedResults.get(0).getMemberId())
-                .hasFieldOrPropertyWithValue("review.id", expectedResults.get(0).getReview().getId())
-                .hasFieldOrPropertyWithValue("ranking", expectedResults.get(0).getRanking());
     }
 
     @DisplayName("새로 갱신하고자 하는 추천 리뷰 세 개의 정보가 주어지고, 추천 리뷰를 batch update하면, 추천 리뷰가 전달받은 리뷰로 갱신된다.")
@@ -186,28 +154,6 @@ class RecommendedReviewServiceTest {
         );
     }
 
-    private MemberDto createMemberDto(Long memberId) {
-        return createMemberDto(memberId, Set.of(RoleType.USER));
-    }
-
-    private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
-        return new MemberDto(
-                memberId,
-                EateryConstants.defaultProfileImageUrl,
-                EateryConstants.defaultProfileThumbnailImageUrl,
-                "1234567890",
-                LoginType.KAKAO,
-                roleTypes,
-                "test@test.com",
-                "test",
-                LocalDate.of(1998, 1, 5),
-                20,
-                Gender.MALE,
-                List.of(FoodCategoryValue.KOREAN),
-                null
-        );
-    }
-
     private Place createPlace(long id, String kakaoPid) {
         return Place.of(
                 id,
@@ -227,26 +173,6 @@ class RecommendedReviewServiceTest {
         );
     }
 
-    private PlaceDto createPlaceDto(Long placeId) {
-        return new PlaceDto(
-                placeId,
-                List.of(ReviewKeywordValue.FRESH),
-                "308342289",
-                "연남토마 본점",
-                "http://place.map.kakao.com/308342289",
-                KakaoCategoryGroupCode.FD6,
-                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
-                "02-332-8064",
-                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
-                "http://place.map.kakao.com/308342289",
-                new Point("37.5595073462493", "126.921462488105"),
-                null,
-                List.of(),
-                null,
-                false
-        );
-    }
-
     private Review createReview(Long reviewId, Member member, Place place) {
         return Review.of(
                 reviewId,
@@ -260,26 +186,6 @@ class RecommendedReviewServiceTest {
         );
     }
 
-    private ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceDto place) {
-        return new ReviewDto(
-                reviewId,
-                writer,
-                place,
-                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
-                "자동 생성된 내용",
-                "제출된 내용",
-                List.of(new ReviewImageDto(
-                        1L,
-                        1L,
-                        "test.txt",
-                        "storedName",
-                        "url",
-                        "thumbnailStoredName",
-                        "thumbnailUrl")),
-                LocalDateTime.now()
-        );
-    }
-
     private RecommendedReview createRecommendedReview(Long id, Member member, Review review, short ranking) {
         return RecommendedReview.of(
                 id,
@@ -288,15 +194,6 @@ class RecommendedReviewServiceTest {
                 ranking,
                 LocalDateTime.now(),
                 LocalDateTime.now()
-        );
-    }
-
-    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewDto review, short ranking) {
-        return new RecommendedReviewDto(
-                id,
-                memberId,
-                review,
-                ranking
         );
     }
 }

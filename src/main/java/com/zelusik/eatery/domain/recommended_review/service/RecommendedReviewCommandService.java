@@ -1,12 +1,12 @@
 package com.zelusik.eatery.domain.recommended_review.service;
 
-import com.zelusik.eatery.domain.member.service.MemberQueryService;
-import com.zelusik.eatery.domain.recommended_review.entity.RecommendedReview;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.review.entity.Review;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
 import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecommendedReviewsRequest;
+import com.zelusik.eatery.domain.recommended_review.entity.RecommendedReview;
 import com.zelusik.eatery.domain.recommended_review.repository.RecommendedReviewRepository;
+import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
-public class RecommendedReviewService {
+public class RecommendedReviewCommandService {
 
     private final MemberQueryService memberQueryService;
     private final ReviewService reviewService;
@@ -31,7 +31,6 @@ public class RecommendedReviewService {
      * @param ranking  추천 순위. 1~3의 값만 가능.
      * @return 저장된 추천 리뷰 dto
      */
-    @Transactional
     public RecommendedReviewDto saveRecommendedReview(long memberId, long reviewId, short ranking) {
         Member member = memberQueryService.findById(memberId);
         Review review = reviewService.findById(reviewId);
@@ -43,16 +42,6 @@ public class RecommendedReviewService {
     }
 
     /**
-     * 특정 회원이 설정한 추천 리뷰들을 장소 저장 여부와 함께 조회한다.
-     *
-     * @param memberId 추천 리뷰를 조회하고자 하는 대상 회원의 PK
-     * @return 조회된 추천 리뷰들의 dto
-     */
-    public List<RecommendedReviewDto> findAllDtosWithPlaceMarkedStatus(long memberId) {
-        return recommendedReviewRepository.findAllDtosWithPlaceMarkedStatusByMemberId(memberId);
-    }
-
-    /**
      * <p>추천 리뷰를 갱신한다.
      * <p>기존 등록된 추천 리뷰 내역을 전부 삭제한 후, 새로 전달받은 추천 리뷰 목록으로 대체한다.
      *
@@ -60,7 +49,6 @@ public class RecommendedReviewService {
      * @param batchUpdateRecommendedReviewsRequest 갱신할 추천 리뷰 목록이 담긴 request dto
      * @return 갱신된 추천 리뷰 목록
      */
-    @Transactional
     public List<RecommendedReviewDto> batchUpdateRecommendedReviews(long memberId, BatchUpdateRecommendedReviewsRequest batchUpdateRecommendedReviewsRequest) {
         Member member = memberQueryService.findById(memberId);
         recommendedReviewRepository.deleteAllByMember(member);
