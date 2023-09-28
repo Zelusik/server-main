@@ -7,7 +7,7 @@ import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecom
 import com.zelusik.eatery.domain.recommended_review.entity.RecommendedReview;
 import com.zelusik.eatery.domain.recommended_review.repository.RecommendedReviewRepository;
 import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review.service.ReviewService;
+import com.zelusik.eatery.domain.review.service.ReviewQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,7 @@ import java.util.List;
 public class RecommendedReviewCommandService {
 
     private final MemberQueryService memberQueryService;
-    private final ReviewService reviewService;
+    private final ReviewQueryService reviewQueryService;
     private final RecommendedReviewRepository recommendedReviewRepository;
 
     /**
@@ -33,7 +33,7 @@ public class RecommendedReviewCommandService {
      */
     public RecommendedReviewDto saveRecommendedReview(long memberId, long reviewId, short ranking) {
         Member member = memberQueryService.findById(memberId);
-        Review review = reviewService.findById(reviewId);
+        Review review = reviewQueryService.findById(reviewId);
 
         RecommendedReview recommendedReview = RecommendedReview.of(member, review, ranking);
         recommendedReviewRepository.save(recommendedReview);
@@ -56,7 +56,7 @@ public class RecommendedReviewCommandService {
 
         List<RecommendedReview> recommendedReviewsForBatchUpdate = batchUpdateRecommendedReviewsRequest.getRecommendedReviews().stream()
                 .map(request -> {
-                    Review review = reviewService.findById(request.getReviewId());
+                    Review review = reviewQueryService.findById(request.getReviewId());
                     return RecommendedReview.of(member, review, request.getRanking());
                 })
                 .toList();

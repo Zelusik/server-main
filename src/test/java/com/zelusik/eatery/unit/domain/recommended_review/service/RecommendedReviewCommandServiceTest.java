@@ -17,7 +17,7 @@ import com.zelusik.eatery.domain.recommended_review.repository.RecommendedReview
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewCommandService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review.service.ReviewService;
+import com.zelusik.eatery.domain.review.service.ReviewQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,7 @@ class RecommendedReviewCommandServiceTest {
     @Mock
     private MemberQueryService memberQueryService;
     @Mock
-    private ReviewService reviewService;
+    private ReviewQueryService reviewQueryService;
     @Mock
     private RecommendedReviewRepository recommendedReviewRepository;
 
@@ -62,7 +62,7 @@ class RecommendedReviewCommandServiceTest {
         Review review = createReview(reviewId, member, createPlace(3L, "12345"));
         RecommendedReview expectedResult = createRecommendedReview(4L, member, review, ranking);
         given(memberQueryService.findById(memberId)).willReturn(member);
-        given(reviewService.findById(reviewId)).willReturn(review);
+        given(reviewQueryService.findById(reviewId)).willReturn(review);
         given(recommendedReviewRepository.save(any(RecommendedReview.class))).willReturn(expectedResult);
 
         // when
@@ -70,7 +70,7 @@ class RecommendedReviewCommandServiceTest {
 
         // then
         then(memberQueryService).should().findById(memberId);
-        then(reviewService).should().findById(reviewId);
+        then(reviewQueryService).should().findById(reviewId);
         then(recommendedReviewRepository).should().save(any(RecommendedReview.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult)
@@ -100,7 +100,7 @@ class RecommendedReviewCommandServiceTest {
         given(memberQueryService.findById(memberId)).willReturn(member);
         willDoNothing().given(recommendedReviewRepository).deleteAllByMember(member);
         willDoNothing().given(recommendedReviewRepository).flush();
-        given(reviewService.findById(any(Long.class))).willReturn(review1, review2, review3);
+        given(reviewQueryService.findById(any(Long.class))).willReturn(review1, review2, review3);
         given(recommendedReviewRepository.saveAll(anyList())).willReturn(expectedResults);
 
         // when
@@ -110,7 +110,7 @@ class RecommendedReviewCommandServiceTest {
         then(memberQueryService).should().findById(memberId);
         then(recommendedReviewRepository).should().deleteAllByMember(member);
         then(recommendedReviewRepository).should().flush();
-        verify(reviewService, times(3)).findById(any(Long.class));
+        verify(reviewQueryService, times(3)).findById(any(Long.class));
         then(recommendedReviewRepository).should().saveAll(anyList());
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResults).isNotEmpty();
@@ -127,7 +127,7 @@ class RecommendedReviewCommandServiceTest {
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(memberQueryService).shouldHaveNoMoreInteractions();
-        then(reviewService).shouldHaveNoMoreInteractions();
+        then(reviewQueryService).shouldHaveNoMoreInteractions();
         then(recommendedReviewRepository).shouldHaveNoMoreInteractions();
     }
 
