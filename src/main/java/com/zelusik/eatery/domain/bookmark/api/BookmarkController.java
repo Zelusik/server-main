@@ -2,7 +2,7 @@ package com.zelusik.eatery.domain.bookmark.api;
 
 import com.zelusik.eatery.domain.bookmark.dto.response.BookmarkResponse;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkCommandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +25,7 @@ import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINO
 @RestController
 public class BookmarkController {
 
-    private final BookmarkService bookmarkService;
+    private final BookmarkCommandService bookmarkCommandService;
 
     @Operation(
             summary = "장소 북마크",
@@ -45,7 +45,7 @@ public class BookmarkController {
                     example = "1"
             ) @RequestParam Long placeId
     ) {
-        BookmarkResponse response = BookmarkResponse.from(bookmarkService.mark(userPrincipal.getMemberId(), placeId));
+        BookmarkResponse response = BookmarkResponse.from(bookmarkCommandService.mark(userPrincipal.getMemberId(), placeId));
 
         return ResponseEntity
                 .created(URI.create("/api/v1/bookmarks/" + response.getId()))
@@ -70,6 +70,6 @@ public class BookmarkController {
                     example = "1"
             ) @RequestParam Long placeId
     ) {
-        bookmarkService.delete(userPrincipal.getMemberId(), placeId);
+        bookmarkCommandService.delete(userPrincipal.getMemberId(), placeId);
     }
 }

@@ -1,23 +1,23 @@
 package com.zelusik.eatery.unit.domain.bookmark.service;
 
+import com.zelusik.eatery.domain.bookmark.dto.BookmarkDto;
+import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
+import com.zelusik.eatery.domain.bookmark.exception.AlreadyMarkedPlaceException;
+import com.zelusik.eatery.domain.bookmark.exception.BookmarkNotFoundException;
+import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkCommandService;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
 import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.bookmark.dto.BookmarkDto;
-import com.zelusik.eatery.domain.bookmark.exception.AlreadyMarkedPlaceException;
-import com.zelusik.eatery.domain.bookmark.exception.BookmarkNotFoundException;
-import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
-import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,12 +36,12 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Unit] Bookmark Service")
+@DisplayName("[Unit] Service(Command) - Bookmark")
 @ExtendWith(MockitoExtension.class)
-class BookmarkServiceTest {
+class BookmarkCommandServiceTest {
 
     @InjectMocks
-    private BookmarkService sut;
+    private BookmarkCommandService sut;
 
     @Mock
     private MemberService memberService;
@@ -95,27 +95,6 @@ class BookmarkServiceTest {
         then(bookmarkRepository).should().existsByMember_IdAndPlace_Id(memberId, placeId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(AlreadyMarkedPlaceException.class);
-    }
-
-    @DisplayName("회원과 장소의 PK가 주어지고, 일치하는 북마크 존재 여부를 확인한다.")
-    @Test
-    void givenMemberIdAndPlaceId_whenCheckMarkingStatus_thenReturnMarkingStatus() {
-        // given
-        long memberId = 1L;
-        long placeId = 2L;
-        Place place = createPlace(placeId, "12345");
-        boolean expectedResult = true;
-        given(bookmarkRepository.existsByMember_IdAndPlace(memberId, place)).willReturn(expectedResult);
-
-        // when
-        boolean actualResult = sut.isMarkedPlace(memberId, place);
-
-        // then
-        then(bookmarkRepository).should().existsByMember_IdAndPlace(memberId, place);
-        then(memberService).shouldHaveNoInteractions();
-        then(placeRepository).shouldHaveNoInteractions();
-        then(bookmarkRepository).shouldHaveNoMoreInteractions();
-        assertThat(actualResult).isEqualTo(expectedResult);
     }
 
     @DisplayName("회원과 장소의 PK가 주어지면, 일치하는 북마크를 삭제한다.")

@@ -1,38 +1,38 @@
 package com.zelusik.eatery.unit.domain.review.service;
 
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
+import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.place.service.PlaceService;
-import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review.service.ReviewService;
-import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
-import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
-import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
-import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
-import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
-import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
-import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
-import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTagCreateRequest;
+import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.exception.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.domain.review.exception.ReviewNotFoundException;
-import com.zelusik.eatery.domain.review_image_menu_tag.repository.ReviewImageMenuTagRepository;
-import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
 import com.zelusik.eatery.domain.review.repository.ReviewRepository;
+import com.zelusik.eatery.domain.review.service.ReviewService;
+import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
+import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
+import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
+import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
+import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTagCreateRequest;
+import com.zelusik.eatery.domain.review_image_menu_tag.repository.ReviewImageMenuTagRepository;
+import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
+import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +58,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Unit] Review Service")
+@DisplayName("[Unit] Service - Review")
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceTest {
 
@@ -76,7 +76,7 @@ class ReviewServiceTest {
     @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
     @Mock
-    private BookmarkService bookmarkService;
+    private BookmarkQueryService bookmarkQueryService;
     @Mock
     private ReviewImageMenuTagRepository reviewImageMenuTagRepository;
 
@@ -97,7 +97,7 @@ class ReviewServiceTest {
         createdReview.getReviewImages().add(reviewImage);
         given(placeService.findById(placeId)).willReturn(expectedPlace);
         given(memberService.findById(writerId)).willReturn(expectedMember);
-        given(bookmarkService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
+        given(bookmarkQueryService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(reviewKeyword);
         given(reviewImageService.upload(any(Review.class), any())).willReturn(List.of(reviewImage));
@@ -110,7 +110,7 @@ class ReviewServiceTest {
         // then
         then(placeService).should().findById(placeId);
         then(memberService).should().findById(writerId);
-        then(bookmarkService).should().isMarkedPlace(writerId, expectedPlace);
+        then(bookmarkQueryService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
         verify(reviewImageService, times(reviewCreateRequest.getImages().size())).upload(any(Review.class), any());
@@ -164,14 +164,14 @@ class ReviewServiceTest {
         long reviewId = 2L;
         Review expectedResult = createReview(reviewId, createMember(memberId), createPlace(3L, "12345"));
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(expectedResult));
-        given(bookmarkService.isMarkedPlace(eq(memberId), any(Place.class))).willReturn(false);
+        given(bookmarkQueryService.isMarkedPlace(eq(memberId), any(Place.class))).willReturn(false);
 
         // when
         ReviewDto actualResult = sut.findDtoById(memberId, reviewId);
 
         // then
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
-        then(bookmarkService).should().isMarkedPlace(eq(memberId), any(Place.class));
+        then(bookmarkQueryService).should().isMarkedPlace(eq(memberId), any(Place.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult)
                 .hasFieldOrPropertyWithValue("id", reviewId)
@@ -286,7 +286,7 @@ class ReviewServiceTest {
         then(placeService).shouldHaveNoMoreInteractions();
         then(reviewRepository).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkService).shouldHaveNoMoreInteractions();
+        then(bookmarkQueryService).shouldHaveNoMoreInteractions();
     }
 
     private Member createMember(Long memberId) {

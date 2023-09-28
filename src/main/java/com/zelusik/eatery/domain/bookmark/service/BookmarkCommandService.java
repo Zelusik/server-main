@@ -1,26 +1,24 @@
 package com.zelusik.eatery.domain.bookmark.service;
 
-import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
-import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.bookmark.dto.BookmarkDto;
+import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
 import com.zelusik.eatery.domain.bookmark.exception.AlreadyMarkedPlaceException;
 import com.zelusik.eatery.domain.bookmark.exception.BookmarkNotFoundException;
-import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
 import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
-import com.zelusik.eatery.domain.place.repository.PlaceRepository;
+import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.place.entity.Place;
+import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
+import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
-public class BookmarkService {
+public class BookmarkCommandService {
 
-    // Service class를 참조하게 될 경우 순환 참조 문제가 발생할 수 있으므로 주의해야 한다.
     private final MemberService memberService;
     private final PlaceRepository placeRepository;
     private final BookmarkRepository bookmarkRepository;
@@ -42,17 +40,6 @@ public class BookmarkService {
 
         Bookmark bookmark = bookmarkRepository.save(Bookmark.of(member, place));
         return BookmarkDto.from(bookmark);
-    }
-
-    /**
-     * 회원이 place를 북마크에 저장했는지 여부를 반환한다.
-     *
-     * @param memberId 북마크 저장 여부를 확인하고자 하는 회원의 PK
-     * @param place    북마크 저장 여부를 확인하고자 하는 장소
-     * @return 북마크 저장 여부
-     */
-    public boolean isMarkedPlace(long memberId, @NonNull Place place) {
-        return bookmarkRepository.existsByMember_IdAndPlace(memberId, place);
     }
 
     /**

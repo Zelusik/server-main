@@ -1,26 +1,26 @@
 package com.zelusik.eatery.domain.review.service;
 
-import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
-import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.service.PlaceService;
-import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
-import com.zelusik.eatery.domain.review_image_menu_tag.entity.ReviewImageMenuTag;
-import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
-import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
+import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.exception.ReviewDeletePermissionDeniedException;
 import com.zelusik.eatery.domain.review.exception.ReviewNotFoundException;
 import com.zelusik.eatery.domain.review.exception.ReviewUpdatePermissionDeniedException;
-import com.zelusik.eatery.domain.review_image_menu_tag.repository.ReviewImageMenuTagRepository;
-import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
 import com.zelusik.eatery.domain.review.repository.ReviewRepository;
+import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
+import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
 import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_image_menu_tag.entity.ReviewImageMenuTag;
+import com.zelusik.eatery.domain.review_image_menu_tag.repository.ReviewImageMenuTagRepository;
+import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
+import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -38,7 +38,7 @@ public class ReviewService {
     private final ReviewImageService reviewImageService;
     private final MemberService memberService;
     private final PlaceService placeService;
-    private final BookmarkService bookmarkService;
+    private final BookmarkQueryService bookmarkQueryService;
     private final ReviewRepository reviewRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
     private final ReviewImageMenuTagRepository reviewImageMenuTagRepository;
@@ -55,7 +55,7 @@ public class ReviewService {
         List<ReviewImageCreateRequest> images = reviewRequest.getImages();
         Place place = placeService.findById(reviewRequest.getPlaceId());
         Member writer = memberService.findById(writerId);
-        boolean placeMarkedStatus = bookmarkService.isMarkedPlace(writerId, place);
+        boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
         ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, placeMarkedStatus));
@@ -113,7 +113,7 @@ public class ReviewService {
      */
     public ReviewDto findDtoById(Long memberId, Long reviewId) {
         Review review = findById(reviewId);
-        boolean isMarkedPlace = bookmarkService.isMarkedPlace(memberId, review.getPlace());
+        boolean isMarkedPlace = bookmarkQueryService.isMarkedPlace(memberId, review.getPlace());
         return ReviewDto.from(review, isMarkedPlace);
     }
 
@@ -164,7 +164,7 @@ public class ReviewService {
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
 
-        return ReviewDto.from(review, bookmarkService.isMarkedPlace(memberId, review.getPlace()));
+        return ReviewDto.from(review, bookmarkQueryService.isMarkedPlace(memberId, review.getPlace()));
     }
 
     /**

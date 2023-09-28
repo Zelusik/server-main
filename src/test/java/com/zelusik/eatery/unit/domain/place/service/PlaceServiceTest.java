@@ -1,29 +1,29 @@
 package com.zelusik.eatery.unit.domain.place.service;
 
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
+import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
+import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
+import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
+import com.zelusik.eatery.domain.place.dto.PlaceScrapingOpeningHourDto;
+import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
+import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingOpeningHourDto;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
-import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
-import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.exception.PlaceAlreadyExistsException;
 import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
-import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
-import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
-import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
 import com.zelusik.eatery.domain.place.service.PlaceService;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("[Unit] Place Service")
+@DisplayName("[Unit] Service - Place")
 @ExtendWith(MockitoExtension.class)
 class PlaceServiceTest {
 
@@ -63,7 +63,7 @@ class PlaceServiceTest {
     @Mock
     private OpeningHoursRepository openingHoursRepository;
     @Mock
-    private BookmarkService bookmarkService;
+    private BookmarkQueryService bookmarkQueryService;
     @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
 
@@ -89,7 +89,7 @@ class PlaceServiceTest {
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(placeScrapingInfo);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(List.of());
-        given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(false);
+        given(bookmarkQueryService.isMarkedPlace(memberId, expectedResult)).willReturn(false);
 
         // when
         PlaceDto actualResult = sut.create(memberId, placeCreateRequest);
@@ -99,7 +99,7 @@ class PlaceServiceTest {
         then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().saveAll(ArgumentMatchers.<List<OpeningHours>>any());
-        then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
+        then(bookmarkQueryService).should().isMarkedPlace(memberId, expectedResult);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
     }
@@ -130,7 +130,7 @@ class PlaceServiceTest {
         long memberId = 2L;
         Place expectedResult = createPlace(placeId, "12345");
         given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedResult));
-        given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
+        given(bookmarkQueryService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
         given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
@@ -138,7 +138,7 @@ class PlaceServiceTest {
 
         // then
         then(placeRepository).should().findById(placeId);
-        then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
+        then(bookmarkQueryService).should().isMarkedPlace(memberId, expectedResult);
         then(reviewImageService).should().findLatest3ByPlace(placeId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult).hasFieldOrPropertyWithValue("id", placeId);
@@ -170,7 +170,7 @@ class PlaceServiceTest {
         String kakaoPid = "12345";
         Place expectedResult = createPlace(placeId, "12345");
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedResult));
-        given(bookmarkService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
+        given(bookmarkQueryService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
         given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
@@ -178,7 +178,7 @@ class PlaceServiceTest {
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
-        then(bookmarkService).should().isMarkedPlace(memberId, expectedResult);
+        then(bookmarkQueryService).should().isMarkedPlace(memberId, expectedResult);
         then(reviewImageService).should().findLatest3ByPlace(placeId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult)
@@ -371,7 +371,7 @@ class PlaceServiceTest {
         then(webScrapingService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(openingHoursRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkService).shouldHaveNoMoreInteractions();
+        then(bookmarkQueryService).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
     }
 

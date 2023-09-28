@@ -1,24 +1,24 @@
 package com.zelusik.eatery.domain.place.service;
 
-import com.zelusik.eatery.domain.place.constant.FilteringType;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
-import com.zelusik.eatery.domain.place.entity.Place;
-import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
+import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
-import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
+import com.zelusik.eatery.domain.place.entity.Place;
+import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.place.exception.PlaceAlreadyExistsException;
 import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
-import com.zelusik.eatery.global.scraping.exception.ScrapingServerInternalError;
-import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
-import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
+import com.zelusik.eatery.global.scraping.exception.ScrapingServerInternalError;
 import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,7 +43,7 @@ public class PlaceService {
     private final ReviewImageService reviewImageService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
-    private final BookmarkService bookmarkService;
+    private final BookmarkQueryService bookmarkQueryService;
     private final ReviewKeywordRepository reviewKeywordRepository;
 
     /**
@@ -64,7 +64,7 @@ public class PlaceService {
         PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
 
         Place savedPlace = placeRepository.save(placeCreateRequest.toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours()).toEntity());
-        boolean placeMarkedStatus = bookmarkService.isMarkedPlace(memberId, savedPlace);
+        boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(memberId, savedPlace);
 
         if (scrapingInfo.getOpeningHours() == null || scrapingInfo.getOpeningHours().isEmpty()) {
             return PlaceDto.from(savedPlace, placeMarkedStatus);
@@ -119,7 +119,7 @@ public class PlaceService {
      */
     public PlaceDto findDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
         Place foundPlace = findById(placeId);
-        boolean isMarked = bookmarkService.isMarkedPlace(memberId, foundPlace);
+        boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
         List<ReviewImageDto> latest3Images = reviewImageService.findLatest3ByPlace(foundPlace.getId());
         return PlaceDto.fromWithImages(foundPlace, isMarked, latest3Images);
     }
@@ -133,7 +133,7 @@ public class PlaceService {
     @NonNull
     public PlaceDto findDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
         Place foundPlace = findByKakaoPid(kakaoPid);
-        boolean isMarked = bookmarkService.isMarkedPlace(memberId, foundPlace);
+        boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
         List<ReviewImageDto> latest3ByPlace = reviewImageService.findLatest3ByPlace(foundPlace.getId());
         return PlaceDto.fromWithImages(foundPlace, isMarked, latest3ByPlace);
     }
