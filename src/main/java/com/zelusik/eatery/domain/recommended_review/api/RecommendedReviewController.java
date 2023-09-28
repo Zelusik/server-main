@@ -21,7 +21,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 
 @Tag(name = "추천 리뷰 관련 API")
 @RequiredArgsConstructor

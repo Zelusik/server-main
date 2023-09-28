@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 
 @Tag(name = "북마크 API")
 @RequiredArgsConstructor

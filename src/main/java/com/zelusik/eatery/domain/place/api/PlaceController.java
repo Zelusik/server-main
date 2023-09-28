@@ -35,7 +35,7 @@ import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.util.List;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 
 @Tag(name = "장소 관련 API")
 @RequiredArgsConstructor

@@ -1,6 +1,6 @@
 package com.zelusik.eatery.unit.service;
 
-import com.zelusik.eatery.global.common.constant.ConstantUtil;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
@@ -397,8 +397,8 @@ class MemberServiceTest {
 
     private MemberDto createNewMemberDto(String socialUid, Set<RoleType> roleTypes) {
         return new MemberDto(
-                ConstantUtil.defaultProfileImageUrl,
-                ConstantUtil.defaultProfileThumbnailImageUrl,
+                EateryConstants.defaultProfileImageUrl,
+                EateryConstants.defaultProfileThumbnailImageUrl,
                 socialUid,
                 LoginType.KAKAO,
                 roleTypes,

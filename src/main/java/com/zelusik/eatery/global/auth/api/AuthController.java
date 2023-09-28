@@ -31,7 +31,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 
 @Tag(name = "로그인 등 인증 관련 API")
 @RequiredArgsConstructor

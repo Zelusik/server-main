@@ -1,7 +1,7 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.ConstantUtil;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
@@ -43,7 +43,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -345,8 +345,8 @@ class PlaceControllerTest {
     private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
         return new MemberDto(
                 memberId,
-                ConstantUtil.defaultProfileImageUrl,
-                ConstantUtil.defaultProfileThumbnailImageUrl,
+                EateryConstants.defaultProfileImageUrl,
+                EateryConstants.defaultProfileThumbnailImageUrl,
                 "1234567890",
                 LoginType.KAKAO,
                 roleTypes,

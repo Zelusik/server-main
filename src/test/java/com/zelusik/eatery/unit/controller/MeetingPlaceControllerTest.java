@@ -1,7 +1,7 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.ConstantUtil;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.domain.location.dto.LocationDto;
 import com.zelusik.eatery.domain.location.service.LocationService;
 import com.zelusik.eatery.domain.meeting_place.api.MeetingPlaceController;
@@ -33,7 +33,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.domain.meeting_place.api.MeetingPlaceController.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -198,8 +198,8 @@ class MeetingPlaceControllerTest {
     private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
         return new MemberDto(
                 memberId,
-                ConstantUtil.defaultProfileImageUrl,
-                ConstantUtil.defaultProfileThumbnailImageUrl,
+                EateryConstants.defaultProfileImageUrl,
+                EateryConstants.defaultProfileThumbnailImageUrl,
                 "1234567890",
                 LoginType.KAKAO,
                 roleTypes,

@@ -1,6 +1,6 @@
 package com.zelusik.eatery.global.apple.dto;
 
-import com.zelusik.eatery.global.common.constant.ConstantUtil;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
@@ -33,8 +33,8 @@ public class AppleOAuthUserInfo {
 
     public MemberDto toMemberDto(String name, Set<RoleType> roleTypes) {
         return new MemberDto(
-                ConstantUtil.defaultProfileImageUrl,
-                ConstantUtil.defaultProfileThumbnailImageUrl,
+                EateryConstants.defaultProfileImageUrl,
+                EateryConstants.defaultProfileThumbnailImageUrl,
                 this.getSub(),
                 LoginType.APPLE,
                 roleTypes,

@@ -23,7 +23,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 
 @Tag(name = "약속 장소 관련 API")
 @RequiredArgsConstructor

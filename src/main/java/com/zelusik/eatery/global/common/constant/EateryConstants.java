@@ -3,7 +3,7 @@ package com.zelusik.eatery.global.common.constant;
 import com.zelusik.eatery.global.apple.dto.AppleOAuthUserInfo;
 import com.zelusik.eatery.global.kakao.dto.KakaoOAuthUserInfo;
 
-public class ConstantUtil {
+public class EateryConstants {
 
     /**
      * @see KakaoOAuthUserInfo

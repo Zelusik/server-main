@@ -1,6 +1,6 @@
 package com.zelusik.eatery.global.kakao.dto;
 
-import com.zelusik.eatery.global.common.constant.ConstantUtil;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
@@ -105,11 +105,11 @@ public class KakaoOAuthUserInfo {
     public MemberDto toMemberDto(Set<RoleType> roleTypes) {
         String profileImageUrl = getProfileImageUrl();
         if (!StringUtils.hasText(profileImageUrl)) {
-            profileImageUrl = ConstantUtil.defaultProfileImageUrl;
+            profileImageUrl = EateryConstants.defaultProfileImageUrl;
         }
         String thumbnailImageUrl = getThumbnailImageUrl();
         if (!StringUtils.hasText(thumbnailImageUrl)) {
-            thumbnailImageUrl = ConstantUtil.defaultProfileThumbnailImageUrl;
+            thumbnailImageUrl = EateryConstants.defaultProfileThumbnailImageUrl;
         }
 
         return new MemberDto(

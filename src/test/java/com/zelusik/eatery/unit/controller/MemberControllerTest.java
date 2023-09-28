@@ -1,7 +1,7 @@
 package com.zelusik.eatery.unit.controller;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.ConstantUtil;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
@@ -38,7 +38,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.global.common.constant.ConstantUtil.API_MINOR_VERSION_HEADER_NAME;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -254,8 +254,8 @@ class MemberControllerTest {
     private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {
         return new MemberDto(
                 memberId,
-                ConstantUtil.defaultProfileImageUrl,
-                ConstantUtil.defaultProfileThumbnailImageUrl,
+                EateryConstants.defaultProfileImageUrl,
+                EateryConstants.defaultProfileThumbnailImageUrl,
                 "1234567890",
                 LoginType.KAKAO,
                 roleTypes,
@@ -281,8 +281,8 @@ class MemberControllerTest {
     private MemberProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
         return new MemberProfileInfoDto(
                 memberId,
-                ConstantUtil.defaultProfileImageUrl,
-                ConstantUtil.defaultProfileThumbnailImageUrl,
+                EateryConstants.defaultProfileImageUrl,
+                EateryConstants.defaultProfileThumbnailImageUrl,
                 "test",
                 Gender.MALE,
                 LocalDate.of(2000, 1, 1),
