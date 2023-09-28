@@ -1,12 +1,12 @@
 package com.zelusik.eatery.domain.menu_keyword.service;
 
-import com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory;
-import com.zelusik.eatery.domain.menu_keyword.entity.MenuKeyword;
-import com.zelusik.eatery.domain.place.entity.PlaceCategory;
-import com.zelusik.eatery.global.common.dto.ListDto;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
+import com.zelusik.eatery.domain.menu_keyword.entity.MenuKeyword;
 import com.zelusik.eatery.domain.menu_keyword.repository.MenuKeywordRepository;
-import lombok.*;
+import com.zelusik.eatery.domain.place.entity.PlaceCategory;
+import com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory;
+import com.zelusik.eatery.global.common.dto.ListDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCateg
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
-public class MenuKeywordService {
+public class MenuKeywordQueryService {
     private static final int MAX_NUM_OF_RESULTS = 10;
 
     private final MenuKeywordRepository menuKeywordRepository;

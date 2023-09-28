@@ -1,11 +1,11 @@
 package com.zelusik.eatery.unit.domain.menu_keyword.service;
 
-import com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory;
-import com.zelusik.eatery.domain.menu_keyword.entity.MenuKeyword;
-import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
+import com.zelusik.eatery.domain.menu_keyword.entity.MenuKeyword;
 import com.zelusik.eatery.domain.menu_keyword.repository.MenuKeywordRepository;
-import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordService;
+import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordQueryService;
+import com.zelusik.eatery.domain.place.entity.PlaceCategory;
+import com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("[Unit] Menu keyword service")
+@DisplayName("[Unit] Service(Query) - Menu keyword")
 @ExtendWith(MockitoExtension.class)
-class MenuKeywordServiceTest {
+class MenuKeywordQueryServiceTest {
 
     @InjectMocks
-    private MenuKeywordService sut;
+    private MenuKeywordQueryService sut;
 
     @Mock
     private MenuKeywordRepository menuKeywordRepository;
