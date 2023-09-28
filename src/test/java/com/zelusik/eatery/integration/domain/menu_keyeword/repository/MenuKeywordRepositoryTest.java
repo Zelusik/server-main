@@ -1,4 +1,4 @@
-package com.zelusik.eatery.integration.domain.menu_keyword.repository;
+package com.zelusik.eatery.integration.domain.menu_keyeword.repository;
 
 import com.zelusik.eatery.global.config.JpaConfig;
 import com.zelusik.eatery.global.config.QuerydslConfig;
@@ -21,7 +21,7 @@ import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCateg
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-@DisplayName("[Integration] MenuKeyword Repository")
+@DisplayName("[Integration] Repository - Menu keyword")
 @Import({QuerydslConfig.class, JpaConfig.class})
 @ActiveProfiles("test")
 @DataJpaTest

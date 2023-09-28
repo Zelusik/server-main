@@ -38,7 +38,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-@DisplayName("[Integration] Member Repository")
+@DisplayName("[Integration] Repository - Member")
 @ActiveProfiles("test")
 @Import({QuerydslConfig.class, JpaConfig.class})
 @DataJpaTest

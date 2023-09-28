@@ -38,7 +38,7 @@ import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.WRITER
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@DisplayName("[Integration] Review Repository")
+@DisplayName("[Integration] Repository - Review")
 @ActiveProfiles("test")
 @Import({QuerydslConfig.class, JpaConfig.class})
 @DataJpaTest

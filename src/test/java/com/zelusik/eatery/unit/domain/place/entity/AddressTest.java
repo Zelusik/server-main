@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@DisplayName("[Unit] Entity(Place) - Address")
 class AddressTest {
 
     @DisplayName("주소 정보가 주어지고 Address entity를 생성하면 시/도, 시/군/구, 상세주소 단위로 주소 정보를 구성한다")

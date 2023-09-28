@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@DisplayName("[Unit] Open AI Service")
+@DisplayName("[Unit] Service - Open AI ")
 @Import(ObjectMapper.class)
 @AutoConfigureWebClient(registerRestTemplate = true)
 @RestClientTest(OpenAIService.class)

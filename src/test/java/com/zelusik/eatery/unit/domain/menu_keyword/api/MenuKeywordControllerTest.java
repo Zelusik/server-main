@@ -41,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Menu keyword controller")
+@DisplayName("[Unit] Controller - Menu keyword")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = MenuKeywordController.class)

@@ -15,7 +15,7 @@ import static com.zelusik.eatery.domain.review.constant.ReviewKeywordValue.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@DisplayName("Review keyword converter test")
+@DisplayName("[Unit] Converter - Review keyword")
 @Import(ReviewKeywordValueConverter.class)
 class ReviewKeywordValueConverterTest {
 

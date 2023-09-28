@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Bookmark Controller Test")
+@DisplayName("[Unit] Controller - Bookmark")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = BookmarkController.class)
 class BookmarkControllerTest {

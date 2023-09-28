@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+@DisplayName("[Unit] Entity(Place) - PlaceCategory")
 class PlaceCategoryTest {
-
 
     @DisplayName("카테고리 이름이 주어지고 PlaceCategory 객체를 생성하면 세 개의 값으로 구성된 카테고리 정보가 구성된다.")
     @MethodSource("categoryInfos")

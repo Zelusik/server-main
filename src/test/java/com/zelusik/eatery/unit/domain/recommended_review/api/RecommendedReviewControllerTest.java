@@ -49,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Recommended Review Controller")
+@DisplayName("[Unit] Controller - Recommended review")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = RecommendedReviewController.class)
 class RecommendedReviewControllerTest {

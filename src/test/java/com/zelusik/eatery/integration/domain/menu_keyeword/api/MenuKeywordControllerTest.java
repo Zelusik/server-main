@@ -21,7 +21,7 @@ import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCateg
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-@DisplayName("[Integration] Menu keyword service")
+@DisplayName("[Integration] Controller - Menu keyword")
 @ActiveProfiles("test")
 @Import({MenuKeywordController.class, MenuKeywordQueryService.class, QuerydslConfig.class, JpaConfig.class})
 @DataJpaTest

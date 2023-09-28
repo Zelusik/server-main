@@ -39,7 +39,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@DisplayName("[Unit] Place Menus Controller")
+@DisplayName("[Unit] Controller - Place menus")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import({TestSecurityConfig.class, JpaConfig.class})
 @WebMvcTest(controllers = PlaceMenusController.class)

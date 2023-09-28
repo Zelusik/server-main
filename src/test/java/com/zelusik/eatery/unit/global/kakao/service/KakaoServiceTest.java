@@ -23,7 +23,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@DisplayName("[Unit] Kakao Service")
+@DisplayName("[Unit] Service - Kakao")
 @ActiveProfiles("test")
 @AutoConfigureWebClient(registerRestTemplate = true)
 @RestClientTest(KakaoService.class)
