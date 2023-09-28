@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("[DTO] Kakao 장소 정보 응답 데이터 테스트")
+@DisplayName("[Unit] DTO - Kakao 장소 정보 응답 데이터 테스트")
 class KakaoPlaceInfoTest {
 
     @DisplayName("Kakao 장소 응답이 주어지면, KakaoPlaceResponse 객체로 변환한다.")

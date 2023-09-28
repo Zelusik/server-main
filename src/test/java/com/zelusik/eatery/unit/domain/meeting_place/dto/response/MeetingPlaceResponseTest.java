@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("[DTO] 약속 장소 응답 데이터 테스트")
+@DisplayName("[Unit] DTO - 약속 장소 응답 데이터 테스트")
 class MeetingPlaceResponseTest {
 
     @DisplayName("LocationDto 객체가 주어지면, MeetingPlaceResponse 객체로 변환한다.")

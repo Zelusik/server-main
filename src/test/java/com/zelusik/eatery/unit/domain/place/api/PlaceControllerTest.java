@@ -1,27 +1,28 @@
 package com.zelusik.eatery.unit.domain.place.api;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
+import com.zelusik.eatery.domain.opening_hours.dto.OpeningHoursDto;
+import com.zelusik.eatery.domain.place.api.PlaceController;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.place.api.PlaceController;
-import com.zelusik.eatery.domain.place.entity.Address;
-import com.zelusik.eatery.domain.place.entity.PlaceCategory;
-import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.opening_hours.dto.OpeningHoursDto;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
+import com.zelusik.eatery.domain.place.entity.Address;
+import com.zelusik.eatery.domain.place.entity.PlaceCategory;
+import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.place.service.PlaceCommandService;
+import com.zelusik.eatery.domain.place.service.PlaceQueryService;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.place.service.PlaceService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.*;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,14 +58,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Place Controller")
+@DisplayName("[Unit] Controller - Place")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = PlaceController.class)
 class PlaceControllerTest {
 
     @MockBean
-    PlaceService placeService;
+    private PlaceCommandService placeCommandService;
+    @MockBean
+    private PlaceQueryService placeQueryService;
 
     private final MockMvc mvc;
     private final ObjectMapper mapper;
@@ -81,7 +84,7 @@ class PlaceControllerTest {
         long memberId = 1L;
         long placeId = 2L;
         PlaceCreateRequest placeCreateRequest = createPlaceRequest();
-        given(placeService.create(eq(memberId), any(PlaceCreateRequest.class))).willReturn(createPlaceDto(placeId, "123"));
+        given(placeCommandService.create(eq(memberId), any(PlaceCreateRequest.class))).willReturn(createPlaceDto(placeId, "123"));
 
         // when & then
         mvc.perform(
@@ -94,8 +97,8 @@ class PlaceControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andDo(print());
-        then(placeService).should().create(eq(memberId), any(PlaceCreateRequest.class));
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeCommandService).should().create(eq(memberId), any(PlaceCreateRequest.class));
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("가게의 id(PK)가 주어지고, 해당하는 장소를 단건 조회하면, 조회된 장소 정보를 반환한다.")
@@ -105,7 +108,7 @@ class PlaceControllerTest {
         long memberId = 1L;
         long placeId = 2L;
         PlaceDto expectedResult = createPlaceDto(placeId, "123");
-        given(placeService.findDtoWithMarkedStatusAndImagesById(memberId, placeId)).willReturn(expectedResult);
+        given(placeQueryService.findDtoWithMarkedStatusAndImagesById(memberId, placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -118,8 +121,8 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
                 .andExpect(jsonPath("$.placeImages").isArray())
                 .andDo(print());
-        then(placeService).should().findDtoWithMarkedStatusAndImagesById(memberId, placeId);
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).should().findDtoWithMarkedStatusAndImagesById(memberId, placeId);
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("Kakao place unique id가 주어지고, 해당하는 장소를 단건 조회하면, 조회된 장소 정보를 반환한다.")
@@ -129,7 +132,7 @@ class PlaceControllerTest {
         long memberId = 1L;
         String kakaoPid = "12345";
         PlaceDto expectedResult = createPlaceDto(2L, kakaoPid);
-        given(placeService.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid)).willReturn(expectedResult);
+        given(placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -143,8 +146,8 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
                 .andExpect(jsonPath("$.placeImages").isArray())
                 .andDo(print());
-        then(placeService).should().findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).should().findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("검색 키워드로 장소를 검색하면, 조회된 장소들이 반환된다.")
@@ -154,7 +157,7 @@ class PlaceControllerTest {
         String searchKeyword = "강남";
         long placeId = 2L;
         Slice<PlaceDto> expectedResult = new SliceImpl<>(List.of(createPlaceDto(placeId, "123")));
-        given(placeService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(expectedResult);
+        given(placeQueryService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -167,8 +170,8 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.contents", hasSize(expectedResult.getContent().size())))
                 .andExpect(jsonPath("$.contents[0].id").value(placeId))
                 .andDo(print());
-        then(placeService).should().searchDtosByKeyword(eq(searchKeyword), any(Pageable.class));
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).should().searchDtosByKeyword(eq(searchKeyword), any(Pageable.class));
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("중심 좌표가 주어지고, 근처 장소들을 검색하면, 검색된 장소들을 응답한다.")
@@ -185,7 +188,7 @@ class PlaceControllerTest {
                 false
         );
         PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId, "123")), Pageable.ofSize(30), 1);
-        given(placeService.findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        given(placeQueryService.findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -202,8 +205,8 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.isEmpty").value(false))
                 .andExpect(jsonPath("$.numOfElements").value(1))
                 .andDo(print());
-        then(placeService).should().findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class));
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).should().findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class));
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("선호하는 분위기 필드에 분위기 유형이 아닌 값이 주어지고, 근처 장소들을 검색하면, 예외가 발생한다.")
@@ -224,7 +227,7 @@ class PlaceControllerTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andDo(print());
-        then(placeService).shouldHaveNoInteractions();
+        then(placeQueryService).shouldHaveNoInteractions();
     }
 
     @DisplayName("내가 저장한 장소들에 대한 filtering keyword를 조회하면, 조회 결과가 응답된다.")
@@ -232,7 +235,7 @@ class PlaceControllerTest {
     void given_whenGetFilteringKeywords_thenReturnFilteringKeywords() throws Exception {
         // given
         long memberId = 1L;
-        given(placeService.getFilteringKeywords(memberId))
+        given(placeQueryService.getFilteringKeywords(memberId))
                 .willReturn(List.of(
                         new PlaceFilteringKeywordDto("연남동", 5, FilteringType.ADDRESS),
                         new PlaceFilteringKeywordDto("신선한 재료", 3, FilteringType.TOP_3_KEYWORDS)
@@ -247,8 +250,8 @@ class PlaceControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.keywords").isArray())
                 .andDo(print());
-        then(placeService).should().getFilteringKeywords(memberId);
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).should().getFilteringKeywords(memberId);
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("필터링 조건이 주어지고, 북마크에 저장한 장소들을 조회하면, 저장된 장소들이 반환된다.")
@@ -261,7 +264,7 @@ class PlaceControllerTest {
         String filteringKeywordDescription = "신선한 재료";
         String filteringKeyword = "FRESH";
         PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId, "123")));
-        given(placeService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
+        given(placeQueryService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(get("/api/v1/places/bookmarks")
@@ -274,8 +277,8 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.size").value(1))
                 .andDo(print());
-        then(placeService).should().findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class));
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).should().findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class));
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("kakao place id가 주어지고, 주어진 kakao place id로 장소의 DB 존재 여부를 조회하면, 조회된 결과를 반환한다.")
@@ -284,7 +287,7 @@ class PlaceControllerTest {
         // given
         String kakaoPid = "123";
         boolean expectedResult = true;
-        given(placeService.existsByKakaoPid(kakaoPid)).willReturn(expectedResult);
+        given(placeQueryService.existsByKakaoPid(kakaoPid)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -295,8 +298,8 @@ class PlaceControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.existenceOfPlace").value(expectedResult));
-        then(placeService).should().existsByKakaoPid(kakaoPid);
-        then(placeService).shouldHaveNoMoreInteractions();
+        then(placeQueryService).should().existsByKakaoPid(kakaoPid);
+        then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
     private PlaceCreateRequest createPlaceRequest() {

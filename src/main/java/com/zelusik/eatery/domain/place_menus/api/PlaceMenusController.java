@@ -4,7 +4,8 @@ import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
 import com.zelusik.eatery.domain.place_menus.dto.request.AddMenuToPlaceMenusRequest;
 import com.zelusik.eatery.domain.place_menus.dto.request.PlaceMenusUpdateRequest;
 import com.zelusik.eatery.domain.place_menus.dto.response.PlaceMenusResponse;
-import com.zelusik.eatery.domain.place_menus.service.PlaceMenusService;
+import com.zelusik.eatery.domain.place_menus.service.PlaceMenusCommandService;
+import com.zelusik.eatery.domain.place_menus.service.PlaceMenusQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +28,8 @@ import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINO
 @RestController
 public class PlaceMenusController {
 
-    private final PlaceMenusService placeMenusService;
+    private final PlaceMenusCommandService placeMenusCommandService;
+    private final PlaceMenusQueryService placeMenusQueryService;
 
     @Operation(
             summary = "장소 메뉴 데이터 생성",
@@ -42,7 +44,7 @@ public class PlaceMenusController {
     })
     @PostMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public ResponseEntity<PlaceMenusResponse> savePlaceMenusByPlaceIdV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
-        PlaceMenusDto result = placeMenusService.savePlaceMenus(placeId);
+        PlaceMenusDto result = placeMenusCommandService.savePlaceMenus(placeId);
         return ResponseEntity
                 .created(URI.create("/api/v1/places/" + placeId + "/menus"))
                 .body(PlaceMenusResponse.from(result));
@@ -61,7 +63,7 @@ public class PlaceMenusController {
     })
     @PostMapping(value = "/v1/places/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public ResponseEntity<PlaceMenusResponse> savePlaceMenusByKakaoPidV1_1(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
-        PlaceMenusDto result = placeMenusService.savePlaceMenus(kakaoPid);
+        PlaceMenusDto result = placeMenusCommandService.savePlaceMenus(kakaoPid);
         return ResponseEntity
                 .created(URI.create("/api/v1/places/" + result.getPlaceId() + "/menus"))
                 .body(PlaceMenusResponse.from(result));
@@ -79,7 +81,7 @@ public class PlaceMenusController {
     })
     @GetMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public PlaceMenusResponse findPlaceMenusByPlaceIdV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
-        PlaceMenusDto result = placeMenusService.findDtoByPlaceId(placeId);
+        PlaceMenusDto result = placeMenusQueryService.findDtoByPlaceId(placeId);
         return PlaceMenusResponse.fromWithoutIds(result);
     }
 
@@ -91,7 +93,7 @@ public class PlaceMenusController {
     )
     @GetMapping(value = "/v1/places/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public PlaceMenusResponse findPlaceMenusByKakaoPidV1_1(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
-        PlaceMenusDto result = placeMenusService.findDtoByKakaoPid(kakaoPid);
+        PlaceMenusDto result = placeMenusQueryService.findDtoByKakaoPid(kakaoPid);
         return PlaceMenusResponse.fromWithoutIds(result);
     }
 
@@ -111,7 +113,7 @@ public class PlaceMenusController {
             @Parameter(description = "PK of place", example = "3") @PathVariable Long placeId,
             @RequestBody PlaceMenusUpdateRequest request
     ) {
-        PlaceMenusDto updatedPlaceMenus = placeMenusService.updateMenus(placeId, request.getMenus());
+        PlaceMenusDto updatedPlaceMenus = placeMenusCommandService.updateMenus(placeId, request.getMenus());
         return PlaceMenusResponse.from(updatedPlaceMenus);
     }
 
@@ -130,7 +132,7 @@ public class PlaceMenusController {
             @Parameter(description = "PK of place", example = "3") @PathVariable Long placeId,
             @Valid @RequestBody AddMenuToPlaceMenusRequest request
     ) {
-        PlaceMenusDto updatedPlaceMenus = placeMenusService.addMenu(placeId, request.getMenu());
+        PlaceMenusDto updatedPlaceMenus = placeMenusCommandService.addMenu(placeId, request.getMenu());
         return PlaceMenusResponse.from(updatedPlaceMenus);
     }
 
@@ -143,6 +145,6 @@ public class PlaceMenusController {
     )
     @DeleteMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public void deletePlaceMenusV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
-        placeMenusService.delete(placeId);
+        placeMenusCommandService.delete(placeId);
     }
 }

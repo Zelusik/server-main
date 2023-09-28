@@ -1,28 +1,29 @@
 package com.zelusik.eatery.unit.domain.review.api;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review.api.ReviewController;
+import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.api.ReviewController;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
-import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
-import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
+import com.zelusik.eatery.domain.review.service.ReviewCommandService;
+import com.zelusik.eatery.domain.review.service.ReviewQueryService;
+import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
+import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
 import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTagCreateRequest;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.global.open_ai.service.OpenAIService;
-import com.zelusik.eatery.domain.review.service.ReviewService;
+import com.zelusik.eatery.global.security.UserPrincipal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +45,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.PLACE;
 import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.WRITER;
 import static com.zelusik.eatery.domain.review.constant.ReviewKeywordValue.*;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -59,16 +60,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Review Controller")
+@DisplayName("[Unit] Controller - Review")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = ReviewController.class)
 class ReviewControllerTest {
 
     @MockBean
-    ReviewService reviewService;
+    private ReviewCommandService reviewCommandService;
     @MockBean
-    OpenAIService openAIService;
+    private ReviewQueryService reviewQueryService;
+    @MockBean
+    private OpenAIService openAIService;
 
     private final MockMvc mvc;
 
@@ -86,7 +89,7 @@ class ReviewControllerTest {
         long placeId = 4L;
         ReviewDto savedReviewDto = createReviewDto(reviewId, createMemberDto(writerId), createPlaceDto(placeId));
         ReviewCreateRequest reviewCreateRequest = createReviewCreateRequest(placeId);
-        given(reviewService.create(eq(loginMemberId), any(ReviewCreateRequest.class))).willReturn(savedReviewDto);
+        given(reviewCommandService.create(eq(loginMemberId), any(ReviewCreateRequest.class))).willReturn(savedReviewDto);
 
         // when & then
         mvc.perform(
@@ -102,8 +105,8 @@ class ReviewControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(reviewId))
                 .andDo(print());
-        then(reviewService).should().create(eq(loginMemberId), any(ReviewCreateRequest.class));
-        then(reviewService).shouldHaveNoMoreInteractions();
+        then(reviewCommandService).should().create(eq(loginMemberId), any(ReviewCreateRequest.class));
+        then(reviewQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("리뷰의 id(PK)가 주어지고, 리뷰 상세 정보를 단건 조회하면, 조회된 리뷰 정보가 반환된다.")
@@ -114,7 +117,7 @@ class ReviewControllerTest {
         long reviewId = 2L;
         long writerId = 3L;
         ReviewDto expectedResult = createReviewDto(reviewId, createMemberDto(writerId), createPlaceDto(4L));
-        given(reviewService.findDtoById(loginMemberId, reviewId)).willReturn(expectedResult);
+        given(reviewQueryService.findDtoById(loginMemberId, reviewId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -132,8 +135,8 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.content").value(expectedResult.getContent()))
                 .andExpect(jsonPath("$.reviewImages").exists())
                 .andDo(print());
-        then(reviewService).should().findDtoById(loginMemberId, reviewId);
-        then(reviewService).shouldHaveNoMoreInteractions();
+        then(reviewQueryService).should().findDtoById(loginMemberId, reviewId);
+        then(reviewQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
@@ -142,7 +145,7 @@ class ReviewControllerTest {
         // given
         long loginMemberId = 1L;
         SliceImpl<ReviewDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceDto(4L))));
-        given(reviewService.findDtos(eq(loginMemberId), isNull(), isNull(), eq(List.of(WRITER, PLACE)), any(Pageable.class))).willReturn(expectedResult);
+        given(reviewQueryService.findDtos(eq(loginMemberId), isNull(), isNull(), eq(List.of(WRITER, PLACE)), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -154,8 +157,8 @@ class ReviewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true))
                 .andDo(print());
-        then(reviewService).should().findDtos(eq(loginMemberId), isNull(), isNull(), eq(List.of(WRITER, PLACE)), any(Pageable.class));
-        then(reviewService).shouldHaveNoMoreInteractions();
+        then(reviewQueryService).should().findDtos(eq(loginMemberId), isNull(), isNull(), eq(List.of(WRITER, PLACE)), any(Pageable.class));
+        then(reviewQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("피드 목록을 조회한다.")
@@ -165,7 +168,7 @@ class ReviewControllerTest {
         long loginMemberId = 1L;
         long reviewId = 2L;
         Slice<ReviewDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(reviewId, createMemberDto(3L), createPlaceDto(4L))));
-        given(reviewService.findReviewReed(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
+        given(reviewQueryService.findReviewReed(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(get("/api/v1/reviews/feed")
@@ -176,8 +179,8 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.contents[0].id").value(reviewId))
                 .andExpect(jsonPath("$.contents[0].reviewImage").exists())
                 .andDo(print());
-        then(reviewService).should().findReviewReed(eq(loginMemberId), any(Pageable.class));
-        then(reviewService).shouldHaveNoMoreInteractions();
+        then(reviewQueryService).should().findReviewReed(eq(loginMemberId), any(Pageable.class));
+        then(reviewQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("내가 작성한 리뷰 목록을 조회하면, 조회된 리뷰 목록(Slice)을 반환한다.")
@@ -186,7 +189,7 @@ class ReviewControllerTest {
         // given
         long loginMemberId = 1L;
         SliceImpl<ReviewDto> expectedResults = new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceDto(4L))));
-        given(reviewService.findDtos(eq(loginMemberId), eq(loginMemberId), isNull(), eq(List.of(PLACE)), any(Pageable.class))).willReturn(expectedResults);
+        given(reviewQueryService.findDtos(eq(loginMemberId), eq(loginMemberId), isNull(), eq(List.of(PLACE)), any(Pageable.class))).willReturn(expectedResults);
 
         // when & then
         mvc.perform(
@@ -197,8 +200,8 @@ class ReviewControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.hasContent").value(true))
                 .andDo(print());
-        then(reviewService).should().findDtos(eq(loginMemberId), eq(loginMemberId), isNull(), eq(List.of(PLACE)), any(Pageable.class));
-        then(reviewService).shouldHaveNoMoreInteractions();
+        then(reviewQueryService).should().findDtos(eq(loginMemberId), eq(loginMemberId), isNull(), eq(List.of(PLACE)), any(Pageable.class));
+        then(reviewQueryService).shouldHaveNoMoreInteractions();
     }
 
     @DisplayName("리뷰를 작성하고자 하는 장소에 대한 키워드들과 메뉴 목록 및 각 메뉴에 대한 키워드들이 주어지고, 자동 생성된 리뷰 내용을 조회하면, 생성된 리뷰 내용을 반환한다.")
@@ -237,7 +240,7 @@ class ReviewControllerTest {
                         .toList()
         );
         then(openAIService).shouldHaveNoMoreInteractions();
-        then(reviewService).shouldHaveNoInteractions();
+        then(reviewQueryService).shouldHaveNoInteractions();
     }
 
     @DisplayName("리뷰 내용 자동 생성 시, 주어진 메뉴와 메뉴 키워드의 개수가 맞지 않다면, 예외가 발생한다.")
@@ -259,7 +262,7 @@ class ReviewControllerTest {
                 )
                 .andExpect(status().isBadRequest())
                 .andDo(print());
-        then(reviewService).shouldHaveNoInteractions();
+        then(reviewQueryService).shouldHaveNoInteractions();
     }
 
     private UserDetails createTestUserDetails(long memberId) {

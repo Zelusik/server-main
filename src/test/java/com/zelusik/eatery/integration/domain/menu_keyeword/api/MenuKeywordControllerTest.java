@@ -6,7 +6,7 @@ import com.zelusik.eatery.domain.menu_keyword.api.MenuKeywordController;
 import com.zelusik.eatery.domain.menu_keyword.entity.MenuKeyword;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
 import com.zelusik.eatery.domain.menu_keyword.repository.MenuKeywordRepository;
-import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordService;
+import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,9 +21,9 @@ import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCateg
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
-@DisplayName("[Integration] Menu keyword service")
+@DisplayName("[Integration] Controller - Menu keyword")
 @ActiveProfiles("test")
-@Import({MenuKeywordController.class, MenuKeywordService.class, QuerydslConfig.class, JpaConfig.class})
+@Import({MenuKeywordController.class, MenuKeywordQueryService.class, QuerydslConfig.class, JpaConfig.class})
 @DataJpaTest
 class MenuKeywordControllerTest {
 

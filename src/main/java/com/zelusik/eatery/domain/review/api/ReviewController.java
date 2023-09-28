@@ -2,15 +2,16 @@ package com.zelusik.eatery.domain.review.api;
 
 import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review.dto.response.*;
-import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
 import com.zelusik.eatery.domain.review.dto.request.ReviewUpdateRequest;
+import com.zelusik.eatery.domain.review.dto.response.*;
 import com.zelusik.eatery.domain.review.exception.MismatchedMenuKeywordCountException;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.domain.review.service.ReviewCommandService;
+import com.zelusik.eatery.domain.review.service.ReviewQueryService;
+import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.global.open_ai.service.OpenAIService;
-import com.zelusik.eatery.domain.review.service.ReviewService;
+import com.zelusik.eatery.global.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,8 +36,8 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.PLACE;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 
 @Tag(name = "리뷰 관련 API")
 @RequiredArgsConstructor
@@ -45,7 +46,8 @@ import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.PLACE;
 @RestController
 public class ReviewController {
 
-    private final ReviewService reviewService;
+    private final ReviewCommandService reviewCommandService;
+    private final ReviewQueryService reviewQueryService;
     private final OpenAIService openAIService;
 
     @Operation(
@@ -66,7 +68,7 @@ public class ReviewController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ParameterObject @Valid @ModelAttribute ReviewCreateRequest request
     ) {
-        ReviewResponse response = ReviewResponse.from(reviewService.create(userPrincipal.getMemberId(), request));
+        ReviewResponse response = ReviewResponse.from(reviewCommandService.create(userPrincipal.getMemberId(), request));
         return ResponseEntity
                 .created(URI.create("/api/reviews/" + response.getId()))
                 .body(response);
@@ -91,7 +93,7 @@ public class ReviewController {
             ) @PathVariable Long reviewId
     ) {
         Long loginMemberId = userPrincipal.getMemberId();
-        ReviewDto reviewDto = reviewService.findDtoById(loginMemberId, reviewId);
+        ReviewDto reviewDto = reviewQueryService.findDtoById(loginMemberId, reviewId);
         return FindReviewResponse.from(reviewDto, loginMemberId);
     }
 
@@ -131,7 +133,7 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "10") int size
     ) {
-        Slice<ReviewDto> reviewDtos = reviewService.findDtos(userPrincipal.getMemberId(), writerId, placeId, embed, PageRequest.of(page, size));
+        Slice<ReviewDto> reviewDtos = reviewQueryService.findDtos(userPrincipal.getMemberId(), writerId, placeId, embed, PageRequest.of(page, size));
         return new SliceResponse<FindReviewsResponse>().from(reviewDtos.map(FindReviewsResponse::from));
     }
 
@@ -161,7 +163,7 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
-        Slice<ReviewDto> reviewDtos = reviewService.findReviewReed(userPrincipal.getMemberId(), PageRequest.of(page, size));
+        Slice<ReviewDto> reviewDtos = reviewQueryService.findReviewReed(userPrincipal.getMemberId(), PageRequest.of(page, size));
         return new SliceResponse<FindReviewFeedResponse>().from(reviewDtos.map(FindReviewFeedResponse::from));
     }
 
@@ -185,7 +187,7 @@ public class ReviewController {
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
         long loginMemberId = userPrincipal.getMemberId();
-        Slice<ReviewDto> reviewDtos = reviewService.findDtos(loginMemberId, loginMemberId, null, List.of(PLACE), PageRequest.of(page, size));
+        Slice<ReviewDto> reviewDtos = reviewQueryService.findDtos(loginMemberId, loginMemberId, null, List.of(PLACE), PageRequest.of(page, size));
         return new SliceResponse<FindReviewsWrittenByMeResponse>().from(reviewDtos.map(FindReviewsWrittenByMeResponse::from));
     }
 
@@ -265,7 +267,7 @@ public class ReviewController {
             ) @PathVariable Long reviewId,
             @Valid @RequestBody ReviewUpdateRequest updateRequest
     ) {
-        return ReviewResponse.from(reviewService.update(userPrincipal.getMemberId(), reviewId, updateRequest.getContent()));
+        return ReviewResponse.from(reviewCommandService.update(userPrincipal.getMemberId(), reviewId, updateRequest.getContent()));
     }
 
     @Operation(
@@ -286,6 +288,6 @@ public class ReviewController {
                     example = "1"
             ) @PathVariable Long reviewId
     ) {
-        reviewService.delete(userPrincipal.getMemberId(), reviewId);
+        reviewCommandService.delete(userPrincipal.getMemberId(), reviewId);
     }
 }

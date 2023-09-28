@@ -2,7 +2,7 @@ package com.zelusik.eatery.unit.domain.meeting_place.api;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
 import com.zelusik.eatery.domain.location.dto.LocationDto;
-import com.zelusik.eatery.domain.location.service.LocationService;
+import com.zelusik.eatery.domain.location.service.LocationQueryService;
 import com.zelusik.eatery.domain.meeting_place.api.MeetingPlaceController;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
@@ -41,14 +41,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Meeting Place Controller")
+@DisplayName("[Unit] Controller - Meeting place")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = MeetingPlaceController.class)
 class MeetingPlaceControllerTest {
 
     @MockBean
-    private LocationService locationService;
+    private LocationQueryService locationQueryService;
     @MockBean
     private KakaoService kakaoService;
 
@@ -82,7 +82,7 @@ class MeetingPlaceControllerTest {
                 LocationDto.of("서울특별시", "종로구", "사직동", new Point("", "126.9688397")),
                 LocationDto.of("서울특별시", "서대문구", "대신동", new Point("", "126.9459748"))
         ));
-        given(locationService.searchDtosByKeyword(keyword, pageable)).willReturn(expectedResult);
+        given(locationQueryService.searchDtosByKeyword(keyword, pageable)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -124,7 +124,7 @@ class MeetingPlaceControllerTest {
                 KakaoPlaceInfo.of("광교저수지", null, "http://place.map.kakao.com/1927266944", "여행 > 관광,명소 > 저수지", "경기 수원시 장안구 상광교동 411", "", "1927266944", "", KakaoCategoryGroupCode.AT4, "127.020951966686", ""),
                 KakaoPlaceInfo.of("광교골", null, "http://place.map.kakao.com/25181435", "여행 > 관광,명소 > 계곡", "경기 수원시 장안구 상광교동", "", "25181435", "", KakaoCategoryGroupCode.AT4, "127.015843158688", "")
         );
-        given(locationService.searchDtosByKeyword(keyword, pageable)).willReturn(Page.empty());
+        given(locationQueryService.searchDtosByKeyword(keyword, pageable)).willReturn(Page.empty());
         given(kakaoService.searchKakaoPlacesByKeyword(keyword, pageable)).willReturn(new SliceImpl<>(expectedContent, pageable, false));
 
         // when & then
@@ -176,7 +176,7 @@ class MeetingPlaceControllerTest {
                 pageable,
                 true
         );
-        given(locationService.searchDtosByKeyword(keyword, pageable)).willReturn(locations);
+        given(locationQueryService.searchDtosByKeyword(keyword, pageable)).willReturn(locations);
         given(kakaoService.searchKakaoPlacesByKeyword(keyword, pageable)).willReturn(kakaoPlaces);
 
         // when & then

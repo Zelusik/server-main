@@ -12,7 +12,7 @@ import com.zelusik.eatery.global.common.dto.ListDto;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordService;
+import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +41,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Menu keyword controller")
+@DisplayName("[Unit] Controller - Menu keyword")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = MenuKeywordController.class)
 class MenuKeywordControllerTest {
 
     @MockBean
-    private MenuKeywordService menuKeywordService;
+    private MenuKeywordQueryService menuKeywordQueryService;
 
     private final MockMvc mvc;
 
@@ -67,10 +67,10 @@ class MenuKeywordControllerTest {
                 new MenuKeywordResponse(menus.get(0), List.of("감칠맛 나는")),
                 new MenuKeywordResponse(menus.get(1), List.of("매운", "퍽퍽한"))
         );
-        given(menuKeywordService.getNamesForCategory(MENU_NAME)).willReturn(new ListDto<>(List.of()));
-        given(menuKeywordService.getNamesForCategory(PLACE_CATEGORY)).willReturn(new ListDto<>(List.of()));
-        given(menuKeywordService.getDefaultKeywords()).willReturn(new ListDto<>(List.of()));
-        given(menuKeywordService.getKeywords(eq(placeCategory), eq(menus), any(EnumMap.class), anyList())).willReturn(expectedResults);
+        given(menuKeywordQueryService.getNamesForCategory(MENU_NAME)).willReturn(new ListDto<>(List.of()));
+        given(menuKeywordQueryService.getNamesForCategory(PLACE_CATEGORY)).willReturn(new ListDto<>(List.of()));
+        given(menuKeywordQueryService.getDefaultKeywords()).willReturn(new ListDto<>(List.of()));
+        given(menuKeywordQueryService.getKeywords(eq(placeCategory), eq(menus), any(EnumMap.class), anyList())).willReturn(expectedResults);
 
         // when & then
         ResultActions resultActions = mvc.perform(

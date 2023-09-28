@@ -3,7 +3,7 @@ package com.zelusik.eatery.domain.meeting_place.api;
 import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.domain.meeting_place.dto.response.MeetingPlaceResponse;
 import com.zelusik.eatery.global.kakao.service.KakaoService;
-import com.zelusik.eatery.domain.location.service.LocationService;
+import com.zelusik.eatery.domain.location.service.LocationQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,7 +34,7 @@ public class MeetingPlaceController {
 
     public static final int PAGE_SIZE_OF_SEARCHING_MEETING_PLACES = 15;
 
-    private final LocationService locationService;
+    private final LocationQueryService locationQueryService;
     private final KakaoService kakaoService;
 
     @Operation(
@@ -57,7 +57,7 @@ public class MeetingPlaceController {
             ) @RequestParam(required = false, defaultValue = "0") int page
     ) {
         Page<MeetingPlaceResponse> locations =
-                locationService.searchDtosByKeyword(keyword, PageRequest.of(page, PAGE_SIZE_OF_SEARCHING_MEETING_PLACES))
+                locationQueryService.searchDtosByKeyword(keyword, PageRequest.of(page, PAGE_SIZE_OF_SEARCHING_MEETING_PLACES))
                         .map(MeetingPlaceResponse::from);
         if (locations.getNumberOfElements() >= PAGE_SIZE_OF_SEARCHING_MEETING_PLACES) {
             return new SliceResponse<MeetingPlaceResponse>().from(locations);

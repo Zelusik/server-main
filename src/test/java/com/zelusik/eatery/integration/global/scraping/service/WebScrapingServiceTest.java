@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled("실제 API 호출 결과 관찰용이므로 평상시엔 비활성화. 외부 API는 정상적으로 동작한다고 가정하는 것이 일반적임")
-@DisplayName("[Integration] Scraping server와 통신하는 business logic")
+@DisplayName("[Integration] Service - Web scraping")
 @ActiveProfiles("test")
 @SpringBootTest(classes = {WebScrapingService.class, RestTemplate.class})
 class WebScrapingServiceTest {

@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import static com.zelusik.eatery.domain.meeting_place.api.MeetingPlaceController.PAGE_SIZE_OF_SEARCHING_MEETING_PLACES;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("[Integration] Kakao Service")
+@DisplayName("[Integration] Service - Kakao")
 @ActiveProfiles("test")
 @SpringBootTest(classes = {KakaoService.class, RestTemplate.class})
 class KakaoServiceTest {

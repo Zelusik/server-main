@@ -41,14 +41,14 @@ import java.util.Set;
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.MON;
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.WED;
 import static com.zelusik.eatery.domain.review.constant.ReviewKeywordValue.*;
-import static com.zelusik.eatery.domain.place.service.PlaceService.MAX_NUM_OF_PLACE_IMAGES;
+import static com.zelusik.eatery.domain.place.service.PlaceQueryService.MAX_NUM_OF_PLACE_IMAGES;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * 대한민국 북-남 거리 약 1,100km
  */
 
-@DisplayName("[Integration] Place Repository")
+@DisplayName("[Integration] Repository - Place")
 @ActiveProfiles("test")
 @Import({QuerydslConfig.class, JpaConfig.class})
 @DataJpaTest

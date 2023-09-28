@@ -1,16 +1,17 @@
 package com.zelusik.eatery.domain.member.api;
 
+import com.zelusik.eatery.domain.favorite_food_category.dto.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.domain.favorite_food_category.dto.response.UpdateFavoriteFoodCategoriesResponse;
-import com.zelusik.eatery.domain.member.dto.response.*;
-import com.zelusik.eatery.domain.member_deletion_survey.dto.response.MemberDeletionSurveyResponse;
-import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
-import com.zelusik.eatery.domain.favorite_food_category.dto.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
+import com.zelusik.eatery.domain.member.dto.response.*;
+import com.zelusik.eatery.domain.member.service.MemberCommandService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.member_deletion_survey.dto.request.MemberDeletionSurveyRequest;
+import com.zelusik.eatery.domain.member_deletion_survey.dto.response.MemberDeletionSurveyResponse;
+import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,7 +37,8 @@ import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINO
 @RestController
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
 
     @Operation(
             summary = "내 정보 조회",
@@ -46,7 +48,7 @@ public class MemberController {
     )
     @GetMapping(value = "/v1/members/me", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public GetMyInfoResponse getMyInfoV1_1(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return GetMyInfoResponse.from(memberService.findDtoById(userPrincipal.getMemberId()));
+        return GetMyInfoResponse.from(memberQueryService.findDtoById(userPrincipal.getMemberId()));
     }
 
     @Operation(
@@ -70,7 +72,7 @@ public class MemberController {
     )
     @GetMapping(value = "/v1/members/me/profile", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public GetMyProfileInfoResponse getMyProfileInfoV1_1(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return GetMyProfileInfoResponse.from(memberService.getMemberProfileInfoById(userPrincipal.getMemberId()));
+        return GetMyProfileInfoResponse.from(memberQueryService.getMemberProfileInfoById(userPrincipal.getMemberId()));
     }
 
     @Operation(
@@ -101,7 +103,7 @@ public class MemberController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long memberId
     ) {
-        MemberProfileInfoDto memberProfileInfoDto = memberService.getMemberProfileInfoById(memberId);
+        MemberProfileInfoDto memberProfileInfoDto = memberQueryService.getMemberProfileInfoById(memberId);
         return GetMemberProfileInfoResponse.from(userPrincipal.getMemberId(), memberProfileInfoDto);
     }
 
@@ -126,7 +128,7 @@ public class MemberController {
                     example = "30"
             ) @RequestParam(required = false, defaultValue = "30") int size
     ) {
-        Slice<MemberDto> memberDtos = memberService.searchDtosByKeyword(keyword, PageRequest.of(page, size));
+        Slice<MemberDto> memberDtos = memberQueryService.searchDtosByKeyword(keyword, PageRequest.of(page, size));
         return new SliceResponse<SearchMembersByKeywordResponse>().from(memberDtos.map(SearchMembersByKeywordResponse::from));
     }
 
@@ -142,7 +144,7 @@ public class MemberController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ModelAttribute @Valid MemberUpdateRequest memberUpdateRequest
     ) {
-        MemberDto updatedMember = memberService.update(userPrincipal.getMemberId(), memberUpdateRequest);
+        MemberDto updatedMember = memberCommandService.update(userPrincipal.getMemberId(), memberUpdateRequest);
         return MemberResponse.from(updatedMember);
     }
 
@@ -157,7 +159,7 @@ public class MemberController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody FavoriteFoodCategoriesUpdateRequest request
     ) {
-        MemberDto updatedMemberDto = memberService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), request.getFavoriteFoodCategories());
+        MemberDto updatedMemberDto = memberCommandService.updateFavoriteFoodCategories(userPrincipal.getMemberId(), request.getFavoriteFoodCategories());
         return UpdateFavoriteFoodCategoriesResponse.from(updatedMemberDto);
     }
 
@@ -173,7 +175,7 @@ public class MemberController {
             @Valid @RequestBody MemberDeletionSurveyRequest memberDeletionSurveyRequest
     ) {
         return MemberDeletionSurveyResponse.from(
-                memberService.delete(
+                memberCommandService.delete(
                         userPrincipal.getMemberId(),
                         memberDeletionSurveyRequest.getSurveyType()
                 )

@@ -7,8 +7,9 @@ import com.zelusik.eatery.domain.recommended_review.dto.response.BatchUpdateReco
 import com.zelusik.eatery.domain.recommended_review.dto.response.FindMyRecommendedReviewsResponse;
 import com.zelusik.eatery.domain.recommended_review.dto.response.FindRecommendedReviewsResponse;
 import com.zelusik.eatery.domain.recommended_review.dto.response.SaveRecommendedReviewsResponse;
+import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewCommandService;
+import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewQueryService;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +30,8 @@ import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINO
 @RestController
 public class RecommendedReviewController {
 
-    private final RecommendedReviewService recommendedReviewService;
+    private final RecommendedReviewCommandService recommendedReviewCommandService;
+    private final RecommendedReviewQueryService recommendedReviewQueryService;
 
     @Operation(
             summary = "추천 리뷰 설정",
@@ -42,7 +44,7 @@ public class RecommendedReviewController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid SaveRecommendedReviewsRequest saveRecommendedReviewsRequest
     ) {
-        RecommendedReviewDto recommendedReviewDto = recommendedReviewService.saveRecommendedReview(userPrincipal.getMemberId(), saveRecommendedReviewsRequest.getReviewId(), saveRecommendedReviewsRequest.getRanking());
+        RecommendedReviewDto recommendedReviewDto = recommendedReviewCommandService.saveRecommendedReview(userPrincipal.getMemberId(), saveRecommendedReviewsRequest.getReviewId(), saveRecommendedReviewsRequest.getRanking());
         return ResponseEntity
                 .created(URI.create("/api/v1/members/recommended-reviews/" + recommendedReviewDto.getId()))
                 .body(SaveRecommendedReviewsResponse.from(recommendedReviewDto));
@@ -56,7 +58,7 @@ public class RecommendedReviewController {
     )
     @GetMapping(value = "/v1/members/{memberId}/recommended-reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public FindRecommendedReviewsResponse findRecommendedReviewsV1_1(@PathVariable Long memberId) {
-        List<RecommendedReviewDto> recommendedReviews = recommendedReviewService.findAllDtosWithPlaceMarkedStatus(memberId);
+        List<RecommendedReviewDto> recommendedReviews = recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(memberId);
         return FindRecommendedReviewsResponse.from(recommendedReviews);
     }
 
@@ -68,7 +70,7 @@ public class RecommendedReviewController {
     )
     @GetMapping(value = "/v1/members/me/recommended-reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public FindMyRecommendedReviewsResponse findMyRecommendedReviewsV1_1(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<RecommendedReviewDto> recommendedReviews = recommendedReviewService.findAllDtosWithPlaceMarkedStatus(userPrincipal.getMemberId());
+        List<RecommendedReviewDto> recommendedReviews = recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(userPrincipal.getMemberId());
         return FindMyRecommendedReviewsResponse.from(recommendedReviews);
     }
 
@@ -84,7 +86,7 @@ public class RecommendedReviewController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid BatchUpdateRecommendedReviewsRequest saveRecommendedReviewsRequest
     ) {
-        List<RecommendedReviewDto> recommendedReviewDtos = recommendedReviewService.batchUpdateRecommendedReviews(userPrincipal.getMemberId(), saveRecommendedReviewsRequest);
+        List<RecommendedReviewDto> recommendedReviewDtos = recommendedReviewCommandService.batchUpdateRecommendedReviews(userPrincipal.getMemberId(), saveRecommendedReviewsRequest);
         return BatchUpdateRecommendedReviewsResponse.from(recommendedReviewDtos);
     }
 }

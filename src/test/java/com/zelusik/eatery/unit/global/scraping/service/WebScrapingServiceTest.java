@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@DisplayName("[Unit] Scraping server와 통신하는 business logic")
+@DisplayName("[Unit] Service - Web scraping")
 @ActiveProfiles("test")
 @AutoConfigureWebClient(registerRestTemplate = true)
 @RestClientTest(WebScrapingService.class)

@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@DisplayName("[DTO] Kakao 사용자 정보 응답 데이터 테스트")
+@DisplayName("[Unit] DTO - Kakao 사용자 정보 응답 데이터 테스트")
 class KakaoOAuthUserInfoTest {
 
     private final ObjectMapper mapper = new ObjectMapper();

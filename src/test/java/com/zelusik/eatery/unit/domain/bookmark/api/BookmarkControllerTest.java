@@ -10,7 +10,7 @@ import com.zelusik.eatery.domain.bookmark.api.BookmarkController;
 import com.zelusik.eatery.domain.bookmark.dto.BookmarkDto;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.bookmark.service.BookmarkService;
+import com.zelusik.eatery.domain.bookmark.service.BookmarkCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +34,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Bookmark Controller Test")
+@DisplayName("[Unit] Controller - Bookmark")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = BookmarkController.class)
 class BookmarkControllerTest {
 
     @MockBean
-    private BookmarkService bookmarkService;
+    private BookmarkCommandService bookmarkCommandService;
 
     private final MockMvc mvc;
 
@@ -57,7 +57,7 @@ class BookmarkControllerTest {
         long placeId = 2L;
         long bookmarkId = 3L;
         BookmarkDto expectedResult = createBookmarkDto(bookmarkId, loginMemberId, placeId);
-        given(bookmarkService.mark(loginMemberId, placeId)).willReturn(expectedResult);
+        given(bookmarkCommandService.mark(loginMemberId, placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -79,7 +79,7 @@ class BookmarkControllerTest {
         // given
         long loginMemberId = 1L;
         long placeId = 2L;
-        willDoNothing().given(bookmarkService).delete(loginMemberId, placeId);
+        willDoNothing().given(bookmarkCommandService).delete(loginMemberId, placeId);
 
         // when & then
         mvc.perform(

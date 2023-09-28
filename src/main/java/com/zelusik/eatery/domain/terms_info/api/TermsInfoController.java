@@ -1,10 +1,10 @@
 package com.zelusik.eatery.domain.terms_info.api;
 
-import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
 import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
+import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
 import com.zelusik.eatery.domain.terms_info.dto.response.AgreeToTermsResponse;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoCommandService;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,7 +30,7 @@ import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINO
 @RestController
 public class TermsInfoController {
 
-    private final TermsInfoService termsInfoService;
+    private final TermsInfoCommandService termsInfoCommandService;
 
     @Operation(
             summary = "약관 동의",
@@ -47,7 +47,7 @@ public class TermsInfoController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @Valid @RequestBody AgreeToTermsRequest request
     ) {
-        TermsInfoDto termsInfoDto = termsInfoService.saveTermsInfo(userPrincipal.getMemberId(), request);
+        TermsInfoDto termsInfoDto = termsInfoCommandService.saveTermsInfo(userPrincipal.getMemberId(), request);
         return ResponseEntity
                 .created(URI.create("/api/v1/members/terms/" + termsInfoDto.getId()))
                 .body(AgreeToTermsResponse.from(termsInfoDto));

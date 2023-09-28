@@ -2,26 +2,27 @@ package com.zelusik.eatery.unit.domain.recommended_review.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.recommended_review.api.RecommendedReviewController;
+import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.recommended_review.api.RecommendedReviewController;
 import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
 import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.domain.recommended_review.dto.request.SaveRecommendedReviewsRequest;
+import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewCommandService;
+import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewQueryService;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +49,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Recommended Review Controller")
+@DisplayName("[Unit] Controller - Recommended review")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = RecommendedReviewController.class)
 class RecommendedReviewControllerTest {
 
     @MockBean
-    private RecommendedReviewService recommendedReviewService;
+    private RecommendedReviewCommandService recommendedReviewCommandService;
+    @MockBean
+    private RecommendedReviewQueryService recommendedReviewQueryService;
 
     private final MockMvc mvc;
     private final ObjectMapper mapper;
@@ -75,7 +78,7 @@ class RecommendedReviewControllerTest {
         short ranking = 3;
         SaveRecommendedReviewsRequest request = new SaveRecommendedReviewsRequest(reviewId, ranking);
         RecommendedReviewDto expectedResult = createRecommendedReviewDto(4L, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking);
-        given(recommendedReviewService.saveRecommendedReview(memberId, reviewId, ranking)).willReturn(expectedResult);
+        given(recommendedReviewCommandService.saveRecommendedReview(memberId, reviewId, ranking)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -123,7 +126,7 @@ class RecommendedReviewControllerTest {
         long reviewId = 5L;
         short ranking = 6;
         List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking));
-        given(recommendedReviewService.findAllDtosWithPlaceMarkedStatus(memberId)).willReturn(expectedResults);
+        given(recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(memberId)).willReturn(expectedResults);
 
         // when & then
         mvc.perform(
@@ -156,7 +159,7 @@ class RecommendedReviewControllerTest {
                 createRecommendedReviewDto(6L, memberId, createReviewDto(4L, member, place), (short) 2),
                 createRecommendedReviewDto(7L, memberId, createReviewDto(5L, member, place), (short) 3)
         );
-        given(recommendedReviewService.batchUpdateRecommendedReviews(eq(memberId), any(BatchUpdateRecommendedReviewsRequest.class))).willReturn(expectedResults);
+        given(recommendedReviewCommandService.batchUpdateRecommendedReviews(eq(memberId), any(BatchUpdateRecommendedReviewsRequest.class))).willReturn(expectedResults);
 
         // when & then
         mvc.perform(

@@ -2,17 +2,17 @@ package com.zelusik.eatery.unit.domain.terms_info.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.terms_info.api.TermsInfoController;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
+import com.zelusik.eatery.domain.terms_info.api.TermsInfoController;
 import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
+import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoCommandService;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,20 +38,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Terms Info Controller Test")
+@DisplayName("[Unit] Controller - Terms info")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = TermsInfoController.class)
 class TermsInfoControllerTest {
 
     @MockBean
-    private TermsInfoService termsInfoService;
+    private TermsInfoCommandService termsInfoCommandService;
 
     private final MockMvc mvc;
     private final ObjectMapper mapper;
 
     @Autowired
-    public TermsInfoControllerTest(TermsInfoService termsInfoService, MockMvc mvc, ObjectMapper mapper) {
-        this.termsInfoService = termsInfoService;
+    public TermsInfoControllerTest(MockMvc mvc, ObjectMapper mapper) {
         this.mvc = mvc;
         this.mapper = mapper;
     }
@@ -63,7 +62,7 @@ class TermsInfoControllerTest {
         long loginMemberId = 1L;
         AgreeToTermsRequest agreeToTermsRequest = new AgreeToTermsRequest(true, true, true, true, true);
         TermsInfoDto expectedResult = createTermsInfoDto(2L, loginMemberId, true, true, true, true, true);
-        given(termsInfoService.saveTermsInfo(eq(loginMemberId), any(AgreeToTermsRequest.class))).willReturn(expectedResult);
+        given(termsInfoCommandService.saveTermsInfo(eq(loginMemberId), any(AgreeToTermsRequest.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(

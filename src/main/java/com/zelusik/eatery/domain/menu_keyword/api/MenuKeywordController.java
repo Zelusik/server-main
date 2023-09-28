@@ -4,7 +4,7 @@ import com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordListResponseList;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
-import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordService;
+import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -32,7 +32,7 @@ import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCateg
 @RestController
 public class MenuKeywordController {
 
-    private final MenuKeywordService menuKeywordService;
+    private final MenuKeywordQueryService menuKeywordQueryService;
 
     @Operation(
             summary = "메뉴 키워드 조회",
@@ -52,12 +52,12 @@ public class MenuKeywordController {
             ) @RequestParam List<@NotBlank String> menus
     ) {
         EnumMap<MenuKeywordCategory, List<String>> namesMap = new EnumMap<>(Map.of(
-                MENU_NAME, menuKeywordService.getNamesForCategory(MENU_NAME).getContent(),
-                PLACE_CATEGORY, menuKeywordService.getNamesForCategory(PLACE_CATEGORY).getContent()
+                MENU_NAME, menuKeywordQueryService.getNamesForCategory(MENU_NAME).getContent(),
+                PLACE_CATEGORY, menuKeywordQueryService.getNamesForCategory(PLACE_CATEGORY).getContent()
         ));
-        List<String> defaultKeywords = menuKeywordService.getDefaultKeywords().getContent();
+        List<String> defaultKeywords = menuKeywordQueryService.getDefaultKeywords().getContent();
 
-        List<MenuKeywordResponse> result = menuKeywordService.getKeywords(PlaceCategory.of(placeCategory), menus, namesMap, defaultKeywords);
+        List<MenuKeywordResponse> result = menuKeywordQueryService.getKeywords(PlaceCategory.of(placeCategory), menus, namesMap, defaultKeywords);
         return new MenuKeywordListResponseList(result);
     }
 }

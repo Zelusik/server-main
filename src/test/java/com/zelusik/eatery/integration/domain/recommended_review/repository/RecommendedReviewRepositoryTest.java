@@ -35,7 +35,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("[Integration] Recommended Review Repository")
+@DisplayName("[Integration] Repository - Recommended review")
 @ActiveProfiles("test")
 @Import({QuerydslConfig.class, JpaConfig.class})
 @DataJpaTest

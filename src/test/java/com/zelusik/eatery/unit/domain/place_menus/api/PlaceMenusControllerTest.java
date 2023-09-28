@@ -1,20 +1,21 @@
 package com.zelusik.eatery.unit.domain.place_menus.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.global.config.JpaConfig;
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.place_menus.api.PlaceMenusController;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
+import com.zelusik.eatery.domain.place_menus.api.PlaceMenusController;
 import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
 import com.zelusik.eatery.domain.place_menus.dto.request.AddMenuToPlaceMenusRequest;
 import com.zelusik.eatery.domain.place_menus.dto.request.PlaceMenusUpdateRequest;
+import com.zelusik.eatery.domain.place_menus.service.PlaceMenusCommandService;
+import com.zelusik.eatery.domain.place_menus.service.PlaceMenusQueryService;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.global.config.JpaConfig;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.place_menus.service.PlaceMenusService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,16 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@DisplayName("[Unit] Place Menus Controller")
+@DisplayName("[Unit] Controller - Place menus")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import({TestSecurityConfig.class, JpaConfig.class})
 @WebMvcTest(controllers = PlaceMenusController.class)
 class PlaceMenusControllerTest {
 
     @MockBean
-    private PlaceMenusService placeMenusService;
+    private PlaceMenusCommandService placeMenusCommandService;
+    @MockBean
+    private PlaceMenusQueryService placeMenusQueryService;
 
     private final MockMvc mvc;
     private final ObjectMapper mapper;
@@ -65,7 +68,7 @@ class PlaceMenusControllerTest {
         long placeMenusId = 2L;
         List<String> menus = List.of("돈까스", "계란찜", "라면");
         PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, menus);
-        given(placeMenusService.savePlaceMenus(placeId)).willReturn(expectedResult);
+        given(placeMenusCommandService.savePlaceMenus(placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -90,7 +93,7 @@ class PlaceMenusControllerTest {
         long placeMenusId = 2L;
         List<String> menus = List.of("돈까스", "계란찜", "라면");
         PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, menus);
-        given(placeMenusService.findDtoByPlaceId(placeId)).willReturn(expectedResult);
+        given(placeMenusQueryService.findDtoByPlaceId(placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -113,7 +116,7 @@ class PlaceMenusControllerTest {
         String kakaoPid = "12345";
         List<String> menus = List.of("돈까스", "계란찜", "라면");
         PlaceMenusDto expectedResult = createPlaceMenusDto(2L, 1L, menus);
-        given(placeMenusService.findDtoByKakaoPid(kakaoPid)).willReturn(expectedResult);
+        given(placeMenusQueryService.findDtoByKakaoPid(kakaoPid)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -139,7 +142,7 @@ class PlaceMenusControllerTest {
         List<String> menusForUpdate = List.of("치킨");
         PlaceMenusUpdateRequest requestBody = new PlaceMenusUpdateRequest(menusForUpdate);
         PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, menusForUpdate);
-        given(placeMenusService.updateMenus(placeId, menusForUpdate)).willReturn(expectedResult);
+        given(placeMenusCommandService.updateMenus(placeId, menusForUpdate)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -166,7 +169,7 @@ class PlaceMenusControllerTest {
         String menuForAdd = "양념치킨";
         AddMenuToPlaceMenusRequest requestBody = new AddMenuToPlaceMenusRequest(menuForAdd);
         PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, List.of("후라이드치킨", menuForAdd));
-        given(placeMenusService.addMenu(placeId, menuForAdd)).willReturn(expectedResult);
+        given(placeMenusCommandService.addMenu(placeId, menuForAdd)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -189,7 +192,7 @@ class PlaceMenusControllerTest {
         // given
         long loginMemberId = 2L;
         long placeId = 1L;
-        willDoNothing().given(placeMenusService).delete(placeId);
+        willDoNothing().given(placeMenusCommandService).delete(placeId);
 
         // when & then
         mvc.perform(
@@ -206,7 +209,7 @@ class PlaceMenusControllerTest {
         // given
         long loginMemberId = 2L;
         long placeId = 1L;
-        willDoNothing().given(placeMenusService).delete(placeId);
+        willDoNothing().given(placeMenusCommandService).delete(placeId);
 
         // when & then
         mvc.perform(
