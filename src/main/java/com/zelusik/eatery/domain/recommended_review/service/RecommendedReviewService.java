@@ -1,6 +1,6 @@
 package com.zelusik.eatery.domain.recommended_review.service;
 
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.recommended_review.entity.RecommendedReview;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.review.entity.Review;
@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class RecommendedReviewService {
 
-    private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final ReviewService reviewService;
     private final RecommendedReviewRepository recommendedReviewRepository;
 
@@ -33,7 +33,7 @@ public class RecommendedReviewService {
      */
     @Transactional
     public RecommendedReviewDto saveRecommendedReview(long memberId, long reviewId, short ranking) {
-        Member member = memberService.findById(memberId);
+        Member member = memberQueryService.findById(memberId);
         Review review = reviewService.findById(reviewId);
 
         RecommendedReview recommendedReview = RecommendedReview.of(member, review, ranking);
@@ -62,7 +62,7 @@ public class RecommendedReviewService {
      */
     @Transactional
     public List<RecommendedReviewDto> batchUpdateRecommendedReviews(long memberId, BatchUpdateRecommendedReviewsRequest batchUpdateRecommendedReviewsRequest) {
-        Member member = memberService.findById(memberId);
+        Member member = memberQueryService.findById(memberId);
         recommendedReviewRepository.deleteAllByMember(member);
         recommendedReviewRepository.flush();
 

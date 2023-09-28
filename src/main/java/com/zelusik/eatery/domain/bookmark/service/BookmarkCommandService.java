@@ -6,7 +6,7 @@ import com.zelusik.eatery.domain.bookmark.exception.AlreadyMarkedPlaceException;
 import com.zelusik.eatery.domain.bookmark.exception.BookmarkNotFoundException;
 import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BookmarkCommandService {
 
-    private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final PlaceRepository placeRepository;
     private final BookmarkRepository bookmarkRepository;
 
@@ -35,7 +35,7 @@ public class BookmarkCommandService {
     public BookmarkDto mark(long memberId, long placeId) {
         validateNotAlreadyMarked(memberId, placeId);
 
-        Member member = memberService.findById(memberId);
+        Member member = memberQueryService.findById(memberId);
         Place place = placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
 
         Bookmark bookmark = bookmarkRepository.save(Bookmark.of(member, place));

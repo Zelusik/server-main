@@ -2,7 +2,7 @@ package com.zelusik.eatery.unit.domain.bookmark.service;
 
 import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
 import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
@@ -32,7 +32,7 @@ class BookmarkQueryServiceTest {
     private BookmarkQueryService sut;
 
     @Mock
-    private MemberService memberService;
+    private MemberQueryService memberQueryService;
     @Mock
     private PlaceRepository placeRepository;
     @Mock
@@ -53,7 +53,7 @@ class BookmarkQueryServiceTest {
 
         // then
         then(bookmarkRepository).should().existsByMember_IdAndPlace(memberId, place);
-        then(memberService).shouldHaveNoInteractions();
+        then(memberQueryService).shouldHaveNoInteractions();
         then(placeRepository).shouldHaveNoInteractions();
         then(bookmarkRepository).shouldHaveNoMoreInteractions();
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -61,7 +61,7 @@ class BookmarkQueryServiceTest {
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(memberService).shouldHaveNoMoreInteractions();
+        then(memberQueryService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(bookmarkRepository).shouldHaveNoMoreInteractions();
     }

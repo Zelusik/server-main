@@ -1,28 +1,24 @@
 package com.zelusik.eatery.domain.member.service;
 
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
-import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
 import com.zelusik.eatery.domain.favorite_food_category.entity.FavoriteFoodCategory;
-import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member_deletion_survey.entity.MemberDeletionSurvey;
-import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
-import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurveyDto;
+import com.zelusik.eatery.domain.favorite_food_category.repository.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
+import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
 import com.zelusik.eatery.domain.member.exception.MemberNotFoundException;
-import com.zelusik.eatery.domain.favorite_food_category.repository.FavoriteFoodCategoryRepository;
-import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
+import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
+import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurveyDto;
+import com.zelusik.eatery.domain.member_deletion_survey.entity.MemberDeletionSurvey;
+import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletionSurveyRepository;
+import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageService;
 import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,10 +27,11 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
-public class MemberService {
+public class MemberCommandService {
 
+    private final MemberQueryService memberQueryService;
     private final ProfileImageService profileImageService;
     private final TermsInfoService termsInfoService;
     private final MemberRepository memberRepository;
@@ -50,72 +47,6 @@ public class MemberService {
     @Transactional
     public MemberDto save(MemberDto memberDto) {
         return MemberDto.from(memberRepository.save(memberDto.toEntity()));
-    }
-
-    /**
-     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
-     *
-     * @param memberId 조회할 회원의 PK
-     * @return 조회한 회원 entity
-     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
-     */
-    public Member findById(Long memberId) {
-        return memberRepository.findByIdAndDeletedAtNull(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
-    }
-
-    /**
-     * 주어진 PK에 해당하는 회원을 조회한다.
-     *
-     * @param memberId 조회할 회원의 PK
-     * @return 조회한 회원 dto
-     */
-    @Cacheable(value = "member", key = "#memberId")
-    public MemberDto findDtoById(Long memberId) {
-        return MemberDto.from(findById(memberId));
-    }
-
-    /**
-     * 주어진 socialUid에 해당하는 회원을 조회한 후 <code>Optional</code> 객체를 그대로 반환한다.
-     * 삭제된 회원도 포함해서 조회한다.
-     *
-     * @param socialUid 조회할 회원의 socialUid
-     * @return 조회한 회원 dto. <code>Optional</code> 그대로 반환한다.
-     */
-    public Optional<MemberDto> findOptionalDtoBySocialUidWithDeleted(String socialUid) {
-        return memberRepository.findBySocialUid(socialUid).map(MemberDto::from);
-    }
-
-    /**
-     * 키워드로 회원을 검색한다.
-     *
-     * @param searchKeyword 검색 키워드
-     * @param pageable      paging 정보
-     * @return 조회된 회원 목록
-     */
-    public Slice<MemberDto> searchDtosByKeyword(String searchKeyword, Pageable pageable) {
-        return memberRepository.searchByKeyword(searchKeyword, pageable).map(MemberDto::from);
-    }
-
-    /**
-     * <p>회원 프로필 정보를 조회한다.
-     * <p>회원 프로필 정보란 다음 항목들을 의미합니다.
-     * <ul>
-     *     <li>회원 정보</li>
-     *     <li>작성한 리뷰 수</li>
-     *     <li>영향력</li>
-     *     <li>팔로워 수</li>
-     *     <li>팔로잉 수</li>
-     *     <li>가장 많이 방문한 장소(읍면동)</li>
-     *     <li>가장 많이 태그된 리뷰 키워드</li>
-     *     <li>가장 많이 먹은 음식 카테고리</li>
-     * </ul>
-     *
-     * @param memberId 프로필 정보를 조회할 회원의 PK
-     * @return 조회된 프로필 정보
-     */
-    public MemberProfileInfoDto getMemberProfileInfoById(long memberId) {
-        return memberRepository.getMemberProfileInfoById(memberId);
     }
 
     /**
@@ -141,7 +72,7 @@ public class MemberService {
     @CachePut(value = "member", key = "#memberId")
     @Transactional
     public MemberDto update(Long memberId, MemberUpdateRequest updateRequest) {
-        Member member = findById(memberId);
+        Member member = memberQueryService.findById(memberId);
 
         MultipartFile profileImageForUpdate = updateRequest.getProfileImage();
         if (profileImageForUpdate == null) {
@@ -176,7 +107,7 @@ public class MemberService {
     @CachePut(value = "member", key = "#memberId")
     @Transactional
     public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategoryValue> favoriteFoodCategories) {
-        Member member = findById(memberId);
+        Member member = memberQueryService.findById(memberId);
 
         favoriteFoodCategoryRepository.deleteAll(member.getFavoriteFoodCategories());
         member.getFavoriteFoodCategories().clear();
@@ -202,7 +133,7 @@ public class MemberService {
     @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
-        Member member = findById(memberId);
+        Member member = memberQueryService.findById(memberId);
         if (member.getDeletedAt() != null) {
             throw new MemberNotFoundException();
         }

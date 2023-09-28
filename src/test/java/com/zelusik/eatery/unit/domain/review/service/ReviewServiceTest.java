@@ -6,7 +6,7 @@ import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.entity.Address;
@@ -68,7 +68,7 @@ class ReviewServiceTest {
     @Mock
     private ReviewImageService reviewImageService;
     @Mock
-    private MemberService memberService;
+    private MemberQueryService memberQueryService;
     @Mock
     private PlaceService placeService;
     @Mock
@@ -96,7 +96,7 @@ class ReviewServiceTest {
         ReviewImage reviewImage = createReviewImage(100L, createdReview);
         createdReview.getReviewImages().add(reviewImage);
         given(placeService.findById(placeId)).willReturn(expectedPlace);
-        given(memberService.findById(writerId)).willReturn(expectedMember);
+        given(memberQueryService.findById(writerId)).willReturn(expectedMember);
         given(bookmarkQueryService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(reviewKeyword);
@@ -109,7 +109,7 @@ class ReviewServiceTest {
 
         // then
         then(placeService).should().findById(placeId);
-        then(memberService).should().findById(writerId);
+        then(memberQueryService).should().findById(writerId);
         then(bookmarkQueryService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
@@ -232,7 +232,7 @@ class ReviewServiceTest {
         findReview.getKeywords().add(reviewKeyword);
         ReviewImage reviewImage = createReviewImage(6L, findReview);
         findReview.getReviewImages().add(reviewImage);
-        given(memberService.findById(memberId)).willReturn(loginMember);
+        given(memberQueryService.findById(memberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
         willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
         willDoNothing().given(reviewKeywordRepository).deleteAll(findReview.getKeywords());
@@ -243,7 +243,7 @@ class ReviewServiceTest {
         sut.delete(memberId, reviewId);
 
         // then
-        then(memberService).should().findById(memberId);
+        then(memberQueryService).should().findById(memberId);
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
         then(reviewImageService).should().softDeleteAll(findReview.getReviewImages());
         then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
@@ -267,14 +267,14 @@ class ReviewServiceTest {
         findReview.getKeywords().add(reviewKeyword);
         ReviewImage reviewImage = createReviewImage(6L, findReview);
         findReview.getReviewImages().add(reviewImage);
-        given(memberService.findById(loginMemberId)).willReturn(loginMember);
+        given(memberQueryService.findById(loginMemberId)).willReturn(loginMember);
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(findReview));
 
         // when
         Throwable t = catchThrowable(() -> sut.delete(loginMemberId, reviewId));
 
         // then
-        then(memberService).should().findById(loginMemberId);
+        then(memberQueryService).should().findById(loginMemberId);
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(ReviewDeletePermissionDeniedException.class);
@@ -282,7 +282,7 @@ class ReviewServiceTest {
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(reviewImageService).shouldHaveNoMoreInteractions();
-        then(memberService).shouldHaveNoMoreInteractions();
+        then(memberQueryService).shouldHaveNoMoreInteractions();
         then(placeService).shouldHaveNoMoreInteractions();
         then(reviewRepository).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();

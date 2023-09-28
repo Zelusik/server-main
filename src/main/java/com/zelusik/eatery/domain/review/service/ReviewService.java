@@ -2,7 +2,7 @@ package com.zelusik.eatery.domain.review.service;
 
 import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.service.PlaceService;
@@ -36,7 +36,7 @@ import java.util.List;
 public class ReviewService {
 
     private final ReviewImageService reviewImageService;
-    private final MemberService memberService;
+    private final MemberQueryService memberQueryService;
     private final PlaceService placeService;
     private final BookmarkQueryService bookmarkQueryService;
     private final ReviewRepository reviewRepository;
@@ -54,7 +54,7 @@ public class ReviewService {
     public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest) {
         List<ReviewImageCreateRequest> images = reviewRequest.getImages();
         Place place = placeService.findById(reviewRequest.getPlaceId());
-        Member writer = memberService.findById(writerId);
+        Member writer = memberQueryService.findById(writerId);
         boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
@@ -189,7 +189,7 @@ public class ReviewService {
      */
     @Transactional
     public void delete(Long memberId, Long reviewId) {
-        Member member = memberService.findById(memberId);
+        Member member = memberQueryService.findById(memberId);
         Review review = findById(reviewId);
 
         validateReviewDeletePermission(member, review);

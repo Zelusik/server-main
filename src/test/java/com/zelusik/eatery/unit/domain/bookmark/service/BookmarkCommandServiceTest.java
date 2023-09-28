@@ -10,7 +10,7 @@ import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
@@ -44,7 +44,7 @@ class BookmarkCommandServiceTest {
     private BookmarkCommandService sut;
 
     @Mock
-    private MemberService memberService;
+    private MemberQueryService memberQueryService;
     @Mock
     private PlaceRepository placeRepository;
     @Mock
@@ -61,7 +61,7 @@ class BookmarkCommandServiceTest {
         Place place = createPlace(placeId, "12345");
         Bookmark expectedResult = createBookmark(bookmarkId, member, place);
         given(bookmarkRepository.existsByMember_IdAndPlace_Id(memberId, placeId)).willReturn(false);
-        given(memberService.findById(memberId)).willReturn(member);
+        given(memberQueryService.findById(memberId)).willReturn(member);
         given(placeRepository.findById(placeId)).willReturn(Optional.of(place));
         given(bookmarkRepository.save(any(Bookmark.class))).willReturn(expectedResult);
 
@@ -70,7 +70,7 @@ class BookmarkCommandServiceTest {
 
         // then
         then(bookmarkRepository).should().existsByMember_IdAndPlace_Id(memberId, placeId);
-        then(memberService).should().findById(memberId);
+        then(memberQueryService).should().findById(memberId);
         then(placeRepository).should().findById(placeId);
         then(bookmarkRepository).should().save(any(Bookmark.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -116,7 +116,7 @@ class BookmarkCommandServiceTest {
         // then
         then(bookmarkRepository).should().findByMember_IdAndPlace_Id(memberId, placeId);
         then(bookmarkRepository).should().delete(foundBookmark);
-        then(memberService).shouldHaveNoInteractions();
+        then(memberQueryService).shouldHaveNoInteractions();
         then(placeRepository).shouldHaveNoInteractions();
         then(bookmarkRepository).shouldHaveNoMoreInteractions();
     }
@@ -134,14 +134,14 @@ class BookmarkCommandServiceTest {
 
         // then
         then(bookmarkRepository).should().findByMember_IdAndPlace_Id(memberId, placeId);
-        then(memberService).shouldHaveNoInteractions();
+        then(memberQueryService).shouldHaveNoInteractions();
         then(placeRepository).shouldHaveNoInteractions();
         then(bookmarkRepository).shouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(BookmarkNotFoundException.class);
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(memberService).shouldHaveNoMoreInteractions();
+        then(memberQueryService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(bookmarkRepository).shouldHaveNoMoreInteractions();
     }

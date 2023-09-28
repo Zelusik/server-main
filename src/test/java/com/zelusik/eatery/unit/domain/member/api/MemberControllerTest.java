@@ -1,22 +1,23 @@
 package com.zelusik.eatery.unit.domain.member.api;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.domain.favorite_food_category.dto.request.FavoriteFoodCategoriesUpdateRequest;
+import com.zelusik.eatery.domain.member.api.MemberController;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.member.api.MemberController;
-import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurveyDto;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
-import com.zelusik.eatery.domain.favorite_food_category.dto.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
+import com.zelusik.eatery.domain.member.service.MemberCommandService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
+import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
+import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurveyDto;
 import com.zelusik.eatery.domain.member_deletion_survey.dto.request.MemberDeletionSurveyRequest;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.global.security.UserPrincipal;
-import com.zelusik.eatery.domain.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +49,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Unit] Member Controller")
+@DisplayName("[Unit] Controller - Member")
 @MockBean(JpaMetamodelMappingContext.class)
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = MemberController.class)
 class MemberControllerTest {
 
     @MockBean
-    MemberService memberService;
+    private MemberCommandService memberCommandService;
+    @MockBean
+    private MemberQueryService memberQueryService;
 
     private final MockMvc mvc;
     private final ObjectMapper mapper;
@@ -71,7 +74,7 @@ class MemberControllerTest {
         // given
         long memberId = 1L;
         MemberDto expectedResult = createMemberDto(memberId);
-        given(memberService.findDtoById(memberId)).willReturn(expectedResult);
+        given(memberQueryService.findDtoById(memberId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -98,7 +101,7 @@ class MemberControllerTest {
         ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
         FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
         MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
-        given(memberService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
+        given(memberQueryService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -133,7 +136,7 @@ class MemberControllerTest {
         ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
         FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
         MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
-        given(memberService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
+        given(memberQueryService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -162,7 +165,7 @@ class MemberControllerTest {
         // given
         String searchKeyword = "test";
         List<MemberDto> expectedResult = List.of(createMemberDto(2L));
-        given(memberService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(new SliceImpl<>(expectedResult));
+        given(memberQueryService.searchDtosByKeyword(eq(searchKeyword), any(Pageable.class))).willReturn(new SliceImpl<>(expectedResult));
 
         // when & then
         mvc.perform(
@@ -182,7 +185,7 @@ class MemberControllerTest {
         // given
         long memberId = 1L;
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
-        given(memberService.update(eq(memberId), any(MemberUpdateRequest.class))).willReturn(createMemberDto(memberId));
+        given(memberCommandService.update(eq(memberId), any(MemberUpdateRequest.class))).willReturn(createMemberDto(memberId));
 
         // when & then
         mvc.perform(
@@ -204,7 +207,7 @@ class MemberControllerTest {
         // given
         long memberId = 1L;
         FavoriteFoodCategoriesUpdateRequest request = new FavoriteFoodCategoriesUpdateRequest(List.of(FoodCategoryValue.KOREAN, FoodCategoryValue.WESTERN));
-        given(memberService.updateFavoriteFoodCategories(any(), any())).willReturn(createMemberDto(memberId));
+        given(memberCommandService.updateFavoriteFoodCategories(any(), any())).willReturn(createMemberDto(memberId));
 
         // when & then
         mvc.perform(
@@ -226,8 +229,7 @@ class MemberControllerTest {
         // given
         long memberId = 1L;
         MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
-        given(memberService.delete(memberId, surveyType))
-                .willReturn(createMemberDeletionSurveyDto(memberId, surveyType));
+        given(memberCommandService.delete(memberId, surveyType)).willReturn(createMemberDeletionSurveyDto(memberId, surveyType));
 
         // when & then
         mvc.perform(

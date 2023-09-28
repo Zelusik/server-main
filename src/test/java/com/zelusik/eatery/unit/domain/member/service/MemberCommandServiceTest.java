@@ -1,28 +1,26 @@
 package com.zelusik.eatery.unit.domain.member.service;
 
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.domain.favorite_food_category.entity.FavoriteFoodCategory;
+import com.zelusik.eatery.domain.favorite_food_category.repository.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.favorite_food_category.entity.FavoriteFoodCategory;
-import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member_deletion_survey.entity.MemberDeletionSurvey;
-import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
-import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurveyDto;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
-import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
+import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.exception.MemberNotFoundException;
-import com.zelusik.eatery.domain.favorite_food_category.repository.FavoriteFoodCategoryRepository;
-import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberCommandService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
+import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
+import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurveyDto;
+import com.zelusik.eatery.domain.member_deletion_survey.entity.MemberDeletionSurvey;
+import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletionSurveyRepository;
+import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageService;
 import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,17 +28,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
-import org.springframework.lang.NonNull;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.zelusik.eatery.global.common.constant.FoodCategoryValue.*;
@@ -50,13 +43,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Unit] Member Service")
+@DisplayName("[Unit] Service(Command) - Member")
 @ExtendWith(MockitoExtension.class)
-class MemberServiceTest {
+class MemberCommandServiceTest {
 
     @InjectMocks
-    private MemberService sut;
+    private MemberCommandService sut;
 
+    @Mock
+    private MemberQueryService memberQueryService;
     @Mock
     private ProfileImageService profileImageService;
     @Mock
@@ -90,133 +85,20 @@ class MemberServiceTest {
         assertThat(actualSavedMember.getGender()).isEqualTo(expectedSavedMember.getGender());
     }
 
-    @DisplayName("회원의 id(PK)가 주어지면 해당하는 회원을 조회한 후 반환한다.")
-    @Test
-    void givenMemberId_whenFindMember_thenReturnMember() {
-        // given
-        Long memberId = 1L;
-        Member expected = createMember(memberId);
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(expected));
-
-        // when
-        MemberDto actual = sut.findDtoById(memberId);
-
-        // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-        assertThat(actual.getId()).isEqualTo(expected.getId());
-    }
-
-    @DisplayName("존재하지 않는 회원 id(PK)가 주어지고 회원을 조회하면 예외가 발생한다.")
-    @Test
-    void givenNonExistentMemberId_whenFindMember_thenThrowException() {
-        // given
-        Long memberId = 10L;
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.empty());
-
-        // when
-        Throwable throwable = catchThrowable(() -> sut.findDtoById(memberId));
-
-        // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-        assertThat(throwable).isInstanceOf(MemberIdNotFoundException.class);
-    }
-
-    @DisplayName("회원의 social uid가 주어지면 해당하는 회원을 조회한 후 반환한다.")
-    @Test
-    void givenSocialUid_whenFindMember_thenReturnMember() {
-        // given
-        String socialUid = "1234567890";
-        Member expected = createMember(1L);
-        given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.of(expected));
-
-        // when
-        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUidWithDeleted(socialUid);
-
-        // then
-        then(memberRepository).should().findBySocialUid(socialUid);
-        assertThat(optionalMember.isPresent()).isTrue();
-    }
-
-    @DisplayName("존재하지 않는 회원의 social uid가 주어지고 회원을 조회하면 비어있는 Optional을 반환한다.")
-    @Test
-    void givenNonExistentSocialUid_whenFindMember_thenReturnEmptyOptional() {
-        // given
-        String socialUid = "1234567890";
-        given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.empty());
-
-        // when
-        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUidWithDeleted(socialUid);
-
-        // then
-        then(memberRepository).should().findBySocialUid(socialUid);
-        assertThat(optionalMember.isPresent()).isFalse();
-    }
-
-    @DisplayName("주어진 검색 키워드로 회원을 검색하면, 검색된 회원 목록이 반환된다.")
-    @Test
-    void givenSearchKeyword_whenSearchMembersByKeyword_thenReturnSearchedMembers() {
-        // given
-        String searchKeyword = "test";
-        Pageable pageable = Pageable.ofSize(30);
-        List<Member> expectedResult = List.of(createMember(1L));
-        given(memberRepository.searchByKeyword(searchKeyword, pageable)).willReturn(new SliceImpl<>(expectedResult, pageable, false));
-
-        // when
-        Slice<MemberDto> actualResult = sut.searchDtosByKeyword(searchKeyword, pageable);
-
-        // then
-        then(memberRepository).should().searchByKeyword(searchKeyword, pageable);
-        verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualResult.getNumberOfElements()).isEqualTo(expectedResult.size());
-        assertThat(actualResult.getContent()).hasSize(expectedResult.size());
-        for (int i = 0; i < expectedResult.size(); i++) {
-            assertThat(actualResult.getContent().get(i).getId()).isEqualTo(expectedResult.get(i).getId());
-        }
-    }
-
-    @DisplayName("회원 id로 회원 프로필 정보를 조회하면, 조회된 프로필 정보가 반환된다.")
-    @Test
-    void given_whenGettingMemberProfileInfoWithMemberId_thenReturnMemberProfileInfo() {
-        // given
-        long memberId = 1L;
-        int numOfReviews = 62;
-        String mostVisitedLocation = "연남동";
-        ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
-        FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
-        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
-        given(memberRepository.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
-
-        // when
-        MemberProfileInfoDto actualResult = sut.getMemberProfileInfoById(memberId);
-
-        // then
-        then(memberRepository).should().getMemberProfileInfoById(memberId);
-        verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(actualResult)
-                .hasFieldOrPropertyWithValue("id", memberId)
-                .hasFieldOrPropertyWithValue("numOfReviews", numOfReviews)
-                .hasFieldOrPropertyWithValue("influence", 0)
-                .hasFieldOrPropertyWithValue("numOfFollowers", 0)
-                .hasFieldOrPropertyWithValue("numOfFollowings", 0)
-                .hasFieldOrPropertyWithValue("mostVisitedLocation", mostVisitedLocation)
-                .hasFieldOrPropertyWithValue("mostTaggedReviewKeyword", mostTaggedReviewKeyword)
-                .hasFieldOrPropertyWithValue("mostEatenFoodCategory", mostEatenFoodCategory);
-    }
-
     @DisplayName("프로필 이미지를 제외하고 수정할 회원 정보가 주어지고, 회원 정보를 수정하면, 주어진 정보로 회원 정보가 수정된다.")
     @Test
     void givenMemberUpdateInfoWithoutProfileImage_whenUpdatingMemberInfo_thenUpdate() {
         // given
         long memberId = 1L;
-        Member findMember = createMember(memberId);
+        Member member = createMember(memberId);
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, null);
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+        given(memberQueryService.findById(memberId)).willReturn(member);
 
         // when
         MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
 
         // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(memberQueryService).should().findById(memberId);
         assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
         assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
         assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
@@ -227,16 +109,16 @@ class MemberServiceTest {
     void givenMemberUpdateInfo_whenUpdatingMemberInfo_thenUpdate() {
         // given
         long memberId = 1L;
-        Member findMember = createMember(memberId);
+        Member member = createMember(memberId);
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
-        given(profileImageService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(findMember, 10L));
+        given(memberQueryService.findById(memberId)).willReturn(member);
+        given(profileImageService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(member, 10L));
 
         // when
         MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
 
         // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(memberQueryService).should().findById(memberId);
         then(profileImageService).should().upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()));
         assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
         assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
@@ -255,7 +137,7 @@ class MemberServiceTest {
                 createFavoriteFoodCategory(101L, member, WESTERN),
                 createFavoriteFoodCategory(102L, member, CAFE_DESSERT)
         );
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(member));
+        given(memberQueryService.findById(memberId)).willReturn(member);
         willDoNothing().given(favoriteFoodCategoryRepository).deleteAll(member.getFavoriteFoodCategories());
         given(favoriteFoodCategoryRepository.saveAll(ArgumentMatchers.<List<FavoriteFoodCategory>>any())).willReturn(favoriteFoodCategories);
 
@@ -263,7 +145,7 @@ class MemberServiceTest {
         MemberDto updatedMemberDto = sut.updateFavoriteFoodCategories(memberId, foodCategories);
 
         // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(memberQueryService).should().findById(memberId);
         then(favoriteFoodCategoryRepository).should().deleteAll(member.getFavoriteFoodCategories());
         then(favoriteFoodCategoryRepository).should().saveAll(ArgumentMatchers.<List<FavoriteFoodCategory>>any());
         then(memberRepository).shouldHaveNoMoreInteractions();
@@ -278,7 +160,7 @@ class MemberServiceTest {
         long memberId = 1L;
         MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
         Member findMember = createMember(memberId);
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+        given(memberQueryService.findById(memberId)).willReturn(findMember);
         willDoNothing().given(termsInfoService).deleteByMemberId(memberId);
         given(memberDeletionSurveyRepository.save(any(MemberDeletionSurvey.class)))
                 .willReturn(createMemberDeletionSurvey(11L, findMember, surveyType));
@@ -287,7 +169,7 @@ class MemberServiceTest {
         MemberDeletionSurveyDto surveyResult = sut.delete(memberId, surveyType);
 
         // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
+        then(memberQueryService).should().findById(memberId);
         then(termsInfoService).should().deleteByMemberId(memberId);
         then(memberDeletionSurveyRepository).should().save(any(MemberDeletionSurvey.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -300,15 +182,14 @@ class MemberServiceTest {
         // given
         long memberId = 1L;
         MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
-        Member findMember = createDeletedMember(memberId);
-        given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(findMember));
+        Member deletedMember = createDeletedMember(memberId);
+        given(memberQueryService.findById(memberId)).willReturn(deletedMember);
 
         // when
         Throwable t = catchThrowable(() -> sut.delete(memberId, surveyType));
 
         // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-
+        then(memberQueryService).should().findById(memberId);
         then(memberRepository).shouldHaveNoMoreInteractions();
         then(termsInfoService).shouldHaveNoMoreInteractions();
         then(memberDeletionSurveyRepository).shouldHaveNoInteractions();
@@ -406,17 +287,6 @@ class MemberServiceTest {
                 "nickname" + socialUid,
                 null,
                 null
-        );
-    }
-
-    @NonNull
-    private MemberProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
-        return MemberProfileInfoDto.of(
-                createMember(memberId),
-                numOfReviews,
-                mostVisitedLocation,
-                mostTaggedReviewKeyword,
-                mostEatenFoodCategory
         );
     }
 

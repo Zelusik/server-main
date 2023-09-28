@@ -1,8 +1,12 @@
 package com.zelusik.eatery.global.auth.api;
 
-import com.zelusik.eatery.global.auth.dto.response.RefreshTokenResponse;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
+import com.zelusik.eatery.domain.member.service.MemberCommandService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
+import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
 import com.zelusik.eatery.global.apple.dto.AppleOAuthUserInfo;
 import com.zelusik.eatery.global.apple.service.AppleOAuthService;
 import com.zelusik.eatery.global.auth.dto.JwtTokenDto;
@@ -10,14 +14,11 @@ import com.zelusik.eatery.global.auth.dto.request.AppleLoginRequest;
 import com.zelusik.eatery.global.auth.dto.request.KakaoLoginRequest;
 import com.zelusik.eatery.global.auth.dto.request.RefreshTokensRequest;
 import com.zelusik.eatery.global.auth.dto.response.LoginResponse;
+import com.zelusik.eatery.global.auth.dto.response.RefreshTokenResponse;
 import com.zelusik.eatery.global.auth.dto.response.TokenValidateResponse;
 import com.zelusik.eatery.global.auth.service.JwtTokenService;
 import com.zelusik.eatery.global.kakao.dto.KakaoOAuthUserInfo;
 import com.zelusik.eatery.global.kakao.service.KakaoService;
-import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.service.MemberService;
-import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
-import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,7 +43,8 @@ public class AuthController {
 
     private final KakaoService kakaoService;
     private final AppleOAuthService appleOAuthService;
-    private final MemberService memberService;
+    private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
     private final JwtTokenService jwtTokenService;
     private final TermsInfoService termsInfoService;
 
@@ -65,10 +67,10 @@ public class AuthController {
     public LoginResponse kakaoLoginV1_1(@Valid @RequestBody KakaoLoginRequest request) {
         KakaoOAuthUserInfo userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
-        MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
-                .orElseGet(() -> memberService.save(userInfo.toMemberDto(Set.of(RoleType.USER))));
+        MemberDto memberDto = memberQueryService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
+                .orElseGet(() -> memberCommandService.save(userInfo.toMemberDto(Set.of(RoleType.USER))));
         if (memberDto.getDeletedAt() != null) {
-            memberService.rejoin(memberDto.getId());
+            memberCommandService.rejoin(memberDto.getId());
         }
 
         TermsInfoDto termsInfoDto = termsInfoService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
@@ -98,10 +100,10 @@ public class AuthController {
     public LoginResponse appleLoginV1_1(@Valid @RequestBody AppleLoginRequest request) {
         AppleOAuthUserInfo userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
-        MemberDto memberDto = memberService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
-                .orElseGet(() -> memberService.save(userInfo.toMemberDto(request.getName(), Set.of(RoleType.USER))));
+        MemberDto memberDto = memberQueryService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
+                .orElseGet(() -> memberCommandService.save(userInfo.toMemberDto(request.getName(), Set.of(RoleType.USER))));
         if (memberDto.getDeletedAt() != null) {
-            memberService.rejoin(memberDto.getId());
+            memberCommandService.rejoin(memberDto.getId());
         }
 
         TermsInfoDto termsInfoDto = termsInfoService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);

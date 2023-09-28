@@ -21,7 +21,7 @@ import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecom
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.domain.recommended_review.repository.RecommendedReviewRepository;
-import com.zelusik.eatery.domain.member.service.MemberService;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewService;
 import com.zelusik.eatery.domain.review.service.ReviewService;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +51,7 @@ class RecommendedReviewServiceTest {
     private RecommendedReviewService sut;
 
     @Mock
-    private MemberService memberService;
+    private MemberQueryService memberQueryService;
     @Mock
     private ReviewService reviewService;
     @Mock
@@ -67,7 +67,7 @@ class RecommendedReviewServiceTest {
         Member member = createMember(memberId);
         Review review = createReview(reviewId, member, createPlace(3L, "12345"));
         RecommendedReview expectedResult = createRecommendedReview(4L, member, review, ranking);
-        given(memberService.findById(memberId)).willReturn(member);
+        given(memberQueryService.findById(memberId)).willReturn(member);
         given(reviewService.findById(reviewId)).willReturn(review);
         given(recommendedReviewRepository.save(any(RecommendedReview.class))).willReturn(expectedResult);
 
@@ -75,7 +75,7 @@ class RecommendedReviewServiceTest {
         RecommendedReviewDto actualResult = sut.saveRecommendedReview(memberId, reviewId, ranking);
 
         // then
-        then(memberService).should().findById(memberId);
+        then(memberQueryService).should().findById(memberId);
         then(reviewService).should().findById(reviewId);
         then(recommendedReviewRepository).should().save(any(RecommendedReview.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -129,7 +129,7 @@ class RecommendedReviewServiceTest {
                 createRecommendedReview(7L, member, review2, (short) 2),
                 createRecommendedReview(8L, member, review3, (short) 3)
         );
-        given(memberService.findById(memberId)).willReturn(member);
+        given(memberQueryService.findById(memberId)).willReturn(member);
         willDoNothing().given(recommendedReviewRepository).deleteAllByMember(member);
         willDoNothing().given(recommendedReviewRepository).flush();
         given(reviewService.findById(any(Long.class))).willReturn(review1, review2, review3);
@@ -139,7 +139,7 @@ class RecommendedReviewServiceTest {
         List<RecommendedReviewDto> actualResults = sut.batchUpdateRecommendedReviews(memberId, batchUpdateRecommendedReviewsRequest);
 
         // then
-        then(memberService).should().findById(memberId);
+        then(memberQueryService).should().findById(memberId);
         then(recommendedReviewRepository).should().deleteAllByMember(member);
         then(recommendedReviewRepository).should().flush();
         verify(reviewService, times(3)).findById(any(Long.class));
@@ -158,7 +158,7 @@ class RecommendedReviewServiceTest {
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(memberService).shouldHaveNoMoreInteractions();
+        then(memberQueryService).shouldHaveNoMoreInteractions();
         then(reviewService).shouldHaveNoMoreInteractions();
         then(recommendedReviewRepository).shouldHaveNoMoreInteractions();
     }
