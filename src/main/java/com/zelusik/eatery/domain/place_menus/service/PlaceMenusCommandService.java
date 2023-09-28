@@ -1,19 +1,18 @@
 package com.zelusik.eatery.domain.place_menus.service;
 
 import com.zelusik.eatery.domain.place.entity.Place;
-import com.zelusik.eatery.domain.place.service.PlaceQueryService;
-import com.zelusik.eatery.domain.place_menus.entity.PlaceMenus;
-import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
 import com.zelusik.eatery.domain.place.exception.ContainsDuplicateMenusException;
 import com.zelusik.eatery.domain.place.exception.PlaceMenusAlreadyExistsException;
 import com.zelusik.eatery.domain.place.exception.PlaceMenusNotFoundException;
+import com.zelusik.eatery.domain.place.service.PlaceQueryService;
+import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
+import com.zelusik.eatery.domain.place_menus.entity.PlaceMenus;
 import com.zelusik.eatery.domain.place_menus.repository.PlaceMenusRepository;
 import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotBlank;
 import java.util.HashSet;
@@ -21,9 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
-public class PlaceMenusService {
+public class PlaceMenusCommandService {
 
     private final PlaceQueryService placeQueryService;
     private final PlaceMenusRepository placeMenusRepository;
@@ -37,7 +35,6 @@ public class PlaceMenusService {
      * @return 저장된 메뉴 목록 정보를 담은 dto
      */
     @NonNull
-    @Transactional
     public PlaceMenusDto savePlaceMenus(@NonNull Long placeId) {
         if (placeMenusRepository.existsByPlace_Id(placeId)) {
             throw new PlaceMenusAlreadyExistsException(placeId);
@@ -54,7 +51,6 @@ public class PlaceMenusService {
      * @return 저장된 메뉴 목록 정보를 담은 dto
      */
     @NonNull
-    @Transactional
     public PlaceMenusDto savePlaceMenus(@NonNull String kakaoPid) {
         if (placeMenusRepository.existsByPlace_KakaoPid(kakaoPid)) {
             throw new PlaceMenusAlreadyExistsException(kakaoPid);
@@ -83,42 +79,6 @@ public class PlaceMenusService {
     }
 
     /**
-     * <p><code>kakaoPid</code>에 해당하는 장소에 대해 메뉴 목록 데이터를 조회한다.
-     *
-     * @param kakaoPid 메뉴 데이터를 조회하고자 하는 장소의 고유 id 값
-     * @return 메뉴 목록 정보를 담은 PlaceMenus의 entity 객체
-     * @throws PlaceMenusNotFoundException <code>kakaoPid</code>에 해당하는 장소 메뉴 데이터가 없는 경우
-     */
-    @NonNull
-    private PlaceMenus findByKakaoPid(@NonNull String kakaoPid) {
-        return placeMenusRepository.findByPlace_KakaoPid(kakaoPid).orElseThrow(() -> new PlaceMenusNotFoundException(kakaoPid));
-    }
-
-    /**
-     * placeId에 해당하는 장소에 대해 메뉴 목록 데이터를 조회한다.
-     *
-     * @param placeId 메뉴 데이터를 조회하고자 하는 장소의 PK 값
-     * @return 메뉴 목록 정보를 담은 PlaceMenus의 dto 객체
-     * @throws PlaceMenusNotFoundException placeId에 해당하는 장소 메뉴 데이터가 없는 경우
-     */
-    @NonNull
-    public PlaceMenusDto findDtoByPlaceId(@NonNull Long placeId) {
-        return PlaceMenusDto.from(findByPlaceId(placeId));
-    }
-
-    /**
-     * <p><code>kakaoPid</code>에 해당하는 장소에 대해 메뉴 목록 데이터를 조회한다.
-     *
-     * @param kakaoPid 메뉴 데이터를 조회하고자 하는 장소의 고유 id 값
-     * @return 메뉴 목록 정보를 담은 PlaceMenus의 dto 객체
-     * @throws PlaceMenusNotFoundException <code>kakaoPid</code>에 해당하는 장소 메뉴 데이터가 없는 경우
-     */
-    @NonNull
-    public PlaceMenusDto findDtoByKakaoPid(@NonNull String kakaoPid) {
-        return PlaceMenusDto.from(findByKakaoPid(kakaoPid));
-    }
-
-    /**
      * <code>placeId</code>에 해당하는 장소 메뉴 entity의 메뉴 목록 데이터(<code>menus</code>)를 업데이트(overwrite)한다.
      *
      * @param placeId 메뉴 데이터를 업데이트하고자 하는 장소의 PK 값
@@ -127,7 +87,6 @@ public class PlaceMenusService {
      * @throws ContainsDuplicateMenusException 전달받은 메뉴 목록에 중복된 메뉴가 존재할 경우
      */
     @NonNull
-    @Transactional
     public PlaceMenusDto updateMenus(@NonNull Long placeId, @Nullable List<String> menus) {
         if (menus != null && checkContainsDuplicateNonWhiteSpaceStrings(menus)) {
             throw new ContainsDuplicateMenusException(placeId, menus);
@@ -147,7 +106,6 @@ public class PlaceMenusService {
      * @throws ContainsDuplicateMenusException 전달받은 메뉴가 기존 메뉴 목록 데이터에 존재하는 경우
      */
     @NonNull
-    @Transactional
     public PlaceMenusDto addMenu(@NonNull Long placeId, @NotBlank String menu) {
         PlaceMenus placeMenus = findByPlaceId(placeId);
         placeMenus.addMenu(menu);
@@ -169,12 +127,6 @@ public class PlaceMenusService {
         return list.size() != set.size();
     }
 
-    /**
-     * 장소 메뉴 목록 데이터를 삭제한다.
-     *
-     * @param placeId 삭제하고자 하는 메뉴 목록의 장소
-     */
-    @Transactional
     public void delete(@NonNull Long placeId) {
         placeMenusRepository.deleteByPlace_Id(placeId);
     }
