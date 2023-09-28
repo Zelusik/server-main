@@ -13,7 +13,8 @@ import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurvey
 import com.zelusik.eatery.domain.member_deletion_survey.entity.MemberDeletionSurvey;
 import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletionSurveyRepository;
 import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
-import com.zelusik.eatery.domain.profile_image.service.ProfileImageService;
+import com.zelusik.eatery.domain.profile_image.service.ProfileImageCommandService;
+import com.zelusik.eatery.domain.profile_image.service.ProfileImageQueryService;
 import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,8 @@ import java.util.Optional;
 public class MemberCommandService {
 
     private final MemberQueryService memberQueryService;
-    private final ProfileImageService profileImageService;
+    private final ProfileImageCommandService profileImageCommandService;
+    private final ProfileImageQueryService profileImageQueryService;
     private final TermsInfoService termsInfoService;
     private final MemberRepository memberRepository;
     private final MemberDeletionSurveyRepository memberDeletionSurveyRepository;
@@ -82,10 +84,10 @@ public class MemberCommandService {
                     updateRequest.getGender()
             );
         } else {
-            Optional<ProfileImage> oldProfileImage = profileImageService.findByMember(member);
-            oldProfileImage.ifPresent(profileImageService::softDelete);
+            Optional<ProfileImage> oldProfileImage = profileImageQueryService.findByMember(member);
+            oldProfileImage.ifPresent(profileImageCommandService::softDelete);
 
-            ProfileImage profileImage = profileImageService.upload(member, profileImageForUpdate);
+            ProfileImage profileImage = profileImageCommandService.upload(member, profileImageForUpdate);
             member.update(
                     profileImage.getUrl(),
                     profileImage.getThumbnailUrl(),
