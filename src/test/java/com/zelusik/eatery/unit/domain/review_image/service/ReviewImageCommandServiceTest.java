@@ -3,23 +3,23 @@ package com.zelusik.eatery.unit.domain.review_image.service;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
-import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
-import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
 import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
-import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTagCreateRequest;
+import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
 import com.zelusik.eatery.domain.review_image.repository.ReviewImageRepository;
-import com.zelusik.eatery.global.file.service.S3FileService;
-import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_image.service.ReviewImageCommandService;
+import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
+import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTagCreateRequest;
+import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
 import com.zelusik.eatery.global.file.dto.S3ImageDto;
+import com.zelusik.eatery.global.file.service.S3FileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,12 +39,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-@DisplayName("[Unit] Review File Service")
+@DisplayName("[Unit] Service(Command) - Review image")
 @ExtendWith(MockitoExtension.class)
-class ReviewImageServiceTest {
+class ReviewImageCommandServiceTest {
 
     @InjectMocks
-    private ReviewImageService sut;
+    private ReviewImageCommandService sut;
 
     @Mock
     private S3FileService s3FileService;

@@ -23,7 +23,7 @@ import com.zelusik.eatery.domain.review.service.ReviewCommandService;
 import com.zelusik.eatery.domain.review.service.ReviewQueryService;
 import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
-import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_image.service.ReviewImageCommandService;
 import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.MenuTagPointCreateRequest;
 import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTagCreateRequest;
 import com.zelusik.eatery.domain.review_image_menu_tag.repository.ReviewImageMenuTagRepository;
@@ -58,7 +58,7 @@ class ReviewCommandServiceTest {
     @Mock
     private ReviewQueryService reviewQueryService;
     @Mock
-    private ReviewImageService reviewImageService;
+    private ReviewImageCommandService reviewImageCommandService;
     @Mock
     private MemberQueryService memberQueryService;
     @Mock
@@ -94,7 +94,7 @@ class ReviewCommandServiceTest {
         given(bookmarkQueryService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(reviewKeyword);
-        given(reviewImageService.upload(any(Review.class), any())).willReturn(List.of(reviewImage));
+        given(reviewImageCommandService.upload(any(Review.class), any())).willReturn(List.of(reviewImage));
         given(reviewImageMenuTagRepository.saveAll(anyList())).willReturn(List.of());
         willDoNothing().given(placeCommandService).renewTop3Keywords(expectedPlace);
 
@@ -107,7 +107,7 @@ class ReviewCommandServiceTest {
         then(bookmarkQueryService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
-        verify(reviewImageService, times(reviewCreateRequest.getImages().size())).upload(any(Review.class), any());
+        verify(reviewImageCommandService, times(reviewCreateRequest.getImages().size())).upload(any(Review.class), any());
         then(reviewImageMenuTagRepository).should().saveAll(anyList());
         then(placeCommandService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -129,7 +129,7 @@ class ReviewCommandServiceTest {
         findReview.getReviewImages().add(reviewImage);
         given(memberQueryService.findById(memberId)).willReturn(loginMember);
         given(reviewQueryService.findById(reviewId)).willReturn(findReview);
-        willDoNothing().given(reviewImageService).softDeleteAll(findReview.getReviewImages());
+        willDoNothing().given(reviewImageCommandService).softDeleteAll(findReview.getReviewImages());
         willDoNothing().given(reviewKeywordRepository).deleteAll(findReview.getKeywords());
         willDoNothing().given(reviewRepository).flush();
         willDoNothing().given(placeCommandService).renewTop3Keywords(findReview.getPlace());
@@ -140,7 +140,7 @@ class ReviewCommandServiceTest {
         // then
         then(memberQueryService).should().findById(memberId);
         then(reviewQueryService).should().findById(reviewId);
-        then(reviewImageService).should().softDeleteAll(findReview.getReviewImages());
+        then(reviewImageCommandService).should().softDeleteAll(findReview.getReviewImages());
         then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
         then(reviewRepository).should().flush();
         then(placeCommandService).should().renewTop3Keywords(findReview.getPlace());
@@ -177,7 +177,7 @@ class ReviewCommandServiceTest {
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(reviewQueryService).shouldHaveNoMoreInteractions();
-        then(reviewImageService).shouldHaveNoMoreInteractions();
+        then(reviewImageCommandService).shouldHaveNoMoreInteractions();
         then(memberQueryService).shouldHaveNoMoreInteractions();
         then(placeCommandService).shouldHaveNoMoreInteractions();
         then(placeQueryService).shouldHaveNoMoreInteractions();

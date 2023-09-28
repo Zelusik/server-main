@@ -15,7 +15,7 @@ import com.zelusik.eatery.domain.review.exception.ReviewUpdatePermissionDeniedEx
 import com.zelusik.eatery.domain.review.repository.ReviewRepository;
 import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
 import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
-import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_image.service.ReviewImageCommandService;
 import com.zelusik.eatery.domain.review_image_menu_tag.entity.ReviewImageMenuTag;
 import com.zelusik.eatery.domain.review_image_menu_tag.repository.ReviewImageMenuTagRepository;
 import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
@@ -33,7 +33,7 @@ import java.util.List;
 public class ReviewCommandService {
 
     private final ReviewQueryService reviewQueryService;
-    private final ReviewImageService reviewImageService;
+    private final ReviewImageCommandService reviewImageCommandService;
     private final MemberQueryService memberQueryService;
     private final PlaceCommandService placeCommandService;
     private final PlaceQueryService placeQueryService;
@@ -67,7 +67,7 @@ public class ReviewCommandService {
         });
 
         // 리뷰 이미지 저장 및 업로드
-        List<ReviewImage> reviewImages = reviewImageService.upload(review, images);
+        List<ReviewImage> reviewImages = reviewImageCommandService.upload(review, images);
         review.getReviewImages().addAll(reviewImages);
 
         // 메뉴 태그 저장
@@ -121,7 +121,7 @@ public class ReviewCommandService {
 
         validateReviewDeletePermission(member, review);
 
-        reviewImageService.softDeleteAll(review.getReviewImages());
+        reviewImageCommandService.softDeleteAll(review.getReviewImages());
         reviewKeywordRepository.deleteAll(review.getKeywords());
         softDelete(review);
 

@@ -10,7 +10,7 @@ import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
-import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_image.service.ReviewImageQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +30,7 @@ public class PlaceQueryService {
     public static final int MAX_NUM_OF_PLACE_IMAGES = 4;
     public static final int DISTANCE_LIMITS_FOR_FIND_NEARBY_PLACES = 50;
 
-    private final ReviewImageService reviewImageService;
+    private final ReviewImageQueryService reviewImageQueryService;
     private final PlaceRepository placeRepository;
     private final BookmarkQueryService bookmarkQueryService;
 
@@ -76,7 +76,7 @@ public class PlaceQueryService {
     public PlaceDto findDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
         Place foundPlace = findById(placeId);
         boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
-        List<ReviewImageDto> latest3Images = reviewImageService.findLatest3ByPlace(foundPlace.getId());
+        List<ReviewImageDto> latest3Images = reviewImageQueryService.findLatest3ByPlace(foundPlace.getId());
         return PlaceDto.fromWithImages(foundPlace, isMarked, latest3Images);
     }
 
@@ -90,7 +90,7 @@ public class PlaceQueryService {
     public PlaceDto findDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
         Place foundPlace = findByKakaoPid(kakaoPid);
         boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
-        List<ReviewImageDto> latest3ByPlace = reviewImageService.findLatest3ByPlace(foundPlace.getId());
+        List<ReviewImageDto> latest3ByPlace = reviewImageQueryService.findLatest3ByPlace(foundPlace.getId());
         return PlaceDto.fromWithImages(foundPlace, isMarked, latest3ByPlace);
     }
 

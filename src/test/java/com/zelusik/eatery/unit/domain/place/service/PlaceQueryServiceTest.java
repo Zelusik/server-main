@@ -14,7 +14,7 @@ import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review_image.service.ReviewImageService;
+import com.zelusik.eatery.domain.review_image.service.ReviewImageQueryService;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class PlaceQueryServiceTest {
     private PlaceQueryService sut;
 
     @Mock
-    private ReviewImageService reviewImageService;
+    private ReviewImageQueryService reviewImageQueryService;
     @Mock
     private PlaceRepository placeRepository;
     @Mock
@@ -58,7 +58,7 @@ class PlaceQueryServiceTest {
         Place expectedResult = createPlace(placeId, "12345");
         given(placeRepository.findById(placeId)).willReturn(Optional.of(expectedResult));
         given(bookmarkQueryService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
-        given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
+        given(reviewImageQueryService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
         PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImagesById(memberId, placeId);
@@ -66,7 +66,7 @@ class PlaceQueryServiceTest {
         // then
         then(placeRepository).should().findById(placeId);
         then(bookmarkQueryService).should().isMarkedPlace(memberId, expectedResult);
-        then(reviewImageService).should().findLatest3ByPlace(placeId);
+        then(reviewImageQueryService).should().findLatest3ByPlace(placeId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult).hasFieldOrPropertyWithValue("id", placeId);
     }
@@ -98,7 +98,7 @@ class PlaceQueryServiceTest {
         Place expectedResult = createPlace(placeId, "12345");
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedResult));
         given(bookmarkQueryService.isMarkedPlace(memberId, expectedResult)).willReturn(true);
-        given(reviewImageService.findLatest3ByPlace(placeId)).willReturn(List.of());
+        given(reviewImageQueryService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
         PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
@@ -106,7 +106,7 @@ class PlaceQueryServiceTest {
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
         then(bookmarkQueryService).should().isMarkedPlace(memberId, expectedResult);
-        then(reviewImageService).should().findLatest3ByPlace(placeId);
+        then(reviewImageQueryService).should().findLatest3ByPlace(placeId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult)
                 .hasFieldOrPropertyWithValue("id", placeId)
@@ -269,7 +269,7 @@ class PlaceQueryServiceTest {
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(reviewImageService).shouldHaveNoMoreInteractions();
+        then(reviewImageQueryService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(bookmarkQueryService).shouldHaveNoMoreInteractions();
     }
