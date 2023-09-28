@@ -1,11 +1,10 @@
 package com.zelusik.eatery.domain.terms_info.service;
 
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.terms_info.entity.TermsInfo;
-import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
-import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
-import com.zelusik.eatery.domain.member.repository.MemberRepository;
+import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
+import com.zelusik.eatery.domain.terms_info.entity.TermsInfo;
 import com.zelusik.eatery.domain.terms_info.repository.TermsInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -13,14 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
-public class TermsInfoService {
+public class TermsInfoCommandService {
 
-    private final MemberRepository memberRepository;
+    private final MemberQueryService memberQueryService;
     private final TermsInfoRepository termsInfoRepository;
 
     /**
@@ -31,9 +29,8 @@ public class TermsInfoService {
      * @return 적용된 약관 동의 결과 정보
      */
     @CacheEvict(value = "member", key = "#memberId")
-    @Transactional
     public TermsInfoDto saveTermsInfo(long memberId, AgreeToTermsRequest request) {
-        Member member = findMemberById(memberId);
+        Member member = memberQueryService.findById(memberId);
         LocalDateTime now = LocalDateTime.now();
         TermsInfo termsInfo = TermsInfo.of(
                 member,
@@ -45,20 +42,6 @@ public class TermsInfoService {
         );
         termsInfoRepository.save(termsInfo);
         return TermsInfoDto.from(termsInfo);
-    }
-
-    private Member findMemberById(long memberId) {
-        return memberRepository.findByIdAndDeletedAtNull(memberId).orElseThrow(() -> new MemberIdNotFoundException(memberId));
-    }
-
-    /**
-     * <code>memberId</code>에 해당하는 회원의 약관 동의 정보(termsInfo)를 조회한다.
-     *
-     * @param memberId 약관 동의 정보를 조회하고자 하는 회원의 id(PK)
-     * @return 조회된 약관 동의 정보(termsInfo entity)가 담긴 optional dto
-     */
-    public Optional<TermsInfoDto> findOptionalDtoByMemberId(long memberId) {
-        return termsInfoRepository.findByMember_Id(memberId).map(TermsInfoDto::from);
     }
 
     /**

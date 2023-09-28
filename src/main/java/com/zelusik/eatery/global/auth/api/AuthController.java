@@ -6,7 +6,7 @@ import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.service.MemberCommandService;
 import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
-import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoQueryService;
 import com.zelusik.eatery.global.apple.dto.AppleOAuthUserInfo;
 import com.zelusik.eatery.global.apple.service.AppleOAuthService;
 import com.zelusik.eatery.global.auth.dto.JwtTokenDto;
@@ -46,7 +46,7 @@ public class AuthController {
     private final MemberCommandService memberCommandService;
     private final MemberQueryService memberQueryService;
     private final JwtTokenService jwtTokenService;
-    private final TermsInfoService termsInfoService;
+    private final TermsInfoQueryService termsInfoQueryService;
 
     @Operation(
             summary = "카카오 로그인",
@@ -73,7 +73,7 @@ public class AuthController {
             memberCommandService.rejoin(memberDto.getId());
         }
 
-        TermsInfoDto termsInfoDto = termsInfoService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
+        TermsInfoDto termsInfoDto = termsInfoQueryService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
 
         JwtTokenDto jwtTokenDto = jwtTokenService.create(memberDto.getId(), LoginType.KAKAO);
 
@@ -106,7 +106,7 @@ public class AuthController {
             memberCommandService.rejoin(memberDto.getId());
         }
 
-        TermsInfoDto termsInfoDto = termsInfoService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
+        TermsInfoDto termsInfoDto = termsInfoQueryService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
 
         JwtTokenDto jwtTokenDto = jwtTokenService.create(memberDto.getId(), LoginType.APPLE);
 

@@ -4,12 +4,12 @@ import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.terms_info.entity.TermsInfo;
-import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
+import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
-import com.zelusik.eatery.domain.member.repository.MemberRepository;
+import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
+import com.zelusik.eatery.domain.terms_info.entity.TermsInfo;
 import com.zelusik.eatery.domain.terms_info.repository.TermsInfoRepository;
-import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,22 +19,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
-@DisplayName("[Unit] Terms Info Service Test")
+@DisplayName("[Unit] Service(Command) - Terms info")
 @ExtendWith(MockitoExtension.class)
-class TermsInfoServiceTest {
+class TermsInfoCommandServiceTest {
 
     @InjectMocks
-    private TermsInfoService sut;
+    private TermsInfoCommandService sut;
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberQueryService memberQueryService;
     @Mock
     private TermsInfoRepository termsInfoRepository;
 
@@ -45,7 +44,7 @@ class TermsInfoServiceTest {
         long loginMemberId = 1L;
         AgreeToTermsRequest request = createTermsAgreeRequest();
         Member member = createMember(loginMemberId);
-        given(memberRepository.findByIdAndDeletedAtNull(loginMemberId)).willReturn(Optional.of(member));
+        given(memberQueryService.findById(loginMemberId)).willReturn(member);
         TermsInfo expectedSavedTermsInfo = createTermsInfo(
                 2L,
                 member,
@@ -61,7 +60,7 @@ class TermsInfoServiceTest {
         TermsInfoDto actualSavedTermsInfo = sut.saveTermsInfo(loginMemberId, request);
 
         // then
-        then(memberRepository).should().findByIdAndDeletedAtNull(loginMemberId);
+        then(memberQueryService).should().findById(loginMemberId);
         then(termsInfoRepository).should().save(any(TermsInfo.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSavedTermsInfo)
@@ -86,12 +85,11 @@ class TermsInfoServiceTest {
 
         // then
         then(termsInfoRepository).should().deleteByMember_Id(memberId);
-        then(termsInfoRepository).shouldHaveNoMoreInteractions();
-        then(memberRepository).shouldHaveNoInteractions();
+        verifyEveryMocksShouldHaveNoMoreInteractions();
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
-        then(memberRepository).shouldHaveNoMoreInteractions();
+        then(memberQueryService).shouldHaveNoMoreInteractions();
         then(termsInfoRepository).shouldHaveNoMoreInteractions();
     }
 

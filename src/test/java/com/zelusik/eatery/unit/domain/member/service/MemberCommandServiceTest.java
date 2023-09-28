@@ -19,7 +19,7 @@ import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletio
 import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageCommandService;
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageQueryService;
-import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoCommandService;
 import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +59,7 @@ class MemberCommandServiceTest {
     @Mock
     private ProfileImageQueryService profileImageQueryService;
     @Mock
-    private TermsInfoService termsInfoService;
+    private TermsInfoCommandService termsInfoCommandService;
     @Mock
     private MemberRepository memberRepository;
     @Mock
@@ -171,7 +171,7 @@ class MemberCommandServiceTest {
         MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
         Member findMember = createMember(memberId);
         given(memberQueryService.findById(memberId)).willReturn(findMember);
-        willDoNothing().given(termsInfoService).deleteByMemberId(memberId);
+        willDoNothing().given(termsInfoCommandService).deleteByMemberId(memberId);
         given(memberDeletionSurveyRepository.save(any(MemberDeletionSurvey.class)))
                 .willReturn(createMemberDeletionSurvey(11L, findMember, surveyType));
 
@@ -180,7 +180,7 @@ class MemberCommandServiceTest {
 
         // then
         then(memberQueryService).should().findById(memberId);
-        then(termsInfoService).should().deleteByMemberId(memberId);
+        then(termsInfoCommandService).should().deleteByMemberId(memberId);
         then(memberDeletionSurveyRepository).should().save(any(MemberDeletionSurvey.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(surveyResult.getSurveyType()).isEqualTo(surveyType);
@@ -200,17 +200,14 @@ class MemberCommandServiceTest {
 
         // then
         then(memberQueryService).should().findById(memberId);
-        then(memberRepository).shouldHaveNoMoreInteractions();
-        then(termsInfoService).shouldHaveNoMoreInteractions();
-        then(memberDeletionSurveyRepository).shouldHaveNoInteractions();
-
+        verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(MemberNotFoundException.class);
     }
 
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(profileImageQueryService).shouldHaveNoMoreInteractions();
         then(profileImageCommandService).shouldHaveNoMoreInteractions();
-        then(termsInfoService).shouldHaveNoMoreInteractions();
+        then(termsInfoCommandService).shouldHaveNoMoreInteractions();
         then(memberRepository).shouldHaveNoMoreInteractions();
         then(memberDeletionSurveyRepository).shouldHaveNoMoreInteractions();
         then(favoriteFoodCategoryRepository).shouldHaveNoMoreInteractions();

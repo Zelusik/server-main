@@ -15,7 +15,7 @@ import com.zelusik.eatery.domain.member_deletion_survey.repository.MemberDeletio
 import com.zelusik.eatery.domain.profile_image.entity.ProfileImage;
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageCommandService;
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageQueryService;
-import com.zelusik.eatery.domain.terms_info.service.TermsInfoService;
+import com.zelusik.eatery.domain.terms_info.service.TermsInfoCommandService;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -35,7 +35,7 @@ public class MemberCommandService {
     private final MemberQueryService memberQueryService;
     private final ProfileImageCommandService profileImageCommandService;
     private final ProfileImageQueryService profileImageQueryService;
-    private final TermsInfoService termsInfoService;
+    private final TermsInfoCommandService termsInfoCommandService;
     private final MemberRepository memberRepository;
     private final MemberDeletionSurveyRepository memberDeletionSurveyRepository;
     private final FavoriteFoodCategoryRepository favoriteFoodCategoryRepository;
@@ -140,7 +140,7 @@ public class MemberCommandService {
             throw new MemberNotFoundException();
         }
 
-        termsInfoService.deleteByMemberId(memberId);
+        termsInfoCommandService.deleteByMemberId(memberId);
 
         member.softDelete();
 
