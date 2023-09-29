@@ -16,7 +16,7 @@ import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
 import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
@@ -92,16 +92,16 @@ class MemberRepositoryTest {
         review3.getKeywords().add(reviewKeywordRepository.save(createNewReviewKeyword(review3, ReviewKeywordValue.NOISY)));
 
         // when
-        MemberProfileInfoDto result = sut.getMemberProfileInfoById(member.getId());
+        MemberWithProfileInfoDto result = sut.getMemberProfileInfoById(member.getId());
 
         // then
         assertThat(result)
-                .hasFieldOrPropertyWithValue("id", member.getId())
-                .hasFieldOrPropertyWithValue("profileImageUrl", member.getProfileImageUrl())
-                .hasFieldOrPropertyWithValue("profileThumbnailImageUrl", member.getProfileThumbnailImageUrl())
-                .hasFieldOrPropertyWithValue("nickname", member.getNickname())
-                .hasFieldOrPropertyWithValue("gender", member.getGender())
-                .hasFieldOrPropertyWithValue("birthDay", member.getBirthDay())
+                .hasFieldOrPropertyWithValue("member.id", member.getId())
+                .hasFieldOrPropertyWithValue("member.profileImageUrl", member.getProfileImageUrl())
+                .hasFieldOrPropertyWithValue("member.profileThumbnailImageUrl", member.getProfileThumbnailImageUrl())
+                .hasFieldOrPropertyWithValue("member.nickname", member.getNickname())
+                .hasFieldOrPropertyWithValue("member.gender", member.getGender())
+                .hasFieldOrPropertyWithValue("member.birthDay", member.getBirthDay())
                 .hasFieldOrPropertyWithValue("numOfReviews", 3)
                 .hasFieldOrPropertyWithValue("influence", 0)
                 .hasFieldOrPropertyWithValue("numOfFollowers", 0)

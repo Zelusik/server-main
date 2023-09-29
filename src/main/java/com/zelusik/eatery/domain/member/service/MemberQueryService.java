@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.member.service;
 
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
@@ -83,7 +83,7 @@ public class MemberQueryService {
      * @param memberId 프로필 정보를 조회할 회원의 PK
      * @return 조회된 프로필 정보
      */
-    public MemberProfileInfoDto getMemberProfileInfoById(long memberId) {
+    public MemberWithProfileInfoDto getMemberProfileInfoById(long memberId) {
         return memberRepository.getMemberProfileInfoById(memberId);
     }
 }

@@ -7,7 +7,7 @@ import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
 import com.zelusik.eatery.domain.member.service.MemberCommandService;
 import com.zelusik.eatery.domain.member.service.MemberQueryService;
@@ -100,7 +100,7 @@ class MemberControllerTest {
         String mostVisitedLocation = "연남동";
         ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
         FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
-        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        MemberWithProfileInfoDto expectedResult = createMemberWithProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
         given(memberQueryService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when & then
@@ -110,12 +110,12 @@ class MemberControllerTest {
                                 .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expectedResult.getId()))
-                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
-                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
-                .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
-                .andExpect(jsonPath("$.gender").value(expectedResult.getGender().getDescription()))
-                .andExpect(jsonPath("$.birthDay").value(expectedResult.getBirthDay().toString()))
+                .andExpect(jsonPath("$.id").value(expectedResult.getMember().getId()))
+                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getMember().getProfileImageUrl()))
+                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getMember().getProfileThumbnailImageUrl()))
+                .andExpect(jsonPath("$.nickname").value(expectedResult.getMember().getNickname()))
+                .andExpect(jsonPath("$.gender").value(expectedResult.getMember().getGender().getDescription()))
+                .andExpect(jsonPath("$.birthDay").value(expectedResult.getMember().getBirthDay().toString()))
                 .andExpect(jsonPath("$.numOfReviews").value(numOfReviews))
                 .andExpect(jsonPath("$.influence").value(0))
                 .andExpect(jsonPath("$.numOfFollowers").value(0))
@@ -135,7 +135,7 @@ class MemberControllerTest {
         String mostVisitedLocation = "연남동";
         ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
         FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
-        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        MemberWithProfileInfoDto expectedResult = createMemberWithProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
         given(memberQueryService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when & then
@@ -145,11 +145,11 @@ class MemberControllerTest {
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expectedResult.getId()))
+                .andExpect(jsonPath("$.id").value(expectedResult.getMember().getId()))
                 .andExpect(jsonPath("$.isEqualLoginMember").value(loginMemberId == memberId))
-                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
-                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
-                .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
+                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getMember().getProfileImageUrl()))
+                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getMember().getProfileThumbnailImageUrl()))
+                .andExpect(jsonPath("$.nickname").value(expectedResult.getMember().getNickname()))
                 .andExpect(jsonPath("$.numOfReviews").value(numOfReviews))
                 .andExpect(jsonPath("$.influence").value(0))
                 .andExpect(jsonPath("$.numOfFollowers").value(0))
@@ -280,14 +280,9 @@ class MemberControllerTest {
     }
 
     @NonNull
-    private MemberProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
-        return new MemberProfileInfoDto(
-                memberId,
-                EateryConstants.defaultProfileImageUrl,
-                EateryConstants.defaultProfileThumbnailImageUrl,
-                "test",
-                Gender.MALE,
-                LocalDate.of(2000, 1, 1),
+    private MemberWithProfileInfoDto createMemberWithProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
+        return new MemberWithProfileInfoDto(
+                createMemberDto(memberId),
                 numOfReviews,
                 0,
                 0,

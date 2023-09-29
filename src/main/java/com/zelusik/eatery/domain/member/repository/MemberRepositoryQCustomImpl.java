@@ -6,7 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public MemberProfileInfoDto getMemberProfileInfoById(long memberId) {
+    public MemberWithProfileInfoDto getMemberProfileInfoById(long memberId) {
         Member foundMember = Optional.ofNullable(
                 queryFactory
                         .select(member)
@@ -37,7 +37,7 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
                         .fetchOne()
         ).orElseThrow(() -> new MemberIdNotFoundException(memberId));
 
-        return MemberProfileInfoDto.of(
+        return MemberWithProfileInfoDto.of(
                 foundMember,
                 getNumOfReviews(memberId),
                 getMostVisitedLocation(memberId),

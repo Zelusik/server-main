@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.member.repository;
 
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -24,7 +24,7 @@ public interface MemberRepositoryQCustom {
      * @param memberId 프로필 정보를 조회할 회원의 PK
      * @return 조회된 프로필 정보
      */
-    MemberProfileInfoDto getMemberProfileInfoById(long memberId);
+    MemberWithProfileInfoDto getMemberProfileInfoById(long memberId);
 
     /**
      * 주어진 키워드에 해당하는 닉네임을 갖는 회원을 검색한다..

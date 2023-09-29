@@ -1,6 +1,7 @@
 package com.zelusik.eatery.domain.member.dto.response;
 
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,23 +40,24 @@ public class GetMemberProfileInfoResponse {
     @Schema(description = "취향 통계 정보")
     private MemberTasteStatisticsResponse tasteStatistics;
 
-    public static GetMemberProfileInfoResponse from(long loginMemberId, MemberProfileInfoDto memberProfileInfoDto) {
+    public static GetMemberProfileInfoResponse from(long loginMemberId, MemberWithProfileInfoDto memberWithProfileInfoDto) {
+        MemberDto member = memberWithProfileInfoDto.getMember();
         return new GetMemberProfileInfoResponse(
-                memberProfileInfoDto.getId(),
-                loginMemberId == memberProfileInfoDto.getId(),
+                member.getId(),
+                loginMemberId == member.getId(),
                 new MemberProfileImageResponse(
-                        memberProfileInfoDto.getProfileImageUrl(),
-                        memberProfileInfoDto.getProfileThumbnailImageUrl()
+                        member.getProfileImageUrl(),
+                        member.getProfileThumbnailImageUrl()
                 ),
-                memberProfileInfoDto.getNickname(),
-                memberProfileInfoDto.getNumOfReviews(),
-                memberProfileInfoDto.getInfluence(),
-                memberProfileInfoDto.getNumOfFollowers(),
-                memberProfileInfoDto.getNumOfFollowings(),
+                member.getNickname(),
+                memberWithProfileInfoDto.getNumOfReviews(),
+                memberWithProfileInfoDto.getInfluence(),
+                memberWithProfileInfoDto.getNumOfFollowers(),
+                memberWithProfileInfoDto.getNumOfFollowings(),
                 new MemberTasteStatisticsResponse(
-                        memberProfileInfoDto.getMostVisitedLocation(),
-                        memberProfileInfoDto.getMostTaggedReviewKeyword() != null ? memberProfileInfoDto.getMostTaggedReviewKeyword().getContent() : "",
-                        memberProfileInfoDto.getMostEatenFoodCategory() != null ? memberProfileInfoDto.getMostEatenFoodCategory().getCategoryName() : ""
+                        memberWithProfileInfoDto.getMostVisitedLocation(),
+                        memberWithProfileInfoDto.getMostTaggedReviewKeyword() != null ? memberWithProfileInfoDto.getMostTaggedReviewKeyword().getContent() : "",
+                        memberWithProfileInfoDto.getMostEatenFoodCategory() != null ? memberWithProfileInfoDto.getMostEatenFoodCategory().getCategoryName() : ""
                 )
         );
     }

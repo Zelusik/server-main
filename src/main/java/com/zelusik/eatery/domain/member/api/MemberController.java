@@ -3,7 +3,7 @@ package com.zelusik.eatery.domain.member.api;
 import com.zelusik.eatery.domain.favorite_food_category.dto.request.FavoriteFoodCategoriesUpdateRequest;
 import com.zelusik.eatery.domain.favorite_food_category.dto.response.UpdateFavoriteFoodCategoriesResponse;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
 import com.zelusik.eatery.domain.member.dto.response.*;
 import com.zelusik.eatery.domain.member.service.MemberCommandService;
@@ -103,8 +103,8 @@ public class MemberController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @PathVariable Long memberId
     ) {
-        MemberProfileInfoDto memberProfileInfoDto = memberQueryService.getMemberProfileInfoById(memberId);
-        return GetMemberProfileInfoResponse.from(userPrincipal.getMemberId(), memberProfileInfoDto);
+        MemberWithProfileInfoDto memberWithProfileInfoDto = memberQueryService.getMemberProfileInfoById(memberId);
+        return GetMemberProfileInfoResponse.from(userPrincipal.getMemberId(), memberWithProfileInfoDto);
     }
 
     @Operation(
