@@ -6,8 +6,8 @@ import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingOpeningHourDto;
+import com.zelusik.eatery.global.scraping.dto.KakaoPlaceScrapingInfo;
+import com.zelusik.eatery.global.scraping.dto.PlaceScrapingOpeningHourDto;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
@@ -70,11 +70,11 @@ class PlaceCommandServiceTest {
         );
         String closingHours = "토요일\n일요일";
         String homepageUrl = "https://homepage.url";
-        PlaceScrapingInfo placeScrapingInfo = PlaceScrapingInfo.of(openingHourDtos, closingHours, homepageUrl);
+        KakaoPlaceScrapingInfo kakaoPlaceScrapingInfo = KakaoPlaceScrapingInfo.of(openingHourDtos, closingHours, homepageUrl);
         PlaceCreateRequest placeCreateRequest = createPlaceRequest();
         Place expectedResult = createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(false);
-        given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(placeScrapingInfo);
+        given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(kakaoPlaceScrapingInfo);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(List.of());
         given(bookmarkQueryService.isMarkedPlace(memberId, expectedResult)).willReturn(false);

@@ -3,8 +3,8 @@ package com.zelusik.eatery.unit.global.scraping.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingOpeningHourDto;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
+import com.zelusik.eatery.global.scraping.dto.PlaceScrapingOpeningHourDto;
+import com.zelusik.eatery.global.scraping.dto.KakaoPlaceScrapingInfo;
 import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class WebScrapingServiceTest {
                 ));
 
         // when
-        PlaceScrapingInfo result = sut.getPlaceScrapingInfo(kakaoPid);
+        KakaoPlaceScrapingInfo result = sut.getPlaceScrapingInfo(kakaoPid);
 
         // then
         restServer.verify();
@@ -99,8 +99,8 @@ class WebScrapingServiceTest {
                 .hasSize(3);
     }
 
-    private static PlaceScrapingInfo createPlaceScrapingResponse() {
-        return PlaceScrapingInfo.of(
+    private static KakaoPlaceScrapingInfo createPlaceScrapingResponse() {
+        return KakaoPlaceScrapingInfo.of(
                 List.of(
                         PlaceScrapingOpeningHourDto.of(DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(21, 0)),
                         PlaceScrapingOpeningHourDto.of(DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(21, 0)),

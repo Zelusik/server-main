@@ -1,4 +1,4 @@
-package com.zelusik.eatery.domain.place.dto;
+package com.zelusik.eatery.global.scraping.dto;
 
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;

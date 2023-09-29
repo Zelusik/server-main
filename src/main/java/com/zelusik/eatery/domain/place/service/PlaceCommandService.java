@@ -4,7 +4,7 @@ import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
 import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
+import com.zelusik.eatery.global.scraping.dto.KakaoPlaceScrapingInfo;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.exception.PlaceAlreadyExistsException;
@@ -44,7 +44,7 @@ public class PlaceCommandService {
             throw new PlaceAlreadyExistsException(kakaoPid);
         }
 
-        PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
+        KakaoPlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
 
         Place savedPlace = placeRepository.save(placeCreateRequest.toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours()).toEntity());
         boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(memberId, savedPlace);

@@ -1,6 +1,6 @@
 package com.zelusik.eatery.global.scraping.service;
 
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
+import com.zelusik.eatery.global.scraping.dto.KakaoPlaceScrapingInfo;
 import com.zelusik.eatery.global.scraping.exception.ScrapingServerInternalError;
 import lombok.*;
 import org.json.JSONObject;
@@ -35,7 +35,7 @@ public class WebScrapingService {
      * @return Scraping해서 읽어온 추가 정보
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      */
-    public PlaceScrapingInfo getPlaceScrapingInfo(String kakaoPid) {
+    public KakaoPlaceScrapingInfo getPlaceScrapingInfo(String kakaoPid) {
         URI requestUri = UriComponentsBuilder.fromUriString(scrapingServerUrl + "/places/scraping")
                 .queryParam("kakaoPid", kakaoPid)
                 .encode(StandardCharsets.UTF_8)
@@ -52,7 +52,7 @@ public class WebScrapingService {
         }
 
         Map<String, Object> attributes = new JSONObject(response.getBody()).toMap();
-        return PlaceScrapingInfo.from(attributes);
+        return KakaoPlaceScrapingInfo.from(attributes);
     }
 
     /**
