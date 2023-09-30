@@ -1,6 +1,5 @@
 package com.zelusik.eatery.domain.member.dto.response;
 
-import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -41,15 +40,14 @@ public class GetMemberProfileInfoResponse {
     private MemberTasteStatisticsResponse tasteStatistics;
 
     public static GetMemberProfileInfoResponse from(long loginMemberId, MemberWithProfileInfoDto memberWithProfileInfoDto) {
-        MemberDto member = memberWithProfileInfoDto.getMember();
         return new GetMemberProfileInfoResponse(
-                member.getId(),
-                loginMemberId == member.getId(),
+                memberWithProfileInfoDto.getId(),
+                loginMemberId == memberWithProfileInfoDto.getId(),
                 new MemberProfileImageResponse(
-                        member.getProfileImageUrl(),
-                        member.getProfileThumbnailImageUrl()
+                        memberWithProfileInfoDto.getProfileImageUrl(),
+                        memberWithProfileInfoDto.getProfileThumbnailImageUrl()
                 ),
-                member.getNickname(),
+                memberWithProfileInfoDto.getNickname(),
                 memberWithProfileInfoDto.getNumOfReviews(),
                 memberWithProfileInfoDto.getInfluence(),
                 memberWithProfileInfoDto.getNumOfFollowers(),

@@ -146,7 +146,7 @@ class MemberQueryServiceTest {
         then(memberRepository).should().getMemberProfileInfoById(memberId);
         then(memberRepository).shouldHaveNoMoreInteractions();
         assertThat(actualResult)
-                .hasFieldOrPropertyWithValue("member.id", memberId)
+                .hasFieldOrPropertyWithValue("id", memberId)
                 .hasFieldOrPropertyWithValue("numOfReviews", numOfReviews)
                 .hasFieldOrPropertyWithValue("influence", 0)
                 .hasFieldOrPropertyWithValue("numOfFollowers", 0)
@@ -181,7 +181,7 @@ class MemberQueryServiceTest {
 
     @NonNull
     private MemberWithProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
-        return MemberWithProfileInfoDto.of(
+        return MemberWithProfileInfoDto.from(
                 createMember(memberId),
                 numOfReviews,
                 mostVisitedLocation,

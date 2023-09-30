@@ -96,12 +96,12 @@ class MemberRepositoryTest {
 
         // then
         assertThat(result)
-                .hasFieldOrPropertyWithValue("member.id", member.getId())
-                .hasFieldOrPropertyWithValue("member.profileImageUrl", member.getProfileImageUrl())
-                .hasFieldOrPropertyWithValue("member.profileThumbnailImageUrl", member.getProfileThumbnailImageUrl())
-                .hasFieldOrPropertyWithValue("member.nickname", member.getNickname())
-                .hasFieldOrPropertyWithValue("member.gender", member.getGender())
-                .hasFieldOrPropertyWithValue("member.birthDay", member.getBirthDay())
+                .hasFieldOrPropertyWithValue("id", member.getId())
+                .hasFieldOrPropertyWithValue("profileImageUrl", member.getProfileImageUrl())
+                .hasFieldOrPropertyWithValue("profileThumbnailImageUrl", member.getProfileThumbnailImageUrl())
+                .hasFieldOrPropertyWithValue("nickname", member.getNickname())
+                .hasFieldOrPropertyWithValue("gender", member.getGender())
+                .hasFieldOrPropertyWithValue("birthDay", member.getBirthDay())
                 .hasFieldOrPropertyWithValue("numOfReviews", 3)
                 .hasFieldOrPropertyWithValue("influence", 0)
                 .hasFieldOrPropertyWithValue("numOfFollowers", 0)

@@ -110,12 +110,12 @@ class MemberControllerTest {
                                 .with(user(createTestUserDetails(memberId)))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expectedResult.getMember().getId()))
-                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getMember().getProfileImageUrl()))
-                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getMember().getProfileThumbnailImageUrl()))
-                .andExpect(jsonPath("$.nickname").value(expectedResult.getMember().getNickname()))
-                .andExpect(jsonPath("$.gender").value(expectedResult.getMember().getGender().getDescription()))
-                .andExpect(jsonPath("$.birthDay").value(expectedResult.getMember().getBirthDay().toString()))
+                .andExpect(jsonPath("$.id").value(expectedResult.getId()))
+                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
+                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
+                .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
+                .andExpect(jsonPath("$.gender").value(expectedResult.getGender().getDescription()))
+                .andExpect(jsonPath("$.birthDay").value(expectedResult.getBirthDay().toString()))
                 .andExpect(jsonPath("$.numOfReviews").value(numOfReviews))
                 .andExpect(jsonPath("$.influence").value(0))
                 .andExpect(jsonPath("$.numOfFollowers").value(0))
@@ -145,11 +145,11 @@ class MemberControllerTest {
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(expectedResult.getMember().getId()))
+                .andExpect(jsonPath("$.id").value(expectedResult.getId()))
                 .andExpect(jsonPath("$.isEqualLoginMember").value(loginMemberId == memberId))
-                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getMember().getProfileImageUrl()))
-                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getMember().getProfileThumbnailImageUrl()))
-                .andExpect(jsonPath("$.nickname").value(expectedResult.getMember().getNickname()))
+                .andExpect(jsonPath("$.profileImage.imageUrl").value(expectedResult.getProfileImageUrl()))
+                .andExpect(jsonPath("$.profileImage.thumbnailImageUrl").value(expectedResult.getProfileThumbnailImageUrl()))
+                .andExpect(jsonPath("$.nickname").value(expectedResult.getNickname()))
                 .andExpect(jsonPath("$.numOfReviews").value(numOfReviews))
                 .andExpect(jsonPath("$.influence").value(0))
                 .andExpect(jsonPath("$.numOfFollowers").value(0))
@@ -282,11 +282,20 @@ class MemberControllerTest {
     @NonNull
     private MemberWithProfileInfoDto createMemberWithProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
         return new MemberWithProfileInfoDto(
-                createMemberDto(memberId),
+                memberId,
+                EateryConstants.defaultProfileImageUrl,
+                EateryConstants.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                Set.of(RoleType.USER),
+                "test@test.com",
+                "test",
+                LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null,
                 numOfReviews,
-                0,
-                0,
-                0,
                 mostVisitedLocation,
                 mostTaggedReviewKeyword,
                 mostEatenFoodCategory

@@ -3,6 +3,7 @@ package com.zelusik.eatery.domain.member.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zelusik.eatery.domain.member.entity.QMember;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.entity.Member;
@@ -29,16 +30,16 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
 
     @Override
     public MemberWithProfileInfoDto getMemberProfileInfoById(long memberId) {
-        Member foundMember = Optional.ofNullable(
+        Member member = Optional.ofNullable(
                 queryFactory
-                        .select(member)
-                        .from(member)
-                        .where(isMemberNotDeleted(), member.id.eq(memberId))
+                        .select(QMember.member)
+                        .from(QMember.member)
+                        .where(isMemberNotDeleted(), QMember.member.id.eq(memberId))
                         .fetchOne()
         ).orElseThrow(() -> new MemberIdNotFoundException(memberId));
 
-        return MemberWithProfileInfoDto.of(
-                foundMember,
+        return MemberWithProfileInfoDto.from(
+                member,
                 getNumOfReviews(memberId),
                 getMostVisitedLocation(memberId),
                 getMostTaggedReviewKeyword(memberId),
