@@ -9,7 +9,7 @@ import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 import com.zelusik.eatery.domain.recommended_review.repository.RecommendedReviewRepository;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
@@ -52,11 +52,11 @@ class RecommendedReviewQueryServiceTest {
         long recommendedReviewId = 3L;
         long reviewId = 4L;
         short ranking = 3;
-        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceWithMarkedStatusDto(placeId)), ranking));
+        List<RecommendedReviewWithPlaceDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewWithPlaceMarkedStatusDto(reviewId, createMemberDto(memberId), createPlaceWithMarkedStatusDto(placeId)), ranking));
         given(recommendedReviewRepository.findAllDtosWithPlaceMarkedStatusByMemberId(memberId)).willReturn(expectedResults);
 
         // when
-        List<RecommendedReviewDto> actualResults = sut.findAllDtosWithPlaceMarkedStatus(memberId);
+        List<RecommendedReviewWithPlaceDto> actualResults = sut.findAllDtosWithPlaceMarkedStatus(memberId);
 
         // then
         then(recommendedReviewRepository).should().findAllDtosWithPlaceMarkedStatusByMemberId(memberId);
@@ -110,7 +110,7 @@ class RecommendedReviewQueryServiceTest {
         );
     }
 
-    private ReviewWithPlaceMarkedStatusDto createReviewDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
+    private ReviewWithPlaceMarkedStatusDto createReviewWithPlaceMarkedStatusDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
         return new ReviewWithPlaceMarkedStatusDto(
                 reviewId,
                 writer,
@@ -130,8 +130,8 @@ class RecommendedReviewQueryServiceTest {
         );
     }
 
-    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewWithPlaceMarkedStatusDto review, short ranking) {
-        return new RecommendedReviewDto(
+    private RecommendedReviewWithPlaceDto createRecommendedReviewDto(long id, long memberId, ReviewWithPlaceMarkedStatusDto review, short ranking) {
+        return new RecommendedReviewWithPlaceDto(
                 id,
                 memberId,
                 review,

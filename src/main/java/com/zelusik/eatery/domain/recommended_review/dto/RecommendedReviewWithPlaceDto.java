@@ -1,7 +1,6 @@
 package com.zelusik.eatery.domain.recommended_review.dto;
 
 import com.zelusik.eatery.domain.recommended_review.entity.RecommendedReview;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,18 +15,18 @@ import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.WRITER
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class RecommendedReviewDto {
+public class RecommendedReviewWithPlaceDto {
 
     private Long id;
     private Long memberId;
-    private ReviewDto review;
+    private ReviewWithPlaceMarkedStatusDto review;
     private Short ranking;
 
-    public static RecommendedReviewDto from(RecommendedReview entity) {
-        return new RecommendedReviewDto(
+    public static RecommendedReviewWithPlaceDto from(RecommendedReview entity, boolean placeMarkingStatus) {
+        return new RecommendedReviewWithPlaceDto(
                 entity.getId(),
                 entity.getMember().getId(),
-                ReviewDto.from(entity.getReview(), List.of(WRITER, PLACE)),
+                ReviewWithPlaceMarkedStatusDto.from(entity.getReview(), List.of(WRITER, PLACE), placeMarkingStatus),
                 entity.getRanking()
         );
     }

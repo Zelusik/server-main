@@ -13,11 +13,13 @@ import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.recommended_review.api.RecommendedReviewController;
 import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.domain.recommended_review.dto.request.SaveRecommendedReviewsRequest;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewCommandService;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.global.common.constant.EateryConstants;
@@ -125,7 +127,14 @@ class RecommendedReviewControllerTest {
         long recommendedReviewId = 4L;
         long reviewId = 5L;
         short ranking = 6;
-        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceWithMarkedStatusDto(placeId)), ranking));
+        List<RecommendedReviewWithPlaceDto> expectedResults = List.of(
+                createRecommendedReviewWithPlaceDto(
+                        recommendedReviewId,
+                        memberId,
+                        createReviewWithPlaceMarkedStatusDto(reviewId, createMemberDto(memberId), createPlaceWithMarkedStatusDto(placeId)),
+                        ranking
+                )
+        );
         given(recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(memberId)).willReturn(expectedResults);
 
         // when & then
@@ -240,8 +249,8 @@ class RecommendedReviewControllerTest {
         );
     }
 
-    private ReviewWithPlaceMarkedStatusDto createReviewDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
-        return new ReviewWithPlaceMarkedStatusDto(
+    private ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
+        return new ReviewDto(
                 reviewId,
                 writer,
                 place,
@@ -249,6 +258,26 @@ class RecommendedReviewControllerTest {
                 "자동 생성된 내용",
                 "제출된 내용",
                 List.of(createReviewImageDto(100L, reviewId)),
+                LocalDateTime.now()
+        );
+    }
+
+    private ReviewWithPlaceMarkedStatusDto createReviewWithPlaceMarkedStatusDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
+        return new ReviewWithPlaceMarkedStatusDto(
+                reviewId,
+                writer,
+                place,
+                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
+                "자동 생성된 내용",
+                "제출된 내용",
+                List.of(new ReviewImageDto(
+                        1L,
+                        1L,
+                        "test.txt",
+                        "storedName",
+                        "url",
+                        "thumbnailStoredName",
+                        "thumbnailUrl")),
                 LocalDateTime.now()
         );
     }
@@ -265,7 +294,11 @@ class RecommendedReviewControllerTest {
         );
     }
 
-    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewWithPlaceMarkedStatusDto review, short ranking) {
+    private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewDto review, short ranking) {
         return new RecommendedReviewDto(id, memberId, review, ranking);
+    }
+
+    private RecommendedReviewWithPlaceDto createRecommendedReviewWithPlaceDto(long id, long memberId, ReviewWithPlaceMarkedStatusDto review, short ranking) {
+        return new RecommendedReviewWithPlaceDto(id, memberId, review, ranking);
     }
 }

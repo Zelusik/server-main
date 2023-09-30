@@ -16,7 +16,7 @@ import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
-import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
@@ -78,13 +78,13 @@ class RecommendedReviewRepositoryTest {
         ));
 
         // when
-        List<RecommendedReviewDto> result = sut.findAllDtosWithPlaceMarkedStatusByMemberId(member.getId());
+        List<RecommendedReviewWithPlaceDto> result = sut.findAllDtosWithPlaceMarkedStatusByMemberId(member.getId());
 
         // then
         assertThat(result).hasSize(savedRecommendedReviews.size());
         for (int i = 0; i < savedRecommendedReviews.size(); i++) {
             RecommendedReview expectedResult = savedRecommendedReviews.get(i);
-            RecommendedReviewDto actualResult = result.get(i);
+            RecommendedReviewWithPlaceDto actualResult = result.get(i);
             assertThat(actualResult)
                     .hasFieldOrPropertyWithValue("id", expectedResult.getId())
                     .hasFieldOrPropertyWithValue("memberId", expectedResult.getMember().getId())
@@ -102,7 +102,7 @@ class RecommendedReviewRepositoryTest {
         // given
 
         // when
-        List<RecommendedReviewDto> result = sut.findAllDtosWithPlaceMarkedStatusByMemberId(1L);
+        List<RecommendedReviewWithPlaceDto> result = sut.findAllDtosWithPlaceMarkedStatusByMemberId(1L);
 
         // then
         assertThat(result).hasSize(0);

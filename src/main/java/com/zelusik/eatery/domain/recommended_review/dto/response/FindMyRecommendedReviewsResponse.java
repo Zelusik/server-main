@@ -2,7 +2,7 @@ package com.zelusik.eatery.domain.recommended_review.dto.response;
 
 import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
-import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.domain.review_image_menu_tag.dto.ReviewImageMenuTagDto;
@@ -23,9 +23,9 @@ import java.util.Optional;
 public class FindMyRecommendedReviewsResponse {
     private List<RecommendedReviewResponse> recommendedReviews;
 
-    public static FindMyRecommendedReviewsResponse from(List<RecommendedReviewDto> recommendedReviewDtos) {
+    public static FindMyRecommendedReviewsResponse from(List<RecommendedReviewWithPlaceDto> recommendedReviewWithPlaceDtos) {
         return new FindMyRecommendedReviewsResponse(
-                recommendedReviewDtos.stream()
+                recommendedReviewWithPlaceDtos.stream()
                         .map(RecommendedReviewResponse::from)
                         .toList()
         );
@@ -45,11 +45,11 @@ public class FindMyRecommendedReviewsResponse {
         @Schema(description = "순위", example = "1")
         private Short ranking;
 
-        private static RecommendedReviewResponse from(RecommendedReviewDto recommendedReviewDto) {
+        private static RecommendedReviewResponse from(RecommendedReviewWithPlaceDto recommendedReviewWithPlaceDto) {
             return new RecommendedReviewResponse(
-                    recommendedReviewDto.getId(),
-                    ReviewResponse.from(recommendedReviewDto.getReview()),
-                    recommendedReviewDto.getRanking()
+                    recommendedReviewWithPlaceDto.getId(),
+                    ReviewResponse.from(recommendedReviewWithPlaceDto.getReview()),
+                    recommendedReviewWithPlaceDto.getRanking()
             );
         }
 
