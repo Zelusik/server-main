@@ -1,9 +1,9 @@
 package com.zelusik.eatery.domain.place.dto.response;
 
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -22,7 +22,7 @@ public class FindNearPlacesResponse {
     private Long id;
 
     @Schema(description = "<p>가장 많이 태그된 top 3 keywords." +
-            "<p>이 장소에 대한 리뷰가 없다면, empty array로 응답합니다.",
+                          "<p>이 장소에 대한 리뷰가 없다면, empty array로 응답합니다.",
             example = "[\"신선한 재료\", \"최고의 맛\"]")
     List<String> top3Keywords;
 
@@ -44,7 +44,7 @@ public class FindNearPlacesResponse {
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static FindNearPlacesResponse from(PlaceDto dto) {
+    public static FindNearPlacesResponse from(PlaceWithMarkedStatusAndImagesDto dto) {
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {
             category = dto.getCategory().getFirstCategory();

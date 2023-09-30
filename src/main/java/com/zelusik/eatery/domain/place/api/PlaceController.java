@@ -2,6 +2,7 @@ package com.zelusik.eatery.domain.place.api;
 
 import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.dto.response.*;
@@ -60,15 +61,11 @@ public class PlaceController {
             @ApiResponse(description = "[1350] 장소에 대한 추가 정보를 추출할 Scraping server에서 에러가 발생한 경우.", responseCode = "500", content = @Content)
     })
     @PostMapping(value = "/v1/places", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
-    public ResponseEntity<PlaceResponse> saveV1_1(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Valid @RequestBody PlaceCreateRequest request
-    ) {
-        PlaceResponse response = PlaceResponse.from(placeCommandService.create(userPrincipal.getMemberId(), request));
-
+    public ResponseEntity<SavePlaceResponse> savePlaceV1_1(@Valid @RequestBody PlaceCreateRequest request) {
+        PlaceDto placeDto = placeCommandService.create(request);
         return ResponseEntity
-                .created(URI.create("/api/v1/places/" + response.getId()))
-                .body(response);
+                .created(URI.create("/api/v1/places/" + placeDto.getId()))
+                .body(SavePlaceResponse.from(placeDto));
     }
 
     @Operation(
@@ -89,7 +86,7 @@ public class PlaceController {
                     example = "3"
             ) @PathVariable Long placeId
     ) {
-        PlaceDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
+        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
         return FindPlaceResponse.from(placeDtos);
     }
 
@@ -111,7 +108,7 @@ public class PlaceController {
                     example = "263830255"
             ) @RequestParam @NotBlank String kakaoPid
     ) {
-        PlaceDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
+        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
         return FindPlaceResponse.from(placeDtos);
     }
 
@@ -177,7 +174,7 @@ public class PlaceController {
             throw new InvalidTypeOfReviewKeywordValueException("분위기에 대한 값만 사용할 수 있습니다.");
         }
 
-        Page<PlaceDto> searchedPlaceDtos = placeQueryService.findDtosNearBy(userPrincipal.getMemberId(), filteringCondition, new Point(lat, lng), PageRequest.of(page, size));
+        Page<PlaceWithMarkedStatusAndImagesDto> searchedPlaceDtos = placeQueryService.findDtosWithoutOpeningHoursNearBy(userPrincipal.getMemberId(), filteringCondition, new Point(lat, lng), PageRequest.of(page, size));
         return new PageResponse<FindNearPlacesResponse>()
                 .from(searchedPlaceDtos.map(FindNearPlacesResponse::from));
     }
@@ -235,7 +232,7 @@ public class PlaceController {
         if (type == FilteringType.TOP_3_KEYWORDS) {
             keyword = ReviewKeywordValue.valueOfContent(keyword).toString();
         }
-        Page<PlaceDto> markedPlaceDtos = placeQueryService.findMarkedDtos(userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size));
+        Page<PlaceWithMarkedStatusAndImagesDto> markedPlaceDtos = placeQueryService.findMarkedDtosWithoutOpeningHours(userPrincipal.getMemberId(), type, keyword, PageRequest.of(page, size));
         return new PageResponse<FindMarkedPlacesResponse>().from(markedPlaceDtos.map(FindMarkedPlacesResponse::from));
     }
 

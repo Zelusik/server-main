@@ -12,7 +12,7 @@ import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
 import com.zelusik.eatery.domain.bookmark.entity.QBookmark;
 import com.zelusik.eatery.domain.favorite_food_category.entity.FavoriteFoodCategory;
 import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
@@ -34,13 +34,13 @@ public class ReviewRepositoryQCustomImpl implements ReviewRepositoryQCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<ReviewDto> findDtos(Long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable) {
+    public Slice<ReviewWithPlaceMarkedStatusDto> findDtos(Long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable) {
         List<Predicate> conditions = new ArrayList<>();
         conditions.add(isNotDeleted());
         conditions.add(writerEqualFilteringCondition(writerId));
         conditions.add(placeEqualFilteringCondition(placeId));
 
-        List<ReviewDto> content = new ArrayList<>();
+        List<ReviewWithPlaceMarkedStatusDto> content = new ArrayList<>();
         if (embed.contains(PLACE)) {
             List<Tuple> result = queryFactory
                     .select(review, isMarkedPlace(loginMemberId))
@@ -53,7 +53,7 @@ public class ReviewRepositoryQCustomImpl implements ReviewRepositoryQCustom {
                     .limit(pageable.getPageSize() + 1)
                     .fetch();
             content.addAll(result.stream()
-                    .map(tuple -> ReviewDto.from(
+                    .map(tuple -> ReviewWithPlaceMarkedStatusDto.from(
                             Objects.requireNonNull(tuple.get(review)),
                             embed,
                             Objects.requireNonNull(tuple.get(isMarkedPlace(loginMemberId)))
@@ -70,7 +70,7 @@ public class ReviewRepositoryQCustomImpl implements ReviewRepositoryQCustom {
                     .limit(pageable.getPageSize() + 1)
                     .fetch();
             content.addAll(result.stream()
-                    .map(review -> ReviewDto.from(review, embed))
+                    .map(review -> ReviewWithPlaceMarkedStatusDto.fromWithoutPlace(review, embed))
                     .toList());
         }
 
@@ -84,7 +84,7 @@ public class ReviewRepositoryQCustomImpl implements ReviewRepositoryQCustom {
     }
 
     @Override
-    public Slice<ReviewDto> findReviewFeed(long loginMemberId, Pageable pageable) {
+    public Slice<ReviewWithPlaceMarkedStatusDto> findReviewFeed(long loginMemberId, Pageable pageable) {
         List<FavoriteFoodCategory> favoriteFoodCategories = queryFactory
                 .selectFrom(favoriteFoodCategory)
                 .where(favoriteFoodCategory.member.id.eq(loginMemberId))
@@ -103,8 +103,8 @@ public class ReviewRepositoryQCustomImpl implements ReviewRepositoryQCustom {
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
-        List<ReviewDto> content = tuples.stream()
-                .map(tuple -> ReviewDto.from(
+        List<ReviewWithPlaceMarkedStatusDto> content = tuples.stream()
+                .map(tuple -> ReviewWithPlaceMarkedStatusDto.from(
                         Objects.requireNonNull(tuple.get(review)),
                         List.of(WRITER, PLACE),
                         Boolean.TRUE.equals(tuple.get(isMarkedPlace(loginMemberId)))

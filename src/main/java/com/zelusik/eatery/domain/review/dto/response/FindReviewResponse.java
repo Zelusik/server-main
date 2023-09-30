@@ -1,19 +1,20 @@
 package com.zelusik.eatery.domain.review.dto.response;
 
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.member.dto.MemberDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.review_image_menu_tag.entity.MenuTagPoint;
-import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.domain.review_image_menu_tag.dto.ReviewImageMenuTagDto;
+import com.zelusik.eatery.domain.review_image_menu_tag.entity.MenuTagPoint;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class FindReviewResponse {
     @Schema(description = "리뷰 이미지")
     private List<ReviewImageResponse> reviewImages;
 
-    public static FindReviewResponse from(ReviewDto dto, long loginMemberId) {
+    public static FindReviewResponse from(ReviewWithPlaceMarkedStatusDto dto, long loginMemberId) {
         return new FindReviewResponse(
                 dto.getId(),
                 WriterResponse.from(dto.getWriter(), loginMemberId),
@@ -126,9 +127,9 @@ public class FindReviewResponse {
         @Schema(description = "장소에 대한 북마크 여부", example = "false")
         private Boolean isMarked;
 
-        private static PlaceResponse from(PlaceDto dto) {
+        private static PlaceResponse from(PlaceWithMarkedStatusDto dto) {
             String snsUrl = dto.getHomepageUrl();
-            if (snsUrl != null && !snsUrl.contains("instagram")) {
+            if (!StringUtils.hasText(snsUrl) || !snsUrl.contains("instagram")) {
                 snsUrl = null;
             }
 
@@ -143,7 +144,7 @@ public class FindReviewResponse {
                     snsUrl,
                     dto.getPoint(),
                     dto.getClosingHours(),
-                    dto.getOpeningHoursDtos().stream()
+                    dto.getOpeningHours().stream()
                             .map(oh -> String.format(oh.getDayOfWeek().getDescription() + " " + oh.getOpenAt() + "-" + oh.getCloseAt()))
                             .toList(),
                     dto.getIsMarked()

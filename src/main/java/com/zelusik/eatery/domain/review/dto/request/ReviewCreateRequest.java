@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.review.dto.request;
 
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import com.zelusik.eatery.domain.review_image.dto.request.ReviewImageCreateRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,8 +11,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Setter // for @ModelAttribute
 @Getter
 public class ReviewCreateRequest {
@@ -62,12 +62,8 @@ public class ReviewCreateRequest {
             images[0].menuTags[1].point.y="45.05"
             </pre>
             """)
-    @NonNull
+    @NotNull
     private List<ReviewImageCreateRequest> images;
-
-    public static ReviewCreateRequest of(long placeId, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content, List<ReviewImageCreateRequest> images) {
-        return new ReviewCreateRequest(placeId, keywords, autoCreatedContent, content, images);
-    }
 
     public ReviewDto toDto(PlaceDto placeDto) {
         return new ReviewDto(

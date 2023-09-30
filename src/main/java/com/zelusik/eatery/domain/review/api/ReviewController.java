@@ -2,7 +2,7 @@ package com.zelusik.eatery.domain.review.api;
 
 import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
 import com.zelusik.eatery.domain.review.dto.request.ReviewUpdateRequest;
 import com.zelusik.eatery.domain.review.dto.response.*;
@@ -93,8 +93,8 @@ public class ReviewController {
             ) @PathVariable Long reviewId
     ) {
         Long loginMemberId = userPrincipal.getMemberId();
-        ReviewDto reviewDto = reviewQueryService.findDtoById(loginMemberId, reviewId);
-        return FindReviewResponse.from(reviewDto, loginMemberId);
+        ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto = reviewQueryService.findDtoById(loginMemberId, reviewId);
+        return FindReviewResponse.from(reviewWithPlaceMarkedStatusDto, loginMemberId);
     }
 
     @Operation(
@@ -133,7 +133,7 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "10") int size
     ) {
-        Slice<ReviewDto> reviewDtos = reviewQueryService.findDtos(userPrincipal.getMemberId(), writerId, placeId, embed, PageRequest.of(page, size));
+        Slice<ReviewWithPlaceMarkedStatusDto> reviewDtos = reviewQueryService.findDtos(userPrincipal.getMemberId(), writerId, placeId, embed, PageRequest.of(page, size));
         return new SliceResponse<FindReviewsResponse>().from(reviewDtos.map(FindReviewsResponse::from));
     }
 
@@ -163,7 +163,7 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
-        Slice<ReviewDto> reviewDtos = reviewQueryService.findReviewReed(userPrincipal.getMemberId(), PageRequest.of(page, size));
+        Slice<ReviewWithPlaceMarkedStatusDto> reviewDtos = reviewQueryService.findReviewReed(userPrincipal.getMemberId(), PageRequest.of(page, size));
         return new SliceResponse<FindReviewFeedResponse>().from(reviewDtos.map(FindReviewFeedResponse::from));
     }
 
@@ -187,7 +187,7 @@ public class ReviewController {
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
         long loginMemberId = userPrincipal.getMemberId();
-        Slice<ReviewDto> reviewDtos = reviewQueryService.findDtos(loginMemberId, loginMemberId, null, List.of(PLACE), PageRequest.of(page, size));
+        Slice<ReviewWithPlaceMarkedStatusDto> reviewDtos = reviewQueryService.findDtos(loginMemberId, loginMemberId, null, List.of(PLACE), PageRequest.of(page, size));
         return new SliceResponse<FindReviewsWrittenByMeResponse>().from(reviewDtos.map(FindReviewsWrittenByMeResponse::from));
     }
 

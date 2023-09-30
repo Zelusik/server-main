@@ -1,15 +1,16 @@
 package com.zelusik.eatery.domain.place.dto.response;
 
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -57,9 +58,9 @@ public class FindPlaceResponse {
     @Schema(description = "북마크 여부", example = "false")
     private Boolean isMarked;
 
-    public static FindPlaceResponse from(PlaceDto dto) {
+    public static FindPlaceResponse from(PlaceWithMarkedStatusAndImagesDto dto) {
         String snsUrl = dto.getHomepageUrl();
-        if (snsUrl != null && !snsUrl.contains("instagram")) {
+        if (!StringUtils.hasText(snsUrl) || !snsUrl.contains("instagram")) {
             snsUrl = null;
         }
 
@@ -71,8 +72,8 @@ public class FindPlaceResponse {
         }
 
         List<String> openingHours = List.of();
-        if (dto.getOpeningHoursDtos() != null && !dto.getOpeningHoursDtos().isEmpty()) {
-            openingHours = dto.getOpeningHoursDtos().stream()
+        if (dto.getOpeningHours() != null && !dto.getOpeningHours().isEmpty()) {
+            openingHours = dto.getOpeningHours().stream()
                     .map(oh -> String.format(oh.getDayOfWeek().getDescription() + " " + oh.getOpenAt() + "-" + oh.getCloseAt()))
                     .toList();
         }

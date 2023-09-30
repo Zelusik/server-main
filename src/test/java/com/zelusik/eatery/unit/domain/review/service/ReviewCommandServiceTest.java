@@ -14,7 +14,7 @@ import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.place.service.PlaceCommandService;
 import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
 import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.exception.ReviewDeletePermissionDeniedException;
@@ -99,7 +99,7 @@ class ReviewCommandServiceTest {
         willDoNothing().given(placeCommandService).renewTop3Keywords(expectedPlace);
 
         // when
-        ReviewDto actualSavedReview = sut.create(writerId, reviewCreateRequest);
+        ReviewWithPlaceMarkedStatusDto actualSavedReview = sut.create(writerId, reviewCreateRequest);
 
         // then
         then(placeQueryService).should().findById(placeId);
@@ -268,7 +268,7 @@ class ReviewCommandServiceTest {
     }
 
     private ReviewCreateRequest createReviewCreateRequest(long placeId) {
-        return ReviewCreateRequest.of(
+        return new ReviewCreateRequest(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",

@@ -4,6 +4,7 @@ import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.Point;
@@ -73,11 +74,11 @@ public class PlaceQueryService {
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceDto findDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
+    public PlaceWithMarkedStatusAndImagesDto findDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
         Place foundPlace = findById(placeId);
         boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
         List<ReviewImageDto> latest3Images = reviewImageQueryService.findLatest3ByPlace(foundPlace.getId());
-        return PlaceDto.fromWithImages(foundPlace, isMarked, latest3Images);
+        return PlaceWithMarkedStatusAndImagesDto.from(foundPlace, isMarked, latest3Images);
     }
 
     /**
@@ -87,11 +88,11 @@ public class PlaceQueryService {
      * @return 조회한 장소 dto
      */
     @NonNull
-    public PlaceDto findDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
+    public PlaceWithMarkedStatusAndImagesDto findDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
         Place foundPlace = findByKakaoPid(kakaoPid);
         boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
         List<ReviewImageDto> latest3ByPlace = reviewImageQueryService.findLatest3ByPlace(foundPlace.getId());
-        return PlaceDto.fromWithImages(foundPlace, isMarked, latest3ByPlace);
+        return PlaceWithMarkedStatusAndImagesDto.from(foundPlace, isMarked, latest3ByPlace);
     }
 
     /**
@@ -102,11 +103,12 @@ public class PlaceQueryService {
      * @return 조회된 장소 목록
      */
     public Slice<PlaceDto> searchDtosByKeyword(String searchKeyword, Pageable pageable) {
-        return placeRepository.searchByKeyword(searchKeyword, pageable).map(PlaceDto::fromWithoutMarkedStatusAndImages);
+        return placeRepository.searchByKeyword(searchKeyword, pageable).map(PlaceDto::from);
     }
 
     /**
      * <p>중심 좌표 기준, 가까운 순으로 장소 목록을 검색한다.
+     * <p>영업 시간 정보는 함께 조회하지 않는다.
      * <p>최대 50km 범위까지 조회한다.
      *
      * @param loginMemberId      PK of login member
@@ -115,21 +117,22 @@ public class PlaceQueryService {
      * @param pageable           paging 정보
      * @return 조회한 장소 목록
      */
-    public Page<PlaceDto> findDtosNearBy(long loginMemberId, FindNearPlacesFilteringConditionRequest filteringCondition, Point center, Pageable pageable) {
-        return placeRepository.findDtosNearBy(loginMemberId, filteringCondition, center, DISTANCE_LIMITS_FOR_FIND_NEARBY_PLACES, MAX_NUM_OF_PLACE_IMAGES, pageable);
+    public Page<PlaceWithMarkedStatusAndImagesDto> findDtosWithoutOpeningHoursNearBy(long loginMemberId, FindNearPlacesFilteringConditionRequest filteringCondition, Point center, Pageable pageable) {
+        return placeRepository.findDtosWithoutOpeningHoursNearBy(loginMemberId, filteringCondition, center, DISTANCE_LIMITS_FOR_FIND_NEARBY_PLACES, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**
-     * 북마크에 저장한 장소 목록(Slice)을 조회합니다.
-     * 조회 시 장소와 관련된 이미지를 함께 조회합니다.
-     * 이미지를 가져오는 기준은 "해당 장소에 작성된 리뷰에 담긴 사진 중 최신순으로 최대 3개"입니다.
+     * <p>북마크에 저장한 장소 목록(Slice)을 조회한다.
+     * <p>영업 시간 정보는 함께 조회하지 않는다.
+     * <p>조회 시 장소와 관련된 이미지를 함께 조회한다.
+     * <p>이미지를 가져오는 기준은 "해당 장소에 작성된 리뷰에 담긴 사진 중 최신순으로 최대 3개"입니다.
      *
      * @param memberId 로그인 회원의 PK.
      * @param pageable paging 정보
      * @return 조회한 장소 목록
      */
-    public Page<PlaceDto> findMarkedDtos(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
-        return placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
+    public Page<PlaceWithMarkedStatusAndImagesDto> findMarkedDtosWithoutOpeningHours(Long memberId, FilteringType filteringType, String filteringKeyword, Pageable pageable) {
+        return placeRepository.findMarkedDtosWithoutOpeningHours(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
     }
 
     /**

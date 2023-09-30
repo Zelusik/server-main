@@ -15,7 +15,7 @@ import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
 import com.zelusik.eatery.domain.favorite_food_category.repository.FavoriteFoodCategoryRepository;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
@@ -73,12 +73,12 @@ class ReviewRepositoryTest {
         bookmarkRepository.save(createNewBookmark(member, place));
 
         // when
-        Slice<ReviewDto> results = sut.findDtos(member.getId(), null, null, List.of(WRITER, PLACE), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findDtos(member.getId(), null, null, List.of(WRITER, PLACE), Pageable.ofSize(10));
 
         // then
         assertThat(results.getNumberOfElements()).isEqualTo(3);
         assertThat(results.getContent()).hasSize(3);
-        for (ReviewDto result : results) {
+        for (ReviewWithPlaceMarkedStatusDto result : results) {
             assertThat(result)
                     .hasFieldOrProperty("writer").isNotNull()
                     .hasFieldOrProperty("place").isNotNull()
@@ -104,12 +104,12 @@ class ReviewRepositoryTest {
         ));
 
         // when
-        Slice<ReviewDto> results = sut.findDtos(member1.getId(), member1.getId(), null, List.of(WRITER, PLACE), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findDtos(member1.getId(), member1.getId(), null, List.of(WRITER, PLACE), Pageable.ofSize(10));
 
         // then
         assertThat(results.getNumberOfElements()).isEqualTo(2);
         assertThat(results.getContent()).hasSize(2);
-        for (ReviewDto result : results) {
+        for (ReviewWithPlaceMarkedStatusDto result : results) {
             assertThat(result)
                     .hasFieldOrProperty("writer").isNotNull()
                     .hasFieldOrPropertyWithValue("writer.socialUid", member1.getSocialUid())
@@ -136,12 +136,12 @@ class ReviewRepositoryTest {
         ));
 
         // when
-        Slice<ReviewDto> results = sut.findDtos(member.getId(), null, place1.getId(), List.of(WRITER, PLACE), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findDtos(member.getId(), null, place1.getId(), List.of(WRITER, PLACE), Pageable.ofSize(10));
 
         // then
         assertThat(results.getNumberOfElements()).isEqualTo(1);
         assertThat(results.getContent()).hasSize(1);
-        for (ReviewDto result : results) {
+        for (ReviewWithPlaceMarkedStatusDto result : results) {
             assertThat(result)
                     .hasFieldOrProperty("writer").isNotNull()
                     .hasFieldOrPropertyWithValue("writer.socialUid", member.getSocialUid())
@@ -171,12 +171,12 @@ class ReviewRepositoryTest {
         ));
 
         // when
-        Slice<ReviewDto> results = sut.findDtos(member1.getId(), member1.getId(), place2.getId(), List.of(WRITER, PLACE), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findDtos(member1.getId(), member1.getId(), place2.getId(), List.of(WRITER, PLACE), Pageable.ofSize(10));
 
         // then
         assertThat(results.getNumberOfElements()).isEqualTo(2);
         assertThat(results.getContent()).hasSize(2);
-        for (ReviewDto result : results) {
+        for (ReviewWithPlaceMarkedStatusDto result : results) {
             assertThat(result)
                     .hasFieldOrProperty("writer").isNotNull()
                     .hasFieldOrPropertyWithValue("writer.socialUid", member1.getSocialUid())
@@ -202,12 +202,12 @@ class ReviewRepositoryTest {
         ));
 
         // when
-        Slice<ReviewDto> results = sut.findDtos(member.getId(), null, null, List.of(), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findDtos(member.getId(), null, null, List.of(), Pageable.ofSize(10));
 
         // then
         assertThat(results.getNumberOfElements()).isEqualTo(3);
         assertThat(results.getContent()).hasSize(3);
-        for (ReviewDto result : results) {
+        for (ReviewWithPlaceMarkedStatusDto result : results) {
             assertThat(result)
                     .hasFieldOrPropertyWithValue("writer", null)
                     .hasFieldOrPropertyWithValue("place", null)
@@ -231,12 +231,12 @@ class ReviewRepositoryTest {
         ));
 
         // when
-        Slice<ReviewDto> results = sut.findDtos(member.getId(), null, null, List.of(WRITER), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findDtos(member.getId(), null, null, List.of(WRITER), Pageable.ofSize(10));
 
         // then
         assertThat(results.getNumberOfElements()).isEqualTo(3);
         assertThat(results.getContent()).hasSize(3);
-        for (ReviewDto result : results) {
+        for (ReviewWithPlaceMarkedStatusDto result : results) {
             assertThat(result)
                     .hasFieldOrProperty("writer").isNotNull()
                     .hasFieldOrPropertyWithValue("place", null)
@@ -260,12 +260,12 @@ class ReviewRepositoryTest {
         ));
 
         // when
-        Slice<ReviewDto> results = sut.findDtos(member.getId(), null, null, List.of(PLACE), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findDtos(member.getId(), null, null, List.of(PLACE), Pageable.ofSize(10));
 
         // then
         assertThat(results.getNumberOfElements()).isEqualTo(3);
         assertThat(results.getContent()).hasSize(3);
-        for (ReviewDto result : results) {
+        for (ReviewWithPlaceMarkedStatusDto result : results) {
             assertThat(result)
                     .hasFieldOrPropertyWithValue("writer", null)
                     .hasFieldOrProperty("place").isNotNull()
@@ -295,13 +295,13 @@ class ReviewRepositoryTest {
         ));
 
         // when
-        Slice<ReviewDto> results = sut.findReviewFeed(member1.getId(), Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> results = sut.findReviewFeed(member1.getId(), Pageable.ofSize(10));
 
         // then
         assertThat(results).hasSize(3);  // 내가 작성한 리뷰는 조회되지 않음
-        List<ReviewDto> content = results.getContent();
+        List<ReviewWithPlaceMarkedStatusDto> content = results.getContent();
         for (int i = 0; i < results.getNumberOfElements(); i++) {
-            ReviewDto result = content.get(i);
+            ReviewWithPlaceMarkedStatusDto result = content.get(i);
             assertThat(result).hasFieldOrPropertyWithValue("writer.id", member2.getId());
             // 리뷰를 작성한 장소의 카테고리가 내가 선호하는 음식 카테고리에 해당되는 리뷰의 우선순위가 더 높다
             if (i < results.getNumberOfElements() - 1

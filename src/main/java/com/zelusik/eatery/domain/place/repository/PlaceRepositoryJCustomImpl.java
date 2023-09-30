@@ -1,17 +1,17 @@
 package com.zelusik.eatery.domain.place.repository;
 
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.converter.ReviewKeywordValueConverter;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
+import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import org.springframework.data.domain.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -62,7 +62,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Page<PlaceDto> findDtosNearBy(long loginMemberId, FindNearPlacesFilteringConditionRequest filteringCondition, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable) {
+    public Page<PlaceWithMarkedStatusAndImagesDto> findDtosWithoutOpeningHoursNearBy(long loginMemberId, FindNearPlacesFilteringConditionRequest filteringCondition, Point center, int distanceLimit, int numOfPlaceImages, Pageable pageable) {
         // SELECT
         StringBuilder sqlForCountingTotalElements =
                 new StringBuilder()
@@ -164,7 +164,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("size_of_page", pageable.getPageSize())
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDto> content = template.query(sql.toString(), params, placeDtoWithImagesRowMapper(numOfPlaceImages));
+        List<PlaceWithMarkedStatusAndImagesDto> content = template.query(sql.toString(), params, placeWithMarkedStatusAndImagesRowMapper(numOfPlaceImages));
 
         // Count total elements
         sqlForCountingTotalElements.append("GROUP BY p.place_id HAVING distance <= :distance_limit) AS total_elements");
@@ -176,7 +176,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
     }
 
     @Override
-    public Page<PlaceDto> findMarkedPlaces(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable) {
+    public Page<PlaceWithMarkedStatusAndImagesDto> findMarkedDtosWithoutOpeningHours(Long memberId, FilteringType filteringType, String filteringKeyword, int numOfPlaceImages, Pageable pageable) {
         // SELECT
         StringBuilder sqlBuilderForCountingTotalElements = new StringBuilder()
                 .append("SELECT COUNT(*) ")
@@ -224,7 +224,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                 .addValue("size_of_page", pageable.getPageSize())
                 .addValue("offset", pageable.getOffset());
 
-        List<PlaceDto> content = template.query(sqlBuilder.toString(), params, placeDtoWithImagesRowMapper(numOfPlaceImages));
+        List<PlaceWithMarkedStatusAndImagesDto> content = template.query(sqlBuilder.toString(), params, placeWithMarkedStatusAndImagesRowMapper(numOfPlaceImages));
 
         sqlBuilderForCountingTotalElements.append(") AS num_of_total_elements");
         Long numOfTotalElements = Optional.ofNullable(
@@ -242,11 +242,11 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
         );
     }
 
-    private RowMapper<PlaceDto> placeDtoWithImagesRowMapper(int numOfPlaceImages) {
+    private RowMapper<PlaceWithMarkedStatusAndImagesDto> placeWithMarkedStatusAndImagesRowMapper(int numOfPlaceImages) {
         return (rs, rowNum) -> {
             ReviewKeywordValueConverter reviewKeywordValueConverter = new ReviewKeywordValueConverter();
             long placeId = rs.getLong("place_id");
-            return new PlaceDto(
+            return new PlaceWithMarkedStatusAndImagesDto(
                     placeId,
                     reviewKeywordValueConverter.convertToEntityAttribute(rs.getString("top3keywords")),
                     rs.getString("kakao_pid"),
@@ -272,8 +272,8 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
                     ),
                     rs.getString("closing_hours"),
                     null,
-                    getRecentFourReviewImageDtosOrderByLatest(rs, numOfPlaceImages),
-                    rs.getBoolean("is_marked")
+                    rs.getBoolean("is_marked"),
+                    getRecentFourReviewImageDtosOrderByLatest(rs, numOfPlaceImages)
             );
         };
     }

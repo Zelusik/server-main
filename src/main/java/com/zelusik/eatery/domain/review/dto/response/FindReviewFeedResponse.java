@@ -3,7 +3,7 @@ package com.zelusik.eatery.domain.review.dto.response;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.dto.response.MemberResponse;
 import com.zelusik.eatery.domain.place.dto.response.PlaceCompactResponse;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -40,7 +40,7 @@ public class FindReviewFeedResponse {
     @Schema(description = "리뷰 작성 시간", example = "2023-09-01T08:01:58.253461")
     private LocalDateTime createdAt;
 
-    public static FindReviewFeedResponse from(ReviewDto dto) {
+    public static FindReviewFeedResponse from(ReviewWithPlaceMarkedStatusDto dto) {
         return new FindReviewFeedResponse(
                 dto.getId(),
                 MemberResponse.from(dto.getWriter()),

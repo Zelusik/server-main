@@ -1,28 +1,29 @@
 package com.zelusik.eatery.integration.domain.place.repository;
 
-import com.zelusik.eatery.global.config.JpaConfig;
-import com.zelusik.eatery.global.config.QuerydslConfig;
+import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
+import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
+import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.member.repository.MemberRepository;
+import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
+import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
-import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
+import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
+import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
-import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
-import com.zelusik.eatery.domain.bookmark.repository.BookmarkRepository;
-import com.zelusik.eatery.domain.member.repository.MemberRepository;
-import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.global.config.JpaConfig;
+import com.zelusik.eatery.global.config.QuerydslConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +41,8 @@ import java.util.Set;
 
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.MON;
 import static com.zelusik.eatery.domain.place.constant.DayOfWeek.WED;
-import static com.zelusik.eatery.domain.review.constant.ReviewKeywordValue.*;
 import static com.zelusik.eatery.domain.place.service.PlaceQueryService.MAX_NUM_OF_PLACE_IMAGES;
+import static com.zelusik.eatery.domain.review.constant.ReviewKeywordValue.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -86,7 +87,7 @@ class PlaceRepositoryTest {
         }
 
         // when
-        Slice<PlaceDto> places = sut.findDtosNearBy(memberId, filteringCondition, center, 1100, MAX_NUM_OF_PLACE_IMAGES, PageRequest.of(0, 30));
+        Slice<PlaceWithMarkedStatusAndImagesDto> places = sut.findDtosWithoutOpeningHoursNearBy(memberId, filteringCondition, center, 1100, MAX_NUM_OF_PLACE_IMAGES, PageRequest.of(0, 30));
 
         // then
         assertThat(places.getSize()).isEqualTo(30);
@@ -120,11 +121,11 @@ class PlaceRepositoryTest {
 
         // when
         Pageable pageable = Pageable.ofSize(30);
-        Slice<PlaceDto> placesLimit50 = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, null, null, false), pos, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100 = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, null, null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMon = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(MON), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysWed = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(WED), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
-        Slice<PlaceDto> placesLimit1100DaysMonAndWed = sut.findDtosNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(MON, WED), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceWithMarkedStatusAndImagesDto> placesLimit50 = sut.findDtosWithoutOpeningHoursNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, null, null, false), pos, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceWithMarkedStatusAndImagesDto> placesLimit1100 = sut.findDtosWithoutOpeningHoursNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, null, null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceWithMarkedStatusAndImagesDto> placesLimit1100DaysMon = sut.findDtosWithoutOpeningHoursNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(MON), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceWithMarkedStatusAndImagesDto> placesLimit1100DaysWed = sut.findDtosWithoutOpeningHoursNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(WED), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        Slice<PlaceWithMarkedStatusAndImagesDto> placesLimit1100DaysMonAndWed = sut.findDtosWithoutOpeningHoursNearBy(memberId, new FindNearPlacesFilteringConditionRequest(null, List.of(MON, WED), null, false), pos, 1100, MAX_NUM_OF_PLACE_IMAGES, pageable);
 
         // then
         assertThat(placesLimit50.getNumberOfElements()).isEqualTo(2);

@@ -8,12 +8,13 @@ import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.exception.ReviewNotFoundException;
 import com.zelusik.eatery.domain.review.repository.ReviewRepository;
@@ -103,7 +104,7 @@ class ReviewQueryServiceTest {
         given(bookmarkQueryService.isMarkedPlace(eq(memberId), any(Place.class))).willReturn(false);
 
         // when
-        ReviewDto actualResult = sut.findDtoById(memberId, reviewId);
+        ReviewWithPlaceMarkedStatusDto actualResult = sut.findDtoById(memberId, reviewId);
 
         // then
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
@@ -121,12 +122,12 @@ class ReviewQueryServiceTest {
         long loginMemberId = 1L;
         Pageable pageable = Pageable.ofSize(15);
         MemberDto member = createMemberDto(3L);
-        PlaceDto place = createPlaceDto(4L, "12345");
-        Slice<ReviewDto> expectedSearchResult = new SliceImpl<>(List.of(createReviewDto(2L, member, place)));
+        PlaceWithMarkedStatusDto place = createPlaceWithMarkedStatusDto(4L, "12345");
+        Slice<ReviewWithPlaceMarkedStatusDto> expectedSearchResult = new SliceImpl<>(List.of(createReviewDto(2L, member, place)));
         given(reviewRepository.findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable)).willReturn(expectedSearchResult);
 
         // when
-        Slice<ReviewDto> actualSearchResult = sut.findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable);
+        Slice<ReviewWithPlaceMarkedStatusDto> actualSearchResult = sut.findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable);
 
         // then
         then(reviewRepository).should().findDtos(loginMemberId, null, null, List.of(WRITER, PLACE), pageable);
@@ -142,12 +143,12 @@ class ReviewQueryServiceTest {
         long reviewId = 2L;
         Pageable pageable = Pageable.ofSize(10);
         MemberDto writer = createMemberDto(3L);
-        PlaceDto place = createPlaceDto(4L, "123");
-        Slice<ReviewDto> expectedResults = new SliceImpl<>(List.of(createReviewDto(reviewId, writer, place)), pageable, false);
+        PlaceWithMarkedStatusDto place = createPlaceWithMarkedStatusDto(4L, "123");
+        Slice<ReviewWithPlaceMarkedStatusDto> expectedResults = new SliceImpl<>(List.of(createReviewDto(reviewId, writer, place)), pageable, false);
         given(reviewRepository.findReviewFeed(loginMemberId, pageable)).willReturn(expectedResults);
 
         // when
-        Slice<ReviewDto> actualResults = sut.findReviewReed(loginMemberId, Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> actualResults = sut.findReviewReed(loginMemberId, Pageable.ofSize(10));
 
         // then
         then(reviewRepository).should().findReviewFeed(loginMemberId, pageable);
@@ -238,8 +239,25 @@ class ReviewQueryServiceTest {
                 "http://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
-                List.of(),
+                List.of()
+        );
+    }
+
+    private PlaceWithMarkedStatusDto createPlaceWithMarkedStatusDto(long placeId, String kakaoPid) {
+        return new PlaceWithMarkedStatusDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "연남토마 본점",
+                "https://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "https://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
                 null,
+                List.of(),
                 false
         );
     }
@@ -257,8 +275,8 @@ class ReviewQueryServiceTest {
         );
     }
 
-    public static ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceDto place) {
-        return new ReviewDto(
+    public static ReviewWithPlaceMarkedStatusDto createReviewDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
+        return new ReviewWithPlaceMarkedStatusDto(
                 reviewId,
                 writer,
                 place,
