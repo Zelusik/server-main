@@ -1,6 +1,7 @@
 package com.zelusik.eatery.domain.recommended_review.api;
 
 import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.domain.recommended_review.dto.request.SaveRecommendedReviewsRequest;
 import com.zelusik.eatery.domain.recommended_review.dto.response.BatchUpdateRecommendedReviewsResponse;
@@ -58,7 +59,7 @@ public class RecommendedReviewController {
     )
     @GetMapping(value = "/v1/members/{memberId}/recommended-reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public FindRecommendedReviewsResponse findRecommendedReviewsV1_1(@PathVariable Long memberId) {
-        List<RecommendedReviewDto> recommendedReviews = recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(memberId);
+        List<RecommendedReviewWithPlaceDto> recommendedReviews = recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(memberId);
         return FindRecommendedReviewsResponse.from(recommendedReviews);
     }
 
@@ -70,7 +71,7 @@ public class RecommendedReviewController {
     )
     @GetMapping(value = "/v1/members/me/recommended-reviews", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public FindMyRecommendedReviewsResponse findMyRecommendedReviewsV1_1(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        List<RecommendedReviewDto> recommendedReviews = recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(userPrincipal.getMemberId());
+        List<RecommendedReviewWithPlaceDto> recommendedReviews = recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(userPrincipal.getMemberId());
         return FindMyRecommendedReviewsResponse.from(recommendedReviews);
     }
 

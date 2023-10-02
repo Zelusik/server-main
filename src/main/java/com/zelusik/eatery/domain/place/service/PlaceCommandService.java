@@ -1,16 +1,15 @@
 package com.zelusik.eatery.domain.place.service;
 
-import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
 import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.exception.PlaceAlreadyExistsException;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
+import com.zelusik.eatery.global.scraping.dto.KakaoPlaceScrapingInfo;
 import com.zelusik.eatery.global.scraping.exception.ScrapingServerInternalError;
 import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class PlaceCommandService {
     private final WebScrapingService webScrapingService;
     private final PlaceRepository placeRepository;
     private final OpeningHoursRepository openingHoursRepository;
-    private final BookmarkQueryService bookmarkQueryService;
     private final ReviewKeywordRepository reviewKeywordRepository;
 
     /**
@@ -38,19 +36,16 @@ public class PlaceCommandService {
      * @throws ScrapingServerInternalError Web scraping 서버에서 에러가 발생한 경우
      * @throws PlaceAlreadyExistsException 동일한 장소 데이터가 이미 존재하는 경우
      */
-    public PlaceDto create(Long memberId, PlaceCreateRequest placeCreateRequest) {
+    public PlaceDto create(PlaceCreateRequest placeCreateRequest) {
         String kakaoPid = placeCreateRequest.getKakaoPid();
         if (placeRepository.existsByKakaoPid(kakaoPid)) {
             throw new PlaceAlreadyExistsException(kakaoPid);
         }
-
-        PlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
-
+        KakaoPlaceScrapingInfo scrapingInfo = webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
         Place savedPlace = placeRepository.save(placeCreateRequest.toDto(scrapingInfo.getHomepageUrl(), scrapingInfo.getClosingHours()).toEntity());
-        boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(memberId, savedPlace);
 
         if (scrapingInfo.getOpeningHours() == null || scrapingInfo.getOpeningHours().isEmpty()) {
-            return PlaceDto.from(savedPlace, placeMarkedStatus);
+            return PlaceDto.from(savedPlace);
         }
 
         List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
@@ -58,7 +53,7 @@ public class PlaceCommandService {
                 .toList();
         openingHoursRepository.saveAll(openingHoursList);
         savedPlace.getOpeningHoursList().addAll(openingHoursList);
-        return PlaceDto.from(savedPlace, placeMarkedStatus);
+        return PlaceDto.from(savedPlace);
     }
 
     /**

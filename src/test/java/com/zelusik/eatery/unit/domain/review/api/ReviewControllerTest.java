@@ -7,12 +7,13 @@ import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.review.api.ReviewController;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
 import com.zelusik.eatery.domain.review.service.ReviewCommandService;
 import com.zelusik.eatery.domain.review.service.ReviewQueryService;
@@ -87,19 +88,22 @@ class ReviewControllerTest {
         long reviewId = 2L;
         long writerId = 3L;
         long placeId = 4L;
-        ReviewDto savedReviewDto = createReviewDto(reviewId, createMemberDto(writerId), createPlaceDto(placeId));
+        ReviewWithPlaceMarkedStatusDto savedReviewWithPlaceMarkedStatusDto = createReviewDto(reviewId, createMemberDto(writerId), createPlaceWithMarkedStatusDto(placeId));
         ReviewCreateRequest reviewCreateRequest = createReviewCreateRequest(placeId);
-        given(reviewCommandService.create(eq(loginMemberId), any(ReviewCreateRequest.class))).willReturn(savedReviewDto);
+        given(reviewCommandService.create(eq(loginMemberId), any(ReviewCreateRequest.class))).willReturn(savedReviewWithPlaceMarkedStatusDto);
 
         // when & then
         mvc.perform(
                         multipart("/api/v1/reviews")
                                 .file(createMockMultipartFile())
                                 .header(API_MINOR_VERSION_HEADER_NAME, 1)
-                                .param("placeId", String.valueOf(placeId))
-                                .param("keywords", FRESH.name(), NOISY.name())
+                                .param("placeId", reviewCreateRequest.getPlaceId().toString())
+                                .param("keywords", reviewCreateRequest.getKeywords().stream().map(ReviewKeywordValue::name).toArray(String[]::new))
                                 .param("autoCreatedContent", reviewCreateRequest.getAutoCreatedContent())
                                 .param("content", reviewCreateRequest.getContent())
+                                .param("images[0].menuTags[0].content", reviewCreateRequest.getImages().get(0).getMenuTags().get(0).getContent())
+                                .param("images[0].menuTags[0].point.x", reviewCreateRequest.getImages().get(0).getMenuTags().get(0).getPoint().getX())
+                                .param("images[0].menuTags[0].point.y", reviewCreateRequest.getImages().get(0).getMenuTags().get(0).getPoint().getY())
                                 .with(user(createTestUserDetails(loginMemberId)))
                 )
                 .andExpect(status().isCreated())
@@ -116,7 +120,7 @@ class ReviewControllerTest {
         long loginMemberId = 1L;
         long reviewId = 2L;
         long writerId = 3L;
-        ReviewDto expectedResult = createReviewDto(reviewId, createMemberDto(writerId), createPlaceDto(4L));
+        ReviewWithPlaceMarkedStatusDto expectedResult = createReviewDto(reviewId, createMemberDto(writerId), createPlaceWithMarkedStatusDto(4L));
         given(reviewQueryService.findDtoById(loginMemberId, reviewId)).willReturn(expectedResult);
 
         // when & then
@@ -144,7 +148,7 @@ class ReviewControllerTest {
     void givenPlaceId_whenSearchReviewsOfCertainPlace_thenReturnReviews() throws Exception {
         // given
         long loginMemberId = 1L;
-        SliceImpl<ReviewDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceDto(4L))));
+        SliceImpl<ReviewWithPlaceMarkedStatusDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceWithMarkedStatusDto(4L))));
         given(reviewQueryService.findDtos(eq(loginMemberId), isNull(), isNull(), eq(List.of(WRITER, PLACE)), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
@@ -167,7 +171,7 @@ class ReviewControllerTest {
         // given
         long loginMemberId = 1L;
         long reviewId = 2L;
-        Slice<ReviewDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(reviewId, createMemberDto(3L), createPlaceDto(4L))));
+        Slice<ReviewWithPlaceMarkedStatusDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(reviewId, createMemberDto(3L), createPlaceWithMarkedStatusDto(4L))));
         given(reviewQueryService.findReviewReed(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
@@ -188,7 +192,7 @@ class ReviewControllerTest {
     void whenSearchMyReviews_thenReturnReviews() throws Exception {
         // given
         long loginMemberId = 1L;
-        SliceImpl<ReviewDto> expectedResults = new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceDto(4L))));
+        SliceImpl<ReviewWithPlaceMarkedStatusDto> expectedResults = new SliceImpl<>(List.of(createReviewDto(2L, createMemberDto(3L), createPlaceWithMarkedStatusDto(4L))));
         given(reviewQueryService.findDtos(eq(loginMemberId), eq(loginMemberId), isNull(), eq(List.of(PLACE)), any(Pageable.class))).willReturn(expectedResults);
 
         // when & then
@@ -305,14 +309,31 @@ class ReviewControllerTest {
                 "https://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
-                List.of(),
+                List.of()
+        );
+    }
+
+    private PlaceWithMarkedStatusDto createPlaceWithMarkedStatusDto(long placeId) {
+        return new PlaceWithMarkedStatusDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                "308342289",
+                "연남토마 본점",
+                "https://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "https://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
                 null,
+                List.of(),
                 false
         );
     }
 
-    public static ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceDto place) {
-        return new ReviewDto(
+    public static ReviewWithPlaceMarkedStatusDto createReviewDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
+        return new ReviewWithPlaceMarkedStatusDto(
                 reviewId,
                 writer,
                 place,
@@ -332,7 +353,7 @@ class ReviewControllerTest {
     }
 
     private ReviewCreateRequest createReviewCreateRequest(long placeId) {
-        return ReviewCreateRequest.of(
+        return new ReviewCreateRequest(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "자동 생성된 내용",

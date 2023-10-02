@@ -8,6 +8,7 @@ import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.service.PlaceCommandService;
 import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.dto.request.ReviewCreateRequest;
 import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.exception.ReviewDeletePermissionDeniedException;
@@ -26,6 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.PLACE;
+import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.WRITER;
 
 @RequiredArgsConstructor
 @Transactional
@@ -49,18 +53,17 @@ public class ReviewCommandService {
      * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
-    public ReviewDto create(Long writerId, ReviewCreateRequest reviewRequest) {
+    public ReviewWithPlaceMarkedStatusDto create(Long writerId, ReviewCreateRequest reviewRequest) {
         List<ReviewImageCreateRequest> images = reviewRequest.getImages();
         Place place = placeQueryService.findById(reviewRequest.getPlaceId());
         Member writer = memberQueryService.findById(writerId);
-        boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(writerId, place);
 
         // 리뷰 저장
-        ReviewDto reviewDto = reviewRequest.toDto(PlaceDto.from(place, placeMarkedStatus));
-        Review review = reviewRepository.save(reviewDto.toEntity(writer, place));
+        ReviewDto reviewWithPlaceMarkedStatusDto = reviewRequest.toDto(PlaceDto.from(place));
+        Review review = reviewRepository.save(reviewWithPlaceMarkedStatusDto.toEntity(writer, place));
 
         // 리뷰 키워드 저장
-        reviewDto.getKeywords().forEach(keyword -> {
+        reviewWithPlaceMarkedStatusDto.getKeywords().forEach(keyword -> {
             ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
             review.getKeywords().add(reviewKeyword);
             reviewKeywordRepository.save(reviewKeyword);
@@ -89,7 +92,9 @@ public class ReviewCommandService {
         // 장소 top 3 keyword 갱신
         placeCommandService.renewTop3Keywords(place);
 
-        return ReviewDto.from(review, placeMarkedStatus);
+        boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(writerId, place);
+
+        return ReviewWithPlaceMarkedStatusDto.from(review, List.of(WRITER, PLACE), placeMarkedStatus);
     }
 
     /**
@@ -100,12 +105,13 @@ public class ReviewCommandService {
      * @param content  수정하고자 하는 리뷰 내용
      * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
      */
-    public ReviewDto update(Long memberId, Long reviewId, @Nullable String content) {
+    public ReviewWithPlaceMarkedStatusDto update(Long memberId, Long reviewId, @Nullable String content) {
         Review review = reviewQueryService.findById(reviewId);
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
 
-        return ReviewDto.from(review, bookmarkQueryService.isMarkedPlace(memberId, review.getPlace()));
+        boolean placeMarkedStatus = bookmarkQueryService.isMarkedPlace(memberId, review.getPlace());
+        return ReviewWithPlaceMarkedStatusDto.from(review, List.of(WRITER, PLACE), placeMarkedStatus);
     }
 
     /**

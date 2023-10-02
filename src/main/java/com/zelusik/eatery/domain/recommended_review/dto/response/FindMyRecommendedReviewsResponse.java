@@ -1,13 +1,13 @@
 package com.zelusik.eatery.domain.recommended_review.dto.response;
 
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
-import com.zelusik.eatery.domain.review_image_menu_tag.entity.MenuTagPoint;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.domain.review_image_menu_tag.dto.ReviewImageMenuTagDto;
+import com.zelusik.eatery.domain.review_image_menu_tag.entity.MenuTagPoint;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,9 +23,9 @@ import java.util.Optional;
 public class FindMyRecommendedReviewsResponse {
     private List<RecommendedReviewResponse> recommendedReviews;
 
-    public static FindMyRecommendedReviewsResponse from(List<RecommendedReviewDto> recommendedReviewDtos) {
+    public static FindMyRecommendedReviewsResponse from(List<RecommendedReviewWithPlaceDto> recommendedReviewWithPlaceDtos) {
         return new FindMyRecommendedReviewsResponse(
-                recommendedReviewDtos.stream()
+                recommendedReviewWithPlaceDtos.stream()
                         .map(RecommendedReviewResponse::from)
                         .toList()
         );
@@ -45,11 +45,11 @@ public class FindMyRecommendedReviewsResponse {
         @Schema(description = "순위", example = "1")
         private Short ranking;
 
-        private static RecommendedReviewResponse from(RecommendedReviewDto recommendedReviewDto) {
+        private static RecommendedReviewResponse from(RecommendedReviewWithPlaceDto recommendedReviewWithPlaceDto) {
             return new RecommendedReviewResponse(
-                    recommendedReviewDto.getId(),
-                    ReviewResponse.from(recommendedReviewDto.getReview()),
-                    recommendedReviewDto.getRanking()
+                    recommendedReviewWithPlaceDto.getId(),
+                    ReviewResponse.from(recommendedReviewWithPlaceDto.getReview()),
+                    recommendedReviewWithPlaceDto.getRanking()
             );
         }
 
@@ -67,11 +67,11 @@ public class FindMyRecommendedReviewsResponse {
             @Schema(description = "리뷰 이미지 파일 목록")
             private List<ReviewImageResponse> images;
 
-            private static ReviewResponse from(ReviewDto reviewDto) {
+            private static ReviewResponse from(ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto) {
                 return new ReviewResponse(
-                        reviewDto.getId(),
-                        PlaceResponse.from(reviewDto.getPlace()),
-                        reviewDto.getReviewImageDtos().stream()
+                        reviewWithPlaceMarkedStatusDto.getId(),
+                        PlaceResponse.from(reviewWithPlaceMarkedStatusDto.getPlace()),
+                        reviewWithPlaceMarkedStatusDto.getReviewImageDtos().stream()
                                 .map(ReviewImageResponse::from)
                                 .toList()
                 );
@@ -97,7 +97,7 @@ public class FindMyRecommendedReviewsResponse {
                 @Schema(description = "장소에 대한 북마크 여부", example = "false")
                 private Boolean isMarked;
 
-                private static PlaceResponse from(PlaceDto dto) {
+                private static PlaceResponse from(PlaceWithMarkedStatusDto dto) {
                     return new PlaceResponse(
                             dto.getId(),
                             dto.getName(),

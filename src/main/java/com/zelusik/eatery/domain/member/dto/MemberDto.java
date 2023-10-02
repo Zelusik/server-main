@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class MemberDto {
 

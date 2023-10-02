@@ -16,9 +16,9 @@ public class BatchUpdateRecommendedReviewsResponse {
 
     private List<RecommendedReviewResponse> recommendedReviews;
 
-    public static BatchUpdateRecommendedReviewsResponse from(List<RecommendedReviewDto> recommendedReviewDtos) {
+    public static BatchUpdateRecommendedReviewsResponse from(List<RecommendedReviewDto> recommendedReviewWithPlaceDtos) {
         return new BatchUpdateRecommendedReviewsResponse(
-                recommendedReviewDtos.stream()
+                recommendedReviewWithPlaceDtos.stream()
                         .map(RecommendedReviewResponse::from)
                         .toList()
         );

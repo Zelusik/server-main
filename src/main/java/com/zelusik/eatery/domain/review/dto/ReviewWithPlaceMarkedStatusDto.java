@@ -2,7 +2,6 @@ package com.zelusik.eatery.domain.review.dto;
 
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
@@ -24,40 +23,35 @@ import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.WRITER
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class ReviewDto {
+public class ReviewWithPlaceMarkedStatusDto {
 
     private Long id;
     private MemberDto writer;
-    private PlaceDto place;
+    private PlaceWithMarkedStatusDto place;
     private List<ReviewKeywordValue> keywords;
     private String autoCreatedContent;
     private String content;
     private List<ReviewImageDto> reviewImageDtos;
     private LocalDateTime createdAt;
 
-    public ReviewDto(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
+    public ReviewWithPlaceMarkedStatusDto(PlaceWithMarkedStatusDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
         this(null, null, place, keywords, autoCreatedContent, content, null, null);
     }
 
-    public static ReviewDto from(Review entity, List<ReviewEmbedOption> embed) {
-        return new ReviewDto(
+    public static ReviewWithPlaceMarkedStatusDto fromWithoutPlace(Review entity, List<ReviewEmbedOption> embed) {
+        return from(entity, embed, null);
+    }
+
+    public static ReviewWithPlaceMarkedStatusDto from(Review entity, List<ReviewEmbedOption> embed, Boolean isMarkedPlace) {
+        return new ReviewWithPlaceMarkedStatusDto(
                 entity.getId(),
                 embed != null && embed.contains(WRITER) ? MemberDto.from(entity.getWriter()) : null,
-                embed != null && embed.contains(PLACE) ? PlaceDto.from(entity.getPlace()) : null,
+                embed != null && embed.contains(PLACE) ? PlaceWithMarkedStatusDto.from(entity.getPlace(), isMarkedPlace) : null,
                 entity.getKeywords().stream().map(ReviewKeyword::getKeyword).toList(),
                 entity.getAutoCreatedContent(),
                 entity.getContent(),
                 entity.getReviewImages().stream().map(ReviewImageDto::from).toList(),
                 entity.getCreatedAt()
-        );
-    }
-
-    public Review toEntity(Member writer, Place place) {
-        return Review.of(
-                writer,
-                place,
-                this.getAutoCreatedContent(),
-                this.getContent()
         );
     }
 }

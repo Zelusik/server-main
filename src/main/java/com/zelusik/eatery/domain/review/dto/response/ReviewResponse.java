@@ -1,12 +1,12 @@
 package com.zelusik.eatery.domain.review.dto.response;
 
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.review_image_menu_tag.entity.MenuTagPoint;
 import com.zelusik.eatery.domain.member.dto.response.MemberResponse;
 import com.zelusik.eatery.domain.place.dto.response.PlaceResponse;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.domain.review_image_menu_tag.dto.ReviewImageMenuTagDto;
+import com.zelusik.eatery.domain.review_image_menu_tag.entity.MenuTagPoint;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,16 +39,16 @@ public class ReviewResponse {
     @Schema(description = "리뷰에 첨부된 이미지 파일 목록")
     private List<ReviewImageResponse> images;
 
-    public static ReviewResponse from(ReviewDto reviewDto) {
+    public static ReviewResponse from(ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto) {
         return new ReviewResponse(
-                reviewDto.getId(),
-                MemberResponse.from(reviewDto.getWriter()),
-                PlaceResponse.from(reviewDto.getPlace()),
-                reviewDto.getKeywords().stream()
+                reviewWithPlaceMarkedStatusDto.getId(),
+                MemberResponse.from(reviewWithPlaceMarkedStatusDto.getWriter()),
+                PlaceResponse.from(reviewWithPlaceMarkedStatusDto.getPlace()),
+                reviewWithPlaceMarkedStatusDto.getKeywords().stream()
                         .map(ReviewKeywordValue::getContent)
                         .toList(),
-                reviewDto.getContent(),
-                reviewDto.getReviewImageDtos().stream()
+                reviewWithPlaceMarkedStatusDto.getContent(),
+                reviewWithPlaceMarkedStatusDto.getReviewImageDtos().stream()
                         .map(ReviewImageResponse::from)
                         .toList()
         );

@@ -7,18 +7,20 @@ import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.recommended_review.api.RecommendedReviewController;
 import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 import com.zelusik.eatery.domain.recommended_review.dto.request.BatchUpdateRecommendedReviewsRequest;
 import com.zelusik.eatery.domain.recommended_review.dto.request.SaveRecommendedReviewsRequest;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewCommandService;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
@@ -77,7 +79,7 @@ class RecommendedReviewControllerTest {
         long placeId = 3L;
         short ranking = 3;
         SaveRecommendedReviewsRequest request = new SaveRecommendedReviewsRequest(reviewId, ranking);
-        RecommendedReviewDto expectedResult = createRecommendedReviewDto(4L, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking);
+        RecommendedReviewDto expectedResult = createRecommendedReviewDto(4L, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceWithMarkedStatusDto(placeId)), ranking);
         given(recommendedReviewCommandService.saveRecommendedReview(memberId, reviewId, ranking)).willReturn(expectedResult);
 
         // when & then
@@ -125,7 +127,14 @@ class RecommendedReviewControllerTest {
         long recommendedReviewId = 4L;
         long reviewId = 5L;
         short ranking = 6;
-        List<RecommendedReviewDto> expectedResults = List.of(createRecommendedReviewDto(recommendedReviewId, memberId, createReviewDto(reviewId, createMemberDto(memberId), createPlaceDto(placeId)), ranking));
+        List<RecommendedReviewWithPlaceDto> expectedResults = List.of(
+                createRecommendedReviewWithPlaceDto(
+                        recommendedReviewId,
+                        memberId,
+                        createReviewWithPlaceMarkedStatusDto(reviewId, createMemberDto(memberId), createPlaceWithMarkedStatusDto(placeId)),
+                        ranking
+                )
+        );
         given(recommendedReviewQueryService.findAllDtosWithPlaceMarkedStatus(memberId)).willReturn(expectedResults);
 
         // when & then
@@ -153,7 +162,7 @@ class RecommendedReviewControllerTest {
                 new BatchUpdateRecommendedReviewsRequest.RecommendedReviewRequest(4L, (short) 3)
         ));
         MemberDto member = createMemberDto(memberId);
-        PlaceDto place = createPlaceDto(placeId);
+        PlaceWithMarkedStatusDto place = createPlaceWithMarkedStatusDto(placeId);
         List<RecommendedReviewDto> expectedResults = List.of(
                 createRecommendedReviewDto(5L, memberId, createReviewDto(3L, member, place), (short) 1),
                 createRecommendedReviewDto(6L, memberId, createReviewDto(4L, member, place), (short) 2),
@@ -221,27 +230,26 @@ class RecommendedReviewControllerTest {
         );
     }
 
-    private PlaceDto createPlaceDto(Long placeId) {
-        return new PlaceDto(
+    private PlaceWithMarkedStatusDto createPlaceWithMarkedStatusDto(long placeId) {
+        return new PlaceWithMarkedStatusDto(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",
                 "연남토마 본점",
-                "http://place.map.kakao.com/308342289",
+                "https://place.map.kakao.com/308342289",
                 KakaoCategoryGroupCode.FD6,
                 PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
                 "02-332-8064",
                 Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
-                "http://place.map.kakao.com/308342289",
+                "https://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
                 List.of(),
-                null,
                 false
         );
     }
 
-    private ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceDto place) {
+    private ReviewDto createReviewDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
         return new ReviewDto(
                 reviewId,
                 writer,
@@ -250,6 +258,26 @@ class RecommendedReviewControllerTest {
                 "자동 생성된 내용",
                 "제출된 내용",
                 List.of(createReviewImageDto(100L, reviewId)),
+                LocalDateTime.now()
+        );
+    }
+
+    private ReviewWithPlaceMarkedStatusDto createReviewWithPlaceMarkedStatusDto(long reviewId, MemberDto writer, PlaceWithMarkedStatusDto place) {
+        return new ReviewWithPlaceMarkedStatusDto(
+                reviewId,
+                writer,
+                place,
+                List.of(ReviewKeywordValue.NOISY, ReviewKeywordValue.FRESH),
+                "자동 생성된 내용",
+                "제출된 내용",
+                List.of(new ReviewImageDto(
+                        1L,
+                        1L,
+                        "test.txt",
+                        "storedName",
+                        "url",
+                        "thumbnailStoredName",
+                        "thumbnailUrl")),
                 LocalDateTime.now()
         );
     }
@@ -268,5 +296,9 @@ class RecommendedReviewControllerTest {
 
     private RecommendedReviewDto createRecommendedReviewDto(long id, long memberId, ReviewDto review, short ranking) {
         return new RecommendedReviewDto(id, memberId, review, ranking);
+    }
+
+    private RecommendedReviewWithPlaceDto createRecommendedReviewWithPlaceDto(long id, long memberId, ReviewWithPlaceMarkedStatusDto review, short ranking) {
+        return new RecommendedReviewWithPlaceDto(id, memberId, review, ranking);
     }
 }

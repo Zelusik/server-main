@@ -1,13 +1,10 @@
 package com.zelusik.eatery.unit.domain.place.service;
 
-import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
 import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingInfo;
-import com.zelusik.eatery.domain.place.dto.PlaceScrapingOpeningHourDto;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
@@ -18,6 +15,8 @@ import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.place.service.PlaceCommandService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
+import com.zelusik.eatery.global.scraping.dto.KakaoPlaceScrapingInfo;
+import com.zelusik.eatery.global.scraping.dto.PlaceScrapingOpeningHourDto;
 import com.zelusik.eatery.global.scraping.service.WebScrapingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,16 +50,13 @@ class PlaceCommandServiceTest {
     @Mock
     private OpeningHoursRepository openingHoursRepository;
     @Mock
-    private BookmarkQueryService bookmarkQueryService;
-    @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
 
     @DisplayName("영업시간이 포함된 장소 정보가 주어지면 장소를 생성 및 저장하고 저장된 장소를 반환한다.")
     @Test
     void givenPlaceRequestInfoWithOpeningHours_whenCreatePlace_thenReturnSavedPlace() {
         // given
-        long memberId = 1L;
-        long placeId = 2L;
+        long placeId = 1L;
         List<PlaceScrapingOpeningHourDto> openingHourDtos = List.of(
                 PlaceScrapingOpeningHourDto.of(DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(22, 0)),
                 PlaceScrapingOpeningHourDto.of(DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(22, 0)),
@@ -70,24 +66,22 @@ class PlaceCommandServiceTest {
         );
         String closingHours = "토요일\n일요일";
         String homepageUrl = "https://homepage.url";
-        PlaceScrapingInfo placeScrapingInfo = PlaceScrapingInfo.of(openingHourDtos, closingHours, homepageUrl);
+        KakaoPlaceScrapingInfo kakaoPlaceScrapingInfo = KakaoPlaceScrapingInfo.of(openingHourDtos, closingHours, homepageUrl);
         PlaceCreateRequest placeCreateRequest = createPlaceRequest();
         Place expectedResult = createPlace(placeId, placeCreateRequest.getKakaoPid(), homepageUrl, closingHours);
         given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(false);
-        given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(placeScrapingInfo);
+        given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(kakaoPlaceScrapingInfo);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
         given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(List.of());
-        given(bookmarkQueryService.isMarkedPlace(memberId, expectedResult)).willReturn(false);
 
         // when
-        PlaceDto actualResult = sut.create(memberId, placeCreateRequest);
+        PlaceDto actualResult = sut.create(placeCreateRequest);
 
         // then
         then(placeRepository).should().existsByKakaoPid(placeCreateRequest.getKakaoPid());
         then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
         then(placeRepository).should().save(any(Place.class));
         then(openingHoursRepository).should().saveAll(ArgumentMatchers.<List<OpeningHours>>any());
-        then(bookmarkQueryService).should().isMarkedPlace(memberId, expectedResult);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
     }
@@ -96,12 +90,11 @@ class PlaceCommandServiceTest {
     @Test
     void givenPlaceRequestInfoWithMemberId_whenCreateAlreadyExistsPlace_thenThrowPlaceAlreadyExistsException() {
         // given
-        long memberId = 1L;
         PlaceCreateRequest placeCreateRequest = createPlaceRequest();
         given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(true);
 
         // when
-        Throwable t = catchThrowable(() -> sut.create(memberId, placeCreateRequest));
+        Throwable t = catchThrowable(() -> sut.create(placeCreateRequest));
 
         // then
         then(placeRepository).should().existsByKakaoPid(placeCreateRequest.getKakaoPid());
@@ -139,7 +132,6 @@ class PlaceCommandServiceTest {
         then(webScrapingService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
         then(openingHoursRepository).shouldHaveNoMoreInteractions();
-        then(bookmarkQueryService).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
     }
 

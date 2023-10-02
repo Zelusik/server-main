@@ -33,7 +33,7 @@ public class SwaggerConfig {
     public GroupedOpenApi groupedOpenApiVersion1() {
         return GroupedOpenApi.builder()
                 .group("v1")
-                .packagesToScan("com.zelusik.eatery.controller")
+                .packagesToScan("com.zelusik.eatery")
                 .pathsToMatch("/api/v1/**")
                 .build();
     }

@@ -3,10 +3,11 @@ package com.zelusik.eatery.domain.member.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.zelusik.eatery.domain.member.entity.QMember;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,17 +29,17 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public MemberProfileInfoDto getMemberProfileInfoById(long memberId) {
-        Member foundMember = Optional.ofNullable(
+    public MemberWithProfileInfoDto getMemberProfileInfoById(long memberId) {
+        Member member = Optional.ofNullable(
                 queryFactory
-                        .select(member)
-                        .from(member)
-                        .where(isMemberNotDeleted(), member.id.eq(memberId))
+                        .select(QMember.member)
+                        .from(QMember.member)
+                        .where(isMemberNotDeleted(), QMember.member.id.eq(memberId))
                         .fetchOne()
         ).orElseThrow(() -> new MemberIdNotFoundException(memberId));
 
-        return MemberProfileInfoDto.of(
-                foundMember,
+        return MemberWithProfileInfoDto.from(
+                member,
                 getNumOfReviews(memberId),
                 getMostVisitedLocation(memberId),
                 getMostTaggedReviewKeyword(memberId),

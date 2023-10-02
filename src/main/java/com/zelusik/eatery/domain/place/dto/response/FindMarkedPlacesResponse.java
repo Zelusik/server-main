@@ -1,8 +1,8 @@
 package com.zelusik.eatery.domain.place.dto.response;
 
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.entity.Address;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -39,7 +39,7 @@ public class FindMarkedPlacesResponse {
     @Schema(description = "장소에 대표 이미지(최대 4개)")
     private List<PlaceImageResponse> images;
 
-    public static FindMarkedPlacesResponse from(PlaceDto dto) {
+    public static FindMarkedPlacesResponse from(PlaceWithMarkedStatusAndImagesDto dto) {
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {
             category = dto.getCategory().getFirstCategory();

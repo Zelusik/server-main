@@ -1,8 +1,8 @@
 package com.zelusik.eatery.domain.place.dto.response;
 
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class PlaceCompactResponse {
 
     @Schema(
             description = "<p>가장 많이 태그된 top 3 keywords." +
-                    "<p>이 장소에 대한 리뷰가 없다면, empty array로 응답합니다.",
+                          "<p>이 장소에 대한 리뷰가 없다면, empty array로 응답합니다.",
             example = "[\"신선한 재료\", \"최고의 맛\"]"
     )
     List<String> top3Keywords;
@@ -40,7 +40,7 @@ public class PlaceCompactResponse {
         return new PlaceCompactResponse(id, top3Keywords, name, category, address, isMarked);
     }
 
-    public static PlaceCompactResponse from(PlaceDto dto) {
+    public static PlaceCompactResponse from(PlaceWithMarkedStatusDto dto) {
         String category = dto.getCategory().getSecondCategory();
         if (category == null) {
             category = dto.getCategory().getFirstCategory();

@@ -38,7 +38,7 @@ public class RecommendedReviewCommandService {
         RecommendedReview recommendedReview = RecommendedReview.of(member, review, ranking);
         recommendedReviewRepository.save(recommendedReview);
 
-        return RecommendedReviewDto.fromWithoutReviewWriterAndPlace(recommendedReview);
+        return RecommendedReviewDto.from(recommendedReview);
     }
 
     /**
@@ -64,7 +64,7 @@ public class RecommendedReviewCommandService {
         recommendedReviewRepository.saveAll(recommendedReviewsForBatchUpdate);
 
         return recommendedReviewsForBatchUpdate.stream()
-                .map(RecommendedReviewDto::fromWithoutReviewWriterAndPlace)
+                .map(RecommendedReviewDto::from)
                 .toList();
     }
 }

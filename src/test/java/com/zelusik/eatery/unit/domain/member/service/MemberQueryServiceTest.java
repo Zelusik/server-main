@@ -4,7 +4,7 @@ import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
@@ -136,11 +136,11 @@ class MemberQueryServiceTest {
         String mostVisitedLocation = "연남동";
         ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
         FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
-        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        MemberWithProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
         given(memberRepository.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when
-        MemberProfileInfoDto actualResult = sut.getMemberProfileInfoById(memberId);
+        MemberWithProfileInfoDto actualResult = sut.getMemberProfileInfoById(memberId);
 
         // then
         then(memberRepository).should().getMemberProfileInfoById(memberId);
@@ -180,8 +180,8 @@ class MemberQueryServiceTest {
     }
 
     @NonNull
-    private MemberProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
-        return MemberProfileInfoDto.of(
+    private MemberWithProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
+        return MemberWithProfileInfoDto.from(
                 createMember(memberId),
                 numOfReviews,
                 mostVisitedLocation,

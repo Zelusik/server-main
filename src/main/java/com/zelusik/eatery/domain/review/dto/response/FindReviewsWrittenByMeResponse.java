@@ -1,10 +1,10 @@
 package com.zelusik.eatery.domain.review.dto.response;
 
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
 import com.zelusik.eatery.domain.place.entity.Address;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,11 +25,11 @@ public class FindReviewsWrittenByMeResponse {
     @Schema(description = "리뷰 대표 이미지")
     private ReviewImageResponse reviewImage;
 
-    public static FindReviewsWrittenByMeResponse from(ReviewDto reviewDto) {
+    public static FindReviewsWrittenByMeResponse from(ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto) {
         return new FindReviewsWrittenByMeResponse(
-                reviewDto.getId(),
-                PlaceResponse.from(reviewDto.getPlace()),
-                ReviewImageResponse.from(reviewDto.getReviewImageDtos().get(0))
+                reviewWithPlaceMarkedStatusDto.getId(),
+                PlaceResponse.from(reviewWithPlaceMarkedStatusDto.getPlace()),
+                ReviewImageResponse.from(reviewWithPlaceMarkedStatusDto.getReviewImageDtos().get(0))
         );
     }
 
@@ -53,7 +53,7 @@ public class FindReviewsWrittenByMeResponse {
         @Schema(description = "장소에 대한 북마크 여부", example = "false")
         private Boolean isMarked;
 
-        private static PlaceResponse from(PlaceDto dto) {
+        private static PlaceResponse from(PlaceWithMarkedStatusDto dto) {
             return new PlaceResponse(
                     dto.getId(),
                     dto.getName(),

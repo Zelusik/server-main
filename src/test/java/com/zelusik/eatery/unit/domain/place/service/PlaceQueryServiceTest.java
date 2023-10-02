@@ -5,6 +5,7 @@ import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
@@ -169,14 +170,14 @@ class PlaceQueryServiceTest {
         FilteringType filteringType = FilteringType.SECOND_CATEGORY;
         String filteringKeyword = "고기,육류";
         Pageable pageable = Pageable.ofSize(30);
-        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId)));
-        given(placeRepository.findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
+        PageImpl<PlaceWithMarkedStatusAndImagesDto> expectedResult = new PageImpl<>(List.of(createPlaceWithMarkedStatusAndImagesDto(placeId)));
+        given(placeRepository.findMarkedDtosWithoutOpeningHours(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDto> actualResult = sut.findMarkedDtos(memberId, filteringType, filteringKeyword, pageable);
+        Slice<PlaceWithMarkedStatusAndImagesDto> actualResult = sut.findMarkedDtosWithoutOpeningHours(memberId, filteringType, filteringKeyword, pageable);
 
         // then
-        then(placeRepository).should().findMarkedPlaces(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        then(placeRepository).should().findMarkedDtosWithoutOpeningHours(memberId, filteringType, filteringKeyword, MAX_NUM_OF_PLACE_IMAGES, pageable);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(placeId);
@@ -218,14 +219,14 @@ class PlaceQueryServiceTest {
                 ReviewKeywordValue.WITH_ALCOHOL,
                 false
         );
-        Page<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(2L)), pageable, 1);
-        given(placeRepository.findDtosNearBy(memberId, filteringCondition, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
+        Page<PlaceWithMarkedStatusAndImagesDto> expectedResult = new PageImpl<>(List.of(createPlaceWithMarkedStatusAndImagesDto(2L)), pageable, 1);
+        given(placeRepository.findDtosWithoutOpeningHoursNearBy(memberId, filteringCondition, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable)).willReturn(expectedResult);
 
         // when
-        Slice<PlaceDto> actualResult = sut.findDtosNearBy(memberId, filteringCondition, point, pageable);
+        Slice<PlaceWithMarkedStatusAndImagesDto> actualResult = sut.findDtosWithoutOpeningHoursNearBy(memberId, filteringCondition, point, pageable);
 
         // then
-        then(placeRepository).should().findDtosNearBy(memberId, filteringCondition, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
+        then(placeRepository).should().findDtosWithoutOpeningHoursNearBy(memberId, filteringCondition, point, 50, MAX_NUM_OF_PLACE_IMAGES, pageable);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getSize()).isEqualTo(expectedResult.getSize());
         assertThat(actualResult.getContent().get(0).getId()).isEqualTo(expectedResult.getContent().get(0).getId());
@@ -297,23 +298,23 @@ class PlaceQueryServiceTest {
         return createPlace(id, kakaoPid, null, null);
     }
 
-    private PlaceDto createPlaceDto(Long placeId) {
-        return new PlaceDto(
+    private PlaceWithMarkedStatusAndImagesDto createPlaceWithMarkedStatusAndImagesDto(long placeId) {
+        return new PlaceWithMarkedStatusAndImagesDto(
                 placeId,
                 List.of(ReviewKeywordValue.FRESH),
                 "308342289",
                 "연남토마 본점",
-                "http://place.map.kakao.com/308342289",
+                "https://place.map.kakao.com/308342289",
                 KakaoCategoryGroupCode.FD6,
                 PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
                 "02-332-8064",
                 Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
-                "http://place.map.kakao.com/308342289",
+                "https://place.map.kakao.com/308342289",
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
                 List.of(),
-                null,
-                false
+                false,
+                List.of()
         );
     }
 }

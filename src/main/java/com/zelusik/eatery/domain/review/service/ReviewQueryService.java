@@ -2,7 +2,7 @@ package com.zelusik.eatery.domain.review.service;
 
 import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review.exception.ReviewNotFoundException;
 import com.zelusik.eatery.domain.review.repository.ReviewRepository;
@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.PLACE;
+import static com.zelusik.eatery.domain.review.constant.ReviewEmbedOption.WRITER;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -39,10 +42,10 @@ public class ReviewQueryService {
      * @param reviewId 조회하고자 하는 리뷰의 PK
      * @return 조회된 리뷰 dto
      */
-    public ReviewDto findDtoById(Long memberId, Long reviewId) {
+    public ReviewWithPlaceMarkedStatusDto findDtoById(Long memberId, Long reviewId) {
         Review review = findById(reviewId);
         boolean isMarkedPlace = bookmarkQueryService.isMarkedPlace(memberId, review.getPlace());
-        return ReviewDto.from(review, isMarkedPlace);
+        return ReviewWithPlaceMarkedStatusDto.from(review, List.of(WRITER, PLACE), isMarkedPlace);
     }
 
     /**
@@ -57,7 +60,7 @@ public class ReviewQueryService {
      * @param pageable      paging 정보
      * @return 조회된 리뷰 목록(Slice)
      */
-    public Slice<ReviewDto> findDtos(long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable) {
+    public Slice<ReviewWithPlaceMarkedStatusDto> findDtos(long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable) {
         return reviewRepository.findDtos(loginMemberId, writerId, placeId, embed, pageable);
     }
 
@@ -74,7 +77,7 @@ public class ReviewQueryService {
      * @param pageable      paging 정보
      * @return 조회된 리뷰 dtos
      */
-    public Slice<ReviewDto> findReviewReed(long loginMemberId, Pageable pageable) {
+    public Slice<ReviewWithPlaceMarkedStatusDto> findReviewReed(long loginMemberId, Pageable pageable) {
         return reviewRepository.findReviewFeed(loginMemberId, pageable);
     }
 }

@@ -1,13 +1,13 @@
 package com.zelusik.eatery.domain.review.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.place.dto.PlaceDto;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusDto;
+import com.zelusik.eatery.domain.place.entity.Address;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,7 +40,7 @@ public class FindReviewsResponse {
     @Schema(description = "리뷰에 첨부된 썸네일 이미지 url")
     private List<String> reviewThumbnailImageUrls;
 
-    public static FindReviewsResponse from(ReviewDto dto) {
+    public static FindReviewsResponse from(ReviewWithPlaceMarkedStatusDto dto) {
         return new FindReviewsResponse(
                 dto.getId(),
                 dto.getWriter() != null ? WriterResponse.from(dto.getWriter()) : null,
@@ -90,7 +90,7 @@ public class FindReviewsResponse {
         @Schema(description = "장소에 대한 북마크 여부", example = "false")
         private Boolean isMarked;
 
-        private static PlaceResponse from(PlaceDto dto) {
+        private static PlaceResponse from(PlaceWithMarkedStatusDto dto) {
             return new PlaceResponse(
                     dto.getId(),
                     dto.getName(),

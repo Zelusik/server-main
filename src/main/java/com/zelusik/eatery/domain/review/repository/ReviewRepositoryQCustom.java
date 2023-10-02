@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.review.repository;
 
 import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
-import com.zelusik.eatery.domain.review.dto.ReviewDto;
+import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -19,7 +19,7 @@ public interface ReviewRepositoryQCustom {
      * @param pageable      paging 정보
      * @return 조회된 리뷰 목록(Slice)
      */
-    Slice<ReviewDto> findDtos(Long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable);
+    Slice<ReviewWithPlaceMarkedStatusDto> findDtos(Long loginMemberId, Long writerId, Long placeId, List<ReviewEmbedOption> embed, Pageable pageable);
 
     /**
      * <p>리뷰 피드를 조회한다.
@@ -34,5 +34,5 @@ public interface ReviewRepositoryQCustom {
      * @param pageable      paging 정보
      * @return 조회된 리뷰 dtos
      */
-    Slice<ReviewDto> findReviewFeed(long loginMemberId, Pageable pageable);
+    Slice<ReviewWithPlaceMarkedStatusDto> findReviewFeed(long loginMemberId, Pageable pageable);
 }

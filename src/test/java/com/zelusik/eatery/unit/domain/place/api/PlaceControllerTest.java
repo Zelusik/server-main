@@ -12,6 +12,7 @@ import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.PlaceFilteringKeywordDto;
+import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.entity.Address;
@@ -84,7 +85,7 @@ class PlaceControllerTest {
         long memberId = 1L;
         long placeId = 2L;
         PlaceCreateRequest placeCreateRequest = createPlaceRequest();
-        given(placeCommandService.create(eq(memberId), any(PlaceCreateRequest.class))).willReturn(createPlaceDto(placeId, "123"));
+        given(placeCommandService.create(any(PlaceCreateRequest.class))).willReturn(createPlaceDto(placeId, "123"));
 
         // when & then
         mvc.perform(
@@ -97,7 +98,7 @@ class PlaceControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andDo(print());
-        then(placeCommandService).should().create(eq(memberId), any(PlaceCreateRequest.class));
+        then(placeCommandService).should().create(any(PlaceCreateRequest.class));
         then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
@@ -107,7 +108,7 @@ class PlaceControllerTest {
         // given
         long memberId = 1L;
         long placeId = 2L;
-        PlaceDto expectedResult = createPlaceDto(placeId, "123");
+        PlaceWithMarkedStatusAndImagesDto expectedResult = createPlaceWithMarkedStatusAndImagesDto(placeId, "123");
         given(placeQueryService.findDtoWithMarkedStatusAndImagesById(memberId, placeId)).willReturn(expectedResult);
 
         // when & then
@@ -131,7 +132,7 @@ class PlaceControllerTest {
         // given
         long memberId = 1L;
         String kakaoPid = "12345";
-        PlaceDto expectedResult = createPlaceDto(2L, kakaoPid);
+        PlaceWithMarkedStatusAndImagesDto expectedResult = createPlaceWithMarkedStatusAndImagesDto(2L, kakaoPid);
         given(placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid)).willReturn(expectedResult);
 
         // when & then
@@ -187,8 +188,8 @@ class PlaceControllerTest {
                 ReviewKeywordValue.WITH_ALCOHOL,
                 false
         );
-        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId, "123")), Pageable.ofSize(30), 1);
-        given(placeQueryService.findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class))).willReturn(expectedResult);
+        PageImpl<PlaceWithMarkedStatusAndImagesDto> expectedResult = new PageImpl<>(List.of(createPlaceWithMarkedStatusAndImagesDto(placeId, "123")), Pageable.ofSize(30), 1);
+        given(placeQueryService.findDtosWithoutOpeningHoursNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -205,7 +206,7 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.isEmpty").value(false))
                 .andExpect(jsonPath("$.numOfElements").value(1))
                 .andDo(print());
-        then(placeQueryService).should().findDtosNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class));
+        then(placeQueryService).should().findDtosWithoutOpeningHoursNearBy(eq(memberId), any(FindNearPlacesFilteringConditionRequest.class), eq(point), any(Pageable.class));
         then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
@@ -263,8 +264,8 @@ class PlaceControllerTest {
         FilteringType filteringType = FilteringType.TOP_3_KEYWORDS;
         String filteringKeywordDescription = "신선한 재료";
         String filteringKeyword = "FRESH";
-        PageImpl<PlaceDto> expectedResult = new PageImpl<>(List.of(createPlaceDto(placeId, "123")));
-        given(placeQueryService.findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
+        PageImpl<PlaceWithMarkedStatusAndImagesDto> expectedResult = new PageImpl<>(List.of(createPlaceWithMarkedStatusAndImagesDto(placeId, "123")));
+        given(placeQueryService.findMarkedDtosWithoutOpeningHours(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(get("/api/v1/places/bookmarks")
@@ -277,7 +278,7 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.contents").isArray())
                 .andExpect(jsonPath("$.size").value(1))
                 .andDo(print());
-        then(placeQueryService).should().findMarkedDtos(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class));
+        then(placeQueryService).should().findMarkedDtosWithoutOpeningHours(eq(memberId), eq(filteringType), eq(filteringKeyword), any(Pageable.class));
         then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
@@ -335,9 +336,27 @@ class PlaceControllerTest {
                         createOpeningHoursDto(1L, DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(18, 0)),
                         createOpeningHoursDto(1L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
                         createOpeningHoursDto(1L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
-                ),
+                )
+        );
+    }
+
+    private PlaceWithMarkedStatusAndImagesDto createPlaceWithMarkedStatusAndImagesDto(long placeId, String kakaoPid) {
+        return new PlaceWithMarkedStatusAndImagesDto(
+                placeId,
+                List.of(ReviewKeywordValue.FRESH),
+                kakaoPid,
+                "연남토마 본점",
+                "https://place.map.kakao.com/308342289",
+                KakaoCategoryGroupCode.FD6,
+                PlaceCategory.of("음식점 > 퓨전요리 > 퓨전일식"),
+                "02-332-8064",
+                Address.of("서울 마포구 연남동 568-26", "서울 마포구 월드컵북로6길 61"),
+                "https://place.map.kakao.com/308342289",
+                new Point("37.5595073462493", "126.921462488105"),
                 null,
-                false
+                List.of(),
+                false,
+                List.of()
         );
     }
 

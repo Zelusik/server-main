@@ -7,7 +7,7 @@ import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.member.dto.MemberProfileInfoDto;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
 import com.zelusik.eatery.domain.member.service.MemberCommandService;
 import com.zelusik.eatery.domain.member.service.MemberQueryService;
@@ -100,7 +100,7 @@ class MemberControllerTest {
         String mostVisitedLocation = "연남동";
         ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
         FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
-        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        MemberWithProfileInfoDto expectedResult = createMemberWithProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
         given(memberQueryService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when & then
@@ -135,7 +135,7 @@ class MemberControllerTest {
         String mostVisitedLocation = "연남동";
         ReviewKeywordValue mostTaggedReviewKeyword = ReviewKeywordValue.FRESH;
         FoodCategoryValue mostEatenFoodCategory = FoodCategoryValue.KOREAN;
-        MemberProfileInfoDto expectedResult = createMemberProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
+        MemberWithProfileInfoDto expectedResult = createMemberWithProfileInfoDto(memberId, numOfReviews, mostVisitedLocation, mostTaggedReviewKeyword, mostEatenFoodCategory);
         given(memberQueryService.getMemberProfileInfoById(memberId)).willReturn(expectedResult);
 
         // when & then
@@ -280,18 +280,22 @@ class MemberControllerTest {
     }
 
     @NonNull
-    private MemberProfileInfoDto createMemberProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
-        return new MemberProfileInfoDto(
+    private MemberWithProfileInfoDto createMemberWithProfileInfoDto(long memberId, int numOfReviews, String mostVisitedLocation, ReviewKeywordValue mostTaggedReviewKeyword, FoodCategoryValue mostEatenFoodCategory) {
+        return new MemberWithProfileInfoDto(
                 memberId,
                 EateryConstants.defaultProfileImageUrl,
                 EateryConstants.defaultProfileThumbnailImageUrl,
+                "1234567890",
+                LoginType.KAKAO,
+                Set.of(RoleType.USER),
+                "test@test.com",
                 "test",
-                Gender.MALE,
                 LocalDate.of(2000, 1, 1),
+                20,
+                Gender.MALE,
+                List.of(FoodCategoryValue.KOREAN),
+                null,
                 numOfReviews,
-                0,
-                0,
-                0,
                 mostVisitedLocation,
                 mostTaggedReviewKeyword,
                 mostEatenFoodCategory

@@ -4,7 +4,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class RecommendedReviewRepositoryQCustomImpl implements RecommendedReview
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<RecommendedReviewDto> findAllDtosWithPlaceMarkedStatusByMemberId(long memberId) {
+    public List<RecommendedReviewWithPlaceDto> findAllDtosWithPlaceMarkedStatusByMemberId(long memberId) {
         List<Tuple> tuples = queryFactory
                 .select(recommendedReview, subQueryForGetPlaceMarkedStatus())
                 .from(recommendedReview)
@@ -38,7 +38,7 @@ public class RecommendedReviewRepositoryQCustomImpl implements RecommendedReview
         }
 
         return tuples.stream()
-                .map(tuple -> RecommendedReviewDto.from(
+                .map(tuple -> RecommendedReviewWithPlaceDto.from(
                         Objects.requireNonNull(tuple.get(recommendedReview)),
                         Boolean.TRUE.equals(tuple.get(subQueryForGetPlaceMarkedStatus()))
                 ))

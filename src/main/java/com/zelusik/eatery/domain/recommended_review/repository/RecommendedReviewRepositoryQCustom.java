@@ -1,6 +1,6 @@
 package com.zelusik.eatery.domain.recommended_review.repository;
 
-import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewDto;
+import com.zelusik.eatery.domain.recommended_review.dto.RecommendedReviewWithPlaceDto;
 
 import java.util.List;
 
@@ -12,5 +12,5 @@ public interface RecommendedReviewRepositoryQCustom {
      * @param memberId 추천 리뷰를 조회하고자 하는 대상 회원의 PK
      * @return 조회된 추천 리뷰들의 dto
      */
-    List<RecommendedReviewDto> findAllDtosWithPlaceMarkedStatusByMemberId(long memberId);
+    List<RecommendedReviewWithPlaceDto> findAllDtosWithPlaceMarkedStatusByMemberId(long memberId);
 }
