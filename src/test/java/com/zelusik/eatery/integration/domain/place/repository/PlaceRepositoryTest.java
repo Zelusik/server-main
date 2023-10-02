@@ -7,8 +7,8 @@ import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
-import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
-import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
+import com.zelusik.eatery.domain.opening_hour.entity.OpeningHour;
+import com.zelusik.eatery.domain.opening_hour.repository.OpeningHourRepository;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.FilteringType;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
@@ -57,14 +57,14 @@ class PlaceRepositoryTest {
 
     private final PlaceRepository sut;
     private final MemberRepository memberRepository;
-    private final OpeningHoursRepository openingHoursRepository;
+    private final OpeningHourRepository openingHourRepository;
     private final BookmarkRepository bookmarkRepository;
 
     @Autowired
-    public PlaceRepositoryTest(PlaceRepository placeRepository, MemberRepository memberRepository, @Autowired OpeningHoursRepository openingHoursRepository, BookmarkRepository bookmarkRepository) {
+    public PlaceRepositoryTest(PlaceRepository placeRepository, MemberRepository memberRepository, @Autowired OpeningHourRepository openingHourRepository, BookmarkRepository bookmarkRepository) {
         this.sut = placeRepository;
         this.memberRepository = memberRepository;
-        this.openingHoursRepository = openingHoursRepository;
+        this.openingHourRepository = openingHourRepository;
         this.bookmarkRepository = bookmarkRepository;
     }
 
@@ -111,13 +111,13 @@ class PlaceRepositoryTest {
         Long memberId = 1L;
         Point pos = new Point("37.5776087830657", "126.976896737645");  // 경복궁
         Place place1 = sut.save(createPlace(1L, "1", "성심당", "36.32765802936324", "127.42727719121109", null));    // 대전
-        place1.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(1L, place1, MON)));
+        place1.getOpeningHourList().add(openingHourRepository.save(createOpeningHour(1L, place1, MON)));
         sut.save(createPlace(2L, "2", "해운대암소갈비집", "35.163310169485634", "129.1666092786243", null));  // 부산
         Place place3 = sut.save(createPlace(3L, "3", "연남토마 본점", "37.5595073462493", "126.921462488105", null));   // 서울
-        place3.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(2L, place3, MON)));
+        place3.getOpeningHourList().add(openingHourRepository.save(createOpeningHour(2L, place3, MON)));
         sut.save(createPlace(4L, "4", "연돈", "33.258895288625645", "126.40715814631936", null));   // 제주
         Place place5 = sut.save(createPlace(5L, "5", "본수원갈비", "37.27796181430103", "127.04060364807957", null));  // 수원
-        place5.getOpeningHoursList().add(openingHoursRepository.save(createOpeningHours(3L, place5, WED)));
+        place5.getOpeningHourList().add(openingHourRepository.save(createOpeningHour(3L, place5, WED)));
 
         // when
         Pageable pageable = Pageable.ofSize(30);
@@ -377,8 +377,8 @@ class PlaceRepositoryTest {
         );
     }
 
-    private OpeningHours createOpeningHours(Long id, Place place, DayOfWeek dayOfWeek) {
-        return OpeningHours.of(
+    private OpeningHour createOpeningHour(Long id, Place place, DayOfWeek dayOfWeek) {
+        return OpeningHour.of(
                 id,
                 place,
                 dayOfWeek,

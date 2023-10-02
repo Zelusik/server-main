@@ -1,7 +1,7 @@
 package com.zelusik.eatery.global.scraping.dto;
 
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
-import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
+import com.zelusik.eatery.domain.opening_hour.entity.OpeningHour;
 import com.zelusik.eatery.domain.place.entity.Place;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class PlaceScrapingOpeningHourDto {
         );
     }
 
-    public OpeningHours toOpeningHoursEntity(Place place) {
-        return OpeningHours.of(place, day, openAt, closeAt);
+    public OpeningHour toOpeningHour(Place place) {
+        return OpeningHour.of(place, day, openAt, closeAt);
     }
 }

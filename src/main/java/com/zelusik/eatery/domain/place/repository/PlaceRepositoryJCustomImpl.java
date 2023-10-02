@@ -92,7 +92,7 @@ public class PlaceRepositoryJCustomImpl implements PlaceRepositoryJCustom {
 
         List<DayOfWeek> daysOfWeeks = filteringCondition.getDaysOfWeek();
         if (daysOfWeeks != null && !daysOfWeeks.isEmpty()) {
-            StringBuilder joinOpeningHours = new StringBuilder("JOIN opening_hours oh ON p.place_id = oh.place_id AND (");
+            StringBuilder joinOpeningHours = new StringBuilder("JOIN opening_hour oh ON p.place_id = oh.place_id AND (");
             for (int i = 0; i < daysOfWeeks.size(); i++) {
                 if (i != 0) {
                     joinOpeningHours.append("OR ");
