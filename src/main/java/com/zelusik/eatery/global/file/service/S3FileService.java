@@ -4,11 +4,12 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.zelusik.eatery.global.common.exception.MultipartFileNotReadableException;
+import com.zelusik.eatery.global.common.exception.ThumbnailImageCreationException;
+import com.zelusik.eatery.global.common.properties.AWSProperties;
+import com.zelusik.eatery.global.file.CustomMultipartFile;
 import com.zelusik.eatery.global.file.dto.S3FileDto;
 import com.zelusik.eatery.global.file.dto.S3ImageDto;
-import com.zelusik.eatery.global.file.CustomMultipartFile;
-import com.zelusik.eatery.global.common.exception.ThumbnailImageCreationException;
-import com.zelusik.eatery.global.common.exception.MultipartFileNotReadableException;
 import lombok.RequiredArgsConstructor;
 import marvin.image.MarvinImage;
 import org.marvinproject.image.transform.scale.Scale;
@@ -32,6 +33,7 @@ public class S3FileService {
     private static final int THUMBNAIL_IMAGE_WIDTH = 500;
 
     private final AmazonS3Client s3Client;
+    private final AWSProperties awsProperties;
 
     @Value("${cloud.aws.s3.bucket-name}")
     private String bucketName;
@@ -59,15 +61,13 @@ public class S3FileService {
             throw new MultipartFileNotReadableException(ex);
         }
 
-        s3Client.putObject(
-                new PutObjectRequest(
-                        bucketName,
-                        storeFileName,
-                        inputStream,
-                        objectMetadata
-                ).withCannedAcl(CannedAccessControlList.PublicRead)
-        );
-        String storedFileUrl = s3Client.getResourceUrl(bucketName, storeFileName);
+        s3Client.putObject(new PutObjectRequest(
+                bucketName,
+                storeFileName,
+                inputStream,
+                objectMetadata
+        ).withCannedAcl(CannedAccessControlList.PublicRead));
+        String storedFileUrl = awsProperties.cloudFront().domainName() + storeFileName;
 
         return S3FileDto.of(originalFilename, storeFileName, storedFileUrl);
     }
