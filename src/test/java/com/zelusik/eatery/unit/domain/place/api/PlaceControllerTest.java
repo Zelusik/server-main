@@ -5,7 +5,7 @@ import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.domain.opening_hours.dto.OpeningHoursDto;
+import com.zelusik.eatery.domain.opening_hour.dto.OpeningHourDto;
 import com.zelusik.eatery.domain.place.api.PlaceController;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.FilteringType;
@@ -333,9 +333,9 @@ class PlaceControllerTest {
                 new Point("37.5595073462493", "126.921462488105"),
                 null,
                 List.of(
-                        createOpeningHoursDto(1L, DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(18, 0)),
-                        createOpeningHoursDto(1L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
-                        createOpeningHoursDto(1L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
+                        createOpeningHourDto(1L, DayOfWeek.MON, LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        createOpeningHourDto(1L, DayOfWeek.TUE, LocalTime.of(12, 0), LocalTime.of(18, 0)),
+                        createOpeningHourDto(1L, DayOfWeek.WED, LocalTime.of(12, 0), LocalTime.of(18, 0))
                 )
         );
     }
@@ -360,8 +360,8 @@ class PlaceControllerTest {
         );
     }
 
-    private OpeningHoursDto createOpeningHoursDto(Long id, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt) {
-        return OpeningHoursDto.of(id, 1L, dayOfWeek, openAt, closeAt);
+    private OpeningHourDto createOpeningHourDto(Long id, DayOfWeek dayOfWeek, LocalTime openAt, LocalTime closeAt) {
+        return OpeningHourDto.of(id, 1L, dayOfWeek, openAt, closeAt);
     }
 
     private MemberDto createMemberDto(Long memberId, Set<RoleType> roleTypes) {

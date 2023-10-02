@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.place.service;
 
-import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
-import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
+import com.zelusik.eatery.domain.opening_hour.entity.OpeningHour;
+import com.zelusik.eatery.domain.opening_hour.repository.OpeningHourRepository;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
 import com.zelusik.eatery.domain.place.dto.request.PlaceCreateRequest;
 import com.zelusik.eatery.domain.place.entity.Place;
@@ -25,7 +25,7 @@ public class PlaceCommandService {
 
     private final WebScrapingService webScrapingService;
     private final PlaceRepository placeRepository;
-    private final OpeningHoursRepository openingHoursRepository;
+    private final OpeningHourRepository openingHourRepository;
     private final ReviewKeywordRepository reviewKeywordRepository;
 
     /**
@@ -48,11 +48,11 @@ public class PlaceCommandService {
             return PlaceDto.from(savedPlace);
         }
 
-        List<OpeningHours> openingHoursList = scrapingInfo.getOpeningHours().stream()
-                .map(oh -> oh.toOpeningHoursEntity(savedPlace))
+        List<OpeningHour> openingHourList = scrapingInfo.getOpeningHours().stream()
+                .map(oh -> oh.toOpeningHour(savedPlace))
                 .toList();
-        openingHoursRepository.saveAll(openingHoursList);
-        savedPlace.getOpeningHoursList().addAll(openingHoursList);
+        openingHourRepository.saveAll(openingHourList);
+        savedPlace.getOpeningHourList().addAll(openingHourList);
         return PlaceDto.from(savedPlace);
     }
 

@@ -1,7 +1,7 @@
 package com.zelusik.eatery.unit.domain.place.service;
 
-import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
-import com.zelusik.eatery.domain.opening_hours.repository.OpeningHoursRepository;
+import com.zelusik.eatery.domain.opening_hour.entity.OpeningHour;
+import com.zelusik.eatery.domain.opening_hour.repository.OpeningHourRepository;
 import com.zelusik.eatery.domain.place.constant.DayOfWeek;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.dto.PlaceDto;
@@ -48,7 +48,7 @@ class PlaceCommandServiceTest {
     @Mock
     private PlaceRepository placeRepository;
     @Mock
-    private OpeningHoursRepository openingHoursRepository;
+    private OpeningHourRepository openingHourRepository;
     @Mock
     private ReviewKeywordRepository reviewKeywordRepository;
 
@@ -72,7 +72,7 @@ class PlaceCommandServiceTest {
         given(placeRepository.existsByKakaoPid(placeCreateRequest.getKakaoPid())).willReturn(false);
         given(webScrapingService.getPlaceScrapingInfo(placeCreateRequest.getKakaoPid())).willReturn(kakaoPlaceScrapingInfo);
         given(placeRepository.save(any(Place.class))).willReturn(expectedResult);
-        given(openingHoursRepository.saveAll(ArgumentMatchers.<List<OpeningHours>>any())).willReturn(List.of());
+        given(openingHourRepository.saveAll(ArgumentMatchers.<List<OpeningHour>>any())).willReturn(List.of());
 
         // when
         PlaceDto actualResult = sut.create(placeCreateRequest);
@@ -81,7 +81,7 @@ class PlaceCommandServiceTest {
         then(placeRepository).should().existsByKakaoPid(placeCreateRequest.getKakaoPid());
         then(webScrapingService).should().getPlaceScrapingInfo(placeCreateRequest.getKakaoPid());
         then(placeRepository).should().save(any(Place.class));
-        then(openingHoursRepository).should().saveAll(ArgumentMatchers.<List<OpeningHours>>any());
+        then(openingHourRepository).should().saveAll(ArgumentMatchers.<List<OpeningHour>>any());
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult.getKakaoPid()).isEqualTo(placeCreateRequest.getKakaoPid());
     }
@@ -131,7 +131,7 @@ class PlaceCommandServiceTest {
     private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(webScrapingService).shouldHaveNoMoreInteractions();
         then(placeRepository).shouldHaveNoMoreInteractions();
-        then(openingHoursRepository).shouldHaveNoMoreInteractions();
+        then(openingHourRepository).shouldHaveNoMoreInteractions();
         then(reviewKeywordRepository).shouldHaveNoMoreInteractions();
     }
 

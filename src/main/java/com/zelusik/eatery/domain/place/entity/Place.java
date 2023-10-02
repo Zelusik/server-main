@@ -4,7 +4,7 @@ import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.place.converter.ReviewKeywordValueConverter;
 import com.zelusik.eatery.global.common.entity.BaseTimeEntity;
-import com.zelusik.eatery.domain.opening_hours.entity.OpeningHours;
+import com.zelusik.eatery.domain.opening_hour.entity.OpeningHour;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,7 +65,7 @@ public class Place extends BaseTimeEntity {
     private String closingHours;
 
     @OneToMany(mappedBy = "place")
-    private List<OpeningHours> openingHoursList = new LinkedList<>();
+    private List<OpeningHour> openingHourList = new LinkedList<>();
 
     public static Place of(
             @NonNull String kakaoPid,

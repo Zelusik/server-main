@@ -1,6 +1,6 @@
 package com.zelusik.eatery.domain.place.dto;
 
-import com.zelusik.eatery.domain.opening_hours.dto.OpeningHoursDto;
+import com.zelusik.eatery.domain.opening_hour.dto.OpeningHourDto;
 import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
@@ -19,7 +19,7 @@ public class PlaceWithMarkedStatusDto extends PlaceDto {
 
     private Boolean isMarked;
 
-    public PlaceWithMarkedStatusDto(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHoursDto> openingHours, Boolean isMarked) {
+    public PlaceWithMarkedStatusDto(Long id, List<ReviewKeywordValue> top3Keywords, String kakaoPid, String name, String pageUrl, KakaoCategoryGroupCode categoryGroupCode, PlaceCategory category, String phone, Address address, String homepageUrl, Point point, String closingHours, List<OpeningHourDto> openingHours, Boolean isMarked) {
         super(id, top3Keywords, kakaoPid, name, pageUrl, categoryGroupCode, category, phone, address, homepageUrl, point, closingHours, openingHours);
         this.isMarked = isMarked;
     }
@@ -38,8 +38,8 @@ public class PlaceWithMarkedStatusDto extends PlaceDto {
                 place.getHomepageUrl(),
                 place.getPoint(),
                 place.getClosingHours(),
-                place.getOpeningHoursList().stream()
-                        .map(OpeningHoursDto::from)
+                place.getOpeningHourList().stream()
+                        .map(OpeningHourDto::from)
                         .toList(),
                 isMarked);
     }
