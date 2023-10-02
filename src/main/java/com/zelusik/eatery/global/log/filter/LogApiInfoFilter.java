@@ -21,7 +21,8 @@ public class LogApiInfoFilter extends OncePerRequestFilter {
 
     private static final String[] LOG_BLACK_LIST = {
             "/swagger",
-            "/v3/api-docs"
+            "/v3/api-docs",
+            "/actuator"
     };
 
     private static final List<MediaType> VISIBLE_TYPES = Arrays.asList(
