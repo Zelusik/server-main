@@ -13,7 +13,6 @@ import com.zelusik.eatery.global.file.dto.S3ImageDto;
 import lombok.RequiredArgsConstructor;
 import marvin.image.MarvinImage;
 import org.marvinproject.image.transform.scale.Scale;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,9 +33,6 @@ public class S3FileService {
 
     private final AmazonS3Client s3Client;
     private final AWSProperties awsProperties;
-
-    @Value("${cloud.aws.s3.bucket-name}")
-    private String bucketName;
 
     /**
      * MultipartFile을 전달받아 S3 bucket에 업로드한다.
@@ -62,7 +58,7 @@ public class S3FileService {
         }
 
         s3Client.putObject(new PutObjectRequest(
-                bucketName,
+                awsProperties.s3().bucketName(),
                 storeFileName,
                 inputStream,
                 objectMetadata
