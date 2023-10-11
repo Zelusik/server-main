@@ -6,7 +6,7 @@ import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.place.exception.ContainsDuplicateMenusException;
-import com.zelusik.eatery.domain.place.exception.PlaceMenusAlreadyExistsException;
+import com.zelusik.eatery.domain.place_menus.exception.PlaceMenusAlreadyExistsException;
 import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
 import com.zelusik.eatery.domain.place_menus.entity.PlaceMenus;

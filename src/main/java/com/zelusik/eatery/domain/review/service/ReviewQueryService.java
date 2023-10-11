@@ -4,7 +4,7 @@ import com.zelusik.eatery.domain.bookmark.service.BookmarkQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewEmbedOption;
 import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review.exception.ReviewNotFoundException;
+import com.zelusik.eatery.domain.review.exception.ReviewNotFoundByIdException;
 import com.zelusik.eatery.domain.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +32,8 @@ public class ReviewQueryService {
      * @return 조회된 리뷰
      */
     public Review findById(Long reviewId) {
-        return reviewRepository.findByIdAndDeletedAtNull(reviewId).orElseThrow(ReviewNotFoundException::new);
+        return reviewRepository.findByIdAndDeletedAtNull(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundByIdException(reviewId));
     }
 
     /**

@@ -1,22 +1,23 @@
 package com.zelusik.eatery.global.common.exception;
 
+import com.zelusik.eatery.global.exception.constant.CustomExceptionType;
 import org.springframework.http.HttpStatus;
 
 public abstract class ConflictException extends CustomException {
 
-    public ConflictException() {
-        super(HttpStatus.CONFLICT);
+    public ConflictException(CustomExceptionType exceptionType) {
+        super(HttpStatus.CONFLICT, exceptionType);
     }
 
-    public ConflictException(String optionalMessage) {
-        super(HttpStatus.CONFLICT, optionalMessage);
+    public ConflictException(CustomExceptionType exceptionType, String optionalMessage) {
+        super(HttpStatus.CONFLICT, exceptionType, optionalMessage);
     }
 
-    public ConflictException(Throwable cause) {
-        super(HttpStatus.CONFLICT, cause);
+    public ConflictException(CustomExceptionType exceptionType, Throwable cause) {
+        super(HttpStatus.CONFLICT, exceptionType, cause);
     }
 
-    public ConflictException(String optionalMessage, Throwable cause) {
-        super(HttpStatus.CONFLICT, optionalMessage, cause);
+    public ConflictException(CustomExceptionType exceptionType, String optionalMessage, Throwable cause) {
+        super(HttpStatus.CONFLICT, exceptionType, optionalMessage, cause);
     }
 }

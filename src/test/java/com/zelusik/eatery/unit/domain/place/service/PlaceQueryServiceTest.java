@@ -11,6 +11,7 @@ import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.place.exception.PlaceNotFoundByKakaoPidException;
 import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.place.service.PlaceQueryService;
@@ -127,7 +128,7 @@ class PlaceQueryServiceTest {
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(t).isInstanceOf(PlaceNotFoundException.class);
+        assertThat(t).isInstanceOf(PlaceNotFoundByKakaoPidException.class);
     }
 
     @DisplayName("kakaoPid가 주어지고, 일치하는 장소를 찾으면, 장소를 반환한다.")

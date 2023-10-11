@@ -1,22 +1,23 @@
 package com.zelusik.eatery.global.common.exception;
 
+import com.zelusik.eatery.global.exception.constant.CustomExceptionType;
 import org.springframework.http.HttpStatus;
 
 public abstract class NotFoundException extends CustomException {
 
-    public NotFoundException() {
-        super(HttpStatus.NOT_FOUND);
+    public NotFoundException(CustomExceptionType exceptionType) {
+        super(HttpStatus.NOT_FOUND, exceptionType);
     }
 
-    public NotFoundException(String optionalMessage) {
-        super(HttpStatus.NOT_FOUND, optionalMessage);
+    public NotFoundException(CustomExceptionType exceptionType, String optionalMessage) {
+        super(HttpStatus.NOT_FOUND, exceptionType, optionalMessage);
     }
 
-    public NotFoundException(Throwable cause) {
-        super(HttpStatus.NOT_FOUND, cause);
+    public NotFoundException(CustomExceptionType exceptionType, Throwable cause) {
+        super(HttpStatus.NOT_FOUND, exceptionType, cause);
     }
 
-    public NotFoundException(String optionalMessage, Throwable cause) {
-        super(HttpStatus.NOT_FOUND, optionalMessage, cause);
+    public NotFoundException(CustomExceptionType exceptionType, String optionalMessage, Throwable cause) {
+        super(HttpStatus.NOT_FOUND, exceptionType, optionalMessage, cause);
     }
 }

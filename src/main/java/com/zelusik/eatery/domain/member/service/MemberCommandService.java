@@ -5,7 +5,7 @@ import com.zelusik.eatery.domain.favorite_food_category.repository.FavoriteFoodC
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
+import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
 import com.zelusik.eatery.domain.member.exception.MemberNotFoundException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
@@ -155,10 +155,10 @@ public class MemberCommandService {
      *
      * @param memberId 조회할 회원의 PK
      * @return 조회한 회원 entity
-     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
+     * @throws MemberNotFoundByIdException 일치하는 회원이 없는 경우
      */
     private Member findByIdWithDeleted(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
+                .orElseThrow(() -> new MemberNotFoundByIdException(memberId));
     }
 }

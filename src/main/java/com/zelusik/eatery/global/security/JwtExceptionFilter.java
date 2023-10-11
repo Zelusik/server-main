@@ -1,11 +1,11 @@
 package com.zelusik.eatery.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zelusik.eatery.global.exception.dto.ErrorResponse;
-import com.zelusik.eatery.global.exception.constant.ExceptionType;
 import com.zelusik.eatery.global.auth.exception.AccessTokenValidateException;
 import com.zelusik.eatery.global.auth.exception.RefreshTokenValidateException;
 import com.zelusik.eatery.global.auth.exception.TokenValidateException;
+import com.zelusik.eatery.global.exception.constant.CustomExceptionType;
+import com.zelusik.eatery.global.exception.dto.ErrorResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,6 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * <code>JwtAuthenticationFilter</code>에서 발생하는 에러를 처리하기 위한 filter
+ *
+ * @see JwtAuthenticationFilter
+ */
 @Component
 public class JwtExceptionFilter extends OncePerRequestFilter {
 
@@ -22,10 +27,12 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (TokenValidateException
-                 | AccessTokenValidateException
-                 | RefreshTokenValidateException ex) {
-            setErrorResponse(ex.getClass(), response);
+        } catch (TokenValidateException ex) {
+            setErrorResponse(CustomExceptionType.TOKEN_VALIDATE, response);
+        } catch (AccessTokenValidateException ex) {
+            setErrorResponse(CustomExceptionType.ACCESS_TOKEN_VALIDATE, response);
+        } catch (RefreshTokenValidateException ex) {
+            setErrorResponse(CustomExceptionType.REFRESH_TOKEN_VALIDATE, response);
         }
     }
 
@@ -36,14 +43,12 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
      * @param response  HttpServletResponse 객체
      */
     private void setErrorResponse(
-            Class<? extends Exception> classType,
+            CustomExceptionType exceptionType,
             HttpServletResponse response
     ) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json; charset=UTF-8");
-
-        ExceptionType exceptionType = ExceptionType.from(classType).orElse(ExceptionType.UNAUTHORIZED);
         ErrorResponse errorResponse = new ErrorResponse(exceptionType.getCode(), exceptionType.getMessage());
         new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
     }

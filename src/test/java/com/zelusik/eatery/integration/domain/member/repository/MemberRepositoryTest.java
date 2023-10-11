@@ -17,7 +17,7 @@ import com.zelusik.eatery.domain.review.entity.Review;
 import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
 import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
 import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
-import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
+import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
@@ -121,7 +121,7 @@ class MemberRepositoryTest {
         Throwable t = catchThrowable(() -> sut.getMemberProfileInfoById(100));
 
         // then
-        assertThat(t).isInstanceOf(MemberIdNotFoundException.class);
+        assertThat(t).isInstanceOf(MemberNotFoundByIdException.class);
     }
 
     private Member createNewMember(String socialUid, String nickname) {

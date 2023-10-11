@@ -3,7 +3,7 @@ package com.zelusik.eatery.domain.member.service;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
+import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,11 +26,11 @@ public class MemberQueryService {
      *
      * @param memberId 조회할 회원의 PK
      * @return 조회한 회원 entity
-     * @throws MemberIdNotFoundException 일치하는 회원이 없는 경우
+     * @throws MemberNotFoundByIdException 일치하는 회원이 없는 경우
      */
     public Member findById(Long memberId) {
         return memberRepository.findByIdAndDeletedAtNull(memberId)
-                .orElseThrow(() -> new MemberIdNotFoundException(memberId));
+                .orElseThrow(() -> new MemberNotFoundByIdException(memberId));
     }
 
     /**

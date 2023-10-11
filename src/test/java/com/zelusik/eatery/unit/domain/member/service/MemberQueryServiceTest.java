@@ -6,7 +6,7 @@ import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
+import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
@@ -71,7 +71,7 @@ class MemberQueryServiceTest {
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
-        assertThat(throwable).isInstanceOf(MemberIdNotFoundException.class);
+        assertThat(throwable).isInstanceOf(MemberNotFoundByIdException.class);
     }
 
     @DisplayName("회원의 social uid가 주어지면 해당하는 회원을 조회한 후 반환한다.")

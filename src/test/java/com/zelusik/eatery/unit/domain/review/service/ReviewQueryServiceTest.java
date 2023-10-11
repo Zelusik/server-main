@@ -16,7 +16,7 @@ import com.zelusik.eatery.domain.place.entity.Point;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.dto.ReviewWithPlaceMarkedStatusDto;
 import com.zelusik.eatery.domain.review.entity.Review;
-import com.zelusik.eatery.domain.review.exception.ReviewNotFoundException;
+import com.zelusik.eatery.domain.review.exception.ReviewNotFoundByIdException;
 import com.zelusik.eatery.domain.review.repository.ReviewRepository;
 import com.zelusik.eatery.domain.review.service.ReviewQueryService;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
@@ -90,7 +90,7 @@ class ReviewQueryServiceTest {
         // then
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
-        assertThat(t).isInstanceOf(ReviewNotFoundException.class);
+        assertThat(t).isInstanceOf(ReviewNotFoundByIdException.class);
     }
 
     @DisplayName("리뷰의 id(PK)가 주어지고, id로 리뷰 dto를 단건 조회하면, 조회된 리뷰의 dto가 반환된다.")

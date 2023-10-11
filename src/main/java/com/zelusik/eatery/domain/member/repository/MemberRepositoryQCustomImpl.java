@@ -8,7 +8,7 @@ import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
-import com.zelusik.eatery.domain.member.exception.MemberIdNotFoundException;
+import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -36,7 +36,7 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
                         .from(QMember.member)
                         .where(isMemberNotDeleted(), QMember.member.id.eq(memberId))
                         .fetchOne()
-        ).orElseThrow(() -> new MemberIdNotFoundException(memberId));
+        ).orElseThrow(() -> new MemberNotFoundByIdException(memberId));
 
         return MemberWithProfileInfoDto.from(
                 member,
