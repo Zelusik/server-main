@@ -2,8 +2,8 @@ package com.zelusik.eatery.domain.place_menus.service;
 
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.exception.ContainsDuplicateMenusException;
-import com.zelusik.eatery.domain.place.exception.PlaceMenusAlreadyExistsException;
-import com.zelusik.eatery.domain.place.exception.PlaceMenusNotFoundException;
+import com.zelusik.eatery.domain.place_menus.exception.PlaceMenusAlreadyExistsException;
+import com.zelusik.eatery.domain.place_menus.exception.PlaceMenusNotFoundByPlaceIdException;
 import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
 import com.zelusik.eatery.domain.place_menus.entity.PlaceMenus;
@@ -71,11 +71,11 @@ public class PlaceMenusCommandService {
      *
      * @param placeId 메뉴 데이터를 조회하고자 하는 장소의 PK 값
      * @return 메뉴 목록 정보를 담은 PlaceMenus의 entity 객체
-     * @throws PlaceMenusNotFoundException placeId에 해당하는 장소 메뉴 데이터가 없는 경우
+     * @throws PlaceMenusNotFoundByPlaceIdException placeId에 해당하는 장소 메뉴 데이터가 없는 경우
      */
     @NonNull
     private PlaceMenus findByPlaceId(@NonNull Long placeId) {
-        return placeMenusRepository.findByPlace_Id(placeId).orElseThrow(() -> new PlaceMenusNotFoundException(placeId));
+        return placeMenusRepository.findByPlace_Id(placeId).orElseThrow(() -> new PlaceMenusNotFoundByPlaceIdException(placeId));
     }
 
     /**

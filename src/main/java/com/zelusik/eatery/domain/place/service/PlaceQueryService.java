@@ -8,6 +8,7 @@ import com.zelusik.eatery.domain.place.dto.PlaceWithMarkedStatusAndImagesDto;
 import com.zelusik.eatery.domain.place.dto.request.FindNearPlacesFilteringConditionRequest;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.place.exception.PlaceNotFoundByKakaoPidException;
 import com.zelusik.eatery.domain.place.exception.PlaceNotFoundException;
 import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.review_image.dto.ReviewImageDto;
@@ -65,7 +66,7 @@ public class PlaceQueryService {
      */
     @NonNull
     public Place findByKakaoPid(@NonNull String kakaoPid) {
-        return findOptByKakaoPid(kakaoPid).orElseThrow(() -> PlaceNotFoundException.kakaoPid(kakaoPid));
+        return findOptByKakaoPid(kakaoPid).orElseThrow(() -> new PlaceNotFoundByKakaoPidException(kakaoPid));
     }
 
     /**

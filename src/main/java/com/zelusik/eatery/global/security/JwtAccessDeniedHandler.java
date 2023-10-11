@@ -2,7 +2,7 @@ package com.zelusik.eatery.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.global.exception.dto.ErrorResponse;
-import com.zelusik.eatery.global.exception.constant.ExceptionType;
+import com.zelusik.eatery.global.exception.constant.CustomExceptionType;
 import com.zelusik.eatery.global.exception.util.ExceptionUtils;
 import com.zelusik.eatery.global.log.LogUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -47,8 +47,8 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         response.getWriter().write(
                 new ObjectMapper().writeValueAsString(
                         new ErrorResponse(
-                                ExceptionType.ACCESS_DENIED.getCode(),
-                                ExceptionType.ACCESS_DENIED.getMessage()
+                                CustomExceptionType.ACCESS_DENIED.getCode(),
+                                CustomExceptionType.ACCESS_DENIED.getMessage()
                         )
                 )
         );

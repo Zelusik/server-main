@@ -5,9 +5,10 @@ import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
-import com.zelusik.eatery.domain.place.exception.PlaceMenusNotFoundException;
 import com.zelusik.eatery.domain.place_menus.dto.PlaceMenusDto;
 import com.zelusik.eatery.domain.place_menus.entity.PlaceMenus;
+import com.zelusik.eatery.domain.place_menus.exception.PlaceMenusNotFoundByKakaoPidException;
+import com.zelusik.eatery.domain.place_menus.exception.PlaceMenusNotFoundByPlaceIdException;
 import com.zelusik.eatery.domain.place_menus.repository.PlaceMenusRepository;
 import com.zelusik.eatery.domain.place_menus.service.PlaceMenusQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
@@ -74,7 +75,7 @@ class PlaceMenusQueryServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_Id(placeId);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        assertThat(t).isInstanceOf(PlaceMenusNotFoundException.class);
+        assertThat(t).isInstanceOf(PlaceMenusNotFoundByPlaceIdException.class);
     }
 
     @DisplayName("장소의 kakaoPid 값이 주어지고, 장소 메뉴 데이터를 조회하면, 조회된 결과를 반환한다.")
@@ -114,7 +115,7 @@ class PlaceMenusQueryServiceTest {
         // then
         then(placeMenusRepository).should().findByPlace_KakaoPid(kakaoPid);
         then(placeMenusRepository).shouldHaveNoMoreInteractions();
-        assertThat(t).isInstanceOf(PlaceMenusNotFoundException.class);
+        assertThat(t).isInstanceOf(PlaceMenusNotFoundByKakaoPidException.class);
     }
 
     private Place createPlace(long id, String kakaoPid) {
