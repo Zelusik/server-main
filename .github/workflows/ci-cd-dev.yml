@@ -29,12 +29,14 @@ jobs:
           arguments: build
 
       - name: Docker build and push
+        if: ${{ !failure() }}
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker build -t ${{ secrets.DOCKER_REPO_DEV }} -f Dockerfile.dev .
           docker push ${{ secrets.DOCKER_REPO_DEV }}
 
       - name: Executing remote ssh commands with docker compose for Continuous Delivery
+        if: ${{ !failure() }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_EC2_HOST_DEV }}
