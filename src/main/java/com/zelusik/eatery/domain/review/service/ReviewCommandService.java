@@ -49,21 +49,26 @@ public class ReviewCommandService {
     /**
      * 리뷰를 생성합니다.
      *
-     * @param writerId      리뷰를 생성하고자 하는 회원의 PK.
-     * @param reviewRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
+     * @param writerId            리뷰를 생성하고자 하는 회원의 PK.
+     * @param reviewCreateRequest 생성할 리뷰의 정보. 여기에 장소 정보도 포함되어 있다.
      * @return 생성된 리뷰 정보가 담긴 dto.
      */
-    public ReviewWithPlaceMarkedStatusDto create(Long writerId, ReviewCreateRequest reviewRequest) {
-        List<ReviewImageCreateRequest> images = reviewRequest.getImages();
-        Place place = placeQueryService.findById(reviewRequest.getPlaceId());
+    public ReviewWithPlaceMarkedStatusDto create(Long writerId, ReviewCreateRequest reviewCreateRequest) {
+        List<ReviewImageCreateRequest> images = reviewCreateRequest.getImages();
+        Place place = placeQueryService.findById(reviewCreateRequest.getPlaceId());
         Member writer = memberQueryService.findById(writerId);
 
         // 리뷰 저장
-        ReviewDto reviewWithPlaceMarkedStatusDto = reviewRequest.toDto(PlaceDto.from(place));
-        Review review = reviewRepository.save(reviewWithPlaceMarkedStatusDto.toEntity(writer, place));
+        ReviewDto newReviewDto = ReviewDto.createNewReviewDto(
+                PlaceDto.from(place),
+                reviewCreateRequest.getKeywords(),
+                reviewCreateRequest.getAutoCreatedContent(),
+                reviewCreateRequest.getContent()
+        );
+        Review review = reviewRepository.save(newReviewDto.toEntity(writer, place));
 
         // 리뷰 키워드 저장
-        reviewWithPlaceMarkedStatusDto.getKeywords().forEach(keyword -> {
+        reviewCreateRequest.getKeywords().forEach(keyword -> {
             ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
             review.getKeywords().add(reviewKeyword);
             reviewKeywordRepository.save(reviewKeyword);

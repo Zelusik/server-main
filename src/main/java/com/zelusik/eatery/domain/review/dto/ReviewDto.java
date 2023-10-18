@@ -35,8 +35,8 @@ public class ReviewDto {
     private List<ReviewImageDto> reviewImageDtos;
     private LocalDateTime createdAt;
 
-    public ReviewDto(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
-        this(null, null, place, keywords, autoCreatedContent, content, null, null);
+    public static ReviewDto createNewReviewDto(PlaceDto place, List<ReviewKeywordValue> keywords, String autoCreatedContent, String content) {
+        return new ReviewDto(null, null, place, keywords, autoCreatedContent, content, null, null);
     }
 
     public static ReviewDto from(Review entity, List<ReviewEmbedOption> embed) {

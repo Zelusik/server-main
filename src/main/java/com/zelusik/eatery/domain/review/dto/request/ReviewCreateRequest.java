@@ -66,7 +66,7 @@ public class ReviewCreateRequest {
     private List<ReviewImageCreateRequest> images;
 
     public ReviewDto toDto(PlaceDto placeDto) {
-        return new ReviewDto(
+        return ReviewDto.createNewReviewDto(
                 placeDto,
                 this.getKeywords(),
                 this.getAutoCreatedContent(),
