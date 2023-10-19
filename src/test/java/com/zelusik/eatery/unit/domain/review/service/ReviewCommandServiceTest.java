@@ -243,7 +243,7 @@ class ReviewCommandServiceTest {
     }
 
     private ReviewKeyword createReviewKeyword(Long reviewKeywordId, Review review, ReviewKeywordValue reviewKeywordValue) {
-        return ReviewKeyword.of(
+        return new ReviewKeyword(
                 reviewKeywordId,
                 review,
                 reviewKeywordValue,
@@ -253,7 +253,7 @@ class ReviewCommandServiceTest {
     }
 
     public static ReviewImage createReviewImage(Long reviewImageId, Review review) {
-        return ReviewImage.of(
+        return new ReviewImage(
                 reviewImageId,
                 review,
                 "original file name",

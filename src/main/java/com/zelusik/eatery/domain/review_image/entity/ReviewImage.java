@@ -30,15 +30,11 @@ public class ReviewImage extends S3Image {
     @Setter(AccessLevel.PRIVATE)
     private LocalDateTime deletedAt;
 
-    public static ReviewImage of(Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
-        return of(null, review, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, null, null, null);
+    public static ReviewImage createNewReviewImage(Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl) {
+        return new ReviewImage(null, review, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, null, null, null);
     }
 
-    public static ReviewImage of(Long id, Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
-        return new ReviewImage(id, review, originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt, deletedAt);
-    }
-
-    private ReviewImage(Long id, Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
+    public ReviewImage(Long id, Review review, String originalName, String storedName, String url, String thumbnailStoredName, String thumbnailUrl, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime deletedAt) {
         super(originalName, storedName, url, thumbnailStoredName, thumbnailUrl, createdAt, updatedAt);
         this.id = id;
         this.review = review;

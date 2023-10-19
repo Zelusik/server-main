@@ -69,7 +69,7 @@ public class ReviewCommandService {
 
         // 리뷰 키워드 저장
         reviewCreateRequest.getKeywords().forEach(keyword -> {
-            ReviewKeyword reviewKeyword = ReviewKeyword.of(review, keyword);
+            ReviewKeyword reviewKeyword = ReviewKeyword.createNewReviewKeyword(review, keyword);
             review.getKeywords().add(reviewKeyword);
             reviewKeywordRepository.save(reviewKeyword);
         });

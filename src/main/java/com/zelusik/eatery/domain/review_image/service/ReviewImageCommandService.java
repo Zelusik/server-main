@@ -32,7 +32,7 @@ public class ReviewImageCommandService {
     public List<ReviewImage> upload(Review review, List<ReviewImageCreateRequest> images) {
         List<ReviewImage> reviewImages = images.stream().map(image -> {
             S3ImageDto imageDto = s3FileService.uploadImageWithResizing(image.getImage(), DIR_PATH);
-            return ReviewImage.of(
+            return ReviewImage.createNewReviewImage(
                     review,
                     imageDto.getOriginalName(),
                     imageDto.getStoredName(),

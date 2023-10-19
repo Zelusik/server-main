@@ -151,7 +151,7 @@ class RecommendedReviewRepositoryTest {
     }
 
     private ReviewKeyword createNewReviewKeyword(Review review, ReviewKeywordValue reviewKeywordValue) {
-        return ReviewKeyword.of(review, reviewKeywordValue);
+        return ReviewKeyword.createNewReviewKeyword(review, reviewKeywordValue);
     }
 
     private RecommendedReview createNewRecommendedReview(Member member, Review review, short ranking) {

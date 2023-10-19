@@ -182,7 +182,7 @@ class MemberRepositoryTest {
     }
 
     private ReviewKeyword createReviewKeyword(Long reviewKeywordId, Review review, ReviewKeywordValue reviewKeywordValue) {
-        return ReviewKeyword.of(
+        return new ReviewKeyword(
                 reviewKeywordId,
                 review,
                 reviewKeywordValue,
