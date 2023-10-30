@@ -109,7 +109,7 @@ class ProfileImageCommandServiceTest {
     }
 
     private S3ImageDto createS3ImageDto() {
-        return S3ImageDto.of(
+        return new S3ImageDto(
                 "originalFileName",
                 "storedFileName",
                 "url",

@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 @Service
 public class S3FileService {
 
@@ -39,9 +39,8 @@ public class S3FileService {
      *
      * @param multipartFile 업로드할 파일
      * @param dirPath       업로드할 경로
-     * @return 업로드한 파일 정보
+     * @return S3에 저장된 파일 정보
      */
-    @Transactional
     public S3FileDto uploadFile(MultipartFile multipartFile, String dirPath) {
         String originalFilename = multipartFile.getOriginalFilename();
         if (originalFilename == null) {
@@ -65,25 +64,24 @@ public class S3FileService {
         ).withCannedAcl(CannedAccessControlList.PublicRead));
         String storedFileUrl = awsProperties.cloudFront().domainName() + storeFileName;
 
-        return S3FileDto.of(originalFilename, storeFileName, storedFileUrl);
+        return new S3FileDto(originalFilename, storeFileName, storedFileUrl);
     }
 
     /**
-     * S3 bucket에 이미지를 업로드한다.
-     * 전달받은 multipartFile을 리사이징한 썸네일 이미지를 생성하고, 원본 이미지와 썸네일 이미지 두 개를 모두 업로드한다.
+     * <p>S3 bucket에 이미지를 업로드한다.
+     * <p>전달받은 multipartFile을 리사이징한 썸네일 이미지를 생성하고, 원본 이미지와 썸네일 이미지 두 개를 모두 업로드한다.
      *
      * @param multipartFile 업로드할 이미지 파일
      * @param dirPath       업로드할 경로
      * @return 업로드된 파일 정보. 원본 이미지와 썸네일 이미지 두 개에 대한 정보가 모두 담겨있다.
      */
-    @Transactional
     public S3ImageDto uploadImageWithResizing(MultipartFile multipartFile, String dirPath) {
-        MultipartFile resizedImage = resizeImage(multipartFile);
+        MultipartFile imageResized = resizeImage(multipartFile);
 
-        S3FileDto originalImageDto = this.uploadFile(multipartFile, dirPath);
-        S3FileDto thumbnailImageDto = this.uploadFile(resizedImage, dirPath + "thumbnail/");
+        S3FileDto originalImageDto = uploadFile(multipartFile, dirPath);
+        S3FileDto thumbnailImageDto = uploadFile(imageResized, dirPath + "thumbnail/");
 
-        return S3ImageDto.of(
+        return new S3ImageDto(
                 originalImageDto.getOriginalName(),
                 originalImageDto.getStoredName(),
                 originalImageDto.getUrl(),

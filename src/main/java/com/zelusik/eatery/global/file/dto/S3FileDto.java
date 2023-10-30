@@ -3,16 +3,14 @@ package com.zelusik.eatery.global.file.dto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class S3FileDto {
 
     private String originalName;
     private String storedName;
     private String url;
-
-    public static S3FileDto of(String originalName, String storedName, String url) {
-        return new S3FileDto(originalName, storedName, url);
-    }
 }
