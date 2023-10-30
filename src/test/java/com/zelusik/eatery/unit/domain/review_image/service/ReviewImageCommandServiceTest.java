@@ -63,7 +63,7 @@ class ReviewImageCommandServiceTest {
         given(reviewImageRepository.saveAll(any())).willReturn(List.of());
 
         // when
-        sut.upload(review, images);
+        sut.uploadReviewImages(review, images);
 
         // then
         then(s3FileService).should().uploadImageWithResizing(any(MultipartFile.class), any(String.class));
