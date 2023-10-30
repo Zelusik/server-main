@@ -3,7 +3,7 @@ package com.zelusik.eatery.unit.global.auth.service;
 import com.zelusik.eatery.global.auth.exception.TokenValidateException;
 import com.zelusik.eatery.global.auth.repository.RefreshTokenRepository;
 import com.zelusik.eatery.global.auth.service.JwtTokenQueryService;
-import com.zelusik.eatery.global.security.JwtTokenProvider;
+import com.zelusik.eatery.global.auth.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

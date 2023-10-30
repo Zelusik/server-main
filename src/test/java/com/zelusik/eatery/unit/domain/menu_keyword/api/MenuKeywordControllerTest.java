@@ -11,7 +11,7 @@ import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.global.common.dto.ListDto;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.zelusik.eatery.global.security;
+package com.zelusik.eatery.global.auth;
 
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.dto.MemberDto;

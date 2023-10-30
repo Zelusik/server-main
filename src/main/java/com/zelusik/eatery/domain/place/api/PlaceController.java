@@ -13,7 +13,7 @@ import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.exception.InvalidTypeOfReviewKeywordValueException;
 import com.zelusik.eatery.global.common.dto.response.PageResponse;
 import com.zelusik.eatery.global.common.dto.response.SliceResponse;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

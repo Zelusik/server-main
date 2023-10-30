@@ -11,7 +11,7 @@ import com.zelusik.eatery.domain.review.service.ReviewCommandService;
 import com.zelusik.eatery.domain.review.service.ReviewQueryService;
 import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.global.open_ai.service.OpenAIService;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

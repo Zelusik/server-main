@@ -1,4 +1,4 @@
-package com.zelusik.eatery.global.security;
+package com.zelusik.eatery.global.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.global.auth.exception.AccessTokenValidateException;
