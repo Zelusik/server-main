@@ -35,7 +35,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException {
-        log.error(
+        log.warn(
                 "[{}] JwtAccessDeniedHandler.handle() ex={}",
                 LogUtils.getLogTraceId(),
                 ExceptionUtils.getExceptionStackTrace(accessDeniedException)
