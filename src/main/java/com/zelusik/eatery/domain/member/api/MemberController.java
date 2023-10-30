@@ -11,7 +11,7 @@ import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import com.zelusik.eatery.domain.member_deletion_survey.dto.request.MemberDeletionSurveyRequest;
 import com.zelusik.eatery.domain.member_deletion_survey.dto.response.MemberDeletionSurveyResponse;
 import com.zelusik.eatery.global.common.dto.response.SliceResponse;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,4 +1,4 @@
-package com.zelusik.eatery.global.security.dto;
+package com.zelusik.eatery.global.auth.dto;
 
 import java.time.LocalDateTime;
 

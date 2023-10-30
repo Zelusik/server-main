@@ -10,7 +10,7 @@ import com.zelusik.eatery.domain.recommended_review.dto.response.FindRecommended
 import com.zelusik.eatery.domain.recommended_review.dto.response.SaveRecommendedReviewsResponse;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewCommandService;
 import com.zelusik.eatery.domain.recommended_review.service.RecommendedReviewQueryService;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

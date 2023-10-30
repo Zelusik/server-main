@@ -9,7 +9,7 @@ import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.bookmark.api.BookmarkController;
 import com.zelusik.eatery.domain.bookmark.dto.BookmarkDto;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import com.zelusik.eatery.domain.bookmark.service.BookmarkCommandService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
