@@ -44,7 +44,7 @@ class TermsInfoCommandServiceTest {
         long loginMemberId = 1L;
         AgreeToTermsRequest request = createTermsAgreeRequest();
         Member member = createMember(loginMemberId);
-        given(memberQueryService.findById(loginMemberId)).willReturn(member);
+        given(memberQueryService.getById(loginMemberId)).willReturn(member);
         TermsInfo expectedSavedTermsInfo = createTermsInfo(
                 2L,
                 member,
@@ -60,7 +60,7 @@ class TermsInfoCommandServiceTest {
         TermsInfoDto actualSavedTermsInfo = sut.saveTermsInfo(loginMemberId, request);
 
         // then
-        then(memberQueryService).should().findById(loginMemberId);
+        then(memberQueryService).should().getById(loginMemberId);
         then(termsInfoRepository).should().save(any(TermsInfo.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualSavedTermsInfo)

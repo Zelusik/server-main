@@ -61,7 +61,7 @@ class BookmarkCommandServiceTest {
         Place place = createPlace(placeId, "12345");
         Bookmark expectedResult = createBookmark(bookmarkId, member, place);
         given(bookmarkRepository.existsByMember_IdAndPlace_Id(memberId, placeId)).willReturn(false);
-        given(memberQueryService.findById(memberId)).willReturn(member);
+        given(memberQueryService.getById(memberId)).willReturn(member);
         given(placeRepository.findById(placeId)).willReturn(Optional.of(place));
         given(bookmarkRepository.save(any(Bookmark.class))).willReturn(expectedResult);
 
@@ -70,7 +70,7 @@ class BookmarkCommandServiceTest {
 
         // then
         then(bookmarkRepository).should().existsByMember_IdAndPlace_Id(memberId, placeId);
-        then(memberQueryService).should().findById(memberId);
+        then(memberQueryService).should().getById(memberId);
         then(placeRepository).should().findById(placeId);
         then(bookmarkRepository).should().save(any(Bookmark.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();

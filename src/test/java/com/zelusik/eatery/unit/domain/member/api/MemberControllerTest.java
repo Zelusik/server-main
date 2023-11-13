@@ -17,7 +17,7 @@ import com.zelusik.eatery.domain.member_deletion_survey.dto.request.MemberDeleti
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +74,7 @@ class MemberControllerTest {
         // given
         long memberId = 1L;
         MemberDto expectedResult = createMemberDto(memberId);
-        given(memberQueryService.findDtoById(memberId)).willReturn(expectedResult);
+        given(memberQueryService.getDtoById(memberId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(

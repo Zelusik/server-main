@@ -1,4 +1,4 @@
-package com.zelusik.eatery.global.security;
+package com.zelusik.eatery.global.auth;
 
 import com.zelusik.eatery.domain.member.service.MemberQueryService;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +10,6 @@ public class CustomUserDetailsService {
 
     @Bean
     public UserDetailsService userDetailsService(MemberQueryService memberQueryService) {
-        return username -> UserPrincipal.of(memberQueryService.findDtoById(Long.valueOf(username)));
+        return username -> UserPrincipal.of(memberQueryService.getDtoById(Long.valueOf(username)));
     }
 }

@@ -1,10 +1,10 @@
 package com.zelusik.eatery.global.config;
 
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.global.security.JwtAccessDeniedHandler;
-import com.zelusik.eatery.global.security.JwtAuthenticationEntryPoint;
-import com.zelusik.eatery.global.security.JwtAuthenticationFilter;
-import com.zelusik.eatery.global.security.JwtExceptionFilter;
+import com.zelusik.eatery.global.auth.JwtAccessDeniedHandler;
+import com.zelusik.eatery.global.auth.JwtAuthenticationEntryPoint;
+import com.zelusik.eatery.global.auth.JwtAuthenticationFilter;
+import com.zelusik.eatery.global.auth.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

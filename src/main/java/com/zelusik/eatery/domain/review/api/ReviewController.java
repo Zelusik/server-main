@@ -11,7 +11,7 @@ import com.zelusik.eatery.domain.review.service.ReviewCommandService;
 import com.zelusik.eatery.domain.review.service.ReviewQueryService;
 import com.zelusik.eatery.global.common.dto.response.SliceResponse;
 import com.zelusik.eatery.global.open_ai.service.OpenAIService;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -93,7 +93,7 @@ public class ReviewController {
             ) @PathVariable Long reviewId
     ) {
         Long loginMemberId = userPrincipal.getMemberId();
-        ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto = reviewQueryService.findDtoById(loginMemberId, reviewId);
+        ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto = reviewQueryService.getDtoById(loginMemberId, reviewId);
         return FindReviewResponse.from(reviewWithPlaceMarkedStatusDto, loginMemberId);
     }
 
@@ -163,7 +163,7 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
-        Slice<ReviewWithPlaceMarkedStatusDto> reviewDtos = reviewQueryService.findReviewReed(userPrincipal.getMemberId(), PageRequest.of(page, size));
+        Slice<ReviewWithPlaceMarkedStatusDto> reviewDtos = reviewQueryService.findReviewFeed(userPrincipal.getMemberId(), PageRequest.of(page, size));
         return new SliceResponse<FindReviewFeedResponse>().from(reviewDtos.map(FindReviewFeedResponse::from));
     }
 

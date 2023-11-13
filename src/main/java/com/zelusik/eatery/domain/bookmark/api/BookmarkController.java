@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.bookmark.api;
 
 import com.zelusik.eatery.domain.bookmark.dto.response.BookmarkResponse;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import com.zelusik.eatery.domain.bookmark.service.BookmarkCommandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

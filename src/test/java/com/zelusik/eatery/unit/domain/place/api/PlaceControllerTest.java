@@ -23,7 +23,7 @@ import com.zelusik.eatery.domain.place.service.PlaceQueryService;
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,7 +109,7 @@ class PlaceControllerTest {
         long memberId = 1L;
         long placeId = 2L;
         PlaceWithMarkedStatusAndImagesDto expectedResult = createPlaceWithMarkedStatusAndImagesDto(placeId, "123");
-        given(placeQueryService.findDtoWithMarkedStatusAndImagesById(memberId, placeId)).willReturn(expectedResult);
+        given(placeQueryService.getDtoWithMarkedStatusAndImagesById(memberId, placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -122,7 +122,7 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
                 .andExpect(jsonPath("$.placeImages").isArray())
                 .andDo(print());
-        then(placeQueryService).should().findDtoWithMarkedStatusAndImagesById(memberId, placeId);
+        then(placeQueryService).should().getDtoWithMarkedStatusAndImagesById(memberId, placeId);
         then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 
@@ -133,7 +133,7 @@ class PlaceControllerTest {
         long memberId = 1L;
         String kakaoPid = "12345";
         PlaceWithMarkedStatusAndImagesDto expectedResult = createPlaceWithMarkedStatusAndImagesDto(2L, kakaoPid);
-        given(placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid)).willReturn(expectedResult);
+        given(placeQueryService.getDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -147,7 +147,7 @@ class PlaceControllerTest {
                 .andExpect(jsonPath("$.isMarked").isNotEmpty())
                 .andExpect(jsonPath("$.placeImages").isArray())
                 .andDo(print());
-        then(placeQueryService).should().findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
+        then(placeQueryService).should().getDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
         then(placeQueryService).shouldHaveNoMoreInteractions();
     }
 

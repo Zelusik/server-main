@@ -24,7 +24,7 @@ import com.zelusik.eatery.domain.review_image_menu_tag.dto.request.ReviewMenuTag
 import com.zelusik.eatery.global.common.constant.EateryConstants;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.global.open_ai.service.OpenAIService;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +121,7 @@ class ReviewControllerTest {
         long reviewId = 2L;
         long writerId = 3L;
         ReviewWithPlaceMarkedStatusDto expectedResult = createReviewDto(reviewId, createMemberDto(writerId), createPlaceWithMarkedStatusDto(4L));
-        given(reviewQueryService.findDtoById(loginMemberId, reviewId)).willReturn(expectedResult);
+        given(reviewQueryService.getDtoById(loginMemberId, reviewId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -139,7 +139,7 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.content").value(expectedResult.getContent()))
                 .andExpect(jsonPath("$.reviewImages").exists())
                 .andDo(print());
-        then(reviewQueryService).should().findDtoById(loginMemberId, reviewId);
+        then(reviewQueryService).should().getDtoById(loginMemberId, reviewId);
         then(reviewQueryService).shouldHaveNoMoreInteractions();
     }
 
@@ -172,7 +172,7 @@ class ReviewControllerTest {
         long loginMemberId = 1L;
         long reviewId = 2L;
         Slice<ReviewWithPlaceMarkedStatusDto> expectedResult = new SliceImpl<>(List.of(createReviewDto(reviewId, createMemberDto(3L), createPlaceWithMarkedStatusDto(4L))));
-        given(reviewQueryService.findReviewReed(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
+        given(reviewQueryService.findReviewFeed(eq(loginMemberId), any(Pageable.class))).willReturn(expectedResult);
 
         // when & then
         mvc.perform(get("/api/v1/reviews/feed")
@@ -183,7 +183,7 @@ class ReviewControllerTest {
                 .andExpect(jsonPath("$.contents[0].id").value(reviewId))
                 .andExpect(jsonPath("$.contents[0].reviewImage").exists())
                 .andDo(print());
-        then(reviewQueryService).should().findReviewReed(eq(loginMemberId), any(Pageable.class));
+        then(reviewQueryService).should().findReviewFeed(eq(loginMemberId), any(Pageable.class));
         then(reviewQueryService).shouldHaveNoMoreInteractions();
     }
 

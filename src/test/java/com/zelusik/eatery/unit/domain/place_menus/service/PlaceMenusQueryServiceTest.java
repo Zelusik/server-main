@@ -51,7 +51,7 @@ class PlaceMenusQueryServiceTest {
         given(placeMenusRepository.findByPlace_Id(placeId)).willReturn(Optional.of(expectedResult));
 
         // when
-        PlaceMenusDto actualResult = sut.findDtoByPlaceId(placeId);
+        PlaceMenusDto actualResult = sut.getDtoByPlaceId(placeId);
 
         // then
         then(placeMenusRepository).should().findByPlace_Id(placeId);
@@ -70,7 +70,7 @@ class PlaceMenusQueryServiceTest {
         given(placeMenusRepository.findByPlace_Id(placeId)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findDtoByPlaceId(placeId));
+        Throwable t = catchThrowable(() -> sut.getDtoByPlaceId(placeId));
 
         // then
         then(placeMenusRepository).should().findByPlace_Id(placeId);
@@ -91,7 +91,7 @@ class PlaceMenusQueryServiceTest {
         given(placeMenusRepository.findByPlace_KakaoPid(kakaoPid)).willReturn(Optional.of(expectedResult));
 
         // when
-        PlaceMenusDto actualResult = sut.findDtoByKakaoPid(kakaoPid);
+        PlaceMenusDto actualResult = sut.getDtoByKakaoPid(kakaoPid);
 
         // then
         then(placeMenusRepository).should().findByPlace_KakaoPid(kakaoPid);
@@ -110,7 +110,7 @@ class PlaceMenusQueryServiceTest {
         given(placeMenusRepository.findByPlace_KakaoPid(kakaoPid)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findDtoByKakaoPid(kakaoPid));
+        Throwable t = catchThrowable(() -> sut.getDtoByKakaoPid(kakaoPid));
 
         // then
         then(placeMenusRepository).should().findByPlace_KakaoPid(kakaoPid);

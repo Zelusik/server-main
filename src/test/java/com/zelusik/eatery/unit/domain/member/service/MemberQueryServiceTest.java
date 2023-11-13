@@ -52,7 +52,7 @@ class MemberQueryServiceTest {
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.of(expected));
 
         // when
-        MemberDto actual = sut.findDtoById(memberId);
+        MemberDto actual = sut.getDtoById(memberId);
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
@@ -67,7 +67,7 @@ class MemberQueryServiceTest {
         given(memberRepository.findByIdAndDeletedAtNull(memberId)).willReturn(Optional.empty());
 
         // when
-        Throwable throwable = catchThrowable(() -> sut.findDtoById(memberId));
+        Throwable throwable = catchThrowable(() -> sut.getDtoById(memberId));
 
         // then
         then(memberRepository).should().findByIdAndDeletedAtNull(memberId);
@@ -83,7 +83,7 @@ class MemberQueryServiceTest {
         given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.of(expected));
 
         // when
-        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUidWithDeleted(socialUid);
+        Optional<MemberDto> optionalMember = sut.findDtoBySocialUidWithDeleted(socialUid);
 
         // then
         then(memberRepository).should().findBySocialUid(socialUid);
@@ -98,7 +98,7 @@ class MemberQueryServiceTest {
         given(memberRepository.findBySocialUid(socialUid)).willReturn(Optional.empty());
 
         // when
-        Optional<MemberDto> optionalMember = sut.findOptionalDtoBySocialUidWithDeleted(socialUid);
+        Optional<MemberDto> optionalMember = sut.findDtoBySocialUidWithDeleted(socialUid);
 
         // then
         then(memberRepository).should().findBySocialUid(socialUid);

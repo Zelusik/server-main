@@ -1,9 +1,9 @@
-package com.zelusik.eatery.global.security;
+package com.zelusik.eatery.global.auth;
 
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.global.auth.exception.TokenValidateException;
-import com.zelusik.eatery.global.security.dto.JwtTokenInfoDto;
+import com.zelusik.eatery.global.auth.dto.JwtTokenInfoDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

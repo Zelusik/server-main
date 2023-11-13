@@ -1,4 +1,4 @@
-package com.zelusik.eatery.global.security;
+package com.zelusik.eatery.global.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zelusik.eatery.global.exception.dto.ErrorResponse;
@@ -35,7 +35,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authenticationException
     ) throws IOException {
-        log.error(
+        log.warn(
                 "[{}] JwtAuthenticationEntryPoint.commence() ex={}",
                 LogUtils.getLogTraceId(),
                 ExceptionUtils.getExceptionStackTrace(authenticationException)

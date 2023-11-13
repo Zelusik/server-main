@@ -4,7 +4,7 @@ import com.zelusik.eatery.domain.terms_info.dto.TermsInfoDto;
 import com.zelusik.eatery.domain.terms_info.dto.request.AgreeToTermsRequest;
 import com.zelusik.eatery.domain.terms_info.dto.response.AgreeToTermsResponse;
 import com.zelusik.eatery.domain.terms_info.service.TermsInfoCommandService;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

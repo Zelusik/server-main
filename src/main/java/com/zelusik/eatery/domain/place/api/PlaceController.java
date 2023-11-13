@@ -13,7 +13,7 @@ import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.exception.InvalidTypeOfReviewKeywordValueException;
 import com.zelusik.eatery.global.common.dto.response.PageResponse;
 import com.zelusik.eatery.global.common.dto.response.SliceResponse;
-import com.zelusik.eatery.global.security.UserPrincipal;
+import com.zelusik.eatery.global.auth.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -86,7 +86,7 @@ public class PlaceController {
                     example = "3"
             ) @PathVariable Long placeId
     ) {
-        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
+        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.getDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
         return FindPlaceResponse.from(placeDtos);
     }
 
@@ -108,7 +108,7 @@ public class PlaceController {
                     example = "263830255"
             ) @RequestParam @NotBlank String kakaoPid
     ) {
-        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
+        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.getDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
         return FindPlaceResponse.from(placeDtos);
     }
 

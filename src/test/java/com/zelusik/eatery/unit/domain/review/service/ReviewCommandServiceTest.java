@@ -89,8 +89,8 @@ class ReviewCommandServiceTest {
         createdReview.getKeywords().add(reviewKeyword);
         ReviewImage reviewImage = createReviewImage(100L, createdReview);
         createdReview.getReviewImages().add(reviewImage);
-        given(placeQueryService.findById(placeId)).willReturn(expectedPlace);
-        given(memberQueryService.findById(writerId)).willReturn(expectedMember);
+        given(placeQueryService.getById(placeId)).willReturn(expectedPlace);
+        given(memberQueryService.getById(writerId)).willReturn(expectedMember);
         given(bookmarkQueryService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(reviewKeyword);
@@ -102,8 +102,8 @@ class ReviewCommandServiceTest {
         ReviewWithPlaceMarkedStatusDto actualSavedReview = sut.create(writerId, reviewCreateRequest);
 
         // then
-        then(placeQueryService).should().findById(placeId);
-        then(memberQueryService).should().findById(writerId);
+        then(placeQueryService).should().getById(placeId);
+        then(memberQueryService).should().getById(writerId);
         then(bookmarkQueryService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
@@ -127,8 +127,8 @@ class ReviewCommandServiceTest {
         findReview.getKeywords().add(reviewKeyword);
         ReviewImage reviewImage = createReviewImage(6L, findReview);
         findReview.getReviewImages().add(reviewImage);
-        given(memberQueryService.findById(memberId)).willReturn(loginMember);
-        given(reviewQueryService.findById(reviewId)).willReturn(findReview);
+        given(memberQueryService.getById(memberId)).willReturn(loginMember);
+        given(reviewQueryService.getById(reviewId)).willReturn(findReview);
         willDoNothing().given(reviewImageCommandService).softDeleteAll(findReview.getReviewImages());
         willDoNothing().given(reviewKeywordRepository).deleteAll(findReview.getKeywords());
         willDoNothing().given(reviewRepository).flush();
@@ -138,8 +138,8 @@ class ReviewCommandServiceTest {
         sut.delete(memberId, reviewId);
 
         // then
-        then(memberQueryService).should().findById(memberId);
-        then(reviewQueryService).should().findById(reviewId);
+        then(memberQueryService).should().getById(memberId);
+        then(reviewQueryService).should().getById(reviewId);
         then(reviewImageCommandService).should().softDeleteAll(findReview.getReviewImages());
         then(reviewKeywordRepository).should().deleteAll(findReview.getKeywords());
         then(reviewRepository).should().flush();
@@ -162,15 +162,15 @@ class ReviewCommandServiceTest {
         findReview.getKeywords().add(reviewKeyword);
         ReviewImage reviewImage = createReviewImage(6L, findReview);
         findReview.getReviewImages().add(reviewImage);
-        given(memberQueryService.findById(loginMemberId)).willReturn(loginMember);
-        given(reviewQueryService.findById(reviewId)).willReturn(findReview);
+        given(memberQueryService.getById(loginMemberId)).willReturn(loginMember);
+        given(reviewQueryService.getById(reviewId)).willReturn(findReview);
 
         // when
         Throwable t = catchThrowable(() -> sut.delete(loginMemberId, reviewId));
 
         // then
-        then(memberQueryService).should().findById(loginMemberId);
-        then(reviewQueryService).should().findById(reviewId);
+        then(memberQueryService).should().getById(loginMemberId);
+        then(reviewQueryService).should().getById(reviewId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(ReviewDeletePermissionDeniedException.class);
     }

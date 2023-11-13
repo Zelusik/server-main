@@ -55,7 +55,7 @@ class PlaceMenusCommandServiceTest {
         List<String> extractedMenus = List.of("돈까스", "파스타", "수제비", "라면");
         PlaceMenus expectedResult = createPlaceMenus(placeMenusId, place, extractedMenus);
         given(placeMenusRepository.existsByPlace_Id(placeId)).willReturn(false);
-        given(placeQueryService.findById(placeId)).willReturn(place);
+        given(placeQueryService.getById(placeId)).willReturn(place);
         given(webScrapingService.scrapMenuList(kakaoPid)).willReturn(extractedMenus);
         given(placeMenusRepository.save(any(PlaceMenus.class))).willReturn(expectedResult);
 
@@ -64,7 +64,7 @@ class PlaceMenusCommandServiceTest {
 
         // then
         then(placeMenusRepository).should().existsByPlace_Id(placeId);
-        then(placeQueryService).should().findById(placeId);
+        then(placeQueryService).should().getById(placeId);
         then(webScrapingService).should().scrapMenuList(kakaoPid);
         then(placeMenusRepository).should().save(any(PlaceMenus.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -103,7 +103,7 @@ class PlaceMenusCommandServiceTest {
         List<String> extractedMenus = List.of("돈까스", "파스타", "수제비", "라면");
         PlaceMenus expectedResult = createPlaceMenus(placeMenusId, place, extractedMenus);
         given(placeMenusRepository.existsByPlace_KakaoPid(kakaoPid)).willReturn(false);
-        given(placeQueryService.findByKakaoPid(kakaoPid)).willReturn(place);
+        given(placeQueryService.getByKakaoPid(kakaoPid)).willReturn(place);
         given(webScrapingService.scrapMenuList(kakaoPid)).willReturn(extractedMenus);
         given(placeMenusRepository.save(any(PlaceMenus.class))).willReturn(expectedResult);
 
@@ -112,7 +112,7 @@ class PlaceMenusCommandServiceTest {
 
         // then
         then(placeMenusRepository).should().existsByPlace_KakaoPid(kakaoPid);
-        then(placeQueryService).should().findByKakaoPid(kakaoPid);
+        then(placeQueryService).should().getByKakaoPid(kakaoPid);
         then(webScrapingService).should().scrapMenuList(kakaoPid);
         then(placeMenusRepository).should().save(any(PlaceMenus.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();

@@ -35,7 +35,7 @@ public class BookmarkCommandService {
     public BookmarkDto mark(long memberId, long placeId) {
         validateNotAlreadyMarked(memberId, placeId);
 
-        Member member = memberQueryService.findById(memberId);
+        Member member = memberQueryService.getById(memberId);
         Place place = placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
 
         Bookmark bookmark = bookmarkRepository.save(Bookmark.of(member, place));

@@ -21,7 +21,7 @@ public class TermsInfoQueryService {
      * @param memberId 약관 동의 정보를 조회하고자 하는 회원의 id(PK)
      * @return 조회된 약관 동의 정보(termsInfo entity)가 담긴 optional dto
      */
-    public Optional<TermsInfoDto> findOptionalDtoByMemberId(long memberId) {
+    public Optional<TermsInfoDto> findDtoByMemberId(long memberId) {
         return termsInfoRepository.findByMember_Id(memberId).map(TermsInfoDto::from);
     }
 }
