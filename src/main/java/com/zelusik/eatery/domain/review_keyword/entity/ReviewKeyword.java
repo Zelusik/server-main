@@ -1,10 +1,9 @@
 package com.zelusik.eatery.domain.review_keyword.entity;
 
 import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.global.common.entity.BaseTimeEntity;
 import com.zelusik.eatery.domain.review.entity.Review;
+import com.zelusik.eatery.global.common.entity.BaseTimeEntity;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,22 +30,11 @@ public class ReviewKeyword extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ReviewKeywordValue keyword;
 
-    public static ReviewKeyword of(Review review, ReviewKeywordValue keyword) {
-        return of(null, review, keyword, null, null);
+    public static ReviewKeyword createNewReviewKeyword(Review review, ReviewKeywordValue keyword) {
+        return new ReviewKeyword(null, review, keyword, null, null);
     }
 
-    public static ReviewKeyword of(Long id, Review review, ReviewKeywordValue keyword, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return ReviewKeyword.builder()
-                .id(id)
-                .review(review)
-                .keyword(keyword)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .build();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE)
-    private ReviewKeyword(Long id, Review review, ReviewKeywordValue keyword, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public ReviewKeyword(Long id, Review review, ReviewKeywordValue keyword, LocalDateTime createdAt, LocalDateTime updatedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.review = review;

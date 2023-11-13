@@ -35,6 +35,8 @@ public enum CustomExceptionType {
     MULTIPART_FILE_NOT_READABLE(1001, "파일을 읽을 수 없습니다."),
     THUMBNAIL_IMAGE_CREATE(1002, "이미지 압축 과정에서 알 수 없는 에러가 발생했습니다."),
     MAPPER_IO_EXCEPTION(1003, "ObjectMapper가 값을 읽는 과정에서 IOException이 발생했습니다."),
+    ASYNC_EXECUTION(1004, "비동기 작업 중 예외가 발생했습니다."),
+    ASYNC_INTERRUPTED(1005, "Thread가 비동기 작업 대기 중 interrupted 되었습니다."),
 
     /**
      * Scraping Server 관련 예외

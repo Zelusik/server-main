@@ -94,7 +94,7 @@ class ReviewCommandServiceTest {
         given(bookmarkQueryService.isMarkedPlace(writerId, expectedPlace)).willReturn(false);
         given(reviewRepository.save(any(Review.class))).willReturn(createdReview);
         given(reviewKeywordRepository.save(any(ReviewKeyword.class))).willReturn(reviewKeyword);
-        given(reviewImageCommandService.upload(any(Review.class), any())).willReturn(List.of(reviewImage));
+        given(reviewImageCommandService.uploadReviewImages(any(Review.class), any())).willReturn(List.of(reviewImage));
         given(reviewImageMenuTagRepository.saveAll(anyList())).willReturn(List.of());
         willDoNothing().given(placeCommandService).renewTop3Keywords(expectedPlace);
 
@@ -107,7 +107,7 @@ class ReviewCommandServiceTest {
         then(bookmarkQueryService).should().isMarkedPlace(writerId, expectedPlace);
         then(reviewRepository).should().save(any(Review.class));
         then(reviewKeywordRepository).should().save(any(ReviewKeyword.class));
-        verify(reviewImageCommandService, times(reviewCreateRequest.getImages().size())).upload(any(Review.class), any());
+        verify(reviewImageCommandService, times(reviewCreateRequest.getImages().size())).uploadReviewImages(any(Review.class), any());
         then(reviewImageMenuTagRepository).should().saveAll(anyList());
         then(placeCommandService).should().renewTop3Keywords(expectedPlace);
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -243,7 +243,7 @@ class ReviewCommandServiceTest {
     }
 
     private ReviewKeyword createReviewKeyword(Long reviewKeywordId, Review review, ReviewKeywordValue reviewKeywordValue) {
-        return ReviewKeyword.of(
+        return new ReviewKeyword(
                 reviewKeywordId,
                 review,
                 reviewKeywordValue,
@@ -253,7 +253,7 @@ class ReviewCommandServiceTest {
     }
 
     public static ReviewImage createReviewImage(Long reviewImageId, Review review) {
-        return ReviewImage.of(
+        return new ReviewImage(
                 reviewImageId,
                 review,
                 "original file name",

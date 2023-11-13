@@ -68,10 +68,10 @@ public class ReviewController {
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @ParameterObject @Valid @ModelAttribute ReviewCreateRequest request
     ) {
-        ReviewResponse response = ReviewResponse.from(reviewCommandService.create(userPrincipal.getMemberId(), request));
+        ReviewWithPlaceMarkedStatusDto reviewDto = reviewCommandService.create(userPrincipal.getMemberId(), request);
         return ResponseEntity
-                .created(URI.create("/api/reviews/" + response.getId()))
-                .body(response);
+                .created(URI.create("/api/reviews/" + reviewDto.getId()))
+                .body(ReviewResponse.from(reviewDto));
     }
 
     @Operation(

@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.zelusik.eatery.global.common.properties.AWSProperties;
-import com.zelusik.eatery.global.file.dto.S3FileDto;
 import com.zelusik.eatery.global.file.service.S3FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -30,7 +28,6 @@ class S3FileServiceTest {
 
     @Mock
     private AmazonS3Client s3Client;
-
     @Mock
     private AWSProperties awsProperties;
     @Mock
@@ -39,7 +36,7 @@ class S3FileServiceTest {
     private AWSProperties.CloudFront cloudFront;
 
     @BeforeEach
-    void setUp() {
+    void setMockProperties() {
         given(awsProperties.s3()).willReturn(s3);
         given(awsProperties.cloudFront()).willReturn(cloudFront);
         given(s3.bucketName()).willReturn("aws-s3-bucket-name");
@@ -53,18 +50,22 @@ class S3FileServiceTest {
         given(s3Client.putObject(any(PutObjectRequest.class))).willReturn(new PutObjectResult());
 
         // when
-        S3FileDto actualFileDto = sut.uploadFile(createMockMultipartFile(), "test");
+        sut.uploadFile(createMockMultipartFile(), "test");
 
         // then
         then(s3Client).should().putObject(any(PutObjectRequest.class));
-        assertThat(actualFileDto.getUrl()).contains(awsProperties.cloudFront().domainName());
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+    }
+
+    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
+        then(s3Client).shouldHaveNoMoreInteractions();
     }
 
     private MockMultipartFile createMockMultipartFile() {
         return new MockMultipartFile(
                 "test",
-                "test.txt",
-                MediaType.TEXT_PLAIN_VALUE,
+                "test.png",
+                MediaType.IMAGE_PNG_VALUE,
                 "test".getBytes()
         );
     }

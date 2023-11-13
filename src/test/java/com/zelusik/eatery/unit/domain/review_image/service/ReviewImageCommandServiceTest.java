@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -35,7 +36,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import static org.mockito.ArgumentMatchers.any;
+import static com.zelusik.eatery.domain.review_image.service.ReviewImageCommandService.AWS_S3_DIR_PATH;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -55,19 +57,25 @@ class ReviewImageCommandServiceTest {
     @Test
     void givenImageFiles_whenUploading_thenUploadFiles() {
         // given
-        List<ReviewImageCreateRequest> images = List.of(createReviewImageCreateRequest());
+        List<ReviewImageCreateRequest> reviewImageCreateRequests = List.of(createReviewImageCreateRequest());
         Member member = createMember(2L);
         Place place = createPlace(3L, "12345");
         Review review = createReview(1L, member, place);
-        given(s3FileService.uploadImageWithResizing(any(MultipartFile.class), any(String.class))).willReturn(createS3ImageDto());
-        given(reviewImageRepository.saveAll(any())).willReturn(List.of());
+        AsyncResult<S3ImageDto> expectedResultOfAsyncImageUpload = new AsyncResult<>(createS3ImageDto());
+        List<ReviewImage> expectedResultOfReviewImagesSave = List.of();
+        given(s3FileService.asyncUploadImageWithResizing(any(MultipartFile.class), eq(AWS_S3_DIR_PATH))).willReturn(expectedResultOfAsyncImageUpload);
+        given(reviewImageRepository.saveAll(anyList())).willReturn(expectedResultOfReviewImagesSave);
 
         // when
-        sut.upload(review, images);
+        sut.uploadReviewImages(review, reviewImageCreateRequests);
 
         // then
-        then(s3FileService).should().uploadImageWithResizing(any(MultipartFile.class), any(String.class));
+        then(s3FileService).should().asyncUploadImageWithResizing(any(MultipartFile.class), eq(AWS_S3_DIR_PATH));
         then(reviewImageRepository).should().saveAll(any());
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+    }
+
+    private void verifyEveryMocksShouldHaveNoMoreInteractions() {
         then(s3FileService).shouldHaveNoMoreInteractions();
         then(reviewImageRepository).shouldHaveNoMoreInteractions();
     }
@@ -153,7 +161,7 @@ class ReviewImageCommandServiceTest {
     }
 
     private S3ImageDto createS3ImageDto() {
-        return S3ImageDto.of(
+        return new S3ImageDto(
                 "originalFileName",
                 "storedFileName",
                 "url",
