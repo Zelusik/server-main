@@ -1,16 +1,15 @@
 package com.zelusik.eatery.domain.member.entity;
 
+import com.zelusik.eatery.domain.favorite_food_category.entity.FavoriteFoodCategory;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
 import com.zelusik.eatery.domain.member.converter.RoleTypesConverter;
 import com.zelusik.eatery.global.common.entity.BaseTimeEntity;
-import com.zelusik.eatery.domain.favorite_food_category.entity.FavoriteFoodCategory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.lang.NonNull;
+import javax.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -35,11 +34,9 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
-    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private String profileImageUrl;
 
-    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false)
     private String profileThumbnailImageUrl;
 
@@ -56,60 +53,23 @@ public class Member extends BaseTimeEntity {
 
     private String email;
 
-    @Setter(AccessLevel.PRIVATE)
     @Column(nullable = false, length = 15)
     private String nickname;
 
-    @Setter(AccessLevel.PRIVATE)
     private LocalDate birthDay;
 
     private Integer ageRange;
 
-    @Setter(AccessLevel.PRIVATE)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Gender gender;
 
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "member")
     private List<FavoriteFoodCategory> favoriteFoodCategories = new LinkedList<>();
 
-    @Setter(AccessLevel.PRIVATE)
-    private LocalDateTime deletedAt;
-
-    public static Member of(
-            @NonNull String profileImageUrl,
-            @NonNull String profileThumbnailImageUrl,
-            @NonNull String socialUid,
-            @NonNull LoginType loginType,
-            @NonNull Set<RoleType> roleTypes,
-            @Nullable String email,
-            @NonNull String nickname,
-            @Nullable Integer ageRange,
-            @Nullable Gender gender
-    ) {
-        return of(null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null);
-    }
-
-    public static Member of(
-            @Nullable Long id,
-            @NonNull String profileImageUrl,
-            @NonNull String profileThumbnailImageUrl,
-            @NonNull String socialUid,
-            @NonNull LoginType loginType,
-            @NonNull Set<RoleType> roleTypes,
-            @Nullable String email,
-            @NonNull String nickname,
-            @Nullable LocalDate birthDay,
-            @Nullable Integer ageRange,
-            @Nullable Gender gender,
-            @Nullable LocalDateTime createdAt,
-            @Nullable LocalDateTime updatedAt,
-            @Nullable LocalDateTime deletedAt
-    ) {
-        return new Member(id, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, birthDay, ageRange, gender, createdAt, updatedAt, deletedAt);
-    }
-
-    private Member(@Nullable Long id, @NonNull String profileImageUrl, @NonNull String profileThumbnailImageUrl, @NonNull String socialUid, @NonNull LoginType loginType, @NonNull Set<RoleType> roleTypes, @Nullable String email, @NonNull String nickname, @Nullable LocalDate birthDay, @Nullable Integer ageRange, @Nullable Gender gender, @Nullable LocalDateTime createdAt, @Nullable LocalDateTime updatedAt, @Nullable LocalDateTime deletedAt) {
+    public Member(@Nullable Long id, @NotNull String profileImageUrl, @NotNull String profileThumbnailImageUrl, @NotNull String socialUid, @NotNull LoginType loginType, @NotNull Set<RoleType> roleTypes, @Nullable String email, @NotNull String nickname, @Nullable LocalDate birthDay, @Nullable Integer ageRange, @Nullable Gender gender, @Nullable LocalDateTime createdAt, @Nullable LocalDateTime updatedAt, @Nullable LocalDateTime deletedAt) {
         super(createdAt, updatedAt);
         this.id = id;
         this.profileImageUrl = profileImageUrl;
@@ -125,25 +85,39 @@ public class Member extends BaseTimeEntity {
         this.deletedAt = deletedAt;
     }
 
+    public static Member create(
+            @NotNull String profileImageUrl,
+            @NotNull String profileThumbnailImageUrl,
+            @NotNull String socialUid,
+            @NotNull LoginType loginType,
+            @NotNull Set<RoleType> roleTypes,
+            @Nullable String email,
+            @NotNull String nickname,
+            @Nullable Integer ageRange,
+            @Nullable Gender gender
+    ) {
+        return new Member(null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null);
+    }
+
     public void update(String profileImageUrl, String profileThumbnailImageUrl, String nickname, LocalDate birthDay, Gender gender) {
-        this.setProfileImageUrl(profileImageUrl);
-        this.setProfileThumbnailImageUrl(profileThumbnailImageUrl);
-        this.setNickname(nickname);
-        this.setBirthDay(birthDay);
-        this.setGender(gender);
+        this.profileImageUrl = profileImageUrl;
+        this.profileThumbnailImageUrl = profileThumbnailImageUrl;
+        this.nickname = nickname;
+        this.birthDay = birthDay;
+        this.gender = gender;
     }
 
     public void update(String nickname, LocalDate birthDay, Gender gender) {
-        this.setNickname(nickname);
-        this.setBirthDay(birthDay);
-        this.setGender(gender);
+        this.nickname = nickname;
+        this.birthDay = birthDay;
+        this.gender = gender;
     }
 
     public void rejoin() {
-        this.setDeletedAt(null);
+        this.deletedAt = (null);
     }
 
     public void softDelete() {
-        this.setDeletedAt(LocalDateTime.now());
+        this.deletedAt = LocalDateTime.now();
     }
 }

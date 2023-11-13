@@ -214,7 +214,7 @@ class MemberCommandServiceTest {
     }
 
     private Member createDeletedMember(long memberId) {
-        return Member.of(
+        return new Member(
                 memberId,
                 "profile image url",
                 "profile thunmbnail image url",
@@ -237,7 +237,7 @@ class MemberCommandServiceTest {
     }
 
     private Member createMember(long memberId, Set<RoleType> roleTypes) {
-        return Member.of(
+        return new Member(
                 memberId,
                 "profile image url",
                 "profile thunmbnail image url",

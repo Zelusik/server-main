@@ -12,6 +12,7 @@ import com.zelusik.eatery.global.file.service.S3FileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.util.ReflectionUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -75,7 +76,7 @@ class ProfileImageCommandServiceTest {
     }
 
     private Member createMember(long memberId) {
-        return Member.of(
+        return new Member(
                 memberId,
                 "profile image url",
                 "profile thunmbnail image url",

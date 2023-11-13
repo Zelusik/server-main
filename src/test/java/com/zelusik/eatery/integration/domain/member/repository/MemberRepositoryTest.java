@@ -125,7 +125,7 @@ class MemberRepositoryTest {
     }
 
     private Member createNewMember(String socialUid, String nickname) {
-        return Member.of(
+        return Member.create(
                 "https://default-profile-image",
                 "https://defualt-profile-thumbnail-image",
                 socialUid,
