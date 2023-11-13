@@ -13,8 +13,11 @@ import com.zelusik.eatery.global.file.dto.S3ImageDto;
 import lombok.RequiredArgsConstructor;
 import marvin.image.MarvinImage;
 import org.marvinproject.image.transform.scale.Scale;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -90,6 +93,11 @@ public class S3FileService {
         );
     }
 
+    @Async
+    public ListenableFuture<S3ImageDto> asyncUploadImageWithResizing(MultipartFile multipartFile, String dirPath) {
+        return new AsyncResult<>(uploadImageWithResizing(multipartFile, dirPath));
+    }
+
     /**
      * S3 Bucket에 업로드할 고유한 파일 이름을 생성한다.
      *
@@ -140,7 +148,7 @@ public class S3FileService {
         }
 
         String imageFormat;
-        if (originalImage.getContentType() == null || originalImage.getContentType().length() == 0) {
+        if (originalImage.getContentType() == null || originalImage.getContentType().isEmpty()) {
             imageFormat = "jpg";
         } else {
             int imageFormatPos = originalImage.getContentType().lastIndexOf("/");
