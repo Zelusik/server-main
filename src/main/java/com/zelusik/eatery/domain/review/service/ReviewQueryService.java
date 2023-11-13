@@ -31,7 +31,7 @@ public class ReviewQueryService {
      * @param reviewId 조회하고자 하는 리뷰의 PK
      * @return 조회된 리뷰
      */
-    public Review findById(Long reviewId) {
+    public Review getById(Long reviewId) {
         return reviewRepository.findByIdAndDeletedAtNull(reviewId)
                 .orElseThrow(() -> new ReviewNotFoundByIdException(reviewId));
     }
@@ -43,8 +43,8 @@ public class ReviewQueryService {
      * @param reviewId 조회하고자 하는 리뷰의 PK
      * @return 조회된 리뷰 dto
      */
-    public ReviewWithPlaceMarkedStatusDto findDtoById(Long memberId, Long reviewId) {
-        Review review = findById(reviewId);
+    public ReviewWithPlaceMarkedStatusDto getDtoById(Long memberId, Long reviewId) {
+        Review review = getById(reviewId);
         boolean isMarkedPlace = bookmarkQueryService.isMarkedPlace(memberId, review.getPlace());
         return ReviewWithPlaceMarkedStatusDto.from(review, List.of(WRITER, PLACE), isMarkedPlace);
     }
@@ -78,7 +78,7 @@ public class ReviewQueryService {
      * @param pageable      paging 정보
      * @return 조회된 리뷰 dtos
      */
-    public Slice<ReviewWithPlaceMarkedStatusDto> findReviewReed(long loginMemberId, Pageable pageable) {
+    public Slice<ReviewWithPlaceMarkedStatusDto> findReviewFeed(long loginMemberId, Pageable pageable) {
         return reviewRepository.findReviewFeed(loginMemberId, pageable);
     }
 }

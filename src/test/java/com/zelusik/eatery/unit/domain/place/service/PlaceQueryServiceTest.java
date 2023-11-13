@@ -63,7 +63,7 @@ class PlaceQueryServiceTest {
         given(reviewImageQueryService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
-        PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImagesById(memberId, placeId);
+        PlaceDto actualResult = sut.getDtoWithMarkedStatusAndImagesById(memberId, placeId);
 
         // then
         then(placeRepository).should().findById(placeId);
@@ -82,7 +82,7 @@ class PlaceQueryServiceTest {
         given(placeRepository.findById(placeId)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findDtoWithMarkedStatusAndImagesById(memberId, placeId));
+        Throwable t = catchThrowable(() -> sut.getDtoWithMarkedStatusAndImagesById(memberId, placeId));
 
         // then
         then(placeRepository).should().findById(placeId);
@@ -103,7 +103,7 @@ class PlaceQueryServiceTest {
         given(reviewImageQueryService.findLatest3ByPlace(placeId)).willReturn(List.of());
 
         // when
-        PlaceDto actualResult = sut.findDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
+        PlaceDto actualResult = sut.getDtoWithMarkedStatusAndImagesByKakaoPid(memberId, kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -123,7 +123,7 @@ class PlaceQueryServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findDtoWithMarkedStatusAndImagesByKakaoPid(1L, kakaoPid));
+        Throwable t = catchThrowable(() -> sut.getDtoWithMarkedStatusAndImagesByKakaoPid(1L, kakaoPid));
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -140,7 +140,7 @@ class PlaceQueryServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.of(expectedPlace));
 
         // when
-        Optional<Place> actualPlace = sut.findOptByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);
@@ -155,7 +155,7 @@ class PlaceQueryServiceTest {
         given(placeRepository.findByKakaoPid(kakaoPid)).willReturn(Optional.empty());
 
         // when
-        Optional<Place> actualPlace = sut.findOptByKakaoPid(kakaoPid);
+        Optional<Place> actualPlace = sut.findByKakaoPid(kakaoPid);
 
         // then
         then(placeRepository).should().findByKakaoPid(kakaoPid);

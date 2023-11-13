@@ -96,13 +96,13 @@ class MemberCommandServiceTest {
         long memberId = 1L;
         Member member = createMember(memberId);
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, null);
-        given(memberQueryService.findById(memberId)).willReturn(member);
+        given(memberQueryService.getById(memberId)).willReturn(member);
 
         // when
         MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
 
         // then
-        then(memberQueryService).should().findById(memberId);
+        then(memberQueryService).should().getById(memberId);
         assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
         assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
         assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
@@ -116,8 +116,8 @@ class MemberCommandServiceTest {
         Member member = createMember(memberId);
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
         ProfileImage oldProfileImage = createProfileImage(member, 2L);
-        given(memberQueryService.findById(memberId)).willReturn(member);
-        given(profileImageQueryService.findOptionalByMember(member)).willReturn(Optional.of(oldProfileImage));
+        given(memberQueryService.getById(memberId)).willReturn(member);
+        given(profileImageQueryService.findByMember(member)).willReturn(Optional.of(oldProfileImage));
         willDoNothing().given(profileImageCommandService).softDelete(oldProfileImage);
         given(profileImageCommandService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(member, 10L));
 
@@ -125,8 +125,8 @@ class MemberCommandServiceTest {
         MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
 
         // then
-        then(memberQueryService).should().findById(memberId);
-        then(profileImageQueryService).should().findOptionalByMember(member);
+        then(memberQueryService).should().getById(memberId);
+        then(profileImageQueryService).should().findByMember(member);
         then(profileImageCommandService).should().softDelete(oldProfileImage);
         then(profileImageCommandService).should().upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -147,7 +147,7 @@ class MemberCommandServiceTest {
                 createFavoriteFoodCategory(101L, member, WESTERN),
                 createFavoriteFoodCategory(102L, member, CAFE_DESSERT)
         );
-        given(memberQueryService.findById(memberId)).willReturn(member);
+        given(memberQueryService.getById(memberId)).willReturn(member);
         willDoNothing().given(favoriteFoodCategoryRepository).deleteAll(member.getFavoriteFoodCategories());
         given(favoriteFoodCategoryRepository.saveAll(ArgumentMatchers.<List<FavoriteFoodCategory>>any())).willReturn(favoriteFoodCategories);
 
@@ -155,7 +155,7 @@ class MemberCommandServiceTest {
         MemberDto updatedMemberDto = sut.updateFavoriteFoodCategories(memberId, foodCategories);
 
         // then
-        then(memberQueryService).should().findById(memberId);
+        then(memberQueryService).should().getById(memberId);
         then(favoriteFoodCategoryRepository).should().deleteAll(member.getFavoriteFoodCategories());
         then(favoriteFoodCategoryRepository).should().saveAll(ArgumentMatchers.<List<FavoriteFoodCategory>>any());
         then(memberRepository).shouldHaveNoMoreInteractions();
@@ -170,7 +170,7 @@ class MemberCommandServiceTest {
         long memberId = 1L;
         MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
         Member findMember = createMember(memberId);
-        given(memberQueryService.findById(memberId)).willReturn(findMember);
+        given(memberQueryService.getById(memberId)).willReturn(findMember);
         willDoNothing().given(termsInfoCommandService).deleteByMemberId(memberId);
         given(memberDeletionSurveyRepository.save(any(MemberDeletionSurvey.class)))
                 .willReturn(createMemberDeletionSurvey(11L, findMember, surveyType));
@@ -179,7 +179,7 @@ class MemberCommandServiceTest {
         MemberDeletionSurveyDto surveyResult = sut.delete(memberId, surveyType);
 
         // then
-        then(memberQueryService).should().findById(memberId);
+        then(memberQueryService).should().getById(memberId);
         then(termsInfoCommandService).should().deleteByMemberId(memberId);
         then(memberDeletionSurveyRepository).should().save(any(MemberDeletionSurvey.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
@@ -193,13 +193,13 @@ class MemberCommandServiceTest {
         long memberId = 1L;
         MemberDeletionSurveyType surveyType = MemberDeletionSurveyType.NOT_TRUST;
         Member deletedMember = createDeletedMember(memberId);
-        given(memberQueryService.findById(memberId)).willReturn(deletedMember);
+        given(memberQueryService.getById(memberId)).willReturn(deletedMember);
 
         // when
         Throwable t = catchThrowable(() -> sut.delete(memberId, surveyType));
 
         // then
-        then(memberQueryService).should().findById(memberId);
+        then(memberQueryService).should().getById(memberId);
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(t).isInstanceOf(MemberNotFoundException.class);
     }
