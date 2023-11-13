@@ -48,7 +48,7 @@ public class MemberController {
     )
     @GetMapping(value = "/v1/members/me", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public GetMyInfoResponse getMyInfoV1_1(@AuthenticationPrincipal UserPrincipal userPrincipal) {
-        return GetMyInfoResponse.from(memberQueryService.findDtoById(userPrincipal.getMemberId()));
+        return GetMyInfoResponse.from(memberQueryService.getDtoById(userPrincipal.getMemberId()));
     }
 
     @Operation(

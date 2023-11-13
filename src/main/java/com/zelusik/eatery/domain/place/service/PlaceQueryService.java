@@ -42,7 +42,7 @@ public class PlaceQueryService {
      * @param kakaoPid 조회하고자 하는 장소의 kakaoPid
      * @return 조회한 장소의 optional entity
      */
-    public Optional<Place> findOptByKakaoPid(String kakaoPid) {
+    public Optional<Place> findByKakaoPid(String kakaoPid) {
         return placeRepository.findByKakaoPid(kakaoPid);
     }
 
@@ -53,7 +53,7 @@ public class PlaceQueryService {
      * @return 조회한 장소 entity
      * @throws PlaceNotFoundException 조회하고자 하는 장소가 존재하지 않는 경우
      */
-    public Place findById(Long placeId) {
+    public Place getById(Long placeId) {
         return placeRepository.findById(placeId).orElseThrow(PlaceNotFoundException::new);
     }
 
@@ -65,8 +65,8 @@ public class PlaceQueryService {
      * @throws PlaceNotFoundException 조회하고자 하는 장소가 존재하지 않는 경우
      */
     @NonNull
-    public Place findByKakaoPid(@NonNull String kakaoPid) {
-        return findOptByKakaoPid(kakaoPid).orElseThrow(() -> new PlaceNotFoundByKakaoPidException(kakaoPid));
+    public Place getByKakaoPid(@NonNull String kakaoPid) {
+        return findByKakaoPid(kakaoPid).orElseThrow(() -> new PlaceNotFoundByKakaoPidException(kakaoPid));
     }
 
     /**
@@ -75,8 +75,8 @@ public class PlaceQueryService {
      * @param placeId 조회하고자 하는 장소의 PK
      * @return 조회한 장소 dto
      */
-    public PlaceWithMarkedStatusAndImagesDto findDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
-        Place foundPlace = findById(placeId);
+    public PlaceWithMarkedStatusAndImagesDto getDtoWithMarkedStatusAndImagesById(Long memberId, Long placeId) {
+        Place foundPlace = getById(placeId);
         boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
         List<ReviewImageDto> latest3Images = reviewImageQueryService.findLatest3ByPlace(foundPlace.getId());
         return PlaceWithMarkedStatusAndImagesDto.from(foundPlace, isMarked, latest3Images);
@@ -89,8 +89,8 @@ public class PlaceQueryService {
      * @return 조회한 장소 dto
      */
     @NonNull
-    public PlaceWithMarkedStatusAndImagesDto findDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
-        Place foundPlace = findByKakaoPid(kakaoPid);
+    public PlaceWithMarkedStatusAndImagesDto getDtoWithMarkedStatusAndImagesByKakaoPid(@NonNull Long memberId, @NonNull String kakaoPid) {
+        Place foundPlace = getByKakaoPid(kakaoPid);
         boolean isMarked = bookmarkQueryService.isMarkedPlace(memberId, foundPlace);
         List<ReviewImageDto> latest3ByPlace = reviewImageQueryService.findLatest3ByPlace(foundPlace.getId());
         return PlaceWithMarkedStatusAndImagesDto.from(foundPlace, isMarked, latest3ByPlace);

@@ -22,7 +22,7 @@ public class ProfileImageQueryService {
      * @param member Member
      * @return 조회된 ProfileImage
      */
-    public Optional<ProfileImage> findOptionalByMember(Member member) {
+    public Optional<ProfileImage> findByMember(Member member) {
         return profileImageRepository.findByMemberAndDeletedAtIsNull(member);
     }
 }

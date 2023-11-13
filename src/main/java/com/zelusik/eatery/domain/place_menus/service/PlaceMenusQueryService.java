@@ -25,7 +25,7 @@ public class PlaceMenusQueryService {
      * @throws PlaceMenusNotFoundByPlaceIdException placeId에 해당하는 장소 메뉴 데이터가 없는 경우
      */
     @NonNull
-    public PlaceMenusDto findDtoByPlaceId(@NonNull Long placeId) {
+    public PlaceMenusDto getDtoByPlaceId(@NonNull Long placeId) {
         PlaceMenus placeMenus = placeMenusRepository.findByPlace_Id(placeId).orElseThrow(() -> new PlaceMenusNotFoundByPlaceIdException(placeId));
         return PlaceMenusDto.from(placeMenus);
     }
@@ -38,7 +38,7 @@ public class PlaceMenusQueryService {
      * @throws PlaceMenusNotFoundByPlaceIdException <code>kakaoPid</code>에 해당하는 장소 메뉴 데이터가 없는 경우
      */
     @NonNull
-    public PlaceMenusDto findDtoByKakaoPid(@NonNull String kakaoPid) {
+    public PlaceMenusDto getDtoByKakaoPid(@NonNull String kakaoPid) {
         PlaceMenus placeMenus = placeMenusRepository.findByPlace_KakaoPid(kakaoPid)
                 .orElseThrow(() -> new PlaceMenusNotFoundByKakaoPidException(kakaoPid));
         return PlaceMenusDto.from(placeMenus);

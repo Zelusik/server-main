@@ -93,7 +93,7 @@ class PlaceMenusControllerTest {
         long placeMenusId = 2L;
         List<String> menus = List.of("돈까스", "계란찜", "라면");
         PlaceMenusDto expectedResult = createPlaceMenusDto(placeMenusId, placeId, menus);
-        given(placeMenusQueryService.findDtoByPlaceId(placeId)).willReturn(expectedResult);
+        given(placeMenusQueryService.getDtoByPlaceId(placeId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -116,7 +116,7 @@ class PlaceMenusControllerTest {
         String kakaoPid = "12345";
         List<String> menus = List.of("돈까스", "계란찜", "라면");
         PlaceMenusDto expectedResult = createPlaceMenusDto(2L, 1L, menus);
-        given(placeMenusQueryService.findDtoByKakaoPid(kakaoPid)).willReturn(expectedResult);
+        given(placeMenusQueryService.getDtoByKakaoPid(kakaoPid)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(

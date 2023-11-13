@@ -67,7 +67,7 @@ class ReviewQueryServiceTest {
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.of(expectedResult));
 
         // when
-        Review actualResult = sut.findById(reviewId);
+        Review actualResult = sut.getById(reviewId);
 
         // then
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
@@ -85,7 +85,7 @@ class ReviewQueryServiceTest {
         given(reviewRepository.findByIdAndDeletedAtNull(reviewId)).willReturn(Optional.empty());
 
         // when
-        Throwable t = catchThrowable(() -> sut.findById(reviewId));
+        Throwable t = catchThrowable(() -> sut.getById(reviewId));
 
         // then
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
@@ -104,7 +104,7 @@ class ReviewQueryServiceTest {
         given(bookmarkQueryService.isMarkedPlace(eq(memberId), any(Place.class))).willReturn(false);
 
         // when
-        ReviewWithPlaceMarkedStatusDto actualResult = sut.findDtoById(memberId, reviewId);
+        ReviewWithPlaceMarkedStatusDto actualResult = sut.getDtoById(memberId, reviewId);
 
         // then
         then(reviewRepository).should().findByIdAndDeletedAtNull(reviewId);
@@ -148,7 +148,7 @@ class ReviewQueryServiceTest {
         given(reviewRepository.findReviewFeed(loginMemberId, pageable)).willReturn(expectedResults);
 
         // when
-        Slice<ReviewWithPlaceMarkedStatusDto> actualResults = sut.findReviewReed(loginMemberId, Pageable.ofSize(10));
+        Slice<ReviewWithPlaceMarkedStatusDto> actualResults = sut.findReviewFeed(loginMemberId, Pageable.ofSize(10));
 
         // then
         then(reviewRepository).should().findReviewFeed(loginMemberId, pageable);

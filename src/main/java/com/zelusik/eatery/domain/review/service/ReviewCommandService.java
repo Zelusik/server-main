@@ -55,8 +55,8 @@ public class ReviewCommandService {
      */
     public ReviewWithPlaceMarkedStatusDto create(Long writerId, ReviewCreateRequest reviewRequest) {
         List<ReviewImageCreateRequest> images = reviewRequest.getImages();
-        Place place = placeQueryService.findById(reviewRequest.getPlaceId());
-        Member writer = memberQueryService.findById(writerId);
+        Place place = placeQueryService.getById(reviewRequest.getPlaceId());
+        Member writer = memberQueryService.getById(writerId);
 
         // 리뷰 저장
         ReviewDto reviewWithPlaceMarkedStatusDto = reviewRequest.toDto(PlaceDto.from(place));
@@ -106,7 +106,7 @@ public class ReviewCommandService {
      * @throws ReviewUpdatePermissionDeniedException 리뷰 수정 권한이 없는 경우
      */
     public ReviewWithPlaceMarkedStatusDto update(Long memberId, Long reviewId, @Nullable String content) {
-        Review review = reviewQueryService.findById(reviewId);
+        Review review = reviewQueryService.getById(reviewId);
         validateReviewUpdatePermission(memberId, review);
         review.update(content);
 
@@ -122,8 +122,8 @@ public class ReviewCommandService {
      * @throws ReviewDeletePermissionDeniedException 리뷰 삭제 권한이 없는 경우
      */
     public void delete(Long memberId, Long reviewId) {
-        Member member = memberQueryService.findById(memberId);
-        Review review = reviewQueryService.findById(reviewId);
+        Member member = memberQueryService.getById(memberId);
+        Review review = reviewQueryService.getById(reviewId);
 
         validateReviewDeletePermission(member, review);
 

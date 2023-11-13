@@ -86,7 +86,7 @@ public class PlaceController {
                     example = "3"
             ) @PathVariable Long placeId
     ) {
-        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
+        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.getDtoWithMarkedStatusAndImagesById(userPrincipal.getMemberId(), placeId);
         return FindPlaceResponse.from(placeDtos);
     }
 
@@ -108,7 +108,7 @@ public class PlaceController {
                     example = "263830255"
             ) @RequestParam @NotBlank String kakaoPid
     ) {
-        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.findDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
+        PlaceWithMarkedStatusAndImagesDto placeDtos = placeQueryService.getDtoWithMarkedStatusAndImagesByKakaoPid(userPrincipal.getMemberId(), kakaoPid);
         return FindPlaceResponse.from(placeDtos);
     }
 

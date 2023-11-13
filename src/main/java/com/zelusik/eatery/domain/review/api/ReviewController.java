@@ -93,7 +93,7 @@ public class ReviewController {
             ) @PathVariable Long reviewId
     ) {
         Long loginMemberId = userPrincipal.getMemberId();
-        ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto = reviewQueryService.findDtoById(loginMemberId, reviewId);
+        ReviewWithPlaceMarkedStatusDto reviewWithPlaceMarkedStatusDto = reviewQueryService.getDtoById(loginMemberId, reviewId);
         return FindReviewResponse.from(reviewWithPlaceMarkedStatusDto, loginMemberId);
     }
 
@@ -163,7 +163,7 @@ public class ReviewController {
                     example = "15"
             ) @RequestParam(required = false, defaultValue = "15") int size
     ) {
-        Slice<ReviewWithPlaceMarkedStatusDto> reviewDtos = reviewQueryService.findReviewReed(userPrincipal.getMemberId(), PageRequest.of(page, size));
+        Slice<ReviewWithPlaceMarkedStatusDto> reviewDtos = reviewQueryService.findReviewFeed(userPrincipal.getMemberId(), PageRequest.of(page, size));
         return new SliceResponse<FindReviewFeedResponse>().from(reviewDtos.map(FindReviewFeedResponse::from));
     }
 

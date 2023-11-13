@@ -32,8 +32,8 @@ public class RecommendedReviewCommandService {
      * @return 저장된 추천 리뷰 dto
      */
     public RecommendedReviewDto saveRecommendedReview(long memberId, long reviewId, short ranking) {
-        Member member = memberQueryService.findById(memberId);
-        Review review = reviewQueryService.findById(reviewId);
+        Member member = memberQueryService.getById(memberId);
+        Review review = reviewQueryService.getById(reviewId);
 
         RecommendedReview recommendedReview = RecommendedReview.of(member, review, ranking);
         recommendedReviewRepository.save(recommendedReview);
@@ -50,13 +50,13 @@ public class RecommendedReviewCommandService {
      * @return 갱신된 추천 리뷰 목록
      */
     public List<RecommendedReviewDto> batchUpdateRecommendedReviews(long memberId, BatchUpdateRecommendedReviewsRequest batchUpdateRecommendedReviewsRequest) {
-        Member member = memberQueryService.findById(memberId);
+        Member member = memberQueryService.getById(memberId);
         recommendedReviewRepository.deleteAllByMember(member);
         recommendedReviewRepository.flush();
 
         List<RecommendedReview> recommendedReviewsForBatchUpdate = batchUpdateRecommendedReviewsRequest.getRecommendedReviews().stream()
                 .map(request -> {
-                    Review review = reviewQueryService.findById(request.getReviewId());
+                    Review review = reviewQueryService.getById(request.getReviewId());
                     return RecommendedReview.of(member, review, request.getRanking());
                 })
                 .toList();

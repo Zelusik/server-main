@@ -74,7 +74,7 @@ class MemberControllerTest {
         // given
         long memberId = 1L;
         MemberDto expectedResult = createMemberDto(memberId);
-        given(memberQueryService.findDtoById(memberId)).willReturn(expectedResult);
+        given(memberQueryService.getDtoById(memberId)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(

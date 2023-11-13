@@ -81,7 +81,7 @@ public class PlaceMenusController {
     })
     @GetMapping(value = "/v1/places/{placeId}/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public PlaceMenusResponse findPlaceMenusByPlaceIdV1_1(@Parameter(description = "PK of place", example = "3") @PathVariable Long placeId) {
-        PlaceMenusDto result = placeMenusQueryService.findDtoByPlaceId(placeId);
+        PlaceMenusDto result = placeMenusQueryService.getDtoByPlaceId(placeId);
         return PlaceMenusResponse.fromWithoutIds(result);
     }
 
@@ -93,7 +93,7 @@ public class PlaceMenusController {
     )
     @GetMapping(value = "/v1/places/menus", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public PlaceMenusResponse findPlaceMenusByKakaoPidV1_1(@Parameter(description = "장소의 고유 id", example = "1879186093") @RequestParam String kakaoPid) {
-        PlaceMenusDto result = placeMenusQueryService.findDtoByKakaoPid(kakaoPid);
+        PlaceMenusDto result = placeMenusQueryService.getDtoByKakaoPid(kakaoPid);
         return PlaceMenusResponse.fromWithoutIds(result);
     }
 

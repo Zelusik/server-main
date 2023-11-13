@@ -69,13 +69,13 @@ public class AuthController {
     public LoginResponse kakaoLoginV1_1(@Valid @RequestBody KakaoLoginRequest request) {
         KakaoOAuthUserInfo userInfo = kakaoService.getUserInfo(request.getKakaoAccessToken());
 
-        MemberDto memberDto = memberQueryService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSocialUid())
+        MemberDto memberDto = memberQueryService.findDtoBySocialUidWithDeleted(userInfo.getSocialUid())
                 .orElseGet(() -> memberCommandService.save(userInfo.toMemberDto(Set.of(RoleType.USER))));
         if (memberDto.getDeletedAt() != null) {
             memberCommandService.rejoin(memberDto.getId());
         }
 
-        TermsInfoDto termsInfoDto = termsInfoQueryService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
+        TermsInfoDto termsInfoDto = termsInfoQueryService.findDtoByMemberId(memberDto.getId()).orElse(null);
 
         JwtTokenDto jwtTokenDto = jwtTokenCommandService.create(memberDto.getId(), LoginType.KAKAO);
 
@@ -102,13 +102,13 @@ public class AuthController {
     public LoginResponse appleLoginV1_1(@Valid @RequestBody AppleLoginRequest request) {
         AppleOAuthUserInfo userInfo = appleOAuthService.getUserInfo(request.getIdentityToken());
 
-        MemberDto memberDto = memberQueryService.findOptionalDtoBySocialUidWithDeleted(userInfo.getSub())
+        MemberDto memberDto = memberQueryService.findDtoBySocialUidWithDeleted(userInfo.getSub())
                 .orElseGet(() -> memberCommandService.save(userInfo.toMemberDto(request.getName(), Set.of(RoleType.USER))));
         if (memberDto.getDeletedAt() != null) {
             memberCommandService.rejoin(memberDto.getId());
         }
 
-        TermsInfoDto termsInfoDto = termsInfoQueryService.findOptionalDtoByMemberId(memberDto.getId()).orElse(null);
+        TermsInfoDto termsInfoDto = termsInfoQueryService.findDtoByMemberId(memberDto.getId()).orElse(null);
 
         JwtTokenDto jwtTokenDto = jwtTokenCommandService.create(memberDto.getId(), LoginType.APPLE);
 

@@ -5,7 +5,6 @@ import com.zelusik.eatery.domain.favorite_food_category.repository.FavoriteFoodC
 import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
 import com.zelusik.eatery.domain.member.entity.Member;
-import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
 import com.zelusik.eatery.domain.member.exception.MemberNotFoundException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
@@ -60,7 +59,7 @@ public class MemberCommandService {
     @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public void rejoin(Long memberId) {
-        Member member = findByIdWithDeleted(memberId);
+        Member member = memberQueryService.getByIdWithDeleted(memberId);
         member.rejoin();
     }
 
@@ -74,7 +73,7 @@ public class MemberCommandService {
     @CachePut(value = "member", key = "#memberId")
     @Transactional
     public MemberDto update(Long memberId, MemberUpdateRequest updateRequest) {
-        Member member = memberQueryService.findById(memberId);
+        Member member = memberQueryService.getById(memberId);
 
         MultipartFile profileImageForUpdate = updateRequest.getProfileImage();
         if (profileImageForUpdate == null) {
@@ -84,7 +83,7 @@ public class MemberCommandService {
                     updateRequest.getGender()
             );
         } else {
-            Optional<ProfileImage> oldProfileImage = profileImageQueryService.findOptionalByMember(member);
+            Optional<ProfileImage> oldProfileImage = profileImageQueryService.findByMember(member);
             oldProfileImage.ifPresent(profileImageCommandService::softDelete);
 
             ProfileImage profileImage = profileImageCommandService.upload(member, profileImageForUpdate);
@@ -109,7 +108,7 @@ public class MemberCommandService {
     @CachePut(value = "member", key = "#memberId")
     @Transactional
     public MemberDto updateFavoriteFoodCategories(Long memberId, List<FoodCategoryValue> favoriteFoodCategories) {
-        Member member = memberQueryService.findById(memberId);
+        Member member = memberQueryService.getById(memberId);
 
         favoriteFoodCategoryRepository.deleteAll(member.getFavoriteFoodCategories());
         member.getFavoriteFoodCategories().clear();
@@ -135,7 +134,7 @@ public class MemberCommandService {
     @CacheEvict(value = "member", key = "#memberId")
     @Transactional
     public MemberDeletionSurveyDto delete(Long memberId, MemberDeletionSurveyType surveyType) {
-        Member member = memberQueryService.findById(memberId);
+        Member member = memberQueryService.getById(memberId);
         if (member.getDeletedAt() != null) {
             throw new MemberNotFoundException();
         }
@@ -147,18 +146,5 @@ public class MemberCommandService {
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);
         return MemberDeletionSurveyDto.from(deletionSurvey);
-    }
-
-    /**
-     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
-     * 삭제된 회원도 포함해서 조회한다.
-     *
-     * @param memberId 조회할 회원의 PK
-     * @return 조회한 회원 entity
-     * @throws MemberNotFoundByIdException 일치하는 회원이 없는 경우
-     */
-    private Member findByIdWithDeleted(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundByIdException(memberId));
     }
 }

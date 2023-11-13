@@ -30,7 +30,7 @@ public class TermsInfoCommandService {
      */
     @CacheEvict(value = "member", key = "#memberId")
     public TermsInfoDto saveTermsInfo(long memberId, AgreeToTermsRequest request) {
-        Member member = memberQueryService.findById(memberId);
+        Member member = memberQueryService.getById(memberId);
         LocalDateTime now = LocalDateTime.now();
         TermsInfo termsInfo = TermsInfo.of(
                 member,

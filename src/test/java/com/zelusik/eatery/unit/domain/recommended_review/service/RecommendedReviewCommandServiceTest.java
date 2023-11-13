@@ -61,16 +61,16 @@ class RecommendedReviewCommandServiceTest {
         Member member = createMember(memberId);
         Review review = createReview(reviewId, member, createPlace(3L, "12345"));
         RecommendedReview expectedResult = createRecommendedReview(4L, member, review, ranking);
-        given(memberQueryService.findById(memberId)).willReturn(member);
-        given(reviewQueryService.findById(reviewId)).willReturn(review);
+        given(memberQueryService.getById(memberId)).willReturn(member);
+        given(reviewQueryService.getById(reviewId)).willReturn(review);
         given(recommendedReviewRepository.save(any(RecommendedReview.class))).willReturn(expectedResult);
 
         // when
         RecommendedReviewDto actualResult = sut.saveRecommendedReview(memberId, reviewId, ranking);
 
         // then
-        then(memberQueryService).should().findById(memberId);
-        then(reviewQueryService).should().findById(reviewId);
+        then(memberQueryService).should().getById(memberId);
+        then(reviewQueryService).should().getById(reviewId);
         then(recommendedReviewRepository).should().save(any(RecommendedReview.class));
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResult)
@@ -97,20 +97,20 @@ class RecommendedReviewCommandServiceTest {
                 createRecommendedReview(7L, member, review2, (short) 2),
                 createRecommendedReview(8L, member, review3, (short) 3)
         );
-        given(memberQueryService.findById(memberId)).willReturn(member);
+        given(memberQueryService.getById(memberId)).willReturn(member);
         willDoNothing().given(recommendedReviewRepository).deleteAllByMember(member);
         willDoNothing().given(recommendedReviewRepository).flush();
-        given(reviewQueryService.findById(any(Long.class))).willReturn(review1, review2, review3);
+        given(reviewQueryService.getById(any(Long.class))).willReturn(review1, review2, review3);
         given(recommendedReviewRepository.saveAll(anyList())).willReturn(expectedResults);
 
         // when
         List<RecommendedReviewDto> actualResults = sut.batchUpdateRecommendedReviews(memberId, batchUpdateRecommendedReviewsRequest);
 
         // then
-        then(memberQueryService).should().findById(memberId);
+        then(memberQueryService).should().getById(memberId);
         then(recommendedReviewRepository).should().deleteAllByMember(member);
         then(recommendedReviewRepository).should().flush();
-        verify(reviewQueryService, times(3)).findById(any(Long.class));
+        verify(reviewQueryService, times(3)).getById(any(Long.class));
         then(recommendedReviewRepository).should().saveAll(anyList());
         verifyEveryMocksShouldHaveNoMoreInteractions();
         assertThat(actualResults).isNotEmpty();

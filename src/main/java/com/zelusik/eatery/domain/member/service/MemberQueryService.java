@@ -28,8 +28,21 @@ public class MemberQueryService {
      * @return 조회한 회원 entity
      * @throws MemberNotFoundByIdException 일치하는 회원이 없는 경우
      */
-    public Member findById(Long memberId) {
+    public Member getById(Long memberId) {
         return memberRepository.findByIdAndDeletedAtNull(memberId)
+                .orElseThrow(() -> new MemberNotFoundByIdException(memberId));
+    }
+
+    /**
+     * 주어진 PK에 해당하는 회원 entity를 DB에서 조회한다.
+     * 삭제된 회원도 포함해서 조회한다.
+     *
+     * @param memberId 조회할 회원의 PK
+     * @return 조회한 회원 entity
+     * @throws MemberNotFoundByIdException 일치하는 회원이 없는 경우
+     */
+    public Member getByIdWithDeleted(Long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundByIdException(memberId));
     }
 
@@ -40,8 +53,8 @@ public class MemberQueryService {
      * @return 조회한 회원 dto
      */
     @Cacheable(value = "member", key = "#memberId")
-    public MemberDto findDtoById(Long memberId) {
-        return MemberDto.from(findById(memberId));
+    public MemberDto getDtoById(Long memberId) {
+        return MemberDto.from(getById(memberId));
     }
 
     /**
@@ -51,7 +64,7 @@ public class MemberQueryService {
      * @param socialUid 조회할 회원의 socialUid
      * @return 조회한 회원 dto. <code>Optional</code> 그대로 반환한다.
      */
-    public Optional<MemberDto> findOptionalDtoBySocialUidWithDeleted(String socialUid) {
+    public Optional<MemberDto> findDtoBySocialUidWithDeleted(String socialUid) {
         return memberRepository.findBySocialUid(socialUid).map(MemberDto::from);
     }
 

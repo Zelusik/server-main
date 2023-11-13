@@ -39,7 +39,7 @@ public class PlaceMenusCommandService {
         if (placeMenusRepository.existsByPlace_Id(placeId)) {
             throw new PlaceMenusAlreadyExistsException(placeId);
         }
-        Place place = placeQueryService.findById(placeId);
+        Place place = placeQueryService.getById(placeId);
         return savePlaceMenus(place);
     }
 
@@ -55,7 +55,7 @@ public class PlaceMenusCommandService {
         if (placeMenusRepository.existsByPlace_KakaoPid(kakaoPid)) {
             throw new PlaceMenusAlreadyExistsException(kakaoPid);
         }
-        Place place = placeQueryService.findByKakaoPid(kakaoPid);
+        Place place = placeQueryService.getByKakaoPid(kakaoPid);
         return savePlaceMenus(place);
     }
 
