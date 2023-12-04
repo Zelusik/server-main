@@ -1,6 +1,7 @@
 package com.zelusik.eatery.config;
 
-import com.zelusik.eatery.security.*;
+import com.zelusik.eatery.global.auth.*;
+import com.zelusik.eatery.global.config.SecurityConfig;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Import;
 
