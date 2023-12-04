@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpMethod.*;
-import static org.springframework.http.HttpMethod.OPTIONS;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -80,14 +79,17 @@ public class SecurityConfig {
             @Value("${eatery.web.dev.url}") String eateryWebDevUrl,
             @Value("${eatery.web.prod.url}") String eateryWebProdUrl,
             @Value("${eatery.server.dev.url}") String eateryServerDevUrl,
-            @Value("${eatery.server.prod.url}") String eateryServerProdUrl
+            @Value("${eatery.server.prod.url}") String eateryServerProdUrl,
+            @Value("${eatery.vercel.web.prod.url}") String eateryVercelProdUrl
     ) {
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.setAllowCredentials(true);
         corsConfig.setAllowedOrigins(List.of(
                 "http://localhost", "http://localhost:8080",
                 eateryWebDevUrl, eateryWebProdUrl,
-                eateryServerDevUrl, eateryServerProdUrl
+                // TODO: Web 배포 환경 vercel로 전환한 후 eateryVercelProdUrl 삭제
+                eateryServerDevUrl, eateryServerProdUrl,
+                eateryVercelProdUrl
         ));
         corsConfig.setAllowedMethods(List.of(GET.name(), POST.name(), PUT.name(), DELETE.name(), PATCH.name(), OPTIONS.name()));
         corsConfig.setAllowedHeaders(List.of("*"));
