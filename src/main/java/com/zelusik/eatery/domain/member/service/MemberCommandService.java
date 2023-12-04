@@ -6,6 +6,7 @@ import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.exception.MemberNotFoundException;
+import com.zelusik.eatery.domain.member.exception.NicknameDuplicationException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.member_deletion_survey.constant.MemberDeletionSurveyType;
 import com.zelusik.eatery.domain.member_deletion_survey.dto.MemberDeletionSurveyDto;
@@ -16,6 +17,7 @@ import com.zelusik.eatery.domain.profile_image.service.ProfileImageCommandServic
 import com.zelusik.eatery.domain.profile_image.service.ProfileImageQueryService;
 import com.zelusik.eatery.domain.terms_info.service.TermsInfoCommandService;
 import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.global.util.NicknameGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -47,6 +49,9 @@ public class MemberCommandService {
      */
     @Transactional
     public MemberDto save(MemberDto memberDto) {
+        if (isNicknameExists(memberDto.getNickname())) {
+            memberDto.setNickname(generateUniqueNickname());
+        }
         return MemberDto.from(memberRepository.save(memberDto.toEntity()));
     }
 
@@ -74,6 +79,8 @@ public class MemberCommandService {
     @Transactional
     public MemberDto update(Long memberId, MemberUpdateRequest updateRequest) {
         Member member = memberQueryService.getById(memberId);
+
+        validateNicknameDuplication(updateRequest.getNickname());
 
         MultipartFile profileImageForUpdate = updateRequest.getProfileImage();
         if (profileImageForUpdate == null) {
@@ -146,5 +153,40 @@ public class MemberCommandService {
         MemberDeletionSurvey deletionSurvey = MemberDeletionSurvey.of(member, surveyType);
         memberDeletionSurveyRepository.save(deletionSurvey);
         return MemberDeletionSurveyDto.from(deletionSurvey);
+    }
+
+    /**
+     * 이미 존재하는 닉네임인지 확인한다.
+     *
+     * @param nickname 존재 여부를 확인할 닉네임
+     * @return 닉네임 존재 여부
+     */
+    private boolean isNicknameExists(String nickname) {
+        return memberQueryService.existsByNickname(nickname);
+    }
+
+    /**
+     * 기존에 사용중이지 않은, 새로운 닉네임을 랜덤하게 생성한다.
+     *
+     * @return 생성된 unique nickname
+     */
+    private String generateUniqueNickname() {
+        String nicknameRandomlyGenerated = NicknameGenerator.generateRandomNickname();
+        while (isNicknameExists(nicknameRandomlyGenerated)) {
+            nicknameRandomlyGenerated = NicknameGenerator.generateRandomNickname();
+        }
+        return nicknameRandomlyGenerated;
+    }
+
+    /**
+     * 중복되지 않은 닉네임임을 검증한다.
+     *
+     * @param nickname 중복을 검증하고자 하는 닉네임
+     * @throws NicknameDuplicationException 이미 사용중인 닉네임일 경우
+     */
+    private void validateNicknameDuplication(String nickname) {
+        if (isNicknameExists(nickname)) {
+            throw new NicknameDuplicationException();
+        }
     }
 }

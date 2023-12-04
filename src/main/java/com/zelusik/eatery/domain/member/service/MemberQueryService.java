@@ -99,4 +99,14 @@ public class MemberQueryService {
     public MemberWithProfileInfoDto getMemberProfileInfoById(long memberId) {
         return memberRepository.getMemberProfileInfoById(memberId);
     }
+
+    /**
+     * 이미 존재하는 닉네임인지 확인한다.
+     *
+     * @param nickname 존재 여부를 확인할 닉네임
+     * @return 닉네임 존재 여부
+     */
+    public boolean existsByNickname(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
 }

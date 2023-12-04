@@ -9,6 +9,7 @@ import com.zelusik.eatery.domain.member.dto.MemberDto;
 import com.zelusik.eatery.domain.member.dto.request.MemberUpdateRequest;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.exception.MemberNotFoundException;
+import com.zelusik.eatery.domain.member.exception.NicknameDuplicationException;
 import com.zelusik.eatery.domain.member.repository.MemberRepository;
 import com.zelusik.eatery.domain.member.service.MemberCommandService;
 import com.zelusik.eatery.domain.member.service.MemberQueryService;
@@ -117,6 +118,7 @@ class MemberCommandServiceTest {
         MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
         ProfileImage oldProfileImage = createProfileImage(member, 2L);
         given(memberQueryService.getById(memberId)).willReturn(member);
+        given(memberQueryService.existsByNickname(memberUpdateInfo.getNickname())).willReturn(false);
         given(profileImageQueryService.findByMember(member)).willReturn(Optional.of(oldProfileImage));
         willDoNothing().given(profileImageCommandService).softDelete(oldProfileImage);
         given(profileImageCommandService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(member, 10L));
@@ -126,6 +128,7 @@ class MemberCommandServiceTest {
 
         // then
         then(memberQueryService).should().getById(memberId);
+        then(memberQueryService).should().existsByNickname(memberUpdateInfo.getNickname());
         then(profileImageQueryService).should().findByMember(member);
         then(profileImageCommandService).should().softDelete(oldProfileImage);
         then(profileImageCommandService).should().upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()));
@@ -133,6 +136,26 @@ class MemberCommandServiceTest {
         assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
         assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
         assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
+    }
+
+    @DisplayName("수정할 회원 정보 중 이미 사용중인 닉네임이 주어지고, 회원 정보를 수정하면, 예외가 발생한다.")
+    @Test
+    void givenNicknameThatAlreadyExists_whenUpdatingMemberInfo_thenThrowNicknameDuplicationException() {
+        // given
+        long memberId = 1L;
+        Member member = createMember(memberId);
+        MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest("update", LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
+        given(memberQueryService.getById(memberId)).willReturn(member);
+        given(memberQueryService.existsByNickname(memberUpdateInfo.getNickname())).willReturn(true);
+
+        // when
+        Throwable t = catchThrowable(() -> sut.update(memberId, memberUpdateInfo));
+
+        // then
+        then(memberQueryService).should().getById(memberId);
+        then(memberQueryService).should().existsByNickname(memberUpdateInfo.getNickname());
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(t).isInstanceOf(NicknameDuplicationException.class);
     }
 
     @DisplayName("선호 음식 카테고리 목록이 주어지고, 이를 업데이트하면, 선호 음식 카테고리를 수정한다.")
@@ -292,7 +315,7 @@ class MemberCommandServiceTest {
                 LoginType.KAKAO,
                 roleTypes,
                 "email",
-                "nickname" + socialUid,
+                "name" + socialUid,
                 null,
                 null
         );

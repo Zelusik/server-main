@@ -72,4 +72,8 @@ public class MemberDto {
                 this.getGender()
         );
     }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

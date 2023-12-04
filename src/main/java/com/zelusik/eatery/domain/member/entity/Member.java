@@ -9,10 +9,12 @@ import com.zelusik.eatery.global.common.entity.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import javax.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
@@ -34,34 +36,36 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank
     private String profileImageUrl;
 
-    @Column(nullable = false)
+    @NotBlank
     private String profileThumbnailImageUrl;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank
+    @Column(unique = true)
     private String socialUid;
 
-    @Column(nullable = false)
+    @NotNull
     @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
-    @Column(nullable = false)
+    @NotEmpty
     @Convert(converter = RoleTypesConverter.class)
     private Set<RoleType> roleTypes;
 
     private String email;
 
-    @Column(nullable = false, length = 15)
-    private String nickname;
+    @NotNull
+    @Embedded
+    private MemberNickname nickname;
 
     private LocalDate birthDay;
 
     private Integer ageRange;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Gender gender;
 
     private LocalDateTime deletedAt;
@@ -69,7 +73,22 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member")
     private List<FavoriteFoodCategory> favoriteFoodCategories = new LinkedList<>();
 
-    public Member(@Nullable Long id, @NotNull String profileImageUrl, @NotNull String profileThumbnailImageUrl, @NotNull String socialUid, @NotNull LoginType loginType, @NotNull Set<RoleType> roleTypes, @Nullable String email, @NotNull String nickname, @Nullable LocalDate birthDay, @Nullable Integer ageRange, @Nullable Gender gender, @Nullable LocalDateTime createdAt, @Nullable LocalDateTime updatedAt, @Nullable LocalDateTime deletedAt) {
+    public Member(
+            @Nullable Long id,
+            @NotNull String profileImageUrl,
+            @NotNull String profileThumbnailImageUrl,
+            @NotNull String socialUid,
+            @NotNull LoginType loginType,
+            @NotNull Set<RoleType> roleTypes,
+            @Nullable String email,
+            @NotNull String nickname,
+            @Nullable LocalDate birthDay,
+            @Nullable Integer ageRange,
+            @Nullable Gender gender,
+            @Nullable LocalDateTime createdAt,
+            @Nullable LocalDateTime updatedAt,
+            @Nullable LocalDateTime deletedAt
+    ) {
         super(createdAt, updatedAt);
         this.id = id;
         this.profileImageUrl = profileImageUrl;
@@ -78,7 +97,7 @@ public class Member extends BaseTimeEntity {
         this.loginType = loginType;
         this.roleTypes = roleTypes;
         this.email = email;
-        this.nickname = nickname;
+        this.nickname = new MemberNickname(nickname);
         this.birthDay = birthDay;
         this.ageRange = ageRange;
         this.gender = gender;
@@ -99,22 +118,26 @@ public class Member extends BaseTimeEntity {
         return new Member(null, profileImageUrl, profileThumbnailImageUrl, socialUid, loginType, roleTypes, email, nickname, null, ageRange, gender, null, null, null);
     }
 
+    public String getNickname() {
+        return nickname.getNickname();
+    }
+
     public void update(String profileImageUrl, String profileThumbnailImageUrl, String nickname, LocalDate birthDay, Gender gender) {
         this.profileImageUrl = profileImageUrl;
         this.profileThumbnailImageUrl = profileThumbnailImageUrl;
-        this.nickname = nickname;
+        this.nickname = new MemberNickname(nickname);
         this.birthDay = birthDay;
         this.gender = gender;
     }
 
     public void update(String nickname, LocalDate birthDay, Gender gender) {
-        this.nickname = nickname;
+        this.nickname = new MemberNickname(nickname);
         this.birthDay = birthDay;
         this.gender = gender;
     }
 
     public void rejoin() {
-        this.deletedAt = (null);
+        this.deletedAt = null;
     }
 
     public void softDelete() {
