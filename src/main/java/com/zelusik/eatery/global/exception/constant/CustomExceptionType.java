@@ -4,6 +4,7 @@ import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.review.entity.Review;
+import com.zelusik.eatery.domain.report_review.entity.ReportReview;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -76,6 +77,11 @@ public enum CustomExceptionType {
     REVIEW_UPDATE_PERMISSION_DENIED(3503, "리뷰를 수정할 권한이 없습니다."),
     MISMATCHED_MENU_KEYWORD_COUNT(3504, "요청 데이터가 잘못되었습니다. 메뉴와 메뉴에 대한 키워드의 개수가 일치하지 않습니다."),
     INVALID_TYPE_OF_REVIEW_KEYWORD_VALUE(3505, "잘못된 리뷰 키워드 값 유형입니다."),
+
+    /**
+     * 리뷰 신고{@link ReportReview}) 관련 예외
+     */
+    REPORT_REVIEW_NOT_FOUND(4000, "리뷰 신고 내역을 찾을 수 없습니다."),
 
     /**
      * 북마크({@link Bookmark} 관련 예외
