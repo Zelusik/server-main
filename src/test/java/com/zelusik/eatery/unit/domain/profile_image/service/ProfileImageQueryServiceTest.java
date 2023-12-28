@@ -52,7 +52,7 @@ class ProfileImageQueryServiceTest {
     }
 
     private Member createMember(long memberId) {
-        return Member.of(
+        return new Member(
                 memberId,
                 "profile image url",
                 "profile thunmbnail image url",

@@ -136,7 +136,7 @@ class RecommendedReviewCommandServiceTest {
     }
 
     private Member createMember(Long memberId, Set<RoleType> roleTypes) {
-        return Member.of(
+        return new Member(
                 memberId,
                 "profile image url",
                 "profile thunmbnail image url",
