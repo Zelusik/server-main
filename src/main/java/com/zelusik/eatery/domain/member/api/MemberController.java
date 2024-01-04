@@ -136,9 +136,14 @@ public class MemberController {
             summary = "내 정보 수정",
             description = "<p><strong>Latest version: v1.1</strong>" +
                           "<p>내 정보를 수정합니다." +
-                          "<p>프로필 이미지는 수정하고자 하는 경우에만 요청해야 하고, 수정하지 않는 경우 요청 데이터에서 제외해야합니다.",
+                          "<p>프로필 이미지는 수정하고자 하는 경우에만 요청 데이터에 포함하고, 수정하지 않는 경우 요청 데이터에서 제외해야합니다.",
             security = @SecurityRequirement(name = "access-token")
     )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "409", description = "이미 사용중인 닉네임인 경우"),
+            @ApiResponse(responseCode = "422", description = "유효하지 않은 닉네임인 경우.", content = @Content)
+    })
     @PutMapping(value = "/v1/members", headers = API_MINOR_VERSION_HEADER_NAME + "=1", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public MemberResponse updateMemberV1_1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,

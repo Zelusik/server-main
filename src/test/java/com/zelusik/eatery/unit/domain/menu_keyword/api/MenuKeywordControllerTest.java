@@ -1,18 +1,18 @@
 package com.zelusik.eatery.unit.domain.menu_keyword.api;
 
 import com.zelusik.eatery.config.TestSecurityConfig;
-import com.zelusik.eatery.global.common.constant.EateryConstants;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.menu_keyword.api.MenuKeywordController;
-import com.zelusik.eatery.domain.place.entity.PlaceCategory;
-import com.zelusik.eatery.global.common.dto.ListDto;
 import com.zelusik.eatery.domain.member.dto.MemberDto;
+import com.zelusik.eatery.domain.menu_keyword.api.MenuKeywordController;
 import com.zelusik.eatery.domain.menu_keyword.dto.response.MenuKeywordResponse;
-import com.zelusik.eatery.global.auth.UserPrincipal;
 import com.zelusik.eatery.domain.menu_keyword.service.MenuKeywordQueryService;
+import com.zelusik.eatery.domain.place.entity.PlaceCategory;
+import com.zelusik.eatery.global.auth.UserPrincipal;
+import com.zelusik.eatery.global.common.constant.EateryConstants;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.global.common.dto.ListDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +29,9 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Set;
 
-import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory.MENU_NAME;
 import static com.zelusik.eatery.domain.review_keyword.constant.MenuKeywordCategory.PLACE_CATEGORY;
+import static com.zelusik.eatery.global.common.constant.EateryConstants.API_MINOR_VERSION_HEADER_NAME;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;

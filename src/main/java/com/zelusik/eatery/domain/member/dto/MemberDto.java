@@ -60,7 +60,7 @@ public class MemberDto {
     }
 
     public Member toEntity() {
-        return Member.of(
+        return Member.create(
                 this.getProfileImageUrl(),
                 this.getProfileThumbnailImageUrl(),
                 this.getSocialUid(),
@@ -71,5 +71,9 @@ public class MemberDto {
                 this.getAgeRange(),
                 this.getGender()
         );
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

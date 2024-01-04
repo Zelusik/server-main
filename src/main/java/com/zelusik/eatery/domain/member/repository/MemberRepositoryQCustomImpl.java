@@ -3,12 +3,12 @@ package com.zelusik.eatery.domain.member.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.zelusik.eatery.domain.member.entity.QMember;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
-import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
+import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.member.entity.QMember;
 import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -120,7 +120,7 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
     @Override
     public Slice<Member> searchByKeyword(String searchKeyword, Pageable pageable) {
         List<Member> content = queryFactory.selectFrom(member)
-                .where(isMemberNotDeleted(), member.nickname.containsIgnoreCase(searchKeyword))
+                .where(isMemberNotDeleted(), member.nickname.nickname.containsIgnoreCase(searchKeyword))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();

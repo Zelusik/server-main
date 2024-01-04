@@ -33,6 +33,5 @@ public class MemberUpdateRequest {
     private Gender gender;
 
     @Schema(description = "변경하고자 하는 프로필 이미지")
-    @NotNull
     private MultipartFile profileImage;
 }
