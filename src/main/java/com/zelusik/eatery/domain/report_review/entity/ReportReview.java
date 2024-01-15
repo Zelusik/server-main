@@ -33,12 +33,10 @@ public class ReportReview extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Review review;
 
-    @Column
     @NotNull
     @Enumerated(EnumType.STRING)
     private ReportReviewReasonOption reasonOption;
-
-    @Column
+    
     @NotNull
     private String reasonDetail;
 

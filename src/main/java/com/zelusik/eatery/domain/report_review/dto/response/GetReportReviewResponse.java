@@ -1,6 +1,7 @@
 package com.zelusik.eatery.domain.report_review.dto.response;
 
 import com.zelusik.eatery.domain.report_review.dto.ReportReviewDto;
+import com.zelusik.eatery.domain.report_review.dto.ReportReviewReasonOption;
 import com.zelusik.eatery.domain.review.dto.ReviewDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -23,7 +24,7 @@ public class GetReportReviewResponse {
     private ReviewDto review;
 
     @Schema(description = "신고 이유 옵션 전체 문장", example = "광고/홍보성 게시글임")
-    private String reasonOption;
+    private ReportReviewReasonOption reasonOption;
 
     @Schema(description = "신고 이유 상세", example = "제가 리뷰로 올린 사진을 도용하였어요.")
     private String reasonDetail;
@@ -33,7 +34,7 @@ public class GetReportReviewResponse {
                 reportReviewDto.getId(),
                 reportReviewDto.getReporterId(),
                 reportReviewDto.getReview(),
-                reportReviewDto.getReasonOption().getFullSentence(),
+                reportReviewDto.getReasonOption(),
                 reportReviewDto.getReasonDetail()
         );
     }

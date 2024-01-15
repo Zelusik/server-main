@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("[Unit] Controller - Report Review")
 @Import(TestSecurityConfig.class)
 @WebMvcTest(controllers = ReportReviewControllerV1.class)
-public class ReportReviewControllerTest {
+public class ReportReviewControllerV1Test {
 
     @MockBean
     private ReportReviewCommandService reportReviewCommandService;
@@ -61,7 +61,7 @@ public class ReportReviewControllerTest {
     private final ObjectMapper mapper;
 
     @Autowired
-    public ReportReviewControllerTest(MockMvc mvc, ObjectMapper mapper) {
+    public ReportReviewControllerV1Test(MockMvc mvc, ObjectMapper mapper) {
         this.mvc = mvc;
         this.mapper = mapper;
     }
