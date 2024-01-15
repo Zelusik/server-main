@@ -21,7 +21,7 @@ public class ReportReviewQueryService {
      * @param reportReviewId 조회하고자 하는 리뷰 신고 내역의 PK
      * @return 조회된 리뷰 신고 내역의 dto
      */
-    public ReportReviewDto findDtoByReportReviewId(Long reportReviewId) {
+    public ReportReviewDto getDtoByReportReviewId(Long reportReviewId) {
         ReportReview reportReview = reportReviewRepository.findById(reportReviewId)
                 .orElseThrow(() -> new ReportReviewNotFoundByIdException(reportReviewId));
         return ReportReviewDto.from(reportReview);

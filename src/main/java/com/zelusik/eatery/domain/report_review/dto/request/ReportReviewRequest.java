@@ -1,5 +1,6 @@
 package com.zelusik.eatery.domain.report_review.dto.request;
 
+import com.zelusik.eatery.domain.report_review.dto.ReportReviewReasonOption;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class ReportReviewRequest {
 
     @Schema(description = "신고 이유 선택(UNRELATED, ADVERTISING, SENSATIONAL, UNAUTHORIZED, PRIVACY, ETC 중 택 1)", example = "ETC")
     @NotNull
-    private String reasonOption;
+    private ReportReviewReasonOption reasonOption;
 
     @Schema(description = "신고 이유 상세", example = "제가 리뷰로 올린 사진을 도용하였어요.")
     @NotNull

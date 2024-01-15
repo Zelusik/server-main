@@ -73,12 +73,12 @@ public class ReportReviewControllerV1Test {
         long reporterId = 1L;
         long reviewId = 2L;
         long placeId = 3L;
-        String reasonOption = "ETC";
+        ReportReviewReasonOption reasonOption = ReportReviewReasonOption.ETC;
         String reasonDetail = "제가 리뷰로 올린 사진을 도용하였어요.";
 
         ReportReviewRequest request = new ReportReviewRequest(reviewId, reasonOption, reasonDetail);
-        ReportReviewDto expectedResult = createReportReviewDto(4L, reporterId, createReviewDto(reviewId, createWriter(3L), createPlaceWithMarkedStatusDto(placeId)), ReportReviewReasonOption.valueOf(reasonOption), reasonDetail);
-        given(reportReviewCommandService.reportReview(reporterId, reviewId, reasonOption, reasonDetail)).willReturn(expectedResult);
+        ReportReviewDto expectedResult = createReportReviewDto(4L, reporterId, createReviewDto(reviewId, createWriter(3L), createPlaceWithMarkedStatusDto(placeId)), reasonOption, reasonDetail);
+        given(reportReviewCommandService.reportReview(reporterId, request)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
@@ -109,7 +109,7 @@ public class ReportReviewControllerV1Test {
         String reasonDetail = "제가 리뷰로 올린 사진을 도용하였어요.";
 
         ReportReviewDto expectedResult = createReportReviewDto(1L, reporterId, createReviewDto(reviewId, createWriter(3L), createPlaceWithMarkedStatusDto(placeId)), ReportReviewReasonOption.valueOf(reasonOption), reasonDetail);
-        given(reportReviewQueryService.findDtoByReportReviewId(id)).willReturn(expectedResult);
+        given(reportReviewQueryService.getDtoByReportReviewId(id)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
