@@ -40,8 +40,8 @@ public class ReportReviewControllerV1 {
     @PostMapping(headers = API_MINOR_VERSION_HEADER_NAME + "=1")
     public ResponseEntity<PostReportReviewResponse> reportReviewV1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestBody @Valid ReportReviewRequest body) {
-        ReportReviewDto reportReviewDto = reportReviewCommandService.reportReview(userPrincipal.getMemberId(), body);
+            @RequestBody @Valid ReportReviewRequest reportReviewRequest) {
+        ReportReviewDto reportReviewDto = reportReviewCommandService.reportReview(userPrincipal.getMemberId(), reportReviewRequest.getReviewId(), reportReviewRequest.getReasonOption(), reportReviewRequest.getReasonDetail());
         return ResponseEntity.created(URI.create("/api/v1/reports/reviews/" + reportReviewDto.getId())).body(PostReportReviewResponse.from(reportReviewDto));
     }
 

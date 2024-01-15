@@ -73,12 +73,11 @@ public class ReportReviewControllerV1Test {
         long reporterId = 1L;
         long reviewId = 2L;
         long placeId = 3L;
-        ReportReviewReasonOption reasonOption = ReportReviewReasonOption.ETC;
         String reasonDetail = "제가 리뷰로 올린 사진을 도용하였어요.";
 
-        ReportReviewRequest request = new ReportReviewRequest(reviewId, reasonOption, reasonDetail);
-        ReportReviewDto expectedResult = createReportReviewDto(4L, reporterId, createReviewDto(reviewId, createWriter(3L), createPlaceWithMarkedStatusDto(placeId)), reasonOption, reasonDetail);
-        given(reportReviewCommandService.reportReview(reporterId, request)).willReturn(expectedResult);
+        ReportReviewRequest request = new ReportReviewRequest(reviewId, ReportReviewReasonOption.ETC, reasonDetail);
+        ReportReviewDto expectedResult = createReportReviewDto(4L, reporterId, createReviewDto(reviewId, createWriter(3L), createPlaceWithMarkedStatusDto(placeId)), ReportReviewReasonOption.ETC, reasonDetail);
+        given(reportReviewCommandService.reportReview(reporterId, reviewId, ReportReviewReasonOption.ETC, reasonDetail)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(
