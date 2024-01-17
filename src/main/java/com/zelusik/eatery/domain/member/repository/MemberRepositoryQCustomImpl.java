@@ -134,6 +134,16 @@ public class MemberRepositoryQCustomImpl implements MemberRepositoryQCustom {
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
+    @Override
+    public boolean existsByNickname(String nickname) {
+        Long count = queryFactory
+                .select(member.count())
+                .from(member)
+                .where(member.nickname.nickname.eq(nickname))
+                .fetchOne();
+        return count != null && count >= 1;
+    }
+
     private BooleanExpression isMemberNotDeleted() {
         return member.deletedAt.isNull();
     }

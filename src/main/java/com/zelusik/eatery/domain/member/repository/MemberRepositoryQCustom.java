@@ -1,7 +1,7 @@
 package com.zelusik.eatery.domain.member.repository;
 
-import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
+import com.zelusik.eatery.domain.member.entity.Member;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -30,8 +30,16 @@ public interface MemberRepositoryQCustom {
      * 주어진 키워드에 해당하는 닉네임을 갖는 회원을 검색한다..
      *
      * @param searchKeyword 검색 키워드 (닉네임과 매칭)
-     * @param pageable paging 정보
+     * @param pageable      paging 정보
      * @return 검색된 회원들
      */
     Slice<Member> searchByKeyword(String searchKeyword, Pageable pageable);
+
+    /**
+     * 주어진 닉네임을 갖는 회원이 존재하는지 조회한다.
+     *
+     * @param nickname 회원 닉네임
+     * @return 주어진 닉네임을 갖는 회원이 존재한다면 true, 존재하지 않는다면 false
+     */
+    boolean existsByNickname(String nickname);
 }
