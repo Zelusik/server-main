@@ -1,27 +1,27 @@
 package com.zelusik.eatery.integration.domain.member.repository;
 
-import com.zelusik.eatery.global.config.JpaConfig;
-import com.zelusik.eatery.global.config.QuerydslConfig;
-import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
 import com.zelusik.eatery.domain.member.constant.Gender;
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
-import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
+import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
 import com.zelusik.eatery.domain.member.entity.Member;
+import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
+import com.zelusik.eatery.domain.member.repository.MemberRepository;
+import com.zelusik.eatery.domain.place.constant.KakaoCategoryGroupCode;
 import com.zelusik.eatery.domain.place.entity.Address;
 import com.zelusik.eatery.domain.place.entity.Place;
 import com.zelusik.eatery.domain.place.entity.PlaceCategory;
 import com.zelusik.eatery.domain.place.entity.Point;
+import com.zelusik.eatery.domain.place.repository.PlaceRepository;
+import com.zelusik.eatery.domain.review.constant.ReviewKeywordValue;
 import com.zelusik.eatery.domain.review.entity.Review;
+import com.zelusik.eatery.domain.review.repository.ReviewRepository;
 import com.zelusik.eatery.domain.review_image.entity.ReviewImage;
 import com.zelusik.eatery.domain.review_keyword.entity.ReviewKeyword;
-import com.zelusik.eatery.domain.member.dto.MemberWithProfileInfoDto;
-import com.zelusik.eatery.domain.member.exception.MemberNotFoundByIdException;
-import com.zelusik.eatery.domain.member.repository.MemberRepository;
-import com.zelusik.eatery.domain.place.repository.PlaceRepository;
 import com.zelusik.eatery.domain.review_keyword.repository.ReviewKeywordRepository;
-import com.zelusik.eatery.domain.review.repository.ReviewRepository;
+import com.zelusik.eatery.global.common.constant.FoodCategoryValue;
+import com.zelusik.eatery.global.config.JpaConfig;
+import com.zelusik.eatery.global.config.QuerydslConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,6 +122,32 @@ class MemberRepositoryTest {
 
         // then
         assertThat(t).isInstanceOf(MemberNotFoundByIdException.class);
+    }
+
+    @DisplayName("닉네임이 주어지고, 주어진 닉네임에 해당하는 회원의 존재 여부를 확인할 때, 존재한다면 True를 응답한다.")
+    @Test
+    void givenNickname_whenCheckMemberExistenceWithGivenNickname_thenReturnTrueIfExists() {
+        // given
+        String nickname = "돼지 고양이";
+        sut.save(createNewMember("1", nickname));
+
+        // when
+        boolean result = sut.existsByNickname(nickname);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("닉네임이 주어지고, 주어진 닉네임에 해당하는 회원의 존재 여부를 확인할 때, 존재한다면 True를 응답한다.")
+    @Test
+    void givenNickname_whenCheckMemberExistenceWithGivenNickname_thenReturnFalseIfNoneExists() {
+        // given
+
+        // when
+        boolean result = sut.existsByNickname("존재하지 않는 닉네임");
+
+        // then
+        assertThat(result).isFalse();
     }
 
     private Member createNewMember(String socialUid, String nickname) {
