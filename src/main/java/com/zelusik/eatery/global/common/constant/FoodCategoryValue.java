@@ -36,7 +36,7 @@ public enum FoodCategoryValue {
     CHICKEN("치킨", List.of("치킨")),
     STREET("분식", List.of("분식")),
     MEAT("고기/구이", List.of("육류,고기")),
-    FAST_FOOD("패스트푸드", List.of("패스트푸드")),
+    FAST_FOOD("패스트푸드", List.of("패스트푸드", "구내식당", "푸드코트", "여가시설", "전문대행")),
     CAFE_DESSERT("카페/디저트", List.of("카페", "간식")),
     ASIAN("아시안푸드", List.of("아시아음식")),
     SANDWICH("샌드위치", List.of("샌드위치", "샐러드")),
