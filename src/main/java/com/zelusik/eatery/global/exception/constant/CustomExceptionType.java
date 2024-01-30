@@ -3,8 +3,9 @@ package com.zelusik.eatery.global.exception.constant;
 import com.zelusik.eatery.domain.bookmark.entity.Bookmark;
 import com.zelusik.eatery.domain.member.entity.Member;
 import com.zelusik.eatery.domain.place.entity.Place;
-import com.zelusik.eatery.domain.review.entity.Review;
+import com.zelusik.eatery.domain.report_place.entity.ReportPlace;
 import com.zelusik.eatery.domain.report_review.entity.ReportReview;
+import com.zelusik.eatery.domain.review.entity.Review;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -84,6 +85,11 @@ public enum CustomExceptionType {
      * 리뷰 신고{@link ReportReview}) 관련 예외
      */
     REPORT_REVIEW_NOT_FOUND(4000, "리뷰 신고 내역을 찾을 수 없습니다."),
+
+    /**
+     * 장소 신고{@link ReportPlace}) 관련 예외
+     */
+    REPORT_PLACE_NOT_FOUND(4000, "장소 신고 내역을 찾을 수 없습니다."),
 
     /**
      * 북마크({@link Bookmark} 관련 예외
