@@ -38,7 +38,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
         log.warn(
                 "[{}] JwtAccessDeniedHandler.handle() ex={}",
                 LogUtils.getLogTraceId(),
-                ExceptionUtils.getExceptionStackTrace(accessDeniedException)
+                accessDeniedException.getMessage()
         );
 
         response.setStatus(FORBIDDEN.value());
