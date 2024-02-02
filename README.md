@@ -32,6 +32,7 @@
             <td align="center"><b>FrontEnd</b></td>
             <td align="center"><b>FrontEnd</b></td>
             <td align="center"><b>BackEnd</b></td>
+            <td align="center"><b>BackEnd</b></td>
         </tr>
     </thead>
     <tbody>
@@ -39,11 +40,13 @@
             <td><img src="https://avatars.githubusercontent.com/u/70315572?v=4" width="150px" alt="가비_프로필_이미지"/></td>
             <td><img src="https://github.com/Zelusik/backend/assets/60748900/bd5d5d23-df2d-4c85-a93d-205794391a73" width="150px" alt="에즈_프로필_이미지"/></td>
             <td><img src="https://avatars.githubusercontent.com/u/60748900?v=4" width="150px" alt="재욱_프로필_이미지"/></td>
+            <td><img src="https://avatars.githubusercontent.com/u/42367169?v=4" width="150px" alt="벨라_프로필_이미지"/></td>
         </tr>
         <tr>
             <td align="center"><a href="https://github.com/Limgabi">임가비</a></td>
             <td align="center"><a href="https://github.com/choiyeju">최예주</a></td>
             <td align="center"><a href="https://github.com/Wo-ogie">정재욱</a></td>
+            <td align="center"><a href="https://github.com/jiholee0">이지호</a></td>
         </tr>
     </tbody>
 </table>
@@ -67,6 +70,7 @@
     <li>AWS EC2</li>
     <li>AWS RDS</li>
     <li>AWS S3</li>
+    <li>AWS CloudFront</li>
     <li>Docker, Docker Compose</li>
     <li>GitHub Actions</li>
 </ul>
