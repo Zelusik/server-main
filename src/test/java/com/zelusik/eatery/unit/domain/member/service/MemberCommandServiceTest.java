@@ -138,6 +138,34 @@ class MemberCommandServiceTest {
         assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
     }
 
+    @DisplayName("수정할 회원 정보가 주어지고, 회원 정보를 수정하면, 주어진 정보로 회원 정보가 수정된다. 이때, 닉네임이 변경되지 않았다면 닉네임 중복 확인 과정은 거치지 않는다.")
+    @Test
+    void givenMemberInfoToUpdate_whenUpdateMemberInfo_thenMemberInfoShouldBeUpdatedWithoutNicknameDuplicationCheckIfNicknameNotChanged() {
+        // given
+        long memberId = 1L;
+        String nickname = "nickname";
+        Member member = createMember(memberId, nickname);
+        MemberUpdateRequest memberUpdateInfo = new MemberUpdateRequest(nickname, LocalDate.of(2020, 1, 1), Gender.ETC, createMockMultipartFile());
+        ProfileImage oldProfileImage = createProfileImage(member, 2L);
+        given(memberQueryService.getById(memberId)).willReturn(member);
+        given(profileImageQueryService.findByMember(member)).willReturn(Optional.of(oldProfileImage));
+        willDoNothing().given(profileImageCommandService).softDelete(oldProfileImage);
+        given(profileImageCommandService.upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()))).willReturn(createProfileImage(member, 10L));
+
+        // when
+        MemberDto updatedMemberDto = sut.update(memberId, memberUpdateInfo);
+
+        // then
+        then(memberQueryService).should().getById(memberId);
+        then(profileImageQueryService).should().findByMember(member);
+        then(profileImageCommandService).should().softDelete(oldProfileImage);
+        then(profileImageCommandService).should().upload(any(Member.class), eq(memberUpdateInfo.getProfileImage()));
+        verifyEveryMocksShouldHaveNoMoreInteractions();
+        assertThat(updatedMemberDto.getNickname()).isEqualTo(memberUpdateInfo.getNickname());
+        assertThat(updatedMemberDto.getBirthDay()).isEqualTo(memberUpdateInfo.getBirthDay());
+        assertThat(updatedMemberDto.getGender()).isEqualTo(memberUpdateInfo.getGender());
+    }
+
     @DisplayName("수정할 회원 정보 중 이미 사용중인 닉네임이 주어지고, 회원 정보를 수정하면, 예외가 발생한다.")
     @Test
     void givenNicknameThatAlreadyExists_whenUpdatingMemberInfo_thenThrowNicknameDuplicationException() {
@@ -256,10 +284,14 @@ class MemberCommandServiceTest {
     }
 
     private Member createMember(long memberId) {
-        return createMember(memberId, Set.of(RoleType.USER));
+        return createMember(memberId, "nickname", Set.of(RoleType.USER));
     }
 
-    private Member createMember(long memberId, Set<RoleType> roleTypes) {
+    private Member createMember(long memberId, String nickname) {
+        return createMember(memberId, nickname, Set.of(RoleType.USER));
+    }
+
+    private Member createMember(long memberId, String nickname, Set<RoleType> roleTypes) {
         return new Member(
                 memberId,
                 "profile image url",
@@ -268,7 +300,7 @@ class MemberCommandServiceTest {
                 LoginType.KAKAO,
                 roleTypes,
                 "email",
-                "nickname",
+                nickname,
                 LocalDate.of(2000, 1, 1),
                 20,
                 Gender.MALE,
