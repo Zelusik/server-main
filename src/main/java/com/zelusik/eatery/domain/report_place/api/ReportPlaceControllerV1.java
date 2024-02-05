@@ -41,8 +41,10 @@ public class ReportPlaceControllerV1 {
     public ResponseEntity<PostReportPlaceResponse> reportPlaceV1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid ReportPlaceRequest reportPlaceRequest) {
-        ReportPlaceDto reportPlaceDto = reportPlaceCommandService.reportPlace(userPrincipal, reportPlaceRequest);
-        return ResponseEntity.created(URI.create("/api/v1/reports/places/" + reportPlaceDto.getId())).body(PostReportPlaceResponse.from(reportPlaceDto));
+        ReportPlaceDto reportPlaceDto = reportPlaceCommandService.reportPlace(userPrincipal.getMemberId(), reportPlaceRequest);
+        return ResponseEntity
+                .created(URI.create("/api/v1/reports/places/" + reportPlaceDto.getId()))
+                .body(PostReportPlaceResponse.from(reportPlaceDto));
     }
 
     @Operation(summary = "장소 신고 내역(정보 수정 제안) 단건 조회",

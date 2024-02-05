@@ -8,7 +8,6 @@ import com.zelusik.eatery.domain.report_place.dto.ReportPlaceDto;
 import com.zelusik.eatery.domain.report_place.dto.request.ReportPlaceRequest;
 import com.zelusik.eatery.domain.report_place.entity.ReportPlace;
 import com.zelusik.eatery.domain.report_place.repository.ReportPlaceRepository;
-import com.zelusik.eatery.global.auth.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,17 +23,16 @@ public class ReportPlaceCommandService {
     /**
      * 장소를 신고한다.
      *
-     * @param userPrincipal login member
-     * @param body          장소 신고 요청 request 객체
+     * @param reporterId login member Id
+     * @param body       장소 신고 요청 request 객체
      * @return 장소 신고 dto
      */
-    public ReportPlaceDto reportPlace(UserPrincipal userPrincipal, ReportPlaceRequest body) {
-        Member reporter = memberQueryService.getById(userPrincipal.getMemberId());
+    public ReportPlaceDto reportPlace(Long reporterId, ReportPlaceRequest body) {
+        Member reporter = memberQueryService.getById(reporterId);
         Place place = placeQueryService.getById(body.getPlaceId());
 
-        ReportPlace reportPlace = ReportPlace.create(reporter, place, body.getReasonOption(), body.getReasonDetail());
-        reportPlaceRepository.save(reportPlace);
-
+        ReportPlace newReportPlace = ReportPlace.create(reporter, place, body.getReasonOption(), body.getReasonDetail());
+        ReportPlace reportPlace = reportPlaceRepository.save(newReportPlace);
         return ReportPlaceDto.from(reportPlace);
     }
 }
