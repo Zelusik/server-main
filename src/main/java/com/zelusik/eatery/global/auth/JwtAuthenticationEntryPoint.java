@@ -38,7 +38,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         log.warn(
                 "[{}] JwtAuthenticationEntryPoint.commence() ex={}",
                 LogUtils.getLogTraceId(),
-                ExceptionUtils.getExceptionStackTrace(authenticationException)
+                authenticationException.getMessage()
         );
 
         response.setStatus(UNAUTHORIZED.value());

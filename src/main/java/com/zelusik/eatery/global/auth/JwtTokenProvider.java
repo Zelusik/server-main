@@ -2,14 +2,13 @@ package com.zelusik.eatery.global.auth;
 
 import com.zelusik.eatery.domain.member.constant.LoginType;
 import com.zelusik.eatery.domain.member.constant.RoleType;
-import com.zelusik.eatery.global.auth.exception.TokenValidateException;
 import com.zelusik.eatery.global.auth.dto.JwtTokenInfoDto;
+import com.zelusik.eatery.global.auth.exception.TokenValidateException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +24,6 @@ import java.security.Key;
 import java.sql.Timestamp;
 import java.util.Date;
 
-@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {

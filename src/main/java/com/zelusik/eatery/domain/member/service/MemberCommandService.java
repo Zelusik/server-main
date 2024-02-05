@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -80,7 +81,10 @@ public class MemberCommandService {
     public MemberDto update(Long memberId, MemberUpdateRequest updateRequest) {
         Member member = memberQueryService.getById(memberId);
 
-        validateNicknameDuplication(updateRequest.getNickname());
+        // 닉네임을 변경했다면, 변경하고자 하는 닉네임이 이미 사용중이지 않은지 확인
+        if (!Objects.equals(member.getNickname(), updateRequest.getNickname())) {
+            validateNicknameDuplication(updateRequest.getNickname());
+        }
 
         MultipartFile profileImageForUpdate = updateRequest.getProfileImage();
         if (profileImageForUpdate == null) {
