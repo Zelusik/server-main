@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Table
 @Entity
 public class ReportPlace extends BaseTimeEntity {
 
