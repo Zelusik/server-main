@@ -18,12 +18,12 @@ public class ReportPlaceQueryService {
     /**
      * reportPlaceId에 해당하는 장소 신고 내역을 조회한다.
      *
-     * @param reportPlaceId 조회하고자 하는 장소 신고 내역의 PK
+     * @param id 조회하고자 하는 장소 신고 내역의 PK
      * @return 조회된 장소 신고 내역의 dto
      */
-    public ReportPlaceDto getDtoByReportPlaceId(Long reportPlaceId) {
-        ReportPlace reportPlace = reportPlaceRepository.findById(reportPlaceId)
-                .orElseThrow(() -> new ReportPlaceNotFoundByIdException(reportPlaceId));
+    public ReportPlaceDto getDtoById(Long id) {
+        ReportPlace reportPlace = reportPlaceRepository.findById(id)
+                .orElseThrow(() -> new ReportPlaceNotFoundByIdException(id));
         return ReportPlaceDto.from(reportPlace);
     }
 }

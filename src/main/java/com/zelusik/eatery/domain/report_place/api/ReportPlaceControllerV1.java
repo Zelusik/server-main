@@ -2,7 +2,7 @@ package com.zelusik.eatery.domain.report_place.api;
 
 import com.zelusik.eatery.domain.report_place.dto.ReportPlaceDto;
 import com.zelusik.eatery.domain.report_place.dto.request.ReportPlaceRequest;
-import com.zelusik.eatery.domain.report_place.dto.response.PostReportPlaceResponse;
+import com.zelusik.eatery.domain.report_place.dto.response.ReportPlaceResponse;
 import com.zelusik.eatery.domain.report_place.service.ReportPlaceCommandService;
 import com.zelusik.eatery.domain.report_place.service.ReportPlaceQueryService;
 import com.zelusik.eatery.global.auth.UserPrincipal;
@@ -38,13 +38,13 @@ public class ReportPlaceControllerV1 {
             security = @SecurityRequirement(name = "access-token")
     )
     @PostMapping(headers = API_MINOR_VERSION_HEADER_NAME + "=1")
-    public ResponseEntity<PostReportPlaceResponse> reportPlaceV1(
+    public ResponseEntity<ReportPlaceResponse> reportPlaceV1(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestBody @Valid ReportPlaceRequest reportPlaceRequest) {
         ReportPlaceDto reportPlaceDto = reportPlaceCommandService.reportPlace(userPrincipal.getMemberId(), reportPlaceRequest);
         return ResponseEntity
                 .created(URI.create("/api/v1/reports/places/" + reportPlaceDto.getId()))
-                .body(PostReportPlaceResponse.from(reportPlaceDto));
+                .body(ReportPlaceResponse.from(reportPlaceDto));
     }
 
     @Operation(summary = "장소 신고 내역(정보 수정 제안) 단건 조회",
@@ -53,13 +53,13 @@ public class ReportPlaceControllerV1 {
             security = @SecurityRequirement(name = "access-token")
     )
     @GetMapping(value = "/{reportPlaceId}", headers = API_MINOR_VERSION_HEADER_NAME + "=1")
-    public PostReportPlaceResponse findReportPlaceByIdV1(
+    public ReportPlaceResponse findReportPlaceByIdV1(
             @Parameter(
                     description = "PK of reportPlace",
                     example = "3"
             ) @PathVariable Long reportPlaceId
     ) {
-        ReportPlaceDto reportPlaceDto = reportPlaceQueryService.getDtoByReportPlaceId(reportPlaceId);
-        return PostReportPlaceResponse.from(reportPlaceDto);
+        ReportPlaceDto reportPlaceDto = reportPlaceQueryService.getDtoById(reportPlaceId);
+        return ReportPlaceResponse.from(reportPlaceDto);
     }
 }

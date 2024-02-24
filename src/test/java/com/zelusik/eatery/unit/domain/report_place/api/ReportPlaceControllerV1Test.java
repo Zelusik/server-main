@@ -108,7 +108,7 @@ public class ReportPlaceControllerV1Test {
         String reasonDetail = "전화번호가 ~~로 수정되었어요.";
 
         ReportPlaceDto expectedResult = createReportPlaceDto(1L, reporterId, createPlaceDto(placeId), reasonOption, reasonDetail);
-        given(reportPlaceQueryService.getDtoByReportPlaceId(id)).willReturn(expectedResult);
+        given(reportPlaceQueryService.getDtoById(id)).willReturn(expectedResult);
 
         // when & then
         mvc.perform(

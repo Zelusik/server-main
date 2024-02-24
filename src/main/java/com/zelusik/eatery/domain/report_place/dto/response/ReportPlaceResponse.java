@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class PostReportPlaceResponse {
+public class ReportPlaceResponse {
 
     @Schema(description = "장소 신고의 id(PK)", example = "19")
     private Long id;
@@ -27,8 +27,8 @@ public class PostReportPlaceResponse {
     @Schema(description = "신고 이유 상세", example = "전화번호가 ~~로 변경되었습니다.")
     private String reasonDetail;
 
-    public static PostReportPlaceResponse from(ReportPlaceDto reportPlaceDto) {
-        return new PostReportPlaceResponse(
+    public static ReportPlaceResponse from(ReportPlaceDto reportPlaceDto) {
+        return new ReportPlaceResponse(
                 reportPlaceDto.getId(),
                 reportPlaceDto.getReporterId(),
                 reportPlaceDto.getPlace().getId(),
