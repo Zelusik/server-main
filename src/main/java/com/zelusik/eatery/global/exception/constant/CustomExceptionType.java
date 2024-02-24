@@ -89,7 +89,7 @@ public enum CustomExceptionType {
     /**
      * 장소 신고{@link ReportPlace}) 관련 예외
      */
-    REPORT_PLACE_NOT_FOUND(4000, "장소 신고 내역을 찾을 수 없습니다."),
+    REPORT_PLACE_NOT_FOUND(4100, "장소 신고 내역을 찾을 수 없습니다."),
 
     /**
      * 북마크({@link Bookmark} 관련 예외
