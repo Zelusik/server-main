@@ -21,6 +21,8 @@ import lombok.Getter;
  *     <li>2XXX: 회원({@link Member}) 관련 예외</li>
  *     <li>3000 ~ 3499: 장소 관련 예외</li>
  *     <li>3500 ~ 3999: 리뷰 관련 예외</li>
+ *     <li>4000 ~ 4099: 리뷰 신고 관련 예외</li>
+ *     <li>4100 ~ 4199: 장소 신고 관련 예외</li>
  *     <li>4300 ~ 4599: 북마크 관련 예외</li>
  *     <li>1XXXX: Kakao server 관련 예외</li>
  *     <li>2XXXX: Apple server/login 관련 예외</li>
