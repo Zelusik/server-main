@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -40,6 +41,9 @@ public class FindReviewsResponse {
     @Schema(description = "리뷰에 첨부된 썸네일 이미지 url")
     private List<String> reviewThumbnailImageUrls;
 
+    @Schema(description = "리뷰 생성 시각")
+    private LocalDateTime createdAt;
+
     public static FindReviewsResponse from(ReviewWithPlaceMarkedStatusDto dto) {
         return new FindReviewsResponse(
                 dto.getId(),
@@ -47,7 +51,8 @@ public class FindReviewsResponse {
                 dto.getPlace() != null ? PlaceResponse.from(dto.getPlace()) : null,
                 dto.getKeywords().stream().map(ReviewKeywordValue::getContent).toList(),
                 dto.getContent(),
-                dto.getReviewImageDtos().stream().map(ReviewImageDto::getThumbnailUrl).toList()
+                dto.getReviewImageDtos().stream().map(ReviewImageDto::getThumbnailUrl).toList(),
+                dto.getCreatedAt()
         );
     }
 
